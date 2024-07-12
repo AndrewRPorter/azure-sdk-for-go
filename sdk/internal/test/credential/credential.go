@@ -5,7 +5,9 @@ package credential
 
 import (
 	"context"
+	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -32,7 +34,24 @@ func New(*NewOptions) (azcore.TokenCredential, error) {
 	connectionID := os.Getenv("AZURESUBSCRIPTION_SERVICE_CONNECTION_ID")
 	tenant := os.Getenv("AZURESUBSCRIPTION_TENANT_ID")
 	if accessToken != "" && clientID != "" && connectionID != "" && tenant != "" {
+		fmt.Println("Using Azure Pipelines credential")
 		return azidentity.NewAzurePipelinesCredential(tenant, clientID, connectionID, accessToken, nil)
+	}
+	unset := []string{}
+	if accessToken == "" {
+		unset = append(unset, "SYSTEM_ACCESSTOKEN")
+	}
+	if clientID == "" {
+		unset = append(unset, "AZURESUBSCRIPTION_CLIENT_ID")
+	}
+	if connectionID == "" {
+		unset = append(unset, "AZURESUBSCRIPTION_SERVICE_CONNECTION_ID")
+	}
+	if tenant == "" {
+		unset = append(unset, "AZURESUBSCRIPTION_TENANT_ID")
+	}
+	if len(unset) > 0 {
+		fmt.Printf("Azure Pipelines credential environment variables not set: %v\n", strings.Join(unset, ", "))
 	}
 	if s := os.Getenv("AZURE_SERVICE_DIRECTORY"); s != "" {
 		// New-TestResources.ps1 has configured this environment, possibly with service principal details
