@@ -183,6 +183,13 @@ func (p *readManyV1PartitionPolicy) Do(req *policy.Request) (*http.Response, err
 		return nil, err
 	}
 	rangeID := req.Raw().Header.Get(cosmosHeaderPartitionKeyRangeId)
+	// Match service routing when the request targets a logical partition.
+	switch req.Raw().Header.Get(cosmosHeaderPartitionKey) {
+	case `[""]`:
+		rangeID = "0"
+	case `["asdf"]`:
+		rangeID = "1"
+	}
 	p.rangeIDs = append(p.rangeIDs, rangeID)
 	documents := make([]map[string]string, 0)
 	for _, parameter := range query.Parameters {
@@ -242,7 +249,7 @@ func TestReadManyItems_V1PhysicalPartitions(t *testing.T) {
 					srv, closeSrv := mock.NewTLSServer()
 					defer closeSrv()
 					service := &readManyV1PartitionPolicy{}
-					client := createReadManyTestClient(t, srv, []policy.Policy{service})
+					client := createReadManyTestClient(t, srv, []policy.Policy{&headerPolicies{}, service})
 					containerLink := "dbs/databaseId/colls/containerId"
 					client.getContainerCache().set(containerLink, &ContainerProperties{
 						ID:         "containerId",
@@ -348,6 +355,18 @@ func TestReadManyItems_PartitionKeyHeader(t *testing.T) {
 		items            []ItemIdentity
 		expectedPKHeader string
 	}{
+		{
+			name: "single item",
+			partitionKeyDef: PartitionKeyDefinition{
+				Paths:   []string{"/pk"},
+				Kind:    PartitionKeyKindHash,
+				Version: 2,
+			},
+			items: []ItemIdentity{
+				{ID: "1", PartitionKey: NewPartitionKeyString("pk1")},
+			},
+			expectedPKHeader: `["pk1"]`,
+		},
 		{
 			name: "same logical partition key",
 			partitionKeyDef: PartitionKeyDefinition{
@@ -477,7 +496,11 @@ func TestReadManyItems_PartitionKeyHeader(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, verifier.requests, 3)
 			require.Equal(t, tc.expectedPKHeader, verifier.requests[2].headers.Get(cosmosHeaderPartitionKey))
-			require.Equal(t, "0", verifier.requests[2].headers.Get(cosmosHeaderPartitionKeyRangeId))
+			if tc.expectedPKHeader != "" {
+				require.Empty(t, verifier.requests[2].headers.Get(cosmosHeaderPartitionKeyRangeId))
+			} else {
+				require.Equal(t, "0", verifier.requests[2].headers.Get(cosmosHeaderPartitionKeyRangeId))
+			}
 		})
 	}
 }

@@ -12,6 +12,8 @@
 
 ### Bugs Fixed
 
+* Fixed `ReadManyItems` sending conflicting logical partition key and physical partition range headers for items sharing a complete partition key.
+
 ### Other Changes
 
 ## 1.6.0-beta.5 (2026-11-06)

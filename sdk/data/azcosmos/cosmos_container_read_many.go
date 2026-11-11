@@ -302,7 +302,10 @@ func (c *ContainerClient) executeOneChunkPage(
 		operationContext,
 		queryOpts,
 		func(req *policy.Request) {
-			req.Raw().Header.Set(cosmosHeaderPartitionKeyRangeId, rangeID)
+			// Logical and physical partition routing headers are mutually exclusive.
+			if operationContext.headerOptionsOverride == nil || operationContext.headerOptionsOverride.partitionKey == nil {
+				req.Raw().Header.Set(cosmosHeaderPartitionKeyRangeId, rangeID)
+			}
 		},
 	)
 	if err != nil {
