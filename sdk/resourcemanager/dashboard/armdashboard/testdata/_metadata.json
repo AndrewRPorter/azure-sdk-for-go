@@ -1,0 +1,6 @@
+{
+  "apiVersions": {
+    "Microsoft.Dashboard": "2025-08-01"
+  },
+  "emitterVersion": "0.18.0"
+}

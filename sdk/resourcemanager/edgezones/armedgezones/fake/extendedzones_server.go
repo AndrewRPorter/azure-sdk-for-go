@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // ExtendedZonesServer is a fake server for instances of the armedgezones.ExtendedZonesClient type.
@@ -59,40 +60,54 @@ func (e *ExtendedZonesServerTransport) Do(req *http.Request) (*http.Response, er
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return e.dispatchToMethodFake(req, method)
 }
 
 func (e *ExtendedZonesServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	var resp *http.Response
-	var err error
+	resultChan := make(chan result, 1)
+	go func() {
+		var intercepted bool
+		var res result
+		if extendedZonesServerTransportInterceptor != nil {
+			res.resp, res.err, intercepted = extendedZonesServerTransportInterceptor.Do(req)
+		}
+		if !intercepted {
+			switch method {
+			case "ExtendedZonesClient.Get":
+				res.resp, res.err = e.dispatchGet(req)
+			case "ExtendedZonesClient.NewListBySubscriptionPager":
+				res.resp, res.err = e.dispatchNewListBySubscriptionPager(req)
+			case "ExtendedZonesClient.Register":
+				res.resp, res.err = e.dispatchRegister(req)
+			case "ExtendedZonesClient.Unregister":
+				res.resp, res.err = e.dispatchUnregister(req)
+			default:
+				res.err = fmt.Errorf("unhandled API %s", method)
+			}
 
-	switch method {
-	case "ExtendedZonesClient.Get":
-		resp, err = e.dispatchGet(req)
-	case "ExtendedZonesClient.NewListBySubscriptionPager":
-		resp, err = e.dispatchNewListBySubscriptionPager(req)
-	case "ExtendedZonesClient.Register":
-		resp, err = e.dispatchRegister(req)
-	case "ExtendedZonesClient.Unregister":
-		resp, err = e.dispatchUnregister(req)
-	default:
-		err = fmt.Errorf("unhandled API %s", method)
+		}
+		resultChan <- res
+	}()
+
+	select {
+	case <-req.Context().Done():
+		return nil, req.Context().Err()
+	case res := <-resultChan:
+		return res.resp, res.err
 	}
-
-	return resp, err
 }
 
 func (e *ExtendedZonesServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
 	if e.srv.Get == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
 	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 2 {
+	if len(matches) < 3 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	extendedZoneNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("extendedZoneName")])
@@ -104,7 +119,7 @@ func (e *ExtendedZonesServerTransport) dispatchGet(req *http.Request) (*http.Res
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ExtendedZone, req)
@@ -120,10 +135,10 @@ func (e *ExtendedZonesServerTransport) dispatchNewListBySubscriptionPager(req *h
 	}
 	newListBySubscriptionPager := e.newListBySubscriptionPager.get(req)
 	if newListBySubscriptionPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.EdgeZones/extendedZones`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.EdgeZones/extendedZones`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 1 {
+		if len(matches) < 2 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		resp := e.srv.NewListBySubscriptionPager(nil)
@@ -137,7 +152,7 @@ func (e *ExtendedZonesServerTransport) dispatchNewListBySubscriptionPager(req *h
 	if err != nil {
 		return nil, err
 	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
 		e.newListBySubscriptionPager.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
 	}
@@ -151,10 +166,10 @@ func (e *ExtendedZonesServerTransport) dispatchRegister(req *http.Request) (*htt
 	if e.srv.Register == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Register not implemented")}
 	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/register`
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/register`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 2 {
+	if len(matches) < 3 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	extendedZoneNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("extendedZoneName")])
@@ -166,7 +181,7 @@ func (e *ExtendedZonesServerTransport) dispatchRegister(req *http.Request) (*htt
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ExtendedZone, req)
@@ -180,10 +195,10 @@ func (e *ExtendedZonesServerTransport) dispatchUnregister(req *http.Request) (*h
 	if e.srv.Unregister == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Unregister not implemented")}
 	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/unregister`
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.EdgeZones/extendedZones/(?P<extendedZoneName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/unregister`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 2 {
+	if len(matches) < 3 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	extendedZoneNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("extendedZoneName")])
@@ -195,7 +210,7 @@ func (e *ExtendedZonesServerTransport) dispatchUnregister(req *http.Request) (*h
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ExtendedZone, req)
@@ -203,4 +218,10 @@ func (e *ExtendedZonesServerTransport) dispatchUnregister(req *http.Request) (*h
 		return nil, err
 	}
 	return resp, nil
+}
+
+// set this to conditionally intercept incoming requests to ExtendedZonesServerTransport
+var extendedZonesServerTransportInterceptor interface {
+	// Do returns true if the server transport should use the returned response/error
+	Do(*http.Request) (*http.Response, error, bool)
 }

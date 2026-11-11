@@ -18,6 +18,8 @@ import (
 
 // SchedulersClient contains the methods for the Schedulers group.
 // Don't use this type directly, use NewSchedulersClient() instead.
+//
+// Generated from API version 2026-07-01-preview
 type SchedulersClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type SchedulersClient struct {
 // NewSchedulersClient creates a new instance of SchedulersClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewSchedulersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SchedulersClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewSchedulersClient(subscriptionID string, credential azcore.TokenCredentia
 
 // BeginCreateOrUpdate - Create or update a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *SchedulersClient) BeginCreateOrUpdate(ctx context.Context, resourc
 	}
 }
 
-// CreateOrUpdate - Create or update a Scheduler
+// createOrUpdate - Create or update a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *SchedulersClient) createOrUpdate(ctx context.Context, resourceGroupName string, schedulerName string, resource Scheduler, options *SchedulersClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "SchedulersClient.BeginCreateOrUpdate"
@@ -90,11 +91,11 @@ func (client *SchedulersClient) createOrUpdate(ctx context.Context, resourceGrou
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *SchedulersClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, resource Scheduler, _ *SchedulersClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,90 @@ func (client *SchedulersClient) createOrUpdateCreateRequest(ctx context.Context,
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	req.Raw().Header["Content-Type"] = []string{"application/json"}
+	if err := runtime.MarshalAsJSON(req, resource); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// BeginCreateOrUpdatePrivateEndpointConnection - Create or update a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
+//   - resource - Resource create parameters.
+//   - options - SchedulersClientBeginCreateOrUpdatePrivateEndpointConnectionOptions contains the optional parameters for the
+//     SchedulersClient.BeginCreateOrUpdatePrivateEndpointConnection method.
+func (client *SchedulersClient) BeginCreateOrUpdatePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, resource PrivateEndpointConnection, options *SchedulersClientBeginCreateOrUpdatePrivateEndpointConnectionOptions) (*runtime.Poller[SchedulersClientCreateOrUpdatePrivateEndpointConnectionResponse], error) {
+	if options == nil || options.ResumeToken == "" {
+		resp, err := client.createOrUpdatePrivateEndpointConnection(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, resource, options)
+		if err != nil {
+			return nil, err
+		}
+		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[SchedulersClientCreateOrUpdatePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+		return poller, err
+	} else {
+		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[SchedulersClientCreateOrUpdatePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+	}
+}
+
+// createOrUpdatePrivateEndpointConnection - Create or update a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+func (client *SchedulersClient) createOrUpdatePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, resource PrivateEndpointConnection, options *SchedulersClientBeginCreateOrUpdatePrivateEndpointConnectionOptions) (*http.Response, error) {
+	var err error
+	const operationName = "SchedulersClient.BeginCreateOrUpdatePrivateEndpointConnection"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.createOrUpdatePrivateEndpointConnectionCreateRequest(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, resource, options)
+	if err != nil {
+		return nil, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusCreated) {
+		err = runtime.NewResponseError(httpResp)
+		return nil, err
+	}
+	return httpResp, nil
+}
+
+// createOrUpdatePrivateEndpointConnectionCreateRequest creates the createOrUpdatePrivateEndpointConnection request.
+func (client *SchedulersClient) createOrUpdatePrivateEndpointConnectionCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, resource PrivateEndpointConnection, _ *SchedulersClientBeginCreateOrUpdatePrivateEndpointConnectionOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateEndpointConnections/{privateEndpointConnectionName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	if privateEndpointConnectionName == "" {
+		return nil, errors.New("parameter privateEndpointConnectionName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateEndpointConnectionName}", url.PathEscape(privateEndpointConnectionName))
+	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -122,8 +205,6 @@ func (client *SchedulersClient) createOrUpdateCreateRequest(ctx context.Context,
 
 // BeginDelete - Delete a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - options - SchedulersClientBeginDeleteOptions contains the optional parameters for the SchedulersClient.BeginDelete method.
@@ -144,10 +225,8 @@ func (client *SchedulersClient) BeginDelete(ctx context.Context, resourceGroupNa
 	}
 }
 
-// Delete - Delete a Scheduler
+// deleteOperation - Delete a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *SchedulersClient) deleteOperation(ctx context.Context, resourceGroupName string, schedulerName string, options *SchedulersClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "SchedulersClient.BeginDelete"
@@ -169,11 +248,11 @@ func (client *SchedulersClient) deleteOperation(ctx context.Context, resourceGro
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *SchedulersClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, _ *SchedulersClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -189,46 +268,63 @@ func (client *SchedulersClient) deleteCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
-// Get - Get a Scheduler
+// BeginDeletePrivateEndpointConnection - Delete a private endpoint connection for the durable task scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
-//   - options - SchedulersClientGetOptions contains the optional parameters for the SchedulersClient.Get method.
-func (client *SchedulersClient) Get(ctx context.Context, resourceGroupName string, schedulerName string, options *SchedulersClientGetOptions) (SchedulersClientGetResponse, error) {
+//   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
+//   - options - SchedulersClientBeginDeletePrivateEndpointConnectionOptions contains the optional parameters for the SchedulersClient.BeginDeletePrivateEndpointConnection
+//     method.
+func (client *SchedulersClient) BeginDeletePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, options *SchedulersClientBeginDeletePrivateEndpointConnectionOptions) (*runtime.Poller[SchedulersClientDeletePrivateEndpointConnectionResponse], error) {
+	if options == nil || options.ResumeToken == "" {
+		resp, err := client.deletePrivateEndpointConnection(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, options)
+		if err != nil {
+			return nil, err
+		}
+		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[SchedulersClientDeletePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+		return poller, err
+	} else {
+		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[SchedulersClientDeletePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+	}
+}
+
+// deletePrivateEndpointConnection - Delete a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+func (client *SchedulersClient) deletePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, options *SchedulersClientBeginDeletePrivateEndpointConnectionOptions) (*http.Response, error) {
 	var err error
-	const operationName = "SchedulersClient.Get"
+	const operationName = "SchedulersClient.BeginDeletePrivateEndpointConnection"
 	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
 	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, schedulerName, options)
+	req, err := client.deletePrivateEndpointConnectionCreateRequest(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, options)
 	if err != nil {
-		return SchedulersClientGetResponse{}, err
+		return nil, err
 	}
 	httpResp, err := client.internal.Pipeline().Do(req)
 	if err != nil {
-		return SchedulersClientGetResponse{}, err
+		return nil, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
+	if !runtime.HasStatusCode(httpResp, http.StatusAccepted, http.StatusNoContent) {
 		err = runtime.NewResponseError(httpResp)
-		return SchedulersClientGetResponse{}, err
+		return nil, err
 	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
+	return httpResp, nil
 }
 
-// getCreateRequest creates the Get request.
-func (client *SchedulersClient) getCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, _ *SchedulersClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}"
+// deletePrivateEndpointConnectionCreateRequest creates the deletePrivateEndpointConnection request.
+func (client *SchedulersClient) deletePrivateEndpointConnectionCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, _ *SchedulersClientBeginDeletePrivateEndpointConnectionOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateEndpointConnections/{privateEndpointConnectionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -239,145 +335,22 @@ func (client *SchedulersClient) getCreateRequest(ctx context.Context, resourceGr
 		return nil, errors.New("parameter schedulerName cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if privateEndpointConnectionName == "" {
+		return nil, errors.New("parameter privateEndpointConnectionName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateEndpointConnectionName}", url.PathEscape(privateEndpointConnectionName))
+	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *SchedulersClient) getHandleResponse(resp *http.Response) (SchedulersClientGetResponse, error) {
-	result := SchedulersClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.Scheduler); err != nil {
-		return SchedulersClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByResourceGroupPager - List Schedulers by resource group
-//
-// Generated from API version 2025-04-01-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - options - SchedulersClientListByResourceGroupOptions contains the optional parameters for the SchedulersClient.NewListByResourceGroupPager
-//     method.
-func (client *SchedulersClient) NewListByResourceGroupPager(resourceGroupName string, options *SchedulersClientListByResourceGroupOptions) *runtime.Pager[SchedulersClientListByResourceGroupResponse] {
-	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListByResourceGroupResponse]{
-		More: func(page SchedulersClientListByResourceGroupResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *SchedulersClientListByResourceGroupResponse) (SchedulersClientListByResourceGroupResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListByResourceGroupPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
-			if err != nil {
-				return SchedulersClientListByResourceGroupResponse{}, err
-			}
-			return client.listByResourceGroupHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *SchedulersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *SchedulersClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *SchedulersClient) listByResourceGroupHandleResponse(resp *http.Response) (SchedulersClientListByResourceGroupResponse, error) {
-	result := SchedulersClientListByResourceGroupResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerListResult); err != nil {
-		return SchedulersClientListByResourceGroupResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListBySubscriptionPager - List Schedulers by subscription
-//
-// Generated from API version 2025-04-01-preview
-//   - options - SchedulersClientListBySubscriptionOptions contains the optional parameters for the SchedulersClient.NewListBySubscriptionPager
-//     method.
-func (client *SchedulersClient) NewListBySubscriptionPager(options *SchedulersClientListBySubscriptionOptions) *runtime.Pager[SchedulersClientListBySubscriptionResponse] {
-	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListBySubscriptionResponse]{
-		More: func(page SchedulersClientListBySubscriptionResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *SchedulersClientListBySubscriptionResponse) (SchedulersClientListBySubscriptionResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListBySubscriptionPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return SchedulersClientListBySubscriptionResponse{}, err
-			}
-			return client.listBySubscriptionHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *SchedulersClient) listBySubscriptionCreateRequest(ctx context.Context, _ *SchedulersClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DurableTask/schedulers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *SchedulersClient) listBySubscriptionHandleResponse(resp *http.Response) (SchedulersClientListBySubscriptionResponse, error) {
-	result := SchedulersClientListBySubscriptionResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerListResult); err != nil {
-		return SchedulersClientListBySubscriptionResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginUpdate - Update a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - properties - The resource properties to be updated.
@@ -399,10 +372,8 @@ func (client *SchedulersClient) BeginUpdate(ctx context.Context, resourceGroupNa
 	}
 }
 
-// Update - Update a Scheduler
+// update - Update a Scheduler
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *SchedulersClient) update(ctx context.Context, resourceGroupName string, schedulerName string, properties SchedulerUpdate, options *SchedulersClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "SchedulersClient.BeginUpdate"
@@ -424,11 +395,11 @@ func (client *SchedulersClient) update(ctx context.Context, resourceGroupName st
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *SchedulersClient) updateCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, properties SchedulerUpdate, _ *SchedulersClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -444,12 +415,633 @@ func (client *SchedulersClient) updateCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
+	return req, nil
+}
+
+// BeginUpdatePrivateEndpointConnection - Update a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
+//   - properties - The resource properties to be updated.
+//   - options - SchedulersClientBeginUpdatePrivateEndpointConnectionOptions contains the optional parameters for the SchedulersClient.BeginUpdatePrivateEndpointConnection
+//     method.
+func (client *SchedulersClient) BeginUpdatePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, properties PrivateEndpointConnectionUpdate, options *SchedulersClientBeginUpdatePrivateEndpointConnectionOptions) (*runtime.Poller[SchedulersClientUpdatePrivateEndpointConnectionResponse], error) {
+	if options == nil || options.ResumeToken == "" {
+		resp, err := client.updatePrivateEndpointConnection(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, properties, options)
+		if err != nil {
+			return nil, err
+		}
+		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[SchedulersClientUpdatePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+		return poller, err
+	} else {
+		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[SchedulersClientUpdatePrivateEndpointConnectionResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+	}
+}
+
+// updatePrivateEndpointConnection - Update a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+func (client *SchedulersClient) updatePrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, properties PrivateEndpointConnectionUpdate, options *SchedulersClientBeginUpdatePrivateEndpointConnectionOptions) (*http.Response, error) {
+	var err error
+	const operationName = "SchedulersClient.BeginUpdatePrivateEndpointConnection"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.updatePrivateEndpointConnectionCreateRequest(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, properties, options)
+	if err != nil {
+		return nil, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
+		err = runtime.NewResponseError(httpResp)
+		return nil, err
+	}
+	return httpResp, nil
+}
+
+// updatePrivateEndpointConnectionCreateRequest creates the updatePrivateEndpointConnection request.
+func (client *SchedulersClient) updatePrivateEndpointConnectionCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, properties PrivateEndpointConnectionUpdate, _ *SchedulersClientBeginUpdatePrivateEndpointConnectionOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateEndpointConnections/{privateEndpointConnectionName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	if privateEndpointConnectionName == "" {
+		return nil, errors.New("parameter privateEndpointConnectionName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateEndpointConnectionName}", url.PathEscape(privateEndpointConnectionName))
+	req, err := runtime.NewRequest(ctx, http.MethodPatch, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	req.Raw().Header["Content-Type"] = []string{"application/json"}
+	if err := runtime.MarshalAsJSON(req, properties); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// Get - Get a Scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - options - SchedulersClientGetOptions contains the optional parameters for the SchedulersClient.Get method.
+func (client *SchedulersClient) Get(ctx context.Context, resourceGroupName string, schedulerName string, options *SchedulersClientGetOptions) (SchedulersClientGetResponse, error) {
+	var err error
+	const operationName = "SchedulersClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, schedulerName, options)
+	if err != nil {
+		return SchedulersClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SchedulersClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *SchedulersClient) getCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, _ *SchedulersClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *SchedulersClient) getHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientGetResponse, error) {
+	result := SchedulersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.Scheduler); err != nil {
+		return SchedulersClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// GetPrivateEndpointConnection - Get a private endpoint connection for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
+//   - options - SchedulersClientGetPrivateEndpointConnectionOptions contains the optional parameters for the SchedulersClient.GetPrivateEndpointConnection
+//     method.
+func (client *SchedulersClient) GetPrivateEndpointConnection(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, options *SchedulersClientGetPrivateEndpointConnectionOptions) (SchedulersClientGetPrivateEndpointConnectionResponse, error) {
+	var err error
+	const operationName = "SchedulersClient.GetPrivateEndpointConnection"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getPrivateEndpointConnectionCreateRequest(ctx, resourceGroupName, schedulerName, privateEndpointConnectionName, options)
+	if err != nil {
+		return SchedulersClientGetPrivateEndpointConnectionResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SchedulersClientGetPrivateEndpointConnectionResponse{}, err
+	}
+	resp, err := client.getPrivateEndpointConnectionHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getPrivateEndpointConnectionCreateRequest creates the GetPrivateEndpointConnection request.
+func (client *SchedulersClient) getPrivateEndpointConnectionCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, privateEndpointConnectionName string, _ *SchedulersClientGetPrivateEndpointConnectionOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateEndpointConnections/{privateEndpointConnectionName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	if privateEndpointConnectionName == "" {
+		return nil, errors.New("parameter privateEndpointConnectionName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateEndpointConnectionName}", url.PathEscape(privateEndpointConnectionName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getPrivateEndpointConnectionHandleResponse handles the GetPrivateEndpointConnection response.
+func (client *SchedulersClient) getPrivateEndpointConnectionHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientGetPrivateEndpointConnectionResponse, error) {
+	result := SchedulersClientGetPrivateEndpointConnectionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateEndpointConnection); err != nil {
+		return SchedulersClientGetPrivateEndpointConnectionResponse{}, err
+	}
+	return result, nil
+}
+
+// GetPrivateLink - Get a private link resource for the durable task scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - privateLinkResourceName - The name of the private link associated with the Azure resource.
+//   - options - SchedulersClientGetPrivateLinkOptions contains the optional parameters for the SchedulersClient.GetPrivateLink
+//     method.
+func (client *SchedulersClient) GetPrivateLink(ctx context.Context, resourceGroupName string, schedulerName string, privateLinkResourceName string, options *SchedulersClientGetPrivateLinkOptions) (SchedulersClientGetPrivateLinkResponse, error) {
+	var err error
+	const operationName = "SchedulersClient.GetPrivateLink"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getPrivateLinkCreateRequest(ctx, resourceGroupName, schedulerName, privateLinkResourceName, options)
+	if err != nil {
+		return SchedulersClientGetPrivateLinkResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SchedulersClientGetPrivateLinkResponse{}, err
+	}
+	resp, err := client.getPrivateLinkHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getPrivateLinkCreateRequest creates the GetPrivateLink request.
+func (client *SchedulersClient) getPrivateLinkCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, privateLinkResourceName string, _ *SchedulersClientGetPrivateLinkOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateLinkResources/{privateLinkResourceName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	if privateLinkResourceName == "" {
+		return nil, errors.New("parameter privateLinkResourceName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateLinkResourceName}", url.PathEscape(privateLinkResourceName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getPrivateLinkHandleResponse handles the GetPrivateLink response.
+func (client *SchedulersClient) getPrivateLinkHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientGetPrivateLinkResponse, error) {
+	result := SchedulersClientGetPrivateLinkResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerPrivateLinkResource); err != nil {
+		return SchedulersClientGetPrivateLinkResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByResourceGroupPager - List Schedulers by resource group
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - options - SchedulersClientListByResourceGroupOptions contains the optional parameters for the SchedulersClient.NewListByResourceGroupPager
+//     method.
+func (client *SchedulersClient) NewListByResourceGroupPager(resourceGroupName string, options *SchedulersClientListByResourceGroupOptions) *runtime.Pager[SchedulersClientListByResourceGroupResponse] {
+	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListByResourceGroupResponse]{
+		More: func(page SchedulersClientListByResourceGroupResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *SchedulersClientListByResourceGroupResponse) (SchedulersClientListByResourceGroupResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListByResourceGroupPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
+			if err != nil {
+				return SchedulersClientListByResourceGroupResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SchedulersClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
+func (client *SchedulersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *SchedulersClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
+func (client *SchedulersClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientListByResourceGroupResponse, error) {
+	result := SchedulersClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerListResult); err != nil {
+		return SchedulersClientListByResourceGroupResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListBySubscriptionPager - List Schedulers by subscription
+//   - options - SchedulersClientListBySubscriptionOptions contains the optional parameters for the SchedulersClient.NewListBySubscriptionPager
+//     method.
+func (client *SchedulersClient) NewListBySubscriptionPager(options *SchedulersClientListBySubscriptionOptions) *runtime.Pager[SchedulersClientListBySubscriptionResponse] {
+	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListBySubscriptionResponse]{
+		More: func(page SchedulersClientListBySubscriptionResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *SchedulersClientListBySubscriptionResponse) (SchedulersClientListBySubscriptionResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListBySubscriptionPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return SchedulersClientListBySubscriptionResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SchedulersClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listBySubscriptionCreateRequest creates the ListBySubscription request.
+func (client *SchedulersClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *SchedulersClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DurableTask/schedulers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listBySubscriptionHandleResponse handles the ListBySubscription response.
+func (client *SchedulersClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientListBySubscriptionResponse, error) {
+	result := SchedulersClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerListResult); err != nil {
+		return SchedulersClientListBySubscriptionResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListPrivateEndpointConnectionsPager - List private endpoint connections for the durable task scheduler
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - options - SchedulersClientListPrivateEndpointConnectionsOptions contains the optional parameters for the SchedulersClient.NewListPrivateEndpointConnectionsPager
+//     method.
+func (client *SchedulersClient) NewListPrivateEndpointConnectionsPager(resourceGroupName string, schedulerName string, options *SchedulersClientListPrivateEndpointConnectionsOptions) *runtime.Pager[SchedulersClientListPrivateEndpointConnectionsResponse] {
+	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListPrivateEndpointConnectionsResponse]{
+		More: func(page SchedulersClientListPrivateEndpointConnectionsResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *SchedulersClientListPrivateEndpointConnectionsResponse) (SchedulersClientListPrivateEndpointConnectionsResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListPrivateEndpointConnectionsPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listPrivateEndpointConnectionsCreateRequest(ctx, resourceGroupName, schedulerName, nextLink, options)
+			if err != nil {
+				return SchedulersClientListPrivateEndpointConnectionsResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SchedulersClientListPrivateEndpointConnectionsResponse{}, err
+			}
+			return client.listPrivateEndpointConnectionsHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listPrivateEndpointConnectionsCreateRequest creates the ListPrivateEndpointConnections request.
+func (client *SchedulersClient) listPrivateEndpointConnectionsCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, nextLink string, _ *SchedulersClientListPrivateEndpointConnectionsOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateEndpointConnections"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if schedulerName == "" {
+			return nil, errors.New("parameter schedulerName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listPrivateEndpointConnectionsHandleResponse handles the ListPrivateEndpointConnections response.
+func (client *SchedulersClient) listPrivateEndpointConnectionsHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientListPrivateEndpointConnectionsResponse, error) {
+	result := SchedulersClientListPrivateEndpointConnectionsResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateEndpointConnectionListResult); err != nil {
+		return SchedulersClientListPrivateEndpointConnectionsResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListPrivateLinksPager - List private link resources for the durable task scheduler
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - options - SchedulersClientListPrivateLinksOptions contains the optional parameters for the SchedulersClient.NewListPrivateLinksPager
+//     method.
+func (client *SchedulersClient) NewListPrivateLinksPager(resourceGroupName string, schedulerName string, options *SchedulersClientListPrivateLinksOptions) *runtime.Pager[SchedulersClientListPrivateLinksResponse] {
+	return runtime.NewPager(runtime.PagingHandler[SchedulersClientListPrivateLinksResponse]{
+		More: func(page SchedulersClientListPrivateLinksResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *SchedulersClientListPrivateLinksResponse) (SchedulersClientListPrivateLinksResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "SchedulersClient.NewListPrivateLinksPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listPrivateLinksCreateRequest(ctx, resourceGroupName, schedulerName, nextLink, options)
+			if err != nil {
+				return SchedulersClientListPrivateLinksResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SchedulersClientListPrivateLinksResponse{}, err
+			}
+			return client.listPrivateLinksHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listPrivateLinksCreateRequest creates the ListPrivateLinks request.
+func (client *SchedulersClient) listPrivateLinksCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, nextLink string, _ *SchedulersClientListPrivateLinksOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/privateLinkResources"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if schedulerName == "" {
+			return nil, errors.New("parameter schedulerName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listPrivateLinksHandleResponse handles the ListPrivateLinks response.
+func (client *SchedulersClient) listPrivateLinksHandleResponse(resp *http.Response, successCodes ...int) (SchedulersClientListPrivateLinksResponse, error) {
+	result := SchedulersClientListPrivateLinksResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SchedulerPrivateLinkResourceListResult); err != nil {
+		return SchedulersClientListPrivateLinksResponse{}, err
+	}
+	return result, nil
+}
+
+// Restart - Restart a Scheduler
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - schedulerName - The name of the Scheduler
+//   - options - SchedulersClientRestartOptions contains the optional parameters for the SchedulersClient.Restart method.
+func (client *SchedulersClient) Restart(ctx context.Context, resourceGroupName string, schedulerName string, options *SchedulersClientRestartOptions) (SchedulersClientRestartResponse, error) {
+	var err error
+	const operationName = "SchedulersClient.Restart"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.restartCreateRequest(ctx, resourceGroupName, schedulerName, options)
+	if err != nil {
+		return SchedulersClientRestartResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SchedulersClientRestartResponse{}, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusNoContent) {
+		err = runtime.NewResponseError(httpResp)
+		return SchedulersClientRestartResponse{}, err
+	}
+	return SchedulersClientRestartResponse{}, nil
+}
+
+// restartCreateRequest creates the Restart request.
+func (client *SchedulersClient) restartCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, _ *SchedulersClientRestartOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/restart"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if schedulerName == "" {
+		return nil, errors.New("parameter schedulerName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }

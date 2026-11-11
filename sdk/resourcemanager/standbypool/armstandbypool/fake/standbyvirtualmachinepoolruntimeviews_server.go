@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // StandbyVirtualMachinePoolRuntimeViewsServer is a fake server for instances of the armstandbypool.StandbyVirtualMachinePoolRuntimeViewsClient type.
@@ -51,16 +52,14 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) Do(req *http.Requ
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return s.dispatchToMethodFake(req, method)
 }
 
 func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -78,10 +77,7 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchToMethodF
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -96,10 +92,10 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchGet(req *
 	if s.srv.Get == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
 	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.StandbyPool/standbyVirtualMachinePools/(?P<standbyVirtualMachinePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/runtimeViews/(?P<runtimeView>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.StandbyPool/standbyVirtualMachinePools/(?P<standbyVirtualMachinePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/runtimeViews/(?P<runtimeView>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 4 {
+	if len(matches) < 5 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
@@ -119,7 +115,7 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchGet(req *
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).StandbyVirtualMachinePoolRuntimeViewResource, req)
@@ -135,10 +131,10 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchNewListBy
 	}
 	newListByStandbyPoolPager := s.newListByStandbyPoolPager.get(req)
 	if newListByStandbyPoolPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.StandbyPool/standbyVirtualMachinePools/(?P<standbyVirtualMachinePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/runtimeViews`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.StandbyPool/standbyVirtualMachinePools/(?P<standbyVirtualMachinePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/runtimeViews`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
@@ -160,7 +156,7 @@ func (s *StandbyVirtualMachinePoolRuntimeViewsServerTransport) dispatchNewListBy
 	if err != nil {
 		return nil, err
 	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
 		s.newListByStandbyPoolPager.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
 	}

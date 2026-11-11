@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -9,6 +6,11 @@ package directory
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
@@ -23,10 +25,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/path"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/sas"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/internal/sasurl"
 )
 
 // ClientOptions contains the optional parameters when creating a Client.
@@ -59,14 +58,19 @@ func NewClient(directoryURL string, cred azcore.TokenCredential, options *Client
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
+		// sessions apply only to the requests this client sends to the blob endpoint
+		Session: conOptions.Session,
 	}
-	blobClient, _ := blockblob.NewClient(blobURL, cred, &blobClientOpts)
+	blobClient, err := blockblob.NewClient(blobURL, cred, &blobClientOpts)
+	if err != nil {
+		return nil, err
+	}
 	dirClient := base.NewPathClient(directoryURL, blobURL, blobClient, azClient, nil, &cred, (*base.ClientOptions)(conOptions))
 
 	return (*Client)(dirClient), nil
@@ -92,10 +96,10 @@ func NewClientWithNoCredential(directoryURL string, options *ClientOptions) (*Cl
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
@@ -129,10 +133,10 @@ func NewClientWithSharedKeyCredential(directoryURL string, cred *SharedKeyCreden
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -213,7 +217,11 @@ func (d *Client) NewFileClient(fileName string) (*file.Client, error) {
 	fileURL := runtime.JoinPaths(d.DFSURL(), fileName)
 	newBlobURL, fileURL := shared.GetURLs(fileURL)
 	var newBlobClient *blockblob.Client
-	clientOptions := &blockblob.ClientOptions{ClientOptions: d.getClientOptions().ClientOptions}
+	clientOptions := &blockblob.ClientOptions{ClientOptions: d.getClientOptions().ClientOptions, Session: d.getClientOptions().Session}
+	// The blob client built here must capture the raw response so that file.GetProperties
+	// can read the datalake-specific headers (owner, group, permissions). Without this the
+	// captured response is nil and GetProperties panics. See issue #25490.
+	clientOptions.PerCallPolicies = append([]policy.Policy{shared.NewIncludeBlobResponsePolicy()}, clientOptions.PerCallPolicies...)
 	var err error
 	if d.identityCredential() != nil {
 		newBlobClient, err = blockblob.NewClient(newBlobURL, *d.identityCredential(), clientOptions)
@@ -236,7 +244,11 @@ func (d *Client) NewSubdirectoryClient(subdirectoryName string) (*Client, error)
 	subDirectoryURL := runtime.JoinPaths(d.DFSURL(), subdirectoryName)
 	newBlobURL, subDirectoryURL := shared.GetURLs(subDirectoryURL)
 	var newBlobClient *blockblob.Client
-	clientOptions := &blockblob.ClientOptions{ClientOptions: d.getClientOptions().ClientOptions}
+	clientOptions := &blockblob.ClientOptions{ClientOptions: d.getClientOptions().ClientOptions, Session: d.getClientOptions().Session}
+	// The blob client built here must capture the raw response so that GetProperties can read
+	// the datalake-specific headers (owner, group, permissions). Without this the captured
+	// response is nil and GetProperties panics. See issue #25490.
+	clientOptions.PerCallPolicies = append([]policy.Policy{shared.NewIncludeBlobResponsePolicy()}, clientOptions.PerCallPolicies...)
 	var err error
 	if d.identityCredential() != nil {
 		newBlobClient, err = blockblob.NewClient(newBlobURL, *d.identityCredential(), clientOptions)
@@ -255,7 +267,28 @@ func (d *Client) NewSubdirectoryClient(subdirectoryName string) (*Client, error)
 // Create creates a new directory.
 func (d *Client) Create(ctx context.Context, options *CreateOptions) (CreateResponse, error) {
 	lac, mac, httpHeaders, createOpts, cpkOpts := options.format()
-	resp, err := d.generatedDirClientWithDFS().Create(ctx, createOpts, httpHeaders, lac, mac, nil, cpkOpts)
+	if lac != nil {
+		createOpts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		createOpts.IfMatch = mac.IfMatch
+		createOpts.IfNoneMatch = mac.IfNoneMatch
+		createOpts.IfModifiedSince = mac.IfModifiedSince
+		createOpts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	if httpHeaders != nil {
+		createOpts.CacheControl = httpHeaders.CacheControl
+		createOpts.ContentDisposition = httpHeaders.ContentDisposition
+		createOpts.ContentEncoding = httpHeaders.ContentEncoding
+		createOpts.ContentLanguage = httpHeaders.ContentLanguage
+		createOpts.ContentType = httpHeaders.ContentType
+	}
+	if cpkOpts != nil {
+		createOpts.EncryptionAlgorithm = cpkOpts.EncryptionAlgorithm
+		createOpts.EncryptionKey = cpkOpts.EncryptionKey
+		createOpts.EncryptionKeySHA256 = cpkOpts.EncryptionKeySHA256
+	}
+	resp, err := d.generatedDirClientWithDFS().Create(ctx, createOpts)
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -263,11 +296,20 @@ func (d *Client) Create(ctx context.Context, options *CreateOptions) (CreateResp
 // Delete deletes directory and any path under it.
 func (d *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResponse, error) {
 	lac, mac, deleteOpts := path.FormatDeleteOptions(options, true)
+	if lac != nil {
+		deleteOpts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		deleteOpts.IfMatch = mac.IfMatch
+		deleteOpts.IfNoneMatch = mac.IfNoneMatch
+		deleteOpts.IfModifiedSince = mac.IfModifiedSince
+		deleteOpts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
 	for {
-		resp, err := d.generatedDirClientWithDFS().Delete(ctx, deleteOpts, lac, mac)
+		resp, err := d.generatedDirClientWithDFS().Delete(ctx, deleteOpts)
 		if resp.Continuation == nil || err != nil {
 			err = exported.ConvertToDFSError(err)
-			return resp, err
+			return path.FormatDeleteResponse(resp), err
 		}
 		deleteOpts.Continuation = resp.Continuation
 	}
@@ -279,9 +321,11 @@ func (d *Client) GetProperties(ctx context.Context, options *GetPropertiesOption
 	var respFromCtx *http.Response
 	ctxWithResp := shared.WithCaptureBlobResponse(ctx, &respFromCtx)
 	resp, err := d.blobClient().GetProperties(ctxWithResp, opts)
+	if err != nil {
+		return GetPropertiesResponse{}, exported.ConvertToDFSError(err)
+	}
 	newResp := path.FormatGetPropertiesResponse(&resp, respFromCtx)
-	err = exported.ConvertToDFSError(err)
-	return newResp, err
+	return newResp, nil
 }
 
 // Rename renames a directory. The original directory will no longer exist and the client will be stale.
@@ -301,7 +345,10 @@ func (d *Client) Rename(ctx context.Context, destinationPath string, options *Re
 		return RenameResponse{}, err
 	}
 	srcParts := strings.Split(d.DFSURL(), "?")
-	newSrcPath := oldPath.Path
+	// Use the percent-encoded path for the x-ms-rename-source header. oldPath.Path is
+	// decoded, so source names containing spaces or non-ASCII characters would be sent
+	// unencoded and rejected by the service with 400 InvalidSourceUri. See #23831/#24369.
+	newSrcPath := oldPath.EscapedPath()
 	newSrcQuery := ""
 	if len(srcParts) == 2 {
 		newSrcQuery = srcParts[1]
@@ -339,7 +386,27 @@ func (d *Client) Rename(ctx context.Context, destinationPath string, options *Re
 		return RenameResponse{}, exported.ConvertToDFSError(err)
 	}
 	newDirClient := (*Client)(base.NewPathClient(newPathURL, newBlobURL, newBlobClient, d.generatedDirClientWithDFS().InternalClient().WithClientName(exported.ModuleName), d.sharedKey(), d.identityCredential(), d.getClientOptions()))
-	resp, err := newDirClient.generatedDirClientWithDFS().Create(ctx, createOpts, nil, lac, mac, smac, cpkOpts)
+	if lac != nil {
+		createOpts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		createOpts.IfMatch = mac.IfMatch
+		createOpts.IfNoneMatch = mac.IfNoneMatch
+		createOpts.IfModifiedSince = mac.IfModifiedSince
+		createOpts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	if smac != nil {
+		createOpts.SourceIfMatch = smac.SourceIfMatch
+		createOpts.SourceIfNoneMatch = smac.SourceIfNoneMatch
+		createOpts.SourceIfModifiedSince = smac.SourceIfModifiedSince
+		createOpts.SourceIfUnmodifiedSince = smac.SourceIfUnmodifiedSince
+	}
+	if cpkOpts != nil {
+		createOpts.EncryptionAlgorithm = cpkOpts.EncryptionAlgorithm
+		createOpts.EncryptionKey = cpkOpts.EncryptionKey
+		createOpts.EncryptionKeySHA256 = cpkOpts.EncryptionKeySHA256
+	}
+	resp, err := newDirClient.generatedDirClientWithDFS().Create(ctx, createOpts)
 	return path.FormatRenameResponse(&resp), exported.ConvertToDFSError(err)
 }
 
@@ -349,7 +416,16 @@ func (d *Client) SetAccessControl(ctx context.Context, options *SetAccessControl
 	if err != nil {
 		return SetAccessControlResponse{}, err
 	}
-	resp, err := d.generatedDirClientWithDFS().SetAccessControl(ctx, opts, lac, mac)
+	if lac != nil {
+		opts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		opts.IfMatch = mac.IfMatch
+		opts.IfNoneMatch = mac.IfNoneMatch
+		opts.IfModifiedSince = mac.IfModifiedSince
+		opts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	resp, err := d.generatedDirClientWithDFS().SetAccessControl(ctx, opts)
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -360,29 +436,11 @@ func (d *Client) setAccessControlPager(mode generated.PathSetAccessControlRecurs
 			return page.Continuation != nil && len(*page.Continuation) > 0
 		},
 		Fetcher: func(ctx context.Context, page *generated.PathClientSetAccessControlRecursiveResponse) (generated.PathClientSetAccessControlRecursiveResponse, error) {
-			var req *policy.Request
-			var err error
-			if page == nil {
-				req, err = d.generatedDirClientWithDFS().SetAccessControlRecursiveCreateRequest(ctx, mode, listOptions)
-				err = exported.ConvertToDFSError(err)
-			} else {
+			if page != nil {
 				listOptions.Continuation = page.Continuation
-				req, err = d.generatedDirClientWithDFS().SetAccessControlRecursiveCreateRequest(ctx, mode, listOptions)
-				err = exported.ConvertToDFSError(err)
 			}
-			if err != nil {
-				return generated.PathClientSetAccessControlRecursiveResponse{}, err
-			}
-			resp, err := d.generatedDirClientWithDFS().InternalClient().Pipeline().Do(req)
-			err = exported.ConvertToDFSError(err)
-			if err != nil {
-				return generated.PathClientSetAccessControlRecursiveResponse{}, err
-			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return generated.PathClientSetAccessControlRecursiveResponse{}, runtime.NewResponseError(resp)
-			}
-			newResp, err := d.generatedDirClientWithDFS().SetAccessControlRecursiveHandleResponse(resp)
-			return newResp, exported.ConvertToDFSError(err)
+			resp, err := d.generatedDirClientWithDFS().SetAccessControlRecursive(ctx, mode, listOptions)
+			return resp, exported.ConvertToDFSError(err)
 		},
 	})
 
@@ -448,7 +506,24 @@ func (d *Client) RemoveAccessControlRecursive(ctx context.Context, acl string, o
 // GetAccessControl gets the owner, owning group, and permissions for a directory.
 func (d *Client) GetAccessControl(ctx context.Context, options *GetAccessControlOptions) (GetAccessControlResponse, error) {
 	opts, lac, mac := path.FormatGetAccessControlOptions(options)
-	resp, err := d.generatedDirClientWithDFS().GetProperties(ctx, opts, lac, mac)
+	if lac != nil {
+		opts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		opts.IfMatch = mac.IfMatch
+		opts.IfNoneMatch = mac.IfNoneMatch
+		opts.IfModifiedSince = mac.IfModifiedSince
+		opts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	resp, err := d.generatedDirClientWithDFS().GetProperties(ctx, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
+}
+
+// GetSystemProperties returns all system defined properties for a directory.
+func (d *Client) GetSystemProperties(ctx context.Context, options *GetSystemPropertiesOptions) (GetSystemPropertiesResponse, error) {
+	opts := path.FormatGetSystemPropertiesOptions(options)
+	resp, err := d.generatedDirClientWithDFS().GetProperties(ctx, opts)
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -469,6 +544,25 @@ func (d *Client) SetHTTPHeaders(ctx context.Context, httpHeaders HTTPHeaders, op
 	path.FormatSetHTTPHeadersResponse(&newResp, &resp)
 	err = exported.ConvertToDFSError(err)
 	return newResp, err
+}
+
+// GetTags gets the tags associated with a directory.
+func (d *Client) GetTags(ctx context.Context, options *GetTagsOptions) (GetTagsResponse, error) {
+	opts := path.FormatGetTagsOptions(options)
+	resp, err := d.blobClient().GetTags(ctx, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
+}
+
+// SetTags sets tags on a directory.
+// A directory can have up to 10 tags. Tag keys must be between 1 and 128 characters. Tag values must be between 0 and 256 characters.
+// Valid tag key and value characters include lower and upper case letters, digits (0-9),
+// space (' '), plus ('+'), minus ('-'), period ('.'), forward slash ('/'), colon (':'), equals ('='), and underscore ('_').
+func (d *Client) SetTags(ctx context.Context, tags map[string]string, options *SetTagsOptions) (SetTagsResponse, error) {
+	opts := path.FormatSetTagsOptions(options)
+	resp, err := d.blobClient().SetTags(ctx, tags, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
 }
 
 // GetSASURL is a convenience method for generating a SAS token for the currently pointed at directory.
@@ -500,9 +594,7 @@ func (d *Client) GetSASURL(permissions sas.DirectoryPermissions, expiry time.Tim
 		return "", err
 	}
 
-	endpoint := d.BlobURL() + "?" + qps.Encode()
-
-	return endpoint, nil
+	return sasurl.Append(d.BlobURL(), qps.Encode()), nil
 }
 
 // TODO: Undelete()

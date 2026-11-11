@@ -17,11 +17,11 @@ type Association struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of Association
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -92,17 +92,23 @@ type Frontend struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Frontends
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
 
 	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
 	Type *string
+}
+
+// FrontendAssociation - Reference to an Association resource.
+type FrontendAssociation struct {
+	// REQUIRED; Resource ID of the Association.
+	ID *string
 }
 
 // FrontendListResult - The response of a Frontend list operation.
@@ -116,6 +122,13 @@ type FrontendListResult struct {
 
 // FrontendProperties - Frontend Properties.
 type FrontendProperties struct {
+	// Reference to an Association resource that contains the subnet where the private frontend should be deployed.
+	Association *FrontendAssociation
+
+	// Whether public network access is allowed for the frontend. Enabled indicates a public frontend; Disabled indicates a private
+	// frontend.
+	PublicNetworkAccess *PublicNetworkAccess
+
 	// Frontend Security Policy Configuration
 	SecurityPolicyConfigurations *SecurityPolicyConfigurations
 
@@ -137,6 +150,13 @@ type FrontendUpdate struct {
 
 // FrontendUpdateProperties - The updatable properties of the Frontend.
 type FrontendUpdateProperties struct {
+	// Reference to an Association resource that contains the subnet where the private frontend should be deployed.
+	Association *FrontendAssociation
+
+	// Whether public network access is allowed for the frontend. Enabled indicates a public frontend; Disabled indicates a private
+	// frontend.
+	PublicNetworkAccess *PublicNetworkAccess
+
 	// Frontend Security Policy Configuration
 	SecurityPolicyConfigurations *SecurityPolicyConfigurations
 }
@@ -169,7 +189,9 @@ type IPAccessRulesSecurityPolicy struct {
 	ID *string
 }
 
-// Operation - Details of a REST API operation, returned from the Resource Provider Operations API
+// Operation - REST API Operation
+//
+// Details of a REST API operation, returned from the Resource Provider Operations API
 type Operation struct {
 	// Localized display information for this particular operation.
 	Display *OperationDisplay
@@ -190,7 +212,7 @@ type Operation struct {
 	Origin *Origin
 }
 
-// OperationDisplay - Localized display information for and operation.
+// OperationDisplay - Localized display information for an operation.
 type OperationDisplay struct {
 	// READ-ONLY; The short, localized friendly description of the operation; suitable for tool tips and detailed views.
 	Description *string
@@ -218,6 +240,105 @@ type OperationListResult struct {
 	NextLink *string
 }
 
+// PrivateEndpointConnection - Private Endpoint Connection resource of Traffic Controller.
+type PrivateEndpointConnection struct {
+	// The resource-specific properties for this resource.
+	Properties *PrivateEndpointConnectionProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// PrivateEndpointConnectionListResult - The response of a PrivateEndpointConnection list operation.
+type PrivateEndpointConnectionListResult struct {
+	// REQUIRED; The PrivateEndpointConnection items on this page
+	Value []*PrivateEndpointConnection
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// PrivateEndpointConnectionProperties - Properties of a Private Endpoint Connection.
+type PrivateEndpointConnectionProperties struct {
+	// REQUIRED; The connection state of the private endpoint connection.
+	PrivateLinkServiceConnectionState *PrivateLinkServiceConnectionState
+
+	// READ-ONLY; The private endpoint resource.
+	PrivateEndpoint *PrivateEndpointReference
+
+	// READ-ONLY; Provisioning state of the private endpoint connection.
+	ProvisioningState *ProvisioningState
+}
+
+// PrivateEndpointReference - Reference to a private endpoint resource.
+type PrivateEndpointReference struct {
+	// READ-ONLY; Resource ID of the private endpoint.
+	ID *string
+}
+
+// PrivateLinkResource - A private link resource.
+type PrivateLinkResource struct {
+	// The resource-specific properties for this resource.
+	Properties *PrivateLinkResourceProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// PrivateLinkResourceListResult - The response of a PrivateLinkResource list operation.
+type PrivateLinkResourceListResult struct {
+	// REQUIRED; The PrivateLinkResource items on this page
+	Value []*PrivateLinkResource
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// PrivateLinkResourceProperties - Properties of a private link resource.
+type PrivateLinkResourceProperties struct {
+	// READ-ONLY; The private link resource group ID.
+	GroupID *string
+
+	// READ-ONLY; The status of the last operation.
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; The private link resource required member names.
+	RequiredMembers []*string
+
+	// READ-ONLY; The private link resource private DNS zone names.
+	RequiredZoneNames []*string
+}
+
+// PrivateLinkServiceConnectionState - The state of a private link service connection.
+type PrivateLinkServiceConnectionState struct {
+	// A message indicating if changes on the service provider require any updates on the consumer.
+	ActionsRequired *string
+
+	// The reason for approval/rejection of the connection.
+	Description *string
+
+	// Indicates whether the connection has been Approved/Rejected/Removed by the owner of the service.
+	Status *PrivateLinkServiceConnectionStatus
+}
+
 // ResourceID - Resource ID definition used by parent to reference child resources.
 type ResourceID struct {
 	// REQUIRED; Resource ID of child resource.
@@ -235,11 +356,11 @@ type SecurityPolicy struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; SecurityPolicy
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -333,11 +454,11 @@ type TrafficController struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; traffic controller name for path
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -368,6 +489,9 @@ type TrafficControllerProperties struct {
 
 	// READ-ONLY; Frontends References List
 	Frontends []*ResourceID
+
+	// READ-ONLY; Private Endpoint Connections List
+	PrivateEndpointConnections []*ResourceID
 
 	// READ-ONLY; The status of the last operation.
 	ProvisioningState *ProvisioningState

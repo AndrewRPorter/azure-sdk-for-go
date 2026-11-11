@@ -14,6 +14,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/hybridconnectivity/armhybridconnectivity"
 	"net/http"
 	"regexp"
+	"slices"
 )
 
 // GenerateAwsTemplateServer is a fake server for instances of the armhybridconnectivity.GenerateAwsTemplateClient type.
@@ -41,16 +42,14 @@ func (g *GenerateAwsTemplateServerTransport) Do(req *http.Request) (*http.Respon
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return g.dispatchToMethodFake(req, method)
 }
 
 func (g *GenerateAwsTemplateServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -66,10 +65,7 @@ func (g *GenerateAwsTemplateServerTransport) dispatchToMethodFake(req *http.Requ
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -84,10 +80,10 @@ func (g *GenerateAwsTemplateServerTransport) dispatchPost(req *http.Request) (*h
 	if g.srv.Post == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Post not implemented")}
 	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/generateAwsTemplate`
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.HybridConnectivity/generateAwsTemplate`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 1 {
+	if len(matches) < 2 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	body, err := server.UnmarshalRequestAsJSON[armhybridconnectivity.GenerateAwsTemplateRequest](req)
@@ -99,10 +95,10 @@ func (g *GenerateAwsTemplateServerTransport) dispatchPost(req *http.Request) (*h
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
-	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).PostResponse, req)
+	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).GenerateAwsTemplateResponse, req)
 	if err != nil {
 		return nil, err
 	}

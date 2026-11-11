@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -17,7 +14,7 @@ import (
 type UploadResponse = generated.BlockBlobClientUploadResponse
 
 // UploadBlobFromURLResponse contains the response from the method Client.UploadBlobFromURL
-type UploadBlobFromURLResponse = generated.BlockBlobClientPutBlobFromURLResponse
+type UploadBlobFromURLResponse = generated.BlockBlobClientUploadBlobFromURLResponse
 
 // StageBlockResponse contains the response from method Client.StageBlock.
 type StageBlockResponse = generated.BlockBlobClientStageBlockResponse
@@ -67,7 +64,7 @@ type uploadFromReaderResponse struct {
 	VersionID *string
 
 	// ContentCRC64 contains the information returned from the x-ms-content-crc64 header response.
-	// Will be a part of response only if uploading data >= internal.MaxUploadBlobBytes (= 256 * 1024 * 1024 // 256MB)
+	// Will be a part of response only if the service returns it for the Upload or CommitBlockList request used.
 	ContentCRC64 []byte
 }
 
@@ -84,6 +81,7 @@ func toUploadReaderAtResponseFromUploadResponse(resp UploadResponse) uploadFromR
 		RequestID:           resp.RequestID,
 		Version:             resp.Version,
 		VersionID:           resp.VersionID,
+		ContentCRC64:        resp.ContentCRC64,
 	}
 }
 

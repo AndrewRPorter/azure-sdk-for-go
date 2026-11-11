@@ -18,13 +18,15 @@ import (
 
 // StorageClassClient contains the methods for the StorageClass group.
 // Don't use this type directly, use NewStorageClassClient() instead.
+//
+// Generated from API version 2024-03-01
 type StorageClassClient struct {
 	internal *arm.Client
 }
 
 // NewStorageClassClient creates a new instance of StorageClassClient with the specified values.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewStorageClassClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*StorageClassClient, error) {
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
@@ -38,8 +40,6 @@ func NewStorageClassClient(credential azcore.TokenCredential, options *arm.Clien
 
 // BeginCreateOrUpdate - Create a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - storageClassName - The name of the the storage class
 //   - resource - Resource create parameters.
@@ -63,10 +63,8 @@ func (client *StorageClassClient) BeginCreateOrUpdate(ctx context.Context, resou
 	}
 }
 
-// CreateOrUpdate - Create a StorageClassResource
+// createOrUpdate - Create a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 func (client *StorageClassClient) createOrUpdate(ctx context.Context, resourceURI string, storageClassName string, resource StorageClassResource, options *StorageClassClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "StorageClassClient.BeginCreateOrUpdate"
@@ -88,7 +86,7 @@ func (client *StorageClassClient) createOrUpdate(ctx context.Context, resourceUR
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *StorageClassClient) createOrUpdateCreateRequest(ctx context.Context, resourceURI string, storageClassName string, resource StorageClassResource, _ *StorageClassClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses/{storageClassName}"
 	if resourceURI == "" {
@@ -104,8 +102,8 @@ func (client *StorageClassClient) createOrUpdateCreateRequest(ctx context.Contex
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -116,8 +114,6 @@ func (client *StorageClassClient) createOrUpdateCreateRequest(ctx context.Contex
 
 // BeginDelete - Delete a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - storageClassName - The name of the the storage class
 //   - options - StorageClassClientBeginDeleteOptions contains the optional parameters for the StorageClassClient.BeginDelete
@@ -139,10 +135,8 @@ func (client *StorageClassClient) BeginDelete(ctx context.Context, resourceURI s
 	}
 }
 
-// Delete - Delete a StorageClassResource
+// deleteOperation - Delete a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 func (client *StorageClassClient) deleteOperation(ctx context.Context, resourceURI string, storageClassName string, options *StorageClassClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "StorageClassClient.BeginDelete"
@@ -164,7 +158,7 @@ func (client *StorageClassClient) deleteOperation(ctx context.Context, resourceU
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *StorageClassClient) deleteCreateRequest(ctx context.Context, resourceURI string, storageClassName string, _ *StorageClassClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses/{storageClassName}"
 	if resourceURI == "" {
@@ -180,131 +174,13 @@ func (client *StorageClassClient) deleteCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a StorageClassResource
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
-//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
-//   - storageClassName - The name of the the storage class
-//   - options - StorageClassClientGetOptions contains the optional parameters for the StorageClassClient.Get method.
-func (client *StorageClassClient) Get(ctx context.Context, resourceURI string, storageClassName string, options *StorageClassClientGetOptions) (StorageClassClientGetResponse, error) {
-	var err error
-	const operationName = "StorageClassClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceURI, storageClassName, options)
-	if err != nil {
-		return StorageClassClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return StorageClassClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return StorageClassClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *StorageClassClient) getCreateRequest(ctx context.Context, resourceURI string, storageClassName string, _ *StorageClassClientGetOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses/{storageClassName}"
-	if resourceURI == "" {
-		return nil, errors.New("parameter resourceURI cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	if storageClassName == "" {
-		return nil, errors.New("parameter storageClassName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{storageClassName}", url.PathEscape(storageClassName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *StorageClassClient) getHandleResponse(resp *http.Response) (StorageClassClientGetResponse, error) {
-	result := StorageClassClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.StorageClassResource); err != nil {
-		return StorageClassClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListPager - List StorageClassResource resources by parent
-//
-// Generated from API version 2024-03-01
-//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
-//   - options - StorageClassClientListOptions contains the optional parameters for the StorageClassClient.NewListPager method.
-func (client *StorageClassClient) NewListPager(resourceURI string, options *StorageClassClientListOptions) *runtime.Pager[StorageClassClientListResponse] {
-	return runtime.NewPager(runtime.PagingHandler[StorageClassClientListResponse]{
-		More: func(page StorageClassClientListResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *StorageClassClientListResponse) (StorageClassClientListResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "StorageClassClient.NewListPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listCreateRequest(ctx, resourceURI, options)
-			}, nil)
-			if err != nil {
-				return StorageClassClientListResponse{}, err
-			}
-			return client.listHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listCreateRequest creates the List request.
-func (client *StorageClassClient) listCreateRequest(ctx context.Context, resourceURI string, _ *StorageClassClientListOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses"
-	if resourceURI == "" {
-		return nil, errors.New("parameter resourceURI cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listHandleResponse handles the List response.
-func (client *StorageClassClient) listHandleResponse(resp *http.Response) (StorageClassClientListResponse, error) {
-	result := StorageClassClientListResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.StorageClassResourceListResult); err != nil {
-		return StorageClassClientListResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginUpdate - Update a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - storageClassName - The name of the the storage class
 //   - properties - The resource properties to be updated.
@@ -327,10 +203,8 @@ func (client *StorageClassClient) BeginUpdate(ctx context.Context, resourceURI s
 	}
 }
 
-// Update - Update a StorageClassResource
+// update - Update a StorageClassResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 func (client *StorageClassClient) update(ctx context.Context, resourceURI string, storageClassName string, properties StorageClassResourceUpdate, options *StorageClassClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "StorageClassClient.BeginUpdate"
@@ -352,7 +226,7 @@ func (client *StorageClassClient) update(ctx context.Context, resourceURI string
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *StorageClassClient) updateCreateRequest(ctx context.Context, resourceURI string, storageClassName string, properties StorageClassResourceUpdate, _ *StorageClassClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses/{storageClassName}"
 	if resourceURI == "" {
@@ -368,12 +242,136 @@ func (client *StorageClassClient) updateCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a StorageClassResource
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
+//   - storageClassName - The name of the the storage class
+//   - options - StorageClassClientGetOptions contains the optional parameters for the StorageClassClient.Get method.
+func (client *StorageClassClient) Get(ctx context.Context, resourceURI string, storageClassName string, options *StorageClassClientGetOptions) (StorageClassClientGetResponse, error) {
+	var err error
+	const operationName = "StorageClassClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceURI, storageClassName, options)
+	if err != nil {
+		return StorageClassClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return StorageClassClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *StorageClassClient) getCreateRequest(ctx context.Context, resourceURI string, storageClassName string, _ *StorageClassClientGetOptions) (*policy.Request, error) {
+	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses/{storageClassName}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if storageClassName == "" {
+		return nil, errors.New("parameter storageClassName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{storageClassName}", url.PathEscape(storageClassName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *StorageClassClient) getHandleResponse(resp *http.Response, successCodes ...int) (StorageClassClientGetResponse, error) {
+	result := StorageClassClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.StorageClassResource); err != nil {
+		return StorageClassClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListPager - List StorageClassResource resources by parent
+//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
+//   - options - StorageClassClientListOptions contains the optional parameters for the StorageClassClient.NewListPager method.
+func (client *StorageClassClient) NewListPager(resourceURI string, options *StorageClassClientListOptions) *runtime.Pager[StorageClassClientListResponse] {
+	return runtime.NewPager(runtime.PagingHandler[StorageClassClientListResponse]{
+		More: func(page StorageClassClientListResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *StorageClassClientListResponse) (StorageClassClientListResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "StorageClassClient.NewListPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listCreateRequest(ctx, resourceURI, nextLink, options)
+			if err != nil {
+				return StorageClassClientListResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return StorageClassClientListResponse{}, err
+			}
+			return client.listHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listCreateRequest creates the List request.
+func (client *StorageClassClient) listCreateRequest(ctx context.Context, resourceURI string, nextLink string, _ *StorageClassClientListOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/storageClasses"
+		if resourceURI == "" {
+			return nil, errors.New("parameter resourceURI cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20240301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listHandleResponse handles the List response.
+func (client *StorageClassClient) listHandleResponse(resp *http.Response, successCodes ...int) (StorageClassClientListResponse, error) {
+	result := StorageClassClientListResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.StorageClassResourceListResult); err != nil {
+		return StorageClassClientListResponse{}, err
+	}
+	return result, nil
 }

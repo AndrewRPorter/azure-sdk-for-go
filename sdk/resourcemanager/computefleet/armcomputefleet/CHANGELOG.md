@@ -1,5 +1,22 @@
 # Release History
 
+## 2.0.0 (2026-09-29)
+### Breaking Changes
+
+- `ManagedServiceIdentityTypeSystemAndUserAssigned` from enum `ManagedServiceIdentityType` has been removed
+
+### Features Added
+
+- New value `ManagedServiceIdentityTypeSystemAssignedUserAssigned` added to enum type `ManagedServiceIdentityType`
+- New enum type `CapacityType` with values `CapacityTypeVCPU`, `CapacityTypeVM`
+- New enum type `FleetMode` with values `FleetModeLaunch`, `FleetModeManaged`
+- New enum type `VMOperationStatus` with values `VMOperationStatusCreating`, `VMOperationStatusFailed`, `VMOperationStatusLaunching`, `VMOperationStatusSucceeded`
+- New function `*FleetsClient.NewListVirtualMachinesPager(resourceGroupName string, name string, options *FleetsClientListVirtualMachinesOptions) *runtime.Pager[FleetsClientListVirtualMachinesResponse]`
+- New struct `VirtualMachine`
+- New struct `VirtualMachineListResult`
+- New field `CapacityType`, `Mode`, `VMNamePrefix` in struct `FleetProperties`
+
+
 ## 1.0.0 (2024-10-22)
 ### Breaking Changes
 

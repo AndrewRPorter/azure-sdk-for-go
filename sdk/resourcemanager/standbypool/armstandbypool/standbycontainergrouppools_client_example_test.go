@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_CreateOrUpdate.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_CreateOrUpdate.json
 func ExampleStandbyContainerGroupPoolsClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -28,6 +28,9 @@ func ExampleStandbyContainerGroupPoolsClient_BeginCreateOrUpdate() {
 			ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 				MaxReadyCapacity: to.Ptr[int64](688),
 				RefillPolicy:     to.Ptr(armstandbypool.RefillPolicyAlways),
+				DynamicSizing: &armstandbypool.DynamicSizing{
+					Enabled: to.Ptr(true),
+				},
 			},
 			ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
 				ContainerGroupProfile: &armstandbypool.ContainerGroupProfile{
@@ -54,17 +57,20 @@ func ExampleStandbyContainerGroupPoolsClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armstandbypool.StandbyContainerGroupPoolsClientCreateOrUpdateResponse{
-	// 	StandbyContainerGroupPoolResource: &armstandbypool.StandbyContainerGroupPoolResource{
+	// 	StandbyContainerGroupPoolResource: armstandbypool.StandbyContainerGroupPoolResource{
 	// 		Properties: &armstandbypool.StandbyContainerGroupPoolResourceProperties{
 	// 			ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 	// 				MaxReadyCapacity: to.Ptr[int64](688),
 	// 				RefillPolicy: to.Ptr(armstandbypool.RefillPolicyAlways),
+	// 				DynamicSizing: &armstandbypool.DynamicSizing{
+	// 					Enabled: to.Ptr(true),
+	// 				},
 	// 			},
 	// 			ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
 	// 			ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
@@ -93,16 +99,16 @@ func ExampleStandbyContainerGroupPoolsClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armstandbypool.SystemData{
 	// 			CreatedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_Delete.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_Delete.json
 func ExampleStandbyContainerGroupPoolsClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -119,11 +125,11 @@ func ExampleStandbyContainerGroupPoolsClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_Get.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_Get.json
 func ExampleStandbyContainerGroupPoolsClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -142,11 +148,14 @@ func ExampleStandbyContainerGroupPoolsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armstandbypool.StandbyContainerGroupPoolsClientGetResponse{
-	// 	StandbyContainerGroupPoolResource: &armstandbypool.StandbyContainerGroupPoolResource{
+	// 	StandbyContainerGroupPoolResource: armstandbypool.StandbyContainerGroupPoolResource{
 	// 		Properties: &armstandbypool.StandbyContainerGroupPoolResourceProperties{
 	// 			ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 	// 				MaxReadyCapacity: to.Ptr[int64](688),
 	// 				RefillPolicy: to.Ptr(armstandbypool.RefillPolicyAlways),
+	// 				DynamicSizing: &armstandbypool.DynamicSizing{
+	// 					Enabled: to.Ptr(true),
+	// 				},
 	// 			},
 	// 			ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
 	// 			ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
@@ -175,16 +184,16 @@ func ExampleStandbyContainerGroupPoolsClient_Get() {
 	// 		SystemData: &armstandbypool.SystemData{
 	// 			CreatedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_ListByResourceGroup.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_ListByResourceGroup.json
 func ExampleStandbyContainerGroupPoolsClient_NewListByResourceGroupPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -214,6 +223,9 @@ func ExampleStandbyContainerGroupPoolsClient_NewListByResourceGroupPager() {
 		// 					ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 		// 						MaxReadyCapacity: to.Ptr[int64](688),
 		// 						RefillPolicy: to.Ptr(armstandbypool.RefillPolicyAlways),
+		// 						DynamicSizing: &armstandbypool.DynamicSizing{
+		// 							Enabled: to.Ptr(true),
+		// 						},
 		// 					},
 		// 					ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
 		// 					ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
@@ -242,10 +254,10 @@ func ExampleStandbyContainerGroupPoolsClient_NewListByResourceGroupPager() {
 		// 				SystemData: &armstandbypool.SystemData{
 		// 					CreatedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -255,7 +267,7 @@ func ExampleStandbyContainerGroupPoolsClient_NewListByResourceGroupPager() {
 	}
 }
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_ListBySubscription.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_ListBySubscription.json
 func ExampleStandbyContainerGroupPoolsClient_NewListBySubscriptionPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -285,6 +297,9 @@ func ExampleStandbyContainerGroupPoolsClient_NewListBySubscriptionPager() {
 		// 					ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 		// 						MaxReadyCapacity: to.Ptr[int64](688),
 		// 						RefillPolicy: to.Ptr(armstandbypool.RefillPolicyAlways),
+		// 						DynamicSizing: &armstandbypool.DynamicSizing{
+		// 							Enabled: to.Ptr(true),
+		// 						},
 		// 					},
 		// 					ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
 		// 					ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
@@ -313,10 +328,10 @@ func ExampleStandbyContainerGroupPoolsClient_NewListBySubscriptionPager() {
 		// 				SystemData: &armstandbypool.SystemData{
 		// 					CreatedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -326,7 +341,7 @@ func ExampleStandbyContainerGroupPoolsClient_NewListBySubscriptionPager() {
 	}
 }
 
-// Generated from example definition: 2025-03-01/StandbyContainerGroupPools_Update.json
+// Generated from example definition: 2025-10-01/StandbyContainerGroupPools_Update.json
 func ExampleStandbyContainerGroupPoolsClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -343,6 +358,9 @@ func ExampleStandbyContainerGroupPoolsClient_Update() {
 			ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 				MaxReadyCapacity: to.Ptr[int64](1743),
 				RefillPolicy:     to.Ptr(armstandbypool.RefillPolicyAlways),
+				DynamicSizing: &armstandbypool.DynamicSizing{
+					Enabled: to.Ptr(true),
+				},
 			},
 			ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
 				ContainerGroupProfile: &armstandbypool.ContainerGroupProfile{
@@ -369,11 +387,14 @@ func ExampleStandbyContainerGroupPoolsClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armstandbypool.StandbyContainerGroupPoolsClientUpdateResponse{
-	// 	StandbyContainerGroupPoolResource: &armstandbypool.StandbyContainerGroupPoolResource{
+	// 	StandbyContainerGroupPoolResource: armstandbypool.StandbyContainerGroupPoolResource{
 	// 		Properties: &armstandbypool.StandbyContainerGroupPoolResourceProperties{
 	// 			ElasticityProfile: &armstandbypool.StandbyContainerGroupPoolElasticityProfile{
 	// 				MaxReadyCapacity: to.Ptr[int64](1743),
 	// 				RefillPolicy: to.Ptr(armstandbypool.RefillPolicyAlways),
+	// 				DynamicSizing: &armstandbypool.DynamicSizing{
+	// 					Enabled: to.Ptr(true),
+	// 				},
 	// 			},
 	// 			ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
 	// 			ContainerGroupProperties: &armstandbypool.ContainerGroupProperties{
@@ -402,10 +423,10 @@ func ExampleStandbyContainerGroupPoolsClient_Update() {
 	// 		SystemData: &armstandbypool.SystemData{
 	// 			CreatedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

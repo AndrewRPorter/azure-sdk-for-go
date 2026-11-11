@@ -18,7 +18,7 @@ This project uses [Go modules](https://github.com/golang/go/wiki/Modules) for ve
 Install the Azure Container Service module:
 
 ```sh
-go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v7
+go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservice/armcontainerservice/v9
 ```
 
 ## Authorization
@@ -55,7 +55,7 @@ clientFactory, err := armcontainerservice.NewClientFactory(<subscription ID>, cr
 A client groups a set of related APIs, providing access to its functionality. Create one or more clients to access the APIs you require using client factory.
 
 ```go
-client := clientFactory.NewAgentPoolsClient()
+client := clientFactory.NewAgentFabricMembershipsClient()
 ```
 
 ## Fakes

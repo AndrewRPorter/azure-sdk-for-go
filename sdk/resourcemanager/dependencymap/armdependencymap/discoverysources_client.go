@@ -18,6 +18,8 @@ import (
 
 // DiscoverySourcesClient contains the methods for the DiscoverySources group.
 // Don't use this type directly, use NewDiscoverySourcesClient() instead.
+//
+// Generated from API version 2025-01-31-preview
 type DiscoverySourcesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type DiscoverySourcesClient struct {
 // NewDiscoverySourcesClient creates a new instance of DiscoverySourcesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewDiscoverySourcesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*DiscoverySourcesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewDiscoverySourcesClient(subscriptionID string, credential azcore.TokenCre
 
 // BeginCreateOrUpdate - Create a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - sourceName - discovery source resource
@@ -66,10 +69,8 @@ func (client *DiscoverySourcesClient) BeginCreateOrUpdate(ctx context.Context, r
 	}
 }
 
-// CreateOrUpdate - Create a DiscoverySourceResource
+// createOrUpdate - Create a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *DiscoverySourcesClient) createOrUpdate(ctx context.Context, resourceGroupName string, mapName string, sourceName string, resource DiscoverySourceResource, options *DiscoverySourcesClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "DiscoverySourcesClient.BeginCreateOrUpdate"
@@ -91,11 +92,11 @@ func (client *DiscoverySourcesClient) createOrUpdate(ctx context.Context, resour
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *DiscoverySourcesClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, mapName string, sourceName string, resource DiscoverySourceResource, _ *DiscoverySourcesClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources/{sourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -115,8 +116,8 @@ func (client *DiscoverySourcesClient) createOrUpdateCreateRequest(ctx context.Co
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -127,8 +128,6 @@ func (client *DiscoverySourcesClient) createOrUpdateCreateRequest(ctx context.Co
 
 // BeginDelete - Delete a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - sourceName - discovery source resource
@@ -151,10 +150,8 @@ func (client *DiscoverySourcesClient) BeginDelete(ctx context.Context, resourceG
 	}
 }
 
-// Delete - Delete a DiscoverySourceResource
+// deleteOperation - Delete a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *DiscoverySourcesClient) deleteOperation(ctx context.Context, resourceGroupName string, mapName string, sourceName string, options *DiscoverySourcesClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "DiscoverySourcesClient.BeginDelete"
@@ -176,11 +173,11 @@ func (client *DiscoverySourcesClient) deleteOperation(ctx context.Context, resou
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *DiscoverySourcesClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, mapName string, sourceName string, _ *DiscoverySourcesClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources/{sourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -200,150 +197,13 @@ func (client *DiscoverySourcesClient) deleteCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a DiscoverySourceResource
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - mapName - Maps resource name
-//   - sourceName - discovery source resource
-//   - options - DiscoverySourcesClientGetOptions contains the optional parameters for the DiscoverySourcesClient.Get method.
-func (client *DiscoverySourcesClient) Get(ctx context.Context, resourceGroupName string, mapName string, sourceName string, options *DiscoverySourcesClientGetOptions) (DiscoverySourcesClientGetResponse, error) {
-	var err error
-	const operationName = "DiscoverySourcesClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, mapName, sourceName, options)
-	if err != nil {
-		return DiscoverySourcesClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return DiscoverySourcesClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return DiscoverySourcesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *DiscoverySourcesClient) getCreateRequest(ctx context.Context, resourceGroupName string, mapName string, sourceName string, _ *DiscoverySourcesClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources/{sourceName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if mapName == "" {
-		return nil, errors.New("parameter mapName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
-	if sourceName == "" {
-		return nil, errors.New("parameter sourceName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{sourceName}", url.PathEscape(sourceName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *DiscoverySourcesClient) getHandleResponse(resp *http.Response) (DiscoverySourcesClientGetResponse, error) {
-	result := DiscoverySourcesClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.DiscoverySourceResource); err != nil {
-		return DiscoverySourcesClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByMapsResourcePager - List DiscoverySourceResource resources by MapsResource
-//
-// Generated from API version 2025-01-31-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - mapName - Maps resource name
-//   - options - DiscoverySourcesClientListByMapsResourceOptions contains the optional parameters for the DiscoverySourcesClient.NewListByMapsResourcePager
-//     method.
-func (client *DiscoverySourcesClient) NewListByMapsResourcePager(resourceGroupName string, mapName string, options *DiscoverySourcesClientListByMapsResourceOptions) *runtime.Pager[DiscoverySourcesClientListByMapsResourceResponse] {
-	return runtime.NewPager(runtime.PagingHandler[DiscoverySourcesClientListByMapsResourceResponse]{
-		More: func(page DiscoverySourcesClientListByMapsResourceResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *DiscoverySourcesClientListByMapsResourceResponse) (DiscoverySourcesClientListByMapsResourceResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "DiscoverySourcesClient.NewListByMapsResourcePager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByMapsResourceCreateRequest(ctx, resourceGroupName, mapName, options)
-			}, nil)
-			if err != nil {
-				return DiscoverySourcesClientListByMapsResourceResponse{}, err
-			}
-			return client.listByMapsResourceHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByMapsResourceCreateRequest creates the ListByMapsResource request.
-func (client *DiscoverySourcesClient) listByMapsResourceCreateRequest(ctx context.Context, resourceGroupName string, mapName string, _ *DiscoverySourcesClientListByMapsResourceOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if mapName == "" {
-		return nil, errors.New("parameter mapName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByMapsResourceHandleResponse handles the ListByMapsResource response.
-func (client *DiscoverySourcesClient) listByMapsResourceHandleResponse(resp *http.Response) (DiscoverySourcesClientListByMapsResourceResponse, error) {
-	result := DiscoverySourcesClientListByMapsResourceResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.DiscoverySourceResourceListResult); err != nil {
-		return DiscoverySourcesClientListByMapsResourceResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginUpdate - Update a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - sourceName - discovery source resource
@@ -367,10 +227,8 @@ func (client *DiscoverySourcesClient) BeginUpdate(ctx context.Context, resourceG
 	}
 }
 
-// Update - Update a DiscoverySourceResource
+// update - Update a DiscoverySourceResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *DiscoverySourcesClient) update(ctx context.Context, resourceGroupName string, mapName string, sourceName string, properties DiscoverySourceResourceTagsUpdate, options *DiscoverySourcesClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "DiscoverySourcesClient.BeginUpdate"
@@ -392,11 +250,11 @@ func (client *DiscoverySourcesClient) update(ctx context.Context, resourceGroupN
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *DiscoverySourcesClient) updateCreateRequest(ctx context.Context, resourceGroupName string, mapName string, sourceName string, properties DiscoverySourceResourceTagsUpdate, _ *DiscoverySourcesClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources/{sourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -416,12 +274,155 @@ func (client *DiscoverySourcesClient) updateCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a DiscoverySourceResource
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - mapName - Maps resource name
+//   - sourceName - discovery source resource
+//   - options - DiscoverySourcesClientGetOptions contains the optional parameters for the DiscoverySourcesClient.Get method.
+func (client *DiscoverySourcesClient) Get(ctx context.Context, resourceGroupName string, mapName string, sourceName string, options *DiscoverySourcesClientGetOptions) (DiscoverySourcesClientGetResponse, error) {
+	var err error
+	const operationName = "DiscoverySourcesClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, mapName, sourceName, options)
+	if err != nil {
+		return DiscoverySourcesClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return DiscoverySourcesClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *DiscoverySourcesClient) getCreateRequest(ctx context.Context, resourceGroupName string, mapName string, sourceName string, _ *DiscoverySourcesClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources/{sourceName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if mapName == "" {
+		return nil, errors.New("parameter mapName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
+	if sourceName == "" {
+		return nil, errors.New("parameter sourceName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{sourceName}", url.PathEscape(sourceName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *DiscoverySourcesClient) getHandleResponse(resp *http.Response, successCodes ...int) (DiscoverySourcesClientGetResponse, error) {
+	result := DiscoverySourcesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.DiscoverySourceResource); err != nil {
+		return DiscoverySourcesClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByMapsResourcePager - List DiscoverySourceResource resources by MapsResource
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - mapName - Maps resource name
+//   - options - DiscoverySourcesClientListByMapsResourceOptions contains the optional parameters for the DiscoverySourcesClient.NewListByMapsResourcePager
+//     method.
+func (client *DiscoverySourcesClient) NewListByMapsResourcePager(resourceGroupName string, mapName string, options *DiscoverySourcesClientListByMapsResourceOptions) *runtime.Pager[DiscoverySourcesClientListByMapsResourceResponse] {
+	return runtime.NewPager(runtime.PagingHandler[DiscoverySourcesClientListByMapsResourceResponse]{
+		More: func(page DiscoverySourcesClientListByMapsResourceResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *DiscoverySourcesClientListByMapsResourceResponse) (DiscoverySourcesClientListByMapsResourceResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "DiscoverySourcesClient.NewListByMapsResourcePager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByMapsResourceCreateRequest(ctx, resourceGroupName, mapName, nextLink, options)
+			if err != nil {
+				return DiscoverySourcesClientListByMapsResourceResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return DiscoverySourcesClientListByMapsResourceResponse{}, err
+			}
+			return client.listByMapsResourceHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByMapsResourceCreateRequest creates the ListByMapsResource request.
+func (client *DiscoverySourcesClient) listByMapsResourceCreateRequest(ctx context.Context, resourceGroupName string, mapName string, nextLink string, _ *DiscoverySourcesClientListByMapsResourceOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/discoverySources"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if mapName == "" {
+			return nil, errors.New("parameter mapName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20250131Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByMapsResourceHandleResponse handles the ListByMapsResource response.
+func (client *DiscoverySourcesClient) listByMapsResourceHandleResponse(resp *http.Response, successCodes ...int) (DiscoverySourcesClientListByMapsResourceResponse, error) {
+	result := DiscoverySourcesClientListByMapsResourceResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.DiscoverySourceResourceListResult); err != nil {
+		return DiscoverySourcesClientListByMapsResourceResponse{}, err
+	}
+	return result, nil
 }

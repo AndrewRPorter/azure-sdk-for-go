@@ -18,6 +18,8 @@ import (
 
 // ExtendedZonesClient - ExtendedZone operations
 // Don't use this type directly, use NewExtendedZonesClient() instead.
+//
+// Generated from API version 2026-10-01
 type ExtendedZonesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type ExtendedZonesClient struct {
 // NewExtendedZonesClient creates a new instance of ExtendedZonesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewExtendedZonesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ExtendedZonesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewExtendedZonesClient(subscriptionID string, credential azcore.TokenCreden
 
 // Get - Gets an Azure Extended Zone for a subscription
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-04-01-preview
 //   - extendedZoneName - The name of the ExtendedZone
 //   - options - ExtendedZonesClientGetOptions contains the optional parameters for the ExtendedZonesClient.Get method.
 func (client *ExtendedZonesClient) Get(ctx context.Context, extendedZoneName string, options *ExtendedZonesClientGetOptions) (ExtendedZonesClientGetResponse, error) {
@@ -59,11 +62,7 @@ func (client *ExtendedZonesClient) Get(ctx context.Context, extendedZoneName str
 	if err != nil {
 		return ExtendedZonesClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ExtendedZonesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -71,7 +70,7 @@ func (client *ExtendedZonesClient) Get(ctx context.Context, extendedZoneName str
 func (client *ExtendedZonesClient) getCreateRequest(ctx context.Context, extendedZoneName string, _ *ExtendedZonesClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones/{extendedZoneName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if extendedZoneName == "" {
@@ -83,15 +82,18 @@ func (client *ExtendedZonesClient) getCreateRequest(ctx context.Context, extende
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20261001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *ExtendedZonesClient) getHandleResponse(resp *http.Response) (ExtendedZonesClientGetResponse, error) {
+func (client *ExtendedZonesClient) getHandleResponse(resp *http.Response, successCodes ...int) (ExtendedZonesClientGetResponse, error) {
 	result := ExtendedZonesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ExtendedZone); err != nil {
 		return ExtendedZonesClientGetResponse{}, err
 	}
@@ -99,8 +101,6 @@ func (client *ExtendedZonesClient) getHandleResponse(resp *http.Response) (Exten
 }
 
 // NewListBySubscriptionPager - Lists the Azure Extended Zones available to a subscription
-//
-// Generated from API version 2024-04-01-preview
 //   - options - ExtendedZonesClientListBySubscriptionOptions contains the optional parameters for the ExtendedZonesClient.NewListBySubscriptionPager
 //     method.
 func (client *ExtendedZonesClient) NewListBySubscriptionPager(options *ExtendedZonesClientListBySubscriptionOptions) *runtime.Pager[ExtendedZonesClientListBySubscriptionResponse] {
@@ -114,39 +114,53 @@ func (client *ExtendedZonesClient) NewListBySubscriptionPager(options *ExtendedZ
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return ExtendedZonesClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return ExtendedZonesClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *ExtendedZonesClient) listBySubscriptionCreateRequest(ctx context.Context, _ *ExtendedZonesClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *ExtendedZonesClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *ExtendedZonesClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20261001)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *ExtendedZonesClient) listBySubscriptionHandleResponse(resp *http.Response) (ExtendedZonesClientListBySubscriptionResponse, error) {
+func (client *ExtendedZonesClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (ExtendedZonesClientListBySubscriptionResponse, error) {
 	result := ExtendedZonesClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ExtendedZoneListResult); err != nil {
 		return ExtendedZonesClientListBySubscriptionResponse{}, err
 	}
@@ -155,8 +169,6 @@ func (client *ExtendedZonesClient) listBySubscriptionHandleResponse(resp *http.R
 
 // Register - Registers a subscription for an Extended Zone
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-04-01-preview
 //   - extendedZoneName - The name of the ExtendedZone
 //   - options - ExtendedZonesClientRegisterOptions contains the optional parameters for the ExtendedZonesClient.Register method.
 func (client *ExtendedZonesClient) Register(ctx context.Context, extendedZoneName string, options *ExtendedZonesClientRegisterOptions) (ExtendedZonesClientRegisterResponse, error) {
@@ -173,11 +185,7 @@ func (client *ExtendedZonesClient) Register(ctx context.Context, extendedZoneNam
 	if err != nil {
 		return ExtendedZonesClientRegisterResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ExtendedZonesClientRegisterResponse{}, err
-	}
-	resp, err := client.registerHandleResponse(httpResp)
+	resp, err := client.registerHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -185,7 +193,7 @@ func (client *ExtendedZonesClient) Register(ctx context.Context, extendedZoneNam
 func (client *ExtendedZonesClient) registerCreateRequest(ctx context.Context, extendedZoneName string, _ *ExtendedZonesClientRegisterOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones/{extendedZoneName}/register"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if extendedZoneName == "" {
@@ -197,15 +205,18 @@ func (client *ExtendedZonesClient) registerCreateRequest(ctx context.Context, ex
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20261001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // registerHandleResponse handles the Register response.
-func (client *ExtendedZonesClient) registerHandleResponse(resp *http.Response) (ExtendedZonesClientRegisterResponse, error) {
+func (client *ExtendedZonesClient) registerHandleResponse(resp *http.Response, successCodes ...int) (ExtendedZonesClientRegisterResponse, error) {
 	result := ExtendedZonesClientRegisterResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ExtendedZone); err != nil {
 		return ExtendedZonesClientRegisterResponse{}, err
 	}
@@ -214,8 +225,6 @@ func (client *ExtendedZonesClient) registerHandleResponse(resp *http.Response) (
 
 // Unregister - Unregisters a subscription for an Extended Zone
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-04-01-preview
 //   - extendedZoneName - The name of the ExtendedZone
 //   - options - ExtendedZonesClientUnregisterOptions contains the optional parameters for the ExtendedZonesClient.Unregister
 //     method.
@@ -233,11 +242,7 @@ func (client *ExtendedZonesClient) Unregister(ctx context.Context, extendedZoneN
 	if err != nil {
 		return ExtendedZonesClientUnregisterResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ExtendedZonesClientUnregisterResponse{}, err
-	}
-	resp, err := client.unregisterHandleResponse(httpResp)
+	resp, err := client.unregisterHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -245,7 +250,7 @@ func (client *ExtendedZonesClient) Unregister(ctx context.Context, extendedZoneN
 func (client *ExtendedZonesClient) unregisterCreateRequest(ctx context.Context, extendedZoneName string, _ *ExtendedZonesClientUnregisterOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.EdgeZones/extendedZones/{extendedZoneName}/unregister"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if extendedZoneName == "" {
@@ -257,15 +262,18 @@ func (client *ExtendedZonesClient) unregisterCreateRequest(ctx context.Context, 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20261001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // unregisterHandleResponse handles the Unregister response.
-func (client *ExtendedZonesClient) unregisterHandleResponse(resp *http.Response) (ExtendedZonesClientUnregisterResponse, error) {
+func (client *ExtendedZonesClient) unregisterHandleResponse(resp *http.Response, successCodes ...int) (ExtendedZonesClientUnregisterResponse, error) {
 	result := ExtendedZonesClientUnregisterResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ExtendedZone); err != nil {
 		return ExtendedZonesClientUnregisterResponse{}, err
 	}

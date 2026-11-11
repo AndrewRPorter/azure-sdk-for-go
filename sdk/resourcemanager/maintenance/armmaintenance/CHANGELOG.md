@@ -1,5 +1,49 @@
 # Release History
 
+## 2.0.0-beta.1 (2026-10-19)
+### Breaking Changes
+
+- Function `*ClientFactory.NewScheduledEventClient` has been removed
+- Function `NewScheduledEventClient` has been removed
+- Function `*ScheduledEventClient.Acknowledge` has been removed
+- Struct `ScheduledEventApproveResponse` has been removed
+
+### Features Added
+
+- New function `*ClientFactory.NewScheduledEventsClient() *ScheduledEventsClient`
+- New function `NewScheduledEventsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ScheduledEventsClient, error)`
+- New function `*ScheduledEventsClient.Acknowledge(ctx context.Context, resourceGroupName string, resourceType string, resourceName string, scheduledEventID string, options *ScheduledEventsClientAcknowledgeOptions) (ScheduledEventsClientAcknowledgeResponse, error)`
+- New function `*ScheduledEventsClient.AcknowledgeList(ctx context.Context, resourceGroupName string, resourceType string, resourceName string, scheduledEventsIDList ScheduledEventsIDList, options *ScheduledEventsClientAcknowledgeListOptions) (ScheduledEventsClientAcknowledgeListResponse, error)`
+- New struct `ScheduledEventsApproveResponse`
+- New struct `ScheduledEventsIDList`
+
+
+## 1.4.0-beta.2 (2026-03-16)
+### Breaking Changes
+
+- Type of `Operation.Display` has been changed from `*OperationInfo` to `*OperationDisplay`
+- Type of `Operation.Origin` has been changed from `*string` to `*Origin`
+- Struct `Error` has been removed
+- Struct `ErrorDetails` has been removed
+- Struct `OperationInfo` has been removed
+- Struct `Resource` has been removed
+- Field `Properties` of struct `Operation` has been removed
+
+### Features Added
+
+- New enum type `ActionType` with values `ActionTypeInternal`
+- New enum type `Origin` with values `OriginSystem`, `OriginUser`, `OriginUserSystem`
+- New struct `OperationDisplay`
+- New field `RetryAfter` in struct `ApplyUpdatesClientCreateOrUpdateParentResponse`
+- New field `RetryAfter` in struct `ApplyUpdatesClientCreateOrUpdateResponse`
+- New field `NextLink` in struct `ListApplyUpdate`
+- New field `NextLink` in struct `ListConfigurationAssignmentsResult`
+- New field `NextLink` in struct `ListMaintenanceConfigurationsResult`
+- New field `NextLink` in struct `ListUpdatesResult`
+- New field `ActionType` in struct `Operation`
+- New field `NextLink` in struct `OperationsListResult`
+
+
 ## 1.4.0-beta.1 (2024-05-24)
 ### Features Added
 

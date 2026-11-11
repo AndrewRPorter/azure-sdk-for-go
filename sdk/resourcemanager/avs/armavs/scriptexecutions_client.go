@@ -18,6 +18,8 @@ import (
 
 // ScriptExecutionsClient contains the methods for the ScriptExecutions group.
 // Don't use this type directly, use NewScriptExecutionsClient() instead.
+//
+// Generated from API version 2026-03-01
 type ScriptExecutionsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type ScriptExecutionsClient struct {
 // NewScriptExecutionsClient creates a new instance of ScriptExecutionsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewScriptExecutionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ScriptExecutionsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewScriptExecutionsClient(subscriptionID string, credential azcore.TokenCre
 
 // BeginCreateOrUpdate - Create a ScriptExecution
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - scriptExecutionName - Name of the script cmdlet.
@@ -67,10 +70,8 @@ func (client *ScriptExecutionsClient) BeginCreateOrUpdate(ctx context.Context, r
 	}
 }
 
-// CreateOrUpdate - Create a ScriptExecution
+// createOrUpdate - Create a ScriptExecution
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *ScriptExecutionsClient) createOrUpdate(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, scriptExecution ScriptExecution, options *ScriptExecutionsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "ScriptExecutionsClient.BeginCreateOrUpdate"
@@ -92,11 +93,11 @@ func (client *ScriptExecutionsClient) createOrUpdate(ctx context.Context, resour
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *ScriptExecutionsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, scriptExecution ScriptExecution, _ *ScriptExecutionsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -116,8 +117,8 @@ func (client *ScriptExecutionsClient) createOrUpdateCreateRequest(ctx context.Co
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, scriptExecution); err != nil {
@@ -128,8 +129,6 @@ func (client *ScriptExecutionsClient) createOrUpdateCreateRequest(ctx context.Co
 
 // BeginDelete - Delete a ScriptExecution
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - scriptExecutionName - Name of the script cmdlet.
@@ -152,10 +151,8 @@ func (client *ScriptExecutionsClient) BeginDelete(ctx context.Context, resourceG
 	}
 }
 
-// Delete - Delete a ScriptExecution
+// deleteOperation - Delete a ScriptExecution
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *ScriptExecutionsClient) deleteOperation(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, options *ScriptExecutionsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "ScriptExecutionsClient.BeginDelete"
@@ -177,11 +174,11 @@ func (client *ScriptExecutionsClient) deleteOperation(ctx context.Context, resou
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *ScriptExecutionsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, _ *ScriptExecutionsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -201,16 +198,13 @@ func (client *ScriptExecutionsClient) deleteCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a ScriptExecution
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - scriptExecutionName - Name of the script cmdlet.
@@ -229,11 +223,7 @@ func (client *ScriptExecutionsClient) Get(ctx context.Context, resourceGroupName
 	if err != nil {
 		return ScriptExecutionsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ScriptExecutionsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -241,7 +231,7 @@ func (client *ScriptExecutionsClient) Get(ctx context.Context, resourceGroupName
 func (client *ScriptExecutionsClient) getCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, _ *ScriptExecutionsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -261,15 +251,18 @@ func (client *ScriptExecutionsClient) getCreateRequest(ctx context.Context, reso
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *ScriptExecutionsClient) getHandleResponse(resp *http.Response) (ScriptExecutionsClientGetResponse, error) {
+func (client *ScriptExecutionsClient) getHandleResponse(resp *http.Response, successCodes ...int) (ScriptExecutionsClientGetResponse, error) {
 	result := ScriptExecutionsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ScriptExecution); err != nil {
 		return ScriptExecutionsClientGetResponse{}, err
 	}
@@ -278,8 +271,6 @@ func (client *ScriptExecutionsClient) getHandleResponse(resp *http.Response) (Sc
 
 // GetExecutionLogs - Return the logs for a script execution resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - scriptExecutionName - Name of the script cmdlet.
@@ -299,11 +290,7 @@ func (client *ScriptExecutionsClient) GetExecutionLogs(ctx context.Context, reso
 	if err != nil {
 		return ScriptExecutionsClientGetExecutionLogsResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ScriptExecutionsClientGetExecutionLogsResponse{}, err
-	}
-	resp, err := client.getExecutionLogsHandleResponse(httpResp)
+	resp, err := client.getExecutionLogsHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -311,7 +298,7 @@ func (client *ScriptExecutionsClient) GetExecutionLogs(ctx context.Context, reso
 func (client *ScriptExecutionsClient) getExecutionLogsCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, scriptExecutionName string, options *ScriptExecutionsClientGetExecutionLogsOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}/getExecutionLogs"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -331,8 +318,8 @@ func (client *ScriptExecutionsClient) getExecutionLogsCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	if options != nil && options.ScriptOutputStreamType != nil {
 		req.Raw().Header["Content-Type"] = []string{"application/json"}
@@ -345,8 +332,11 @@ func (client *ScriptExecutionsClient) getExecutionLogsCreateRequest(ctx context.
 }
 
 // getExecutionLogsHandleResponse handles the GetExecutionLogs response.
-func (client *ScriptExecutionsClient) getExecutionLogsHandleResponse(resp *http.Response) (ScriptExecutionsClientGetExecutionLogsResponse, error) {
+func (client *ScriptExecutionsClient) getExecutionLogsHandleResponse(resp *http.Response, successCodes ...int) (ScriptExecutionsClientGetExecutionLogsResponse, error) {
 	result := ScriptExecutionsClientGetExecutionLogsResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ScriptExecution); err != nil {
 		return ScriptExecutionsClientGetExecutionLogsResponse{}, err
 	}
@@ -354,8 +344,6 @@ func (client *ScriptExecutionsClient) getExecutionLogsHandleResponse(resp *http.
 }
 
 // NewListPager - List ScriptExecution resources by PrivateCloud
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - options - ScriptExecutionsClientListOptions contains the optional parameters for the ScriptExecutionsClient.NewListPager
@@ -371,47 +359,61 @@ func (client *ScriptExecutionsClient) NewListPager(resourceGroupName string, pri
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listCreateRequest(ctx, resourceGroupName, privateCloudName, options)
-			}, nil)
+			req, err := client.listCreateRequest(ctx, resourceGroupName, privateCloudName, nextLink, options)
 			if err != nil {
 				return ScriptExecutionsClientListResponse{}, err
 			}
-			return client.listHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return ScriptExecutionsClientListResponse{}, err
+			}
+			return client.listHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listCreateRequest creates the List request.
-func (client *ScriptExecutionsClient) listCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *ScriptExecutionsClientListOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *ScriptExecutionsClient) listCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, nextLink string, _ *ScriptExecutionsClientListOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if privateCloudName == "" {
+			return nil, errors.New("parameter privateCloudName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if privateCloudName == "" {
-		return nil, errors.New("parameter privateCloudName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listHandleResponse handles the List response.
-func (client *ScriptExecutionsClient) listHandleResponse(resp *http.Response) (ScriptExecutionsClientListResponse, error) {
+func (client *ScriptExecutionsClient) listHandleResponse(resp *http.Response, successCodes ...int) (ScriptExecutionsClientListResponse, error) {
 	result := ScriptExecutionsClientListResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ScriptExecutionsList); err != nil {
 		return ScriptExecutionsClientListResponse{}, err
 	}

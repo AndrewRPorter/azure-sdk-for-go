@@ -18,6 +18,8 @@ import (
 
 // CapacitiesClient contains the methods for the Capacities group.
 // Don't use this type directly, use NewCapacitiesClient() instead.
+//
+// Generated from API version 2026-09-01-preview
 type CapacitiesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type CapacitiesClient struct {
 // NewCapacitiesClient creates a new instance of CapacitiesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewCapacitiesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*CapacitiesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -39,75 +44,8 @@ func NewCapacitiesClient(subscriptionID string, credential azcore.TokenCredentia
 	return client, nil
 }
 
-// CheckNameAvailability - Implements local CheckNameAvailability operations
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
-//   - location - The location name.
-//   - body - The CheckAvailability request
-//   - options - CapacitiesClientCheckNameAvailabilityOptions contains the optional parameters for the CapacitiesClient.CheckNameAvailability
-//     method.
-func (client *CapacitiesClient) CheckNameAvailability(ctx context.Context, location string, body CheckNameAvailabilityRequest, options *CapacitiesClientCheckNameAvailabilityOptions) (CapacitiesClientCheckNameAvailabilityResponse, error) {
-	var err error
-	const operationName = "CapacitiesClient.CheckNameAvailability"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.checkNameAvailabilityCreateRequest(ctx, location, body, options)
-	if err != nil {
-		return CapacitiesClientCheckNameAvailabilityResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return CapacitiesClientCheckNameAvailabilityResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return CapacitiesClientCheckNameAvailabilityResponse{}, err
-	}
-	resp, err := client.checkNameAvailabilityHandleResponse(httpResp)
-	return resp, err
-}
-
-// checkNameAvailabilityCreateRequest creates the CheckNameAvailability request.
-func (client *CapacitiesClient) checkNameAvailabilityCreateRequest(ctx context.Context, location string, body CheckNameAvailabilityRequest, _ *CapacitiesClientCheckNameAvailabilityOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/locations/{location}/checkNameAvailability"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if location == "" {
-		return nil, errors.New("parameter location cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{location}", url.PathEscape(location))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	req.Raw().Header["Content-Type"] = []string{"application/json"}
-	if err := runtime.MarshalAsJSON(req, body); err != nil {
-		return nil, err
-	}
-	return req, nil
-}
-
-// checkNameAvailabilityHandleResponse handles the CheckNameAvailability response.
-func (client *CapacitiesClient) checkNameAvailabilityHandleResponse(resp *http.Response) (CapacitiesClientCheckNameAvailabilityResponse, error) {
-	result := CapacitiesClientCheckNameAvailabilityResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.CheckNameAvailabilityResponse); err != nil {
-		return CapacitiesClientCheckNameAvailabilityResponse{}, err
-	}
-	return result, nil
-}
-
 // BeginCreateOrUpdate - Create a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
 //   - resource - Resource create parameters.
@@ -130,10 +68,8 @@ func (client *CapacitiesClient) BeginCreateOrUpdate(ctx context.Context, resourc
 	}
 }
 
-// CreateOrUpdate - Create a FabricCapacity
+// createOrUpdate - Create a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 func (client *CapacitiesClient) createOrUpdate(ctx context.Context, resourceGroupName string, capacityName string, resource Capacity, options *CapacitiesClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "CapacitiesClient.BeginCreateOrUpdate"
@@ -155,11 +91,11 @@ func (client *CapacitiesClient) createOrUpdate(ctx context.Context, resourceGrou
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *CapacitiesClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, resource Capacity, _ *CapacitiesClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -175,8 +111,8 @@ func (client *CapacitiesClient) createOrUpdateCreateRequest(ctx context.Context,
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -187,8 +123,6 @@ func (client *CapacitiesClient) createOrUpdateCreateRequest(ctx context.Context,
 
 // BeginDelete - Delete a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
 //   - options - CapacitiesClientBeginDeleteOptions contains the optional parameters for the CapacitiesClient.BeginDelete method.
@@ -209,10 +143,8 @@ func (client *CapacitiesClient) BeginDelete(ctx context.Context, resourceGroupNa
 	}
 }
 
-// Delete - Delete a FabricCapacity
+// deleteOperation - Delete a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 func (client *CapacitiesClient) deleteOperation(ctx context.Context, resourceGroupName string, capacityName string, options *CapacitiesClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "CapacitiesClient.BeginDelete"
@@ -234,11 +166,11 @@ func (client *CapacitiesClient) deleteOperation(ctx context.Context, resourceGro
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *CapacitiesClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -254,314 +186,13 @@ func (client *CapacitiesClient) deleteCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a FabricCapacity
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
-//   - options - CapacitiesClientGetOptions contains the optional parameters for the CapacitiesClient.Get method.
-func (client *CapacitiesClient) Get(ctx context.Context, resourceGroupName string, capacityName string, options *CapacitiesClientGetOptions) (CapacitiesClientGetResponse, error) {
-	var err error
-	const operationName = "CapacitiesClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, capacityName, options)
-	if err != nil {
-		return CapacitiesClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return CapacitiesClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return CapacitiesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *CapacitiesClient) getCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if capacityName == "" {
-		return nil, errors.New("parameter capacityName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{capacityName}", url.PathEscape(capacityName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *CapacitiesClient) getHandleResponse(resp *http.Response) (CapacitiesClientGetResponse, error) {
-	result := CapacitiesClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.Capacity); err != nil {
-		return CapacitiesClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByResourceGroupPager - List FabricCapacity resources by resource group
-//
-// Generated from API version 2023-11-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - options - CapacitiesClientListByResourceGroupOptions contains the optional parameters for the CapacitiesClient.NewListByResourceGroupPager
-//     method.
-func (client *CapacitiesClient) NewListByResourceGroupPager(resourceGroupName string, options *CapacitiesClientListByResourceGroupOptions) *runtime.Pager[CapacitiesClientListByResourceGroupResponse] {
-	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListByResourceGroupResponse]{
-		More: func(page CapacitiesClientListByResourceGroupResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *CapacitiesClientListByResourceGroupResponse) (CapacitiesClientListByResourceGroupResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListByResourceGroupPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
-			if err != nil {
-				return CapacitiesClientListByResourceGroupResponse{}, err
-			}
-			return client.listByResourceGroupHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *CapacitiesClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *CapacitiesClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *CapacitiesClient) listByResourceGroupHandleResponse(resp *http.Response) (CapacitiesClientListByResourceGroupResponse, error) {
-	result := CapacitiesClientListByResourceGroupResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.CapacityListResult); err != nil {
-		return CapacitiesClientListByResourceGroupResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListBySubscriptionPager - List FabricCapacity resources by subscription ID
-//
-// Generated from API version 2023-11-01
-//   - options - CapacitiesClientListBySubscriptionOptions contains the optional parameters for the CapacitiesClient.NewListBySubscriptionPager
-//     method.
-func (client *CapacitiesClient) NewListBySubscriptionPager(options *CapacitiesClientListBySubscriptionOptions) *runtime.Pager[CapacitiesClientListBySubscriptionResponse] {
-	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListBySubscriptionResponse]{
-		More: func(page CapacitiesClientListBySubscriptionResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *CapacitiesClientListBySubscriptionResponse) (CapacitiesClientListBySubscriptionResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListBySubscriptionPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return CapacitiesClientListBySubscriptionResponse{}, err
-			}
-			return client.listBySubscriptionHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *CapacitiesClient) listBySubscriptionCreateRequest(ctx context.Context, _ *CapacitiesClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/capacities"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *CapacitiesClient) listBySubscriptionHandleResponse(resp *http.Response) (CapacitiesClientListBySubscriptionResponse, error) {
-	result := CapacitiesClientListBySubscriptionResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.CapacityListResult); err != nil {
-		return CapacitiesClientListBySubscriptionResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListSKUsPager - List eligible SKUs for Microsoft Fabric resource provider
-//
-// Generated from API version 2023-11-01
-//   - options - CapacitiesClientListSKUsOptions contains the optional parameters for the CapacitiesClient.NewListSKUsPager method.
-func (client *CapacitiesClient) NewListSKUsPager(options *CapacitiesClientListSKUsOptions) *runtime.Pager[CapacitiesClientListSKUsResponse] {
-	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListSKUsResponse]{
-		More: func(page CapacitiesClientListSKUsResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *CapacitiesClientListSKUsResponse) (CapacitiesClientListSKUsResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListSKUsPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listSKUsCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return CapacitiesClientListSKUsResponse{}, err
-			}
-			return client.listSKUsHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listSKUsCreateRequest creates the ListSKUs request.
-func (client *CapacitiesClient) listSKUsCreateRequest(ctx context.Context, _ *CapacitiesClientListSKUsOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/skus"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listSKUsHandleResponse handles the ListSKUs response.
-func (client *CapacitiesClient) listSKUsHandleResponse(resp *http.Response) (CapacitiesClientListSKUsResponse, error) {
-	result := CapacitiesClientListSKUsResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.RpSKUEnumerationForNewResourceResult); err != nil {
-		return CapacitiesClientListSKUsResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListSKUsForCapacityPager - List eligible SKUs for a Microsoft Fabric resource
-//
-// Generated from API version 2023-11-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - capacityName - The name of the capacity.
-//   - options - CapacitiesClientListSKUsForCapacityOptions contains the optional parameters for the CapacitiesClient.NewListSKUsForCapacityPager
-//     method.
-func (client *CapacitiesClient) NewListSKUsForCapacityPager(resourceGroupName string, capacityName string, options *CapacitiesClientListSKUsForCapacityOptions) *runtime.Pager[CapacitiesClientListSKUsForCapacityResponse] {
-	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListSKUsForCapacityResponse]{
-		More: func(page CapacitiesClientListSKUsForCapacityResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *CapacitiesClientListSKUsForCapacityResponse) (CapacitiesClientListSKUsForCapacityResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListSKUsForCapacityPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listSKUsForCapacityCreateRequest(ctx, resourceGroupName, capacityName, options)
-			}, nil)
-			if err != nil {
-				return CapacitiesClientListSKUsForCapacityResponse{}, err
-			}
-			return client.listSKUsForCapacityHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listSKUsForCapacityCreateRequest creates the ListSKUsForCapacity request.
-func (client *CapacitiesClient) listSKUsForCapacityCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientListSKUsForCapacityOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}/skus"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if capacityName == "" {
-		return nil, errors.New("parameter capacityName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{capacityName}", url.PathEscape(capacityName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listSKUsForCapacityHandleResponse handles the ListSKUsForCapacity response.
-func (client *CapacitiesClient) listSKUsForCapacityHandleResponse(resp *http.Response) (CapacitiesClientListSKUsForCapacityResponse, error) {
-	result := CapacitiesClientListSKUsForCapacityResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.RpSKUEnumerationForExistingResourceResult); err != nil {
-		return CapacitiesClientListSKUsForCapacityResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginResume - Resume operation of the specified Fabric capacity instance.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
 //   - options - CapacitiesClientBeginResumeOptions contains the optional parameters for the CapacitiesClient.BeginResume method.
@@ -582,10 +213,8 @@ func (client *CapacitiesClient) BeginResume(ctx context.Context, resourceGroupNa
 	}
 }
 
-// Resume - Resume operation of the specified Fabric capacity instance.
+// resume - Resume operation of the specified Fabric capacity instance.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 func (client *CapacitiesClient) resume(ctx context.Context, resourceGroupName string, capacityName string, options *CapacitiesClientBeginResumeOptions) (*http.Response, error) {
 	var err error
 	const operationName = "CapacitiesClient.BeginResume"
@@ -607,11 +236,11 @@ func (client *CapacitiesClient) resume(ctx context.Context, resourceGroupName st
 	return httpResp, nil
 }
 
-// resumeCreateRequest creates the Resume request.
+// resumeCreateRequest creates the resume request.
 func (client *CapacitiesClient) resumeCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientBeginResumeOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}/resume"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -627,16 +256,13 @@ func (client *CapacitiesClient) resumeCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // BeginSuspend - Suspend operation of the specified Fabric capacity instance.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
 //   - options - CapacitiesClientBeginSuspendOptions contains the optional parameters for the CapacitiesClient.BeginSuspend method.
@@ -657,10 +283,8 @@ func (client *CapacitiesClient) BeginSuspend(ctx context.Context, resourceGroupN
 	}
 }
 
-// Suspend - Suspend operation of the specified Fabric capacity instance.
+// suspend - Suspend operation of the specified Fabric capacity instance.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 func (client *CapacitiesClient) suspend(ctx context.Context, resourceGroupName string, capacityName string, options *CapacitiesClientBeginSuspendOptions) (*http.Response, error) {
 	var err error
 	const operationName = "CapacitiesClient.BeginSuspend"
@@ -682,11 +306,11 @@ func (client *CapacitiesClient) suspend(ctx context.Context, resourceGroupName s
 	return httpResp, nil
 }
 
-// suspendCreateRequest creates the Suspend request.
+// suspendCreateRequest creates the suspend request.
 func (client *CapacitiesClient) suspendCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientBeginSuspendOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}/suspend"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -702,16 +326,13 @@ func (client *CapacitiesClient) suspendCreateRequest(ctx context.Context, resour
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // BeginUpdate - Update a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
 //   - properties - The resource properties to be updated.
@@ -733,10 +354,8 @@ func (client *CapacitiesClient) BeginUpdate(ctx context.Context, resourceGroupNa
 	}
 }
 
-// Update - Update a FabricCapacity
+// update - Update a FabricCapacity
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-11-01
 func (client *CapacitiesClient) update(ctx context.Context, resourceGroupName string, capacityName string, properties CapacityUpdate, options *CapacitiesClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "CapacitiesClient.BeginUpdate"
@@ -758,11 +377,11 @@ func (client *CapacitiesClient) update(ctx context.Context, resourceGroupName st
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *CapacitiesClient) updateCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, properties CapacityUpdate, _ *CapacitiesClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -778,12 +397,489 @@ func (client *CapacitiesClient) updateCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// CheckNameAvailability - Implements local CheckNameAvailability operations
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - location - The name of the Azure region.
+//   - body - The CheckAvailability request
+//   - options - CapacitiesClientCheckNameAvailabilityOptions contains the optional parameters for the CapacitiesClient.CheckNameAvailability
+//     method.
+func (client *CapacitiesClient) CheckNameAvailability(ctx context.Context, location string, body CheckNameAvailabilityRequest, options *CapacitiesClientCheckNameAvailabilityOptions) (CapacitiesClientCheckNameAvailabilityResponse, error) {
+	var err error
+	const operationName = "CapacitiesClient.CheckNameAvailability"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.checkNameAvailabilityCreateRequest(ctx, location, body, options)
+	if err != nil {
+		return CapacitiesClientCheckNameAvailabilityResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return CapacitiesClientCheckNameAvailabilityResponse{}, err
+	}
+	resp, err := client.checkNameAvailabilityHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// checkNameAvailabilityCreateRequest creates the CheckNameAvailability request.
+func (client *CapacitiesClient) checkNameAvailabilityCreateRequest(ctx context.Context, location string, body CheckNameAvailabilityRequest, _ *CapacitiesClientCheckNameAvailabilityOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/locations/{location}/checkNameAvailability"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if location == "" {
+		return nil, errors.New("parameter location cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{location}", url.PathEscape(location))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	req.Raw().Header["Content-Type"] = []string{"application/json"}
+	if err := runtime.MarshalAsJSON(req, body); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// checkNameAvailabilityHandleResponse handles the CheckNameAvailability response.
+func (client *CapacitiesClient) checkNameAvailabilityHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientCheckNameAvailabilityResponse, error) {
+	result := CapacitiesClientCheckNameAvailabilityResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.CheckNameAvailabilityResponse); err != nil {
+		return CapacitiesClientCheckNameAvailabilityResponse{}, err
+	}
+	return result, nil
+}
+
+// Get - Get a FabricCapacity
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
+//   - options - CapacitiesClientGetOptions contains the optional parameters for the CapacitiesClient.Get method.
+func (client *CapacitiesClient) Get(ctx context.Context, resourceGroupName string, capacityName string, options *CapacitiesClientGetOptions) (CapacitiesClientGetResponse, error) {
+	var err error
+	const operationName = "CapacitiesClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, capacityName, options)
+	if err != nil {
+		return CapacitiesClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return CapacitiesClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *CapacitiesClient) getCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, _ *CapacitiesClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if capacityName == "" {
+		return nil, errors.New("parameter capacityName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{capacityName}", url.PathEscape(capacityName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260901Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *CapacitiesClient) getHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientGetResponse, error) {
+	result := CapacitiesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.Capacity); err != nil {
+		return CapacitiesClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByResourceGroupPager - List FabricCapacity resources by resource group
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - options - CapacitiesClientListByResourceGroupOptions contains the optional parameters for the CapacitiesClient.NewListByResourceGroupPager
+//     method.
+func (client *CapacitiesClient) NewListByResourceGroupPager(resourceGroupName string, options *CapacitiesClientListByResourceGroupOptions) *runtime.Pager[CapacitiesClientListByResourceGroupResponse] {
+	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListByResourceGroupResponse]{
+		More: func(page CapacitiesClientListByResourceGroupResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *CapacitiesClientListByResourceGroupResponse) (CapacitiesClientListByResourceGroupResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListByResourceGroupPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
+			if err != nil {
+				return CapacitiesClientListByResourceGroupResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return CapacitiesClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
+func (client *CapacitiesClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *CapacitiesClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260901Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
+func (client *CapacitiesClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientListByResourceGroupResponse, error) {
+	result := CapacitiesClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.CapacityListResult); err != nil {
+		return CapacitiesClientListByResourceGroupResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListBySubscriptionPager - List FabricCapacity resources by subscription ID
+//   - options - CapacitiesClientListBySubscriptionOptions contains the optional parameters for the CapacitiesClient.NewListBySubscriptionPager
+//     method.
+func (client *CapacitiesClient) NewListBySubscriptionPager(options *CapacitiesClientListBySubscriptionOptions) *runtime.Pager[CapacitiesClientListBySubscriptionResponse] {
+	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListBySubscriptionResponse]{
+		More: func(page CapacitiesClientListBySubscriptionResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *CapacitiesClientListBySubscriptionResponse) (CapacitiesClientListBySubscriptionResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListBySubscriptionPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return CapacitiesClientListBySubscriptionResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return CapacitiesClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listBySubscriptionCreateRequest creates the ListBySubscription request.
+func (client *CapacitiesClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *CapacitiesClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/capacities"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260901Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listBySubscriptionHandleResponse handles the ListBySubscription response.
+func (client *CapacitiesClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientListBySubscriptionResponse, error) {
+	result := CapacitiesClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.CapacityListResult); err != nil {
+		return CapacitiesClientListBySubscriptionResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListSKUsForCapacityPager - List eligible SKUs for a Microsoft Fabric resource
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - capacityName - The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
+//   - options - CapacitiesClientListSKUsForCapacityOptions contains the optional parameters for the CapacitiesClient.NewListSKUsForCapacityPager
+//     method.
+func (client *CapacitiesClient) NewListSKUsForCapacityPager(resourceGroupName string, capacityName string, options *CapacitiesClientListSKUsForCapacityOptions) *runtime.Pager[CapacitiesClientListSKUsForCapacityResponse] {
+	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListSKUsForCapacityResponse]{
+		More: func(page CapacitiesClientListSKUsForCapacityResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *CapacitiesClientListSKUsForCapacityResponse) (CapacitiesClientListSKUsForCapacityResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListSKUsForCapacityPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listSKUsForCapacityCreateRequest(ctx, resourceGroupName, capacityName, nextLink, options)
+			if err != nil {
+				return CapacitiesClientListSKUsForCapacityResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return CapacitiesClientListSKUsForCapacityResponse{}, err
+			}
+			return client.listSKUsForCapacityHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listSKUsForCapacityCreateRequest creates the ListSKUsForCapacity request.
+func (client *CapacitiesClient) listSKUsForCapacityCreateRequest(ctx context.Context, resourceGroupName string, capacityName string, nextLink string, _ *CapacitiesClientListSKUsForCapacityOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Fabric/capacities/{capacityName}/skus"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if capacityName == "" {
+			return nil, errors.New("parameter capacityName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{capacityName}", url.PathEscape(capacityName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260901Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listSKUsForCapacityHandleResponse handles the ListSKUsForCapacity response.
+func (client *CapacitiesClient) listSKUsForCapacityHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientListSKUsForCapacityResponse, error) {
+	result := CapacitiesClientListSKUsForCapacityResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.RpSKUEnumerationForExistingResourceResult); err != nil {
+		return CapacitiesClientListSKUsForCapacityResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListSKUsPager - List eligible SKUs for Microsoft Fabric resource provider
+//   - options - CapacitiesClientListSKUsOptions contains the optional parameters for the CapacitiesClient.NewListSKUsPager method.
+func (client *CapacitiesClient) NewListSKUsPager(options *CapacitiesClientListSKUsOptions) *runtime.Pager[CapacitiesClientListSKUsResponse] {
+	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListSKUsResponse]{
+		More: func(page CapacitiesClientListSKUsResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *CapacitiesClientListSKUsResponse) (CapacitiesClientListSKUsResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListSKUsPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listSKUsCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return CapacitiesClientListSKUsResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return CapacitiesClientListSKUsResponse{}, err
+			}
+			return client.listSKUsHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listSKUsCreateRequest creates the ListSKUs request.
+func (client *CapacitiesClient) listSKUsCreateRequest(ctx context.Context, nextLink string, _ *CapacitiesClientListSKUsOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/skus"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260901Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listSKUsHandleResponse handles the ListSKUs response.
+func (client *CapacitiesClient) listSKUsHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientListSKUsResponse, error) {
+	result := CapacitiesClientListSKUsResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.RpSKUEnumerationForNewResourceResult); err != nil {
+		return CapacitiesClientListSKUsResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListUsagesPager - List the current consumption and limit in this location for the provided subscription
+//   - location - The name of the Azure region.
+//   - options - CapacitiesClientListUsagesOptions contains the optional parameters for the CapacitiesClient.NewListUsagesPager
+//     method.
+func (client *CapacitiesClient) NewListUsagesPager(location string, options *CapacitiesClientListUsagesOptions) *runtime.Pager[CapacitiesClientListUsagesResponse] {
+	return runtime.NewPager(runtime.PagingHandler[CapacitiesClientListUsagesResponse]{
+		More: func(page CapacitiesClientListUsagesResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *CapacitiesClientListUsagesResponse) (CapacitiesClientListUsagesResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "CapacitiesClient.NewListUsagesPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listUsagesCreateRequest(ctx, location, nextLink, options)
+			if err != nil {
+				return CapacitiesClientListUsagesResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return CapacitiesClientListUsagesResponse{}, err
+			}
+			return client.listUsagesHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listUsagesCreateRequest creates the ListUsages request.
+func (client *CapacitiesClient) listUsagesCreateRequest(ctx context.Context, location string, nextLink string, _ *CapacitiesClientListUsagesOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Fabric/locations/{location}/usages"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if location == "" {
+			return nil, errors.New("parameter location cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{location}", url.PathEscape(location))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260901Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listUsagesHandleResponse handles the ListUsages response.
+func (client *CapacitiesClient) listUsagesHandleResponse(resp *http.Response, successCodes ...int) (CapacitiesClientListUsagesResponse, error) {
+	result := CapacitiesClientListUsagesResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PagedQuota); err != nil {
+		return CapacitiesClientListUsagesResponse{}, err
+	}
+	return result, nil
 }

@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-03-01/StandbyVirtualMachines_Get.json
+// Generated from example definition: 2025-10-01/StandbyVirtualMachines_Get.json
 func ExampleStandbyVirtualMachinesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -30,7 +30,7 @@ func ExampleStandbyVirtualMachinesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armstandbypool.StandbyVirtualMachinesClientGetResponse{
-	// 	StandbyVirtualMachineResource: &armstandbypool.StandbyVirtualMachineResource{
+	// 	StandbyVirtualMachineResource: armstandbypool.StandbyVirtualMachineResource{
 	// 		Properties: &armstandbypool.StandbyVirtualMachineResourceProperties{
 	// 			VirtualMachineResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000009/resourceGroups/rgstandbypool/providers/Microsoft.Compute/virtualMachines/virtualMachine"),
 	// 			ProvisioningState: to.Ptr(armstandbypool.ProvisioningStateSucceeded),
@@ -41,16 +41,16 @@ func ExampleStandbyVirtualMachinesClient_Get() {
 	// 		SystemData: &armstandbypool.SystemData{
 	// 			CreatedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-03-01/StandbyVirtualMachines_ListByStandbyVirtualMachinePoolResource.json
+// Generated from example definition: 2025-10-01/StandbyVirtualMachines_ListByStandbyVirtualMachinePoolResource.json
 func ExampleStandbyVirtualMachinesClient_NewListByStandbyVirtualMachinePoolResourcePager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -86,10 +86,10 @@ func ExampleStandbyVirtualMachinesClient_NewListByStandbyVirtualMachinePoolResou
 		// 				SystemData: &armstandbypool.SystemData{
 		// 					CreatedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					CreatedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("pooluser@microsoft.com"),
 		// 					LastModifiedByType: to.Ptr(armstandbypool.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-09-07T16:33:22.210Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2023, time.September, 7, 16, 33, 22, 210000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

@@ -12,8 +12,8 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-03-01-preview/FrontendPut.json
-func ExampleFrontendsInterfaceClient_BeginCreateOrUpdate() {
+// Generated from example definition: 2026-03-01/FrontendPut.json
+func ExampleFrontendsInterfaceClient_BeginCreateOrUpdate_putFrontend() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		log.Fatalf("failed to obtain a credential: %v", err)
@@ -24,27 +24,30 @@ func ExampleFrontendsInterfaceClient_BeginCreateOrUpdate() {
 		log.Fatalf("failed to create client: %v", err)
 	}
 	poller, err := clientFactory.NewFrontendsInterfaceClient().BeginCreateOrUpdate(ctx, "rg1", "tc1", "fe1", armservicenetworking.Frontend{
-		Location:   to.Ptr("NorthCentralUS"),
-		Properties: &armservicenetworking.FrontendProperties{},
+		Location: to.Ptr("NorthCentralUS"),
+		Properties: &armservicenetworking.FrontendProperties{
+			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessEnabled),
+		},
 	}, nil)
 	if err != nil {
 		log.Fatalf("failed to finish the request: %v", err)
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.FrontendsInterfaceClientCreateOrUpdateResponse{
-	// 	Frontend: &armservicenetworking.Frontend{
+	// 	Frontend: armservicenetworking.Frontend{
 	// 		Name: to.Ptr("fe1"),
 	// 		Location: to.Ptr("NorthCentralUS"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),
 	// 		ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/fe1"),
 	// 		Properties: &armservicenetworking.FrontendProperties{
 	// 			Fqdn: to.Ptr("test.net"),
+	// 			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessEnabled),
 	// 			SecurityPolicyConfigurations: &armservicenetworking.SecurityPolicyConfigurations{
 	// 				IPAccessRulesSecurityPolicy: &armservicenetworking.IPAccessRulesSecurityPolicy{
 	// 					ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/sample-tc/securityPolicies/ipAccessRules-0"),
@@ -56,7 +59,55 @@ func ExampleFrontendsInterfaceClient_BeginCreateOrUpdate() {
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/FrontendDelete.json
+// Generated from example definition: 2026-03-01/PrivateFrontendPut.json
+func ExampleFrontendsInterfaceClient_BeginCreateOrUpdate_putPrivateFrontend() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armservicenetworking.NewClientFactory("subid", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewFrontendsInterfaceClient().BeginCreateOrUpdate(ctx, "rg1", "tc1", "pfe1", armservicenetworking.Frontend{
+		Location: to.Ptr("NorthCentralUS"),
+		Properties: &armservicenetworking.FrontendProperties{
+			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessDisabled),
+			Association: &armservicenetworking.FrontendAssociation{
+				ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
+			},
+		},
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armservicenetworking.FrontendsInterfaceClientCreateOrUpdateResponse{
+	// 	Frontend: armservicenetworking.Frontend{
+	// 		Name: to.Ptr("pfe1"),
+	// 		Location: to.Ptr("NorthCentralUS"),
+	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),
+	// 		ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/pfe1"),
+	// 		Properties: &armservicenetworking.FrontendProperties{
+	// 			Fqdn: to.Ptr("pfe1.abc123.privatelink.alb.azure.com"),
+	// 			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessDisabled),
+	// 			Association: &armservicenetworking.FrontendAssociation{
+	// 				ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
+	// 			},
+	// 			ProvisioningState: to.Ptr(armservicenetworking.ProvisioningStateSucceeded),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2026-03-01/FrontendDelete.json
 func ExampleFrontendsInterfaceClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -73,12 +124,12 @@ func ExampleFrontendsInterfaceClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-03-01-preview/FrontendGet.json
-func ExampleFrontendsInterfaceClient_Get() {
+// Generated from example definition: 2026-03-01/FrontendGet.json
+func ExampleFrontendsInterfaceClient_Get_getFrontend() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		log.Fatalf("failed to obtain a credential: %v", err)
@@ -96,13 +147,14 @@ func ExampleFrontendsInterfaceClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.FrontendsInterfaceClientGetResponse{
-	// 	Frontend: &armservicenetworking.Frontend{
+	// 	Frontend: armservicenetworking.Frontend{
 	// 		Name: to.Ptr("fe1"),
 	// 		Location: to.Ptr("NorthCentralUS"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),
 	// 		ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/fe1"),
 	// 		Properties: &armservicenetworking.FrontendProperties{
 	// 			Fqdn: to.Ptr("test.net"),
+	// 			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessEnabled),
 	// 			SecurityPolicyConfigurations: &armservicenetworking.SecurityPolicyConfigurations{
 	// 				IPAccessRulesSecurityPolicy: &armservicenetworking.IPAccessRulesSecurityPolicy{
 	// 					ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/sample-tc/securityPolicies/ipAccessRules-0"),
@@ -114,7 +166,43 @@ func ExampleFrontendsInterfaceClient_Get() {
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/FrontendsGet.json
+// Generated from example definition: 2026-03-01/PrivateFrontendGet.json
+func ExampleFrontendsInterfaceClient_Get_getPrivateFrontend() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armservicenetworking.NewClientFactory("subid", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	res, err := clientFactory.NewFrontendsInterfaceClient().Get(ctx, "rg1", "tc1", "pfe1", nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armservicenetworking.FrontendsInterfaceClientGetResponse{
+	// 	Frontend: armservicenetworking.Frontend{
+	// 		Name: to.Ptr("pfe1"),
+	// 		Location: to.Ptr("NorthCentralUS"),
+	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),
+	// 		ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/pfe1"),
+	// 		Properties: &armservicenetworking.FrontendProperties{
+	// 			Fqdn: to.Ptr("pfe1.abc123.privatelink.alb.azure.com"),
+	// 			PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessDisabled),
+	// 			Association: &armservicenetworking.FrontendAssociation{
+	// 				ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
+	// 			},
+	// 			ProvisioningState: to.Ptr(armservicenetworking.ProvisioningStateSucceeded),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2026-03-01/FrontendsGet.json
 func ExampleFrontendsInterfaceClient_NewListByTrafficControllerPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -146,10 +234,20 @@ func ExampleFrontendsInterfaceClient_NewListByTrafficControllerPager() {
 		// 				ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/fe1"),
 		// 				Properties: &armservicenetworking.FrontendProperties{
 		// 					Fqdn: to.Ptr("test.net"),
-		// 					SecurityPolicyConfigurations: &armservicenetworking.SecurityPolicyConfigurations{
-		// 						IPAccessRulesSecurityPolicy: &armservicenetworking.IPAccessRulesSecurityPolicy{
-		// 							ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/sample-tc/securityPolicies/ipAccessRules-0"),
-		// 						},
+		// 					PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessEnabled),
+		// 					ProvisioningState: to.Ptr(armservicenetworking.ProvisioningStateSucceeded),
+		// 				},
+		// 			},
+		// 			{
+		// 				Name: to.Ptr("pfe1"),
+		// 				Location: to.Ptr("NorthCentralUS"),
+		// 				Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),
+		// 				ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/frontends/pfe1"),
+		// 				Properties: &armservicenetworking.FrontendProperties{
+		// 					Fqdn: to.Ptr("pfe1.abc123.privatelink.alb.azure.com"),
+		// 					PublicNetworkAccess: to.Ptr(armservicenetworking.PublicNetworkAccessDisabled),
+		// 					Association: &armservicenetworking.FrontendAssociation{
+		// 						ID: to.Ptr("/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
 		// 					},
 		// 					ProvisioningState: to.Ptr(armservicenetworking.ProvisioningStateSucceeded),
 		// 				},
@@ -160,7 +258,7 @@ func ExampleFrontendsInterfaceClient_NewListByTrafficControllerPager() {
 	}
 }
 
-// Generated from example definition: 2025-03-01-preview/FrontendPatch.json
+// Generated from example definition: 2026-03-01/FrontendPatch.json
 func ExampleFrontendsInterfaceClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -179,7 +277,7 @@ func ExampleFrontendsInterfaceClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.FrontendsInterfaceClientUpdateResponse{
-	// 	Frontend: &armservicenetworking.Frontend{
+	// 	Frontend: armservicenetworking.Frontend{
 	// 		Name: to.Ptr("fe1"),
 	// 		Location: to.Ptr("NorthCentralUS"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/frontends"),

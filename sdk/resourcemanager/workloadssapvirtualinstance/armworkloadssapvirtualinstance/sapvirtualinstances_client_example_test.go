@@ -128,13 +128,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/49d64d54-e966-4c46-a868-1999802b762c/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -233,10 +233,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateRegistrationComplete),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:25:55.2406546Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 25, 55, 240654600, time.UTC)),
 	// 			CreatedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:50:59.1945444Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 50, 59, 194544400, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
 	// 		},
@@ -362,13 +362,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -468,10 +468,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateRegistrationComplete),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -596,13 +596,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -702,10 +702,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateRegistrationComplete),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -779,13 +779,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -836,10 +836,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_detectSapSoftwareInstallationO
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateRegistrationComplete),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -963,13 +963,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForDis
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -1073,10 +1073,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForDis
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -1240,13 +1240,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -1387,10 +1387,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -1557,13 +1557,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -1707,10 +1707,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -1877,13 +1877,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -2027,10 +2027,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -2146,13 +2146,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -2247,10 +2247,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithDiskAn
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -2377,13 +2377,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForHaS
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -2490,10 +2490,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForHaS
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -2620,13 +2620,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForHaS
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -2733,10 +2733,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForHaS
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -2854,13 +2854,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -2958,10 +2958,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -3172,13 +3172,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -3366,10 +3366,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -3644,13 +3644,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -3902,10 +3902,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -4177,13 +4177,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -4432,10 +4432,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -4505,13 +4505,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -4591,10 +4591,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -4712,13 +4712,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -4813,10 +4813,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -4937,13 +4937,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5041,10 +5041,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -5165,13 +5165,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5269,10 +5269,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -5342,13 +5342,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5397,10 +5397,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -5470,13 +5470,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForSin
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5523,10 +5523,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureOnlyForSin
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -5651,13 +5651,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithAnExis
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5759,10 +5759,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithAnExis
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -5887,13 +5887,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithANewSa
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -5995,10 +5995,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithANewSa
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -6117,13 +6117,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -6219,10 +6219,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithOSConf
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -6345,13 +6345,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithoutASa
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -6451,10 +6451,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_createInfrastructureWithoutASa
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatus("Unknown")),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -6582,13 +6582,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_installSapSoftwareOnDistribute
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/49d64d54-e966-4c46-a868-1999802b762c/resourceGroups/aa-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -6689,10 +6689,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_installSapSoftwareOnDistribute
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateSoftwareInstallationInProgress),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:25:55.2406546Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 25, 55, 240654600, time.UTC)),
 	// 			CreatedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:50:59.1945444Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 50, 59, 194544400, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
 	// 		},
@@ -6765,13 +6765,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_installSapSoftwareOnSingleServ
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/49d64d54-e966-4c46-a868-1999802b762c/resourceGroups/aa-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -6872,10 +6872,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_installSapSoftwareOnSingleServ
 	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateSoftwareInstallationInProgress),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:25:55.2406546Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 25, 55, 240654600, time.UTC)),
 	// 			CreatedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-08-18T18:50:59.1945444Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.August, 18, 18, 50, 59, 194544400, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("f1bc9460-9d57-4c16-99a8-5a19378a3a93"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeApplication),
 	// 		},
@@ -6917,13 +6917,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerExistingSapSystemAsVir
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("Q20"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/8e17e36c-42e9-4cd5-a078-7b44883414e0/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/Q20"),
@@ -6945,10 +6945,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerExistingSapSystemAsVir
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T08:22:52.3318907Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.July, 27, 8, 22, 52, 331890700, time.UTC)),
 	// 			CreatedBy: to.Ptr("abc@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T11:44:17.9310503Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.July, 27, 11, 44, 17, 931050300, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("abc@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -6988,13 +6988,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerExistingSapSystemAsVir
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("Q20"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/8e17e36c-42e9-4cd5-a078-7b44883414e0/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/Q20"),
@@ -7017,10 +7017,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerExistingSapSystemAsVir
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T08:22:52.3318907Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.July, 27, 8, 22, 52, 331890700, time.UTC)),
 	// 			CreatedBy: to.Ptr("abc@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T11:44:17.9310503Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.July, 27, 11, 44, 17, 931050300, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("abc@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -7060,13 +7060,13 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerWithTrustedAccessEnabl
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientCreateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("Q20"),
 	// 		Type: to.Ptr("microsoft.workloads/sapvirtualinstances"),
 	// 		ID: to.Ptr("/subscriptions/8e17e36c-42e9-4cd5-a078-7b44883414e0/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/Q20"),
@@ -7089,10 +7089,10 @@ func ExampleSAPVirtualInstancesClient_BeginCreate_registerWithTrustedAccessEnabl
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T08:22:52.3318907Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2022, time.July, 27, 8, 22, 52, 331890700, time.UTC)),
 	// 			CreatedBy: to.Ptr("abc@microsoft.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-07-27T11:44:17.9310503Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2022, time.July, 27, 11, 44, 17, 931050300, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("abc@microsoft.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -7117,8 +7117,365 @@ func ExampleSAPVirtualInstancesClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_Start.json
+func ExampleSAPVirtualInstancesClient_BeginStart_sapVirtualInstancesStart() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStart(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStartOptions{
+		Body: &armworkloadssapvirtualinstance.StartRequest{
+			StartVM: to.Ptr(true),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStartResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_StartWithInfraOperations.json
+func ExampleSAPVirtualInstancesClient_BeginStart_sapVirtualInstancesStartWithInfraOperations() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStart(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStartOptions{
+		Body: &armworkloadssapvirtualinstance.StartRequest{
+			StartVM: to.Ptr(true),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStartResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_SoftStop.json
+func ExampleSAPVirtualInstancesClient_BeginStop_softStopOfSapVirtualInstancesStop() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
+		Body: &armworkloadssapvirtualinstance.StopRequest{
+			SoftStopTimeoutSeconds: to.Ptr[int64](300),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_SoftStopVMAndSystem.json
+func ExampleSAPVirtualInstancesClient_BeginStop_softStopTheVirtualMachineSAndTheSapSystemOnIt() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
+		Body: &armworkloadssapvirtualinstance.StopRequest{
+			DeallocateVM:           to.Ptr(true),
+			SoftStopTimeoutSeconds: to.Ptr[int64](300),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_Stop.json
+func ExampleSAPVirtualInstancesClient_BeginStop_sapVirtualInstancesStop() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
+		Body: &armworkloadssapvirtualinstance.StopRequest{
+			SoftStopTimeoutSeconds: to.Ptr[int64](0),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_StopVMAndSystem.json
+func ExampleSAPVirtualInstancesClient_BeginStop_stopTheVirtualMachineSAndTheSapSystemOnIt() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
+		Body: &armworkloadssapvirtualinstance.StopRequest{
+			DeallocateVM:           to.Ptr(true),
+			SoftStopTimeoutSeconds: to.Ptr[int64](0),
+		}})
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
+	// 	OperationStatusResult: armworkloadssapvirtualinstance.OperationStatusResult{
+	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		EndTime: to.Ptr(time.Date(2021, time.August, 19, 3, 38, 7, 0, time.UTC)),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
+	// 		StartTime: to.Ptr(time.Date(2021, time.August, 19, 3, 36, 7, 0, time.UTC)),
+	// 		Status: to.Ptr("Succeeded"),
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_Update.json
+func ExampleSAPVirtualInstancesClient_BeginUpdate_sapVirtualInstancesUpdate() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginUpdate(ctx, "test-rg", "X00", armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceRequest{
+		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
+			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
+		},
+		Properties: &armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceProperties{},
+		Tags: map[string]*string{
+			"key1": to.Ptr("svi1"),
+		},
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientUpdateResponse{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 		Name: to.Ptr("X00"),
+	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
+	// 		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
+	// 			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
+	// 		},
+	// 		Location: to.Ptr("westcentralus"),
+	// 		Properties: &armworkloadssapvirtualinstance.SAPVirtualInstanceProperties{
+	// 			Configuration: &armworkloadssapvirtualinstance.DeploymentConfiguration{
+	// 				ConfigurationType: to.Ptr(armworkloadssapvirtualinstance.SAPConfigurationTypeDeployment),
+	// 			},
+	// 			Environment: to.Ptr(armworkloadssapvirtualinstance.SAPEnvironmentTypeProd),
+	// 			Health: to.Ptr(armworkloadssapvirtualinstance.SAPHealthStateUnknown),
+	// 			ManagedResourceGroupConfiguration: &armworkloadssapvirtualinstance.ManagedRGConfiguration{
+	// 				Name: to.Ptr("mrg-x00-6d875e77-e412-4d7d-9af4-8895278b4443"),
+	// 			},
+	// 			ProvisioningState: to.Ptr(armworkloadssapvirtualinstance.SapVirtualInstanceProvisioningStateSucceeded),
+	// 			SapProduct: to.Ptr(armworkloadssapvirtualinstance.SAPProductTypeS4HANA),
+	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateInfrastructureDeploymentPending),
+	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusStarting),
+	// 		},
+	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
+	// 			CreatedBy: to.Ptr("user@xyz.com"),
+	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
+	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
+	// 		},
+	// 		Tags: map[string]*string{
+	// 			"key1": to.Ptr("svi1"),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2024-09-01/SapVirtualInstances_UpdateTrustedAccess.json
+func ExampleSAPVirtualInstancesClient_BeginUpdate_sapVirtualInstancesTrustedAccessEnableUpdate() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginUpdate(ctx, "test-rg", "X00", armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceRequest{
+		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
+			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
+		},
+		Properties: &armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceProperties{
+			ManagedResourcesNetworkAccessType: to.Ptr(armworkloadssapvirtualinstance.ManagedResourcesNetworkAccessTypePrivate),
+		},
+		Tags: map[string]*string{
+			"key1": to.Ptr("svi1"),
+		},
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientUpdateResponse{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 		Name: to.Ptr("X00"),
+	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
+	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
+	// 		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
+	// 			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
+	// 		},
+	// 		Location: to.Ptr("westcentralus"),
+	// 		Properties: &armworkloadssapvirtualinstance.SAPVirtualInstanceProperties{
+	// 			Configuration: &armworkloadssapvirtualinstance.DeploymentConfiguration{
+	// 				ConfigurationType: to.Ptr(armworkloadssapvirtualinstance.SAPConfigurationTypeDeployment),
+	// 			},
+	// 			Environment: to.Ptr(armworkloadssapvirtualinstance.SAPEnvironmentTypeProd),
+	// 			Health: to.Ptr(armworkloadssapvirtualinstance.SAPHealthStateUnknown),
+	// 			ManagedResourceGroupConfiguration: &armworkloadssapvirtualinstance.ManagedRGConfiguration{
+	// 				Name: to.Ptr("mrg-x00-6d875e77-e412-4d7d-9af4-8895278b4443"),
+	// 			},
+	// 			ManagedResourcesNetworkAccessType: to.Ptr(armworkloadssapvirtualinstance.ManagedResourcesNetworkAccessTypePrivate),
+	// 			ProvisioningState: to.Ptr(armworkloadssapvirtualinstance.SapVirtualInstanceProvisioningStateSucceeded),
+	// 			SapProduct: to.Ptr(armworkloadssapvirtualinstance.SAPProductTypeS4HANA),
+	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateInfrastructureDeploymentPending),
+	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusStarting),
+	// 		},
+	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
+	// 			CreatedBy: to.Ptr("user@xyz.com"),
+	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
+	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
+	// 		},
+	// 		Tags: map[string]*string{
+	// 			"key1": to.Ptr("svi1"),
+	// 		},
+	// 	},
+	// }
 }
 
 // Generated from example definition: 2024-09-01/SapVirtualInstances_Get.json
@@ -7140,7 +7497,7 @@ func ExampleSAPVirtualInstancesClient_Get_sapVirtualInstancesGet() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -7254,10 +7611,10 @@ func ExampleSAPVirtualInstancesClient_Get_sapVirtualInstancesGet() {
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -7286,7 +7643,7 @@ func ExampleSAPVirtualInstancesClient_Get_sapVirtualInstancesGetWithAcssInstalla
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
+	// 	SAPVirtualInstance: armworkloadssapvirtualinstance.SAPVirtualInstance{
 	// 		Name: to.Ptr("X00"),
 	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
 	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
@@ -7391,10 +7748,10 @@ func ExampleSAPVirtualInstancesClient_Get_sapVirtualInstancesGetWithAcssInstalla
 	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 	// 		},
 	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			CreatedBy: to.Ptr("user@xyz.com"),
 	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
 	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 	// 		},
@@ -7427,7 +7784,7 @@ func ExampleSAPVirtualInstancesClient_GetAvailabilityZoneDetails_sapAvailability
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetAvailabilityZoneDetailsResponse{
-	// 	SAPAvailabilityZoneDetailsResult: &armworkloadssapvirtualinstance.SAPAvailabilityZoneDetailsResult{
+	// 	SAPAvailabilityZoneDetailsResult: armworkloadssapvirtualinstance.SAPAvailabilityZoneDetailsResult{
 	// 		AvailabilityZonePairs: []*armworkloadssapvirtualinstance.SAPAvailabilityZonePair{
 	// 			{
 	// 				ZoneA: to.Ptr[int64](1),
@@ -7461,7 +7818,7 @@ func ExampleSAPVirtualInstancesClient_GetAvailabilityZoneDetails_sapAvailability
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetAvailabilityZoneDetailsResponse{
-	// 	SAPAvailabilityZoneDetailsResult: &armworkloadssapvirtualinstance.SAPAvailabilityZoneDetailsResult{
+	// 	SAPAvailabilityZoneDetailsResult: armworkloadssapvirtualinstance.SAPAvailabilityZoneDetailsResult{
 	// 		AvailabilityZonePairs: []*armworkloadssapvirtualinstance.SAPAvailabilityZonePair{
 	// 			{
 	// 				ZoneA: to.Ptr[int64](2),
@@ -7498,7 +7855,7 @@ func ExampleSAPVirtualInstancesClient_GetDiskConfigurations_sapDiskConfiguration
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetDiskConfigurationsResponse{
-	// 	SAPDiskConfigurationsResult: &armworkloadssapvirtualinstance.SAPDiskConfigurationsResult{
+	// 	SAPDiskConfigurationsResult: armworkloadssapvirtualinstance.SAPDiskConfigurationsResult{
 	// 		VolumeConfigurations: map[string]*armworkloadssapvirtualinstance.SAPDiskConfiguration{
 	// 			"hana/data": &armworkloadssapvirtualinstance.SAPDiskConfiguration{
 	// 				RecommendedConfiguration: &armworkloadssapvirtualinstance.DiskVolumeConfiguration{
@@ -7905,7 +8262,7 @@ func ExampleSAPVirtualInstancesClient_GetDiskConfigurations_sapDiskConfiguration
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetDiskConfigurationsResponse{
-	// 	SAPDiskConfigurationsResult: &armworkloadssapvirtualinstance.SAPDiskConfigurationsResult{
+	// 	SAPDiskConfigurationsResult: armworkloadssapvirtualinstance.SAPDiskConfigurationsResult{
 	// 		VolumeConfigurations: map[string]*armworkloadssapvirtualinstance.SAPDiskConfiguration{
 	// 			"hana/data": &armworkloadssapvirtualinstance.SAPDiskConfiguration{
 	// 				RecommendedConfiguration: &armworkloadssapvirtualinstance.DiskVolumeConfiguration{
@@ -8168,7 +8525,7 @@ func ExampleSAPVirtualInstancesClient_GetSapSupportedSKU_sapSupportedSkUsForDist
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSapSupportedSKUResponse{
-	// 	SAPSupportedResourceSKUsResult: &armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
+	// 	SAPSupportedResourceSKUsResult: armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
 	// 		SupportedSKUs: []*armworkloadssapvirtualinstance.SAPSupportedSKU{
 	// 			{
 	// 				IsAppServerCertified: to.Ptr(true),
@@ -8291,7 +8648,7 @@ func ExampleSAPVirtualInstancesClient_GetSapSupportedSKU_sapSupportedSkUsForDist
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSapSupportedSKUResponse{
-	// 	SAPSupportedResourceSKUsResult: &armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
+	// 	SAPSupportedResourceSKUsResult: armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
 	// 		SupportedSKUs: []*armworkloadssapvirtualinstance.SAPSupportedSKU{
 	// 			{
 	// 				IsAppServerCertified: to.Ptr(true),
@@ -8414,7 +8771,7 @@ func ExampleSAPVirtualInstancesClient_GetSapSupportedSKU_sapSupportedSkusForHaWi
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSapSupportedSKUResponse{
-	// 	SAPSupportedResourceSKUsResult: &armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
+	// 	SAPSupportedResourceSKUsResult: armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
 	// 		SupportedSKUs: []*armworkloadssapvirtualinstance.SAPSupportedSKU{
 	// 			{
 	// 				IsAppServerCertified: to.Ptr(true),
@@ -8516,7 +8873,7 @@ func ExampleSAPVirtualInstancesClient_GetSapSupportedSKU_sapSupportedSkUsForSing
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSapSupportedSKUResponse{
-	// 	SAPSupportedResourceSKUsResult: &armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
+	// 	SAPSupportedResourceSKUsResult: armworkloadssapvirtualinstance.SAPSupportedResourceSKUsResult{
 	// 		SupportedSKUs: []*armworkloadssapvirtualinstance.SAPSupportedSKU{
 	// 			{
 	// 				IsAppServerCertified: to.Ptr(true),
@@ -8571,7 +8928,7 @@ func ExampleSAPVirtualInstancesClient_GetSizingRecommendations_sapSizingRecommen
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSizingRecommendationsResponse{
-	// 	ThreeTierRecommendationResult: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
+	// 	SAPSizingRecommendationResultClassification: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
 	// 		DeploymentType: to.Ptr(armworkloadssapvirtualinstance.SAPDeploymentTypeThreeTier),
 	// 		ApplicationServerVMSKU: to.Ptr("Standard_E8ds_v4"),
 	// 		ApplicationServerInstanceCount: to.Ptr[int64](2),
@@ -8612,7 +8969,7 @@ func ExampleSAPVirtualInstancesClient_GetSizingRecommendations_sapSizingRecommen
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSizingRecommendationsResponse{
-	// 	ThreeTierRecommendationResult: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
+	// 	SAPSizingRecommendationResultClassification: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
 	// 		DeploymentType: to.Ptr(armworkloadssapvirtualinstance.SAPDeploymentTypeThreeTier),
 	// 		ApplicationServerVMSKU: to.Ptr("Standard_E16ds_v4"),
 	// 		ApplicationServerInstanceCount: to.Ptr[int64](3),
@@ -8653,7 +9010,7 @@ func ExampleSAPVirtualInstancesClient_GetSizingRecommendations_sapSizingRecommen
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSizingRecommendationsResponse{
-	// 	ThreeTierRecommendationResult: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
+	// 	SAPSizingRecommendationResultClassification: &armworkloadssapvirtualinstance.ThreeTierRecommendationResult{
 	// 		DeploymentType: to.Ptr(armworkloadssapvirtualinstance.SAPDeploymentTypeThreeTier),
 	// 		ApplicationServerVMSKU: to.Ptr("Standard_E8ds_v4"),
 	// 		ApplicationServerInstanceCount: to.Ptr[int64](6),
@@ -8693,7 +9050,7 @@ func ExampleSAPVirtualInstancesClient_GetSizingRecommendations_sapSizingRecommen
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientGetSizingRecommendationsResponse{
-	// 	SingleServerRecommendationResult: &armworkloadssapvirtualinstance.SingleServerRecommendationResult{
+	// 	SAPSizingRecommendationResultClassification: &armworkloadssapvirtualinstance.SingleServerRecommendationResult{
 	// 		VMSKU: to.Ptr("Standard_M128s"),
 	// 		DeploymentType: to.Ptr(armworkloadssapvirtualinstance.SAPDeploymentTypeSingleServer),
 	// 	},
@@ -8827,10 +9184,10 @@ func ExampleSAPVirtualInstancesClient_NewListByResourceGroupPager() {
 		// 					Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 		// 				},
 		// 				SystemData: &armworkloadssapvirtualinstance.SystemData{
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					CreatedBy: to.Ptr("user@xyz.com"),
 		// 					CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user@xyz.com"),
 		// 					LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 		// 				},
@@ -8936,10 +9293,10 @@ func ExampleSAPVirtualInstancesClient_NewListByResourceGroupPager() {
 		// 					Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 		// 				},
 		// 				SystemData: &armworkloadssapvirtualinstance.SystemData{
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					CreatedBy: to.Ptr("user@xyz.com"),
 		// 					CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user@xyz.com"),
 		// 					LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 		// 				},
@@ -9079,10 +9436,10 @@ func ExampleSAPVirtualInstancesClient_NewListBySubscriptionPager() {
 		// 					Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 		// 				},
 		// 				SystemData: &armworkloadssapvirtualinstance.SystemData{
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					CreatedBy: to.Ptr("user@xyz.com"),
 		// 					CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user@xyz.com"),
 		// 					LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 		// 				},
@@ -9188,10 +9545,10 @@ func ExampleSAPVirtualInstancesClient_NewListBySubscriptionPager() {
 		// 					Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusRunning),
 		// 				},
 		// 				SystemData: &armworkloadssapvirtualinstance.SystemData{
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					CreatedBy: to.Ptr("user@xyz.com"),
 		// 					CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2021, time.August, 19, 15, 10, 46, 196000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user@xyz.com"),
 		// 					LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
 		// 				},
@@ -9202,361 +9559,4 @@ func ExampleSAPVirtualInstancesClient_NewListBySubscriptionPager() {
 		// 	},
 		// }
 	}
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_Start.json
-func ExampleSAPVirtualInstancesClient_BeginStart_sapVirtualInstancesStart() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStart(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStartOptions{
-		Body: &armworkloadssapvirtualinstance.StartRequest{
-			StartVM: to.Ptr(true),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStartResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_StartWithInfraOperations.json
-func ExampleSAPVirtualInstancesClient_BeginStart_sapVirtualInstancesStartWithInfraOperations() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStart(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStartOptions{
-		Body: &armworkloadssapvirtualinstance.StartRequest{
-			StartVM: to.Ptr(true),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStartResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_SoftStop.json
-func ExampleSAPVirtualInstancesClient_BeginStop_softStopOfSapVirtualInstancesStop() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
-		Body: &armworkloadssapvirtualinstance.StopRequest{
-			SoftStopTimeoutSeconds: to.Ptr[int64](300),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_SoftStopVMAndSystem.json
-func ExampleSAPVirtualInstancesClient_BeginStop_softStopTheVirtualMachineSAndTheSapSystemOnIt() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
-		Body: &armworkloadssapvirtualinstance.StopRequest{
-			DeallocateVM:           to.Ptr(true),
-			SoftStopTimeoutSeconds: to.Ptr[int64](300),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_Stop.json
-func ExampleSAPVirtualInstancesClient_BeginStop_sapVirtualInstancesStop() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
-		Body: &armworkloadssapvirtualinstance.StopRequest{
-			SoftStopTimeoutSeconds: to.Ptr[int64](0),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_StopVMAndSystem.json
-func ExampleSAPVirtualInstancesClient_BeginStop_stopTheVirtualMachineSAndTheSapSystemOnIt() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginStop(ctx, "test-rg", "X00", &armworkloadssapvirtualinstance.SAPVirtualInstancesClientBeginStopOptions{
-		Body: &armworkloadssapvirtualinstance.StopRequest{
-			DeallocateVM:           to.Ptr(true),
-			SoftStopTimeoutSeconds: to.Ptr[int64](0),
-		}})
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientStopResponse{
-	// 	OperationStatusResult: &armworkloadssapvirtualinstance.OperationStatusResult{
-	// 		Name: to.Ptr("1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		EndTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:38:07.000Z"); return t}()),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/operations/locations/centralus/1e4193c3-206e-4916-b124-1da16175eb0e"),
-	// 		StartTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T03:36:07.000Z"); return t}()),
-	// 		Status: to.Ptr("Succeeded"),
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_Update.json
-func ExampleSAPVirtualInstancesClient_BeginUpdate_sapVirtualInstancesUpdate() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginUpdate(ctx, "test-rg", "X00", armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceRequest{
-		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
-			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
-		},
-		Properties: &armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceProperties{},
-		Tags: map[string]*string{
-			"key1": to.Ptr("svi1"),
-		},
-	}, nil)
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientUpdateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
-	// 		Name: to.Ptr("X00"),
-	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
-	// 		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
-	// 			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
-	// 		},
-	// 		Location: to.Ptr("westcentralus"),
-	// 		Properties: &armworkloadssapvirtualinstance.SAPVirtualInstanceProperties{
-	// 			Configuration: &armworkloadssapvirtualinstance.DeploymentConfiguration{
-	// 				ConfigurationType: to.Ptr(armworkloadssapvirtualinstance.SAPConfigurationTypeDeployment),
-	// 			},
-	// 			Environment: to.Ptr(armworkloadssapvirtualinstance.SAPEnvironmentTypeProd),
-	// 			Health: to.Ptr(armworkloadssapvirtualinstance.SAPHealthStateUnknown),
-	// 			ManagedResourceGroupConfiguration: &armworkloadssapvirtualinstance.ManagedRGConfiguration{
-	// 				Name: to.Ptr("mrg-x00-6d875e77-e412-4d7d-9af4-8895278b4443"),
-	// 			},
-	// 			ProvisioningState: to.Ptr(armworkloadssapvirtualinstance.SapVirtualInstanceProvisioningStateSucceeded),
-	// 			SapProduct: to.Ptr(armworkloadssapvirtualinstance.SAPProductTypeS4HANA),
-	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateInfrastructureDeploymentPending),
-	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusStarting),
-	// 		},
-	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
-	// 			CreatedBy: to.Ptr("user@xyz.com"),
-	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
-	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 		},
-	// 		Tags: map[string]*string{
-	// 			"key1": to.Ptr("svi1"),
-	// 		},
-	// 	},
-	// }
-}
-
-// Generated from example definition: 2024-09-01/SapVirtualInstances_UpdateTrustedAccess.json
-func ExampleSAPVirtualInstancesClient_BeginUpdate_sapVirtualInstancesTrustedAccessEnableUpdate() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armworkloadssapvirtualinstance.NewClientFactory("8e17e36c-42e9-4cd5-a078-7b44883414e0", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewSAPVirtualInstancesClient().BeginUpdate(ctx, "test-rg", "X00", armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceRequest{
-		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
-			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
-		},
-		Properties: &armworkloadssapvirtualinstance.UpdateSAPVirtualInstanceProperties{
-			ManagedResourcesNetworkAccessType: to.Ptr(armworkloadssapvirtualinstance.ManagedResourcesNetworkAccessTypePrivate),
-		},
-		Tags: map[string]*string{
-			"key1": to.Ptr("svi1"),
-		},
-	}, nil)
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armworkloadssapvirtualinstance.SAPVirtualInstancesClientUpdateResponse{
-	// 	SAPVirtualInstance: &armworkloadssapvirtualinstance.SAPVirtualInstance{
-	// 		Name: to.Ptr("X00"),
-	// 		Type: to.Ptr("Microsoft.Workloads/sapVirtualInstances"),
-	// 		ID: to.Ptr("/subscriptions/6d875e77-e412-4d7d-9af4-8895278b4443/resourceGroups/test-rg/providers/Microsoft.Workloads/sapVirtualInstances/X00"),
-	// 		Identity: &armworkloadssapvirtualinstance.SAPVirtualInstanceIdentity{
-	// 			Type: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceIdentityTypeNone),
-	// 		},
-	// 		Location: to.Ptr("westcentralus"),
-	// 		Properties: &armworkloadssapvirtualinstance.SAPVirtualInstanceProperties{
-	// 			Configuration: &armworkloadssapvirtualinstance.DeploymentConfiguration{
-	// 				ConfigurationType: to.Ptr(armworkloadssapvirtualinstance.SAPConfigurationTypeDeployment),
-	// 			},
-	// 			Environment: to.Ptr(armworkloadssapvirtualinstance.SAPEnvironmentTypeProd),
-	// 			Health: to.Ptr(armworkloadssapvirtualinstance.SAPHealthStateUnknown),
-	// 			ManagedResourceGroupConfiguration: &armworkloadssapvirtualinstance.ManagedRGConfiguration{
-	// 				Name: to.Ptr("mrg-x00-6d875e77-e412-4d7d-9af4-8895278b4443"),
-	// 			},
-	// 			ManagedResourcesNetworkAccessType: to.Ptr(armworkloadssapvirtualinstance.ManagedResourcesNetworkAccessTypePrivate),
-	// 			ProvisioningState: to.Ptr(armworkloadssapvirtualinstance.SapVirtualInstanceProvisioningStateSucceeded),
-	// 			SapProduct: to.Ptr(armworkloadssapvirtualinstance.SAPProductTypeS4HANA),
-	// 			State: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStateInfrastructureDeploymentPending),
-	// 			Status: to.Ptr(armworkloadssapvirtualinstance.SAPVirtualInstanceStatusStarting),
-	// 		},
-	// 		SystemData: &armworkloadssapvirtualinstance.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
-	// 			CreatedBy: to.Ptr("user@xyz.com"),
-	// 			CreatedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2021-08-19T15:10:46.196Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("user@xyz.com"),
-	// 			LastModifiedByType: to.Ptr(armworkloadssapvirtualinstance.CreatedByTypeUser),
-	// 		},
-	// 		Tags: map[string]*string{
-	// 			"key1": to.Ptr("svi1"),
-	// 		},
-	// 	},
-	// }
 }

@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-04-01-preview/RetentionPolicies_CreateOrReplace_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01-preview/RetentionPolicies_CreateOrReplace_MaximumSet_Gen.json
 func ExampleRetentionPoliciesClient_BeginCreateOrReplace() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -41,13 +41,13 @@ func ExampleRetentionPoliciesClient_BeginCreateOrReplace() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdurabletask.RetentionPoliciesClientCreateOrReplaceResponse{
-	// 	RetentionPolicy: &armdurabletask.RetentionPolicy{
+	// 	RetentionPolicy: armdurabletask.RetentionPolicy{
 	// 		Properties: &armdurabletask.RetentionPolicyProperties{
 	// 			ProvisioningState: to.Ptr(armdurabletask.ProvisioningStateSucceeded),
 	// 			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
@@ -66,16 +66,16 @@ func ExampleRetentionPoliciesClient_BeginCreateOrReplace() {
 	// 		SystemData: &armdurabletask.SystemData{
 	// 			CreatedBy: to.Ptr("zshkmc"),
 	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("ivqrae"),
 	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/RetentionPolicies_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01-preview/RetentionPolicies_Delete_MaximumSet_Gen.json
 func ExampleRetentionPoliciesClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -92,11 +92,81 @@ func ExampleRetentionPoliciesClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-04-01-preview/RetentionPolicies_Get_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01-preview/RetentionPolicies_Update_MaximumSet_Gen.json
+func ExampleRetentionPoliciesClient_BeginUpdate() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armdurabletask.NewClientFactory("194D3C1E-462F-4738-9025-092A628C06EB", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewRetentionPoliciesClient().BeginUpdate(ctx, "rgdurabletask", "testscheduler", armdurabletask.RetentionPolicy{
+		Properties: &armdurabletask.RetentionPolicyProperties{
+			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
+				{
+					RetentionPeriodInDays: to.Ptr[int32](30),
+				},
+				{
+					RetentionPeriodInDays: to.Ptr[int32](10),
+					OrchestrationState:    to.Ptr(armdurabletask.PurgeableOrchestrationStateFailed),
+				},
+				{
+					RetentionPeriodInDays: to.Ptr[int32](24),
+					OrchestrationState:    to.Ptr(armdurabletask.PurgeableOrchestrationStateCompleted),
+				},
+			},
+		},
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	res, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armdurabletask.RetentionPoliciesClientUpdateResponse{
+	// 	RetentionPolicy: armdurabletask.RetentionPolicy{
+	// 		Properties: &armdurabletask.RetentionPolicyProperties{
+	// 			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
+	// 				{
+	// 					RetentionPeriodInDays: to.Ptr[int32](30),
+	// 				},
+	// 				{
+	// 					RetentionPeriodInDays: to.Ptr[int32](10),
+	// 					OrchestrationState: to.Ptr(armdurabletask.PurgeableOrchestrationStateFailed),
+	// 				},
+	// 				{
+	// 					RetentionPeriodInDays: to.Ptr[int32](24),
+	// 					OrchestrationState: to.Ptr(armdurabletask.PurgeableOrchestrationStateCompleted),
+	// 				},
+	// 			},
+	// 		},
+	// 		ID: to.Ptr("/subscriptions/194D3C1E-462F-4738-9025-092A628C06EB/resourceGroups/rgdurabletask/providers/Microsoft.DurableTask/schedulers/testscheduler/retentionPolicies/default"),
+	// 		Name: to.Ptr("default"),
+	// 		Type: to.Ptr("Microsoft.DurableTask/schedulers/retentionPolicies"),
+	// 		SystemData: &armdurabletask.SystemData{
+	// 			CreatedBy: to.Ptr("tenmbevaunjzikxowqexrsx"),
+	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 365000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("xfvdcegtj"),
+	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 366000000, time.UTC)),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2026-07-01-preview/RetentionPolicies_Get_MaximumSet_Gen.json
 func ExampleRetentionPoliciesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -115,7 +185,7 @@ func ExampleRetentionPoliciesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdurabletask.RetentionPoliciesClientGetResponse{
-	// 	RetentionPolicy: &armdurabletask.RetentionPolicy{
+	// 	RetentionPolicy: armdurabletask.RetentionPolicy{
 	// 		Properties: &armdurabletask.RetentionPolicyProperties{
 	// 			ProvisioningState: to.Ptr(armdurabletask.ProvisioningStateSucceeded),
 	// 			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
@@ -134,16 +204,16 @@ func ExampleRetentionPoliciesClient_Get() {
 	// 		SystemData: &armdurabletask.SystemData{
 	// 			CreatedBy: to.Ptr("zshkmc"),
 	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("ivqrae"),
 	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/RetentionPolicies_ListByScheduler_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01-preview/RetentionPolicies_ListByScheduler_MaximumSet_Gen.json
 func ExampleRetentionPoliciesClient_NewListBySchedulerPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -187,10 +257,10 @@ func ExampleRetentionPoliciesClient_NewListBySchedulerPager() {
 		// 				SystemData: &armdurabletask.SystemData{
 		// 					CreatedBy: to.Ptr("zshkmc"),
 		// 					CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("ivqrae"),
 		// 					LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2025-03-31T23:34:09.612Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2025, time.March, 31, 23, 34, 9, 612000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -198,74 +268,4 @@ func ExampleRetentionPoliciesClient_NewListBySchedulerPager() {
 		// 	},
 		// }
 	}
-}
-
-// Generated from example definition: 2025-04-01-preview/RetentionPolicies_Update_MaximumSet_Gen.json
-func ExampleRetentionPoliciesClient_BeginUpdate() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armdurabletask.NewClientFactory("194D3C1E-462F-4738-9025-092A628C06EB", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewRetentionPoliciesClient().BeginUpdate(ctx, "rgdurabletask", "testscheduler", armdurabletask.RetentionPolicy{
-		Properties: &armdurabletask.RetentionPolicyProperties{
-			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
-				{
-					RetentionPeriodInDays: to.Ptr[int32](30),
-				},
-				{
-					RetentionPeriodInDays: to.Ptr[int32](10),
-					OrchestrationState:    to.Ptr(armdurabletask.PurgeableOrchestrationStateFailed),
-				},
-				{
-					RetentionPeriodInDays: to.Ptr[int32](24),
-					OrchestrationState:    to.Ptr(armdurabletask.PurgeableOrchestrationStateCompleted),
-				},
-			},
-		},
-	}, nil)
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	res, err := poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
-	}
-	// You could use response here. We use blank identifier for just demo purposes.
-	_ = res
-	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
-	// res = armdurabletask.RetentionPoliciesClientUpdateResponse{
-	// 	RetentionPolicy: &armdurabletask.RetentionPolicy{
-	// 		Properties: &armdurabletask.RetentionPolicyProperties{
-	// 			RetentionPolicies: []*armdurabletask.RetentionPolicyDetails{
-	// 				{
-	// 					RetentionPeriodInDays: to.Ptr[int32](30),
-	// 				},
-	// 				{
-	// 					RetentionPeriodInDays: to.Ptr[int32](10),
-	// 					OrchestrationState: to.Ptr(armdurabletask.PurgeableOrchestrationStateFailed),
-	// 				},
-	// 				{
-	// 					RetentionPeriodInDays: to.Ptr[int32](24),
-	// 					OrchestrationState: to.Ptr(armdurabletask.PurgeableOrchestrationStateCompleted),
-	// 				},
-	// 			},
-	// 		},
-	// 		ID: to.Ptr("/subscriptions/194D3C1E-462F-4738-9025-092A628C06EB/resourceGroups/rgdurabletask/providers/Microsoft.DurableTask/schedulers/testscheduler/retentionPolicies/default"),
-	// 		Name: to.Ptr("default"),
-	// 		Type: to.Ptr("Microsoft.DurableTask/schedulers/retentionPolicies"),
-	// 		SystemData: &armdurabletask.SystemData{
-	// 			CreatedBy: to.Ptr("tenmbevaunjzikxowqexrsx"),
-	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.365Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("xfvdcegtj"),
-	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.366Z"); return t}()),
-	// 		},
-	// 	},
-	// }
 }

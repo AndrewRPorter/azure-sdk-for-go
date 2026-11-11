@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -11,7 +8,7 @@ import (
 )
 
 func (client *ServiceClient) Endpoint() string {
-	return client.endpoint
+	return client.url
 }
 
 func (client *ServiceClient) InternalClient() *azcore.Client {
@@ -24,7 +21,7 @@ func (client *ServiceClient) InternalClient() *azcore.Client {
 func NewServiceClient(endpoint string, azClient *azcore.Client) *ServiceClient {
 	client := &ServiceClient{
 		internal: azClient,
-		endpoint: endpoint,
+		url:      endpoint,
 	}
 	return client
 }

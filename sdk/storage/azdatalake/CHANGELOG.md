@@ -1,14 +1,118 @@
 # Release History
 
-## 1.4.2-beta.1 (Unreleased)
+## 1.8.0-beta.1 (Unreleased)
 
 ### Features Added
+* Added support for session authentication. Set `Session` on `ClientOptions` to configure it. Sessions apply only to
+  clients authenticated with an `azcore.TokenCredential`, and only to the file reads they send to the blob endpoint;
+  requests to the DFS endpoint, writes and every other operation keep using the bearer token. With
+  `SessionOptions.Enabled` set to true, reads are authenticated with a session created and cached per file system.
+  The default, nil, currently resolves to disabled; false disables sessions explicitly.
+  * Each client created with a constructor has its own session cache. Clients derived from it with
+    `service.Client.NewFileSystemClient`, `filesystem.Client.NewDirectoryClient` and `filesystem.Client.NewFileClient`
+    share that cache. Clients created with `directory.Client.NewFileClient` and
+    `directory.Client.NewSubdirectoryClient` have their own cache, so navigating through a directory can create
+    additional sessions for the same file system.
+  * The account name that signs session requests is derived from the client's URL, or set with
+    `SessionOptions.AccountName` for a custom domain. When it can be determined from neither, client construction
+    fails if `SessionOptions.Enabled` was set to true.
+* Added support for data locality in managed downloads through `LayoutAwareRouting` on `file.DownloadBufferOptions`
+  and `file.DownloadFileOptions`. When it is set to true and the initial read carries the service's layout download
+  hint, the remaining chunks are routed to the endpoint that serves each one. The default, nil, currently resolves to
+  disabled; false disables it explicitly. When the service can't provide a layout, downloads use the client's
+  configured endpoint.
 
 ### Breaking Changes
 
 ### Bugs Fixed
+* The token credential constructors now return the error from creating their blob client instead of discarding it.
 
 ### Other Changes
+* Updated `azblob` version to `1.9.0-beta.1`
+
+## 1.7.1 (2026-11-03)
+
+### Bugs Fixed
+* Fixed SAS signing to convert `StartTime` and `ExpiryTime` values to UTC before encoding them, so non-UTC times keep the intended instant.
+
+### Other Changes
+* Updated `azcore` version to `1.23.3`
+* Updated `azblob` version to `1.8.3`
+
+## 1.7.0 (2026-10-08)
+
+### Features Added
+* Added structured message (XSM/1.0) CRC64 content validation for `azdatalake` uploads and downloads via the new `TransferValidationTypeComputeStructuredMessageCRC64` transfer validation option.
+
+### Bugs Fixed
+* Fixed a panic in `GetProperties` (and `DownloadStream`) for file and directory clients created via `directory.NewFileClient`/`directory.NewSubdirectoryClient`. These clients did not capture the raw HTTP response, so reading the datalake-specific headers dereferenced a nil response. Fixes [#25490](https://github.com/Azure/azure-sdk-for-go/issues/25490).
+* Fixed `Rename` on `file.Client` and `directory.Client` so source paths containing spaces or non-ASCII characters are percent-encoded in the `x-ms-rename-source` header instead of being sent decoded, which previously failed with `400 InvalidSourceUri`. Fixes [#23831](https://github.com/Azure/azure-sdk-for-go/issues/23831) and [#24369](https://github.com/Azure/azure-sdk-for-go/issues/24369).
+* Fixed `GetSASURL()` on `filesystem.Client`, `file.Client`, `directory.Client`, and `service.Client` appending a duplicated `?` to the resulting URL when the client's underlying blob URL already contained a query string, which produced a malformed SAS URL.
+
+### Other Changes
+* Updated `azcore` version to `1.23.2`
+* Updated `azblob` version to `1.8.2`
+
+## 1.6.1-beta.1 (2026-07-24)
+
+### Other Changes
+* Updated code generator to `@autorest/go@4.0.0-preview.80`.
+* Default upload/download concurrency is now based on CPU core count (clamped between 8 and 96) instead of the fixed value of 5. Set `AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true` to revert to previous defaults.
+* Updated `azidentity` version to `1.14.0`
+
+## 1.6.0 (2026-06-15)
+
+### Features Added
+* Includes all features from `1.6.0-beta.1`
+
+## 1.5.0 (2026-05-15)
+
+### Features Added
+* Includes all features from `1.5.0-beta.1`
+
+## 1.6.0-beta.1 (2026-05-05)
+
+### Features Added
+* Added support for service version 2026-06-06.
+* Added `GetSystemProperties` API to file and directory clients for retrieving system-defined properties using the `getStatus` action.
+* Added `GetTags` and `SetTags` API to file and directory clients.
+
+## 1.5.0-beta.1 (2026-04-23)
+
+### Features Added
+* Added support for service version 2026-04-06.
+* Added cross-tenant support for Principal-Bound User Delegation SAS.
+* Added support for Dynamic User Delegation SAS.
+* Added error code `PathIsTooDeep` which is returned when a path contains more than 63 path segments.
+
+### Bugs Fixed
+* Added support for error code `IncrementalCopyOfEarlierSnapshotNotAllowed`. This replaces `IncrementalCopyOfEarlierVersionSnapshotNotAllowed` which has been deprecated.
+
+## 1.4.4 (2026-01-12)
+
+### Features Added
+* Added support for service version 2026-02-06.
+
+## 1.4.3 (2025-10-16)
+
+### Other Changes
+* Updated service version to `2025-11-05`
+* Updated `azidentity` version to `1.13.0`
+* Updated `azcore` version to `1.19.1`
+* Updated `azblob` version to `v1.6.2`
+
+## 1.4.2 (2025-07-23)
+
+### Other Changes
+* Updated `azcore` version to `1.18.1`
+
+## 1.4.2-beta.1 (2025-07-08)
+
+### Bugs Fixed
+* Fix panic in File and Directory client DownloadStream and Get Properties on authentication failure.
+
+### Other Changes
+* Updated `azidentity` version to `1.10.1`
 
 ## 1.4.1 (2025-04-28)
 

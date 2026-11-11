@@ -1,5 +1,86 @@
 # Release History
 
+## 2.0.0-beta.3 (2026-10-09)
+### Breaking Changes
+
+- Field `PolicyResourceID` of struct `CertificateProperties` has been removed
+- Field `PolicyResourceID` of struct `CertificatePropertiesWithNonce` has been removed
+- Field `IdentityResourceID` of struct `DeviceRegistry` has been removed
+
+### Features Added
+
+- New enum type `ConnectionProfile` with values `ConnectionProfileClassic`, `ConnectionProfileMqttV5`
+- New enum type `DeviceRegistryIdentityType` with values `DeviceRegistryIdentityTypeSystemAssigned`, `DeviceRegistryIdentityTypeUserAssigned`
+- New enum type `DeviceRegistryLinkingState` with values `DeviceRegistryLinkingStateFailed`, `DeviceRegistryLinkingStateInProgress`, `DeviceRegistryLinkingStateOrphaned`, `DeviceRegistryLinkingStateSuccess`
+- New enum type `MessagePayloadFormat` with values `MessagePayloadFormatDOObservationV1`, `MessagePayloadFormatNone`
+- New struct `DeviceRegistryIdentity`
+- New struct `DeviceRegistryLinkingProperties`
+- New struct `ErrorDetails`
+- New struct `MqttV5Settings`
+- New struct `TopicGroup`
+- New field `CertificateAuthorityResourceID` in struct `CertificateProperties`
+- New field `CertificateAuthorityResourceID` in struct `CertificatePropertiesWithNonce`
+- New field `DataPlaneHostName`, `Identity`, `LinkingProperties`, `NamespaceUUID` in struct `DeviceRegistry`
+- New field `ConnectionProfile`, `MqttV5Settings` in struct `Properties`
+- New field `DataSchema` in struct `RouteProperties`
+- New field `MessagePayloadFormat` in struct `RoutingCosmosDBSQLAPIProperties`
+- New field `MessagePayloadFormat` in struct `RoutingEventHubProperties`
+- New field `MessagePayloadFormat` in struct `RoutingEventStreamProperties`
+- New field `MessagePayloadFormat` in struct `RoutingServiceBusQueueEndpointProperties`
+- New field `MessagePayloadFormat` in struct `RoutingServiceBusTopicEndpointProperties`
+- New field `MessagePayloadFormat` in struct `RoutingStorageContainerProperties`
+
+
+## 2.0.0-beta.2 (2026-08-12)
+### Breaking Changes
+
+- Type of `RoutingTwin.Tags` has been changed from `any` to `map[string]any`
+- Type of `RoutingTwinProperties.Desired` has been changed from `any` to `map[string]any`
+- Type of `RoutingTwinProperties.Reported` has been changed from `any` to `map[string]any`
+- `IotHubSKUGEN2` from enum `IotHubSKU` has been removed
+- `IotHubSKUTierGeneration2` from enum `IotHubSKUTier` has been removed
+
+### Features Added
+
+- New enum type `EventStreamAuthenticationType` with values `EventStreamAuthenticationTypeIdentityBased`
+- New struct `RoutingEventStreamProperties`
+- New field `EventStreams` in struct `RoutingEndpoints`
+
+
+## 2.0.0-beta.1 (2026-05-20)
+### Breaking Changes
+
+- Struct `CertificateBodyDescription` has been removed
+- Struct `ErrorDetails` has been removed
+- Struct `Resource` has been removed
+
+### Features Added
+
+- New enum type `GatewayVersion` with values `GatewayVersionV1`, `GatewayVersionV2`
+- New struct `Details`
+- New field `SystemData` in struct `CertificateDescription`
+- New field `SystemData` in struct `EventHubConsumerGroupInfo`
+- New field `SystemData` in struct `PrivateEndpointConnection`
+- New field `DeviceHostName`, `IotHubDetails`, `ServiceHostName` in struct `Properties`
+
+
+## 1.4.0-beta.1 (2025-11-11)
+### Features Added
+
+- New value `IotHubSKUGEN2` added to enum type `IotHubSKU`
+- New value `IotHubSKUTierGeneration2` added to enum type `IotHubSKUTier`
+- New value `RoutingSourceDigitalTwinChangeEvents`, `RoutingSourceMqttBrokerMessages` added to enum type `RoutingSource`
+- New enum type `IPVersion` with values `IPVersionIPv4`, `IPVersionIPv4IPv6`, `IPVersionIPv6`
+- New struct `DeviceRegistry`
+- New struct `EncryptionPropertiesDescription`
+- New struct `KeyVaultKeyProperties`
+- New struct `PropertiesDeviceStreams`
+- New struct `RootCertificateProperties`
+- New field `PolicyResourceID` in struct `CertificateProperties`
+- New field `PolicyResourceID` in struct `CertificatePropertiesWithNonce`
+- New field `DeviceRegistry`, `DeviceStreams`, `Encryption`, `IPVersion`, `RootCertificate` in struct `Properties`
+
+
 ## 1.3.0 (2023-11-24)
 ### Features Added
 

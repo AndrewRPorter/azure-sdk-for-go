@@ -33,19 +33,19 @@ func ExampleConnectorsClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.ConnectorsClientCreateOrUpdateResponse{
-	// 	Connector: &armimpactreporting.Connector{
+	// 	Connector: armimpactreporting.Connector{
 	// 		Properties: &armimpactreporting.ConnectorProperties{
 	// 			ProvisioningState: to.Ptr(armimpactreporting.ProvisioningStateSucceeded),
 	// 			ConnectorID: to.Ptr("430a444e-6a84-4a6f-8c50-124843ca7cd4"),
 	// 			TenantID: to.Ptr("23a8d1da-a7e9-4443-9797-4cd3e3aeb8f8"),
 	// 			ConnectorType: to.Ptr(armimpactreporting.PlatformAzureMonitor),
-	// 			LastRunTimeStamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-19T06:23:56.238Z"); return t}()),
+	// 			LastRunTimeStamp: to.Ptr(time.Date(2024, time.March, 19, 6, 23, 56, 238000000, time.UTC)),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/74f5e23f-d4d9-410a-bb4d-8f0608adb10d/providers/Microsoft.Impact/connectors/testconnector1"),
 	// 		Name: to.Ptr("testconnector1"),
@@ -53,10 +53,10 @@ func ExampleConnectorsClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armimpactreporting.SystemData{
 	// 			CreatedBy: to.Ptr("testuser@hotmail.com"),
 	// 			CreatedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-07T06:19:01.6431721Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.March, 7, 6, 19, 1, 643172100, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("testuser@hotmail.com"),
 	// 			LastModifiedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-15T08:29:20.8549373Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.March, 15, 8, 29, 20, 854937300, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -103,13 +103,13 @@ func ExampleConnectorsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.ConnectorsClientGetResponse{
-	// 	Connector: &armimpactreporting.Connector{
+	// 	Connector: armimpactreporting.Connector{
 	// 		Properties: &armimpactreporting.ConnectorProperties{
 	// 			ProvisioningState: to.Ptr(armimpactreporting.ProvisioningStateSucceeded),
 	// 			ConnectorID: to.Ptr("430a444e-6a84-4a6f-8c50-124843ca7cd4"),
 	// 			TenantID: to.Ptr("23a8d1da-a7e9-4443-9797-4cd3e3aeb8f8"),
 	// 			ConnectorType: to.Ptr(armimpactreporting.PlatformAzureMonitor),
-	// 			LastRunTimeStamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-19T06:23:56.238Z"); return t}()),
+	// 			LastRunTimeStamp: to.Ptr(time.Date(2024, time.March, 19, 6, 23, 56, 238000000, time.UTC)),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/74f5e23f-d4d9-410a-bb4d-8f0608adb10d/providers/Microsoft.Impact/connectors/testconnector1"),
 	// 		Name: to.Ptr("testconnector1"),
@@ -117,10 +117,10 @@ func ExampleConnectorsClient_Get() {
 	// 		SystemData: &armimpactreporting.SystemData{
 	// 			CreatedBy: to.Ptr("testuser@hotmail.com"),
 	// 			CreatedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-07T06:19:01.6431721Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.March, 7, 6, 19, 1, 643172100, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("testuser@hotmail.com"),
 	// 			LastModifiedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-15T08:29:20.8549373Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.March, 15, 8, 29, 20, 854937300, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -157,7 +157,7 @@ func ExampleConnectorsClient_NewListBySubscriptionPager() {
 		// 					ConnectorID: to.Ptr("430a444e-6a84-4a6f-8c50-124843ca7cd4"),
 		// 					TenantID: to.Ptr("23a8d1da-a7e9-4443-9797-4cd3e3aeb8f8"),
 		// 					ConnectorType: to.Ptr(armimpactreporting.PlatformAzureMonitor),
-		// 					LastRunTimeStamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-19T06:23:56.238Z"); return t}()),
+		// 					LastRunTimeStamp: to.Ptr(time.Date(2024, time.March, 19, 6, 23, 56, 238000000, time.UTC)),
 		// 				},
 		// 				ID: to.Ptr("/subscriptions/74f5e23f-d4d9-410a-bb4d-8f0608adb10d/providers/Microsoft.Impact/connectors/testconnector1"),
 		// 				Name: to.Ptr("testconnector1"),
@@ -165,10 +165,10 @@ func ExampleConnectorsClient_NewListBySubscriptionPager() {
 		// 				SystemData: &armimpactreporting.SystemData{
 		// 					CreatedBy: to.Ptr("testuser@hotmail.com"),
 		// 					CreatedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-07T06:19:01.6431721Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.March, 7, 6, 19, 1, 643172100, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("testuser@hotmail.com"),
 		// 					LastModifiedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-15T08:29:20.8549373Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.March, 15, 8, 29, 20, 854937300, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -201,13 +201,13 @@ func ExampleConnectorsClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.ConnectorsClientUpdateResponse{
-	// 	Connector: &armimpactreporting.Connector{
+	// 	Connector: armimpactreporting.Connector{
 	// 		Properties: &armimpactreporting.ConnectorProperties{
 	// 			ProvisioningState: to.Ptr(armimpactreporting.ProvisioningStateSucceeded),
 	// 			ConnectorID: to.Ptr("430a444e-6a84-4a6f-8c50-124843ca7cd4"),
 	// 			TenantID: to.Ptr("23a8d1da-a7e9-4443-9797-4cd3e3aeb8f8"),
 	// 			ConnectorType: to.Ptr(armimpactreporting.PlatformAzureMonitor),
-	// 			LastRunTimeStamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-19T06:23:56.238Z"); return t}()),
+	// 			LastRunTimeStamp: to.Ptr(time.Date(2024, time.March, 19, 6, 23, 56, 238000000, time.UTC)),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/74f5e23f-d4d9-410a-bb4d-8f0608adb10d/providers/Microsoft.Impact/connectors/testconnector1"),
 	// 		Name: to.Ptr("testconnector1"),
@@ -215,10 +215,10 @@ func ExampleConnectorsClient_Update() {
 	// 		SystemData: &armimpactreporting.SystemData{
 	// 			CreatedBy: to.Ptr("testuser@hotmail.com"),
 	// 			CreatedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-07T06:19:01.6431721Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.March, 7, 6, 19, 1, 643172100, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("testuser@hotmail.com"),
 	// 			LastModifiedByType: to.Ptr(armimpactreporting.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-03-15T08:29:20.8549373Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.March, 15, 8, 29, 20, 854937300, time.UTC)),
 	// 		},
 	// 	},
 	// }

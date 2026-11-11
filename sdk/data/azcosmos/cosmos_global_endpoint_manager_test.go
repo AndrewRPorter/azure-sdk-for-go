@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+// cSpell:ignore azcosmosgemtest azcosmostest westus
+
 package azcosmos
 
 import (
@@ -18,6 +20,7 @@ import (
 	azruntime "github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type countPolicy struct {
@@ -87,7 +90,7 @@ func TestGlobalEndpointManagerMarkEndpointUnavailableForRead(t *testing.T) {
 	gem, err := newGlobalEndpointManager(srv.URL(), pl, []string{"West US", "Central US"}, 5*time.Minute, true)
 	assert.NoError(t, err)
 
-	err = gem.MarkEndpointUnavailableForRead(*endpoint)
+	_, err = gem.MarkEndpointUnavailableForRead(*endpoint)
 	assert.NoError(t, err)
 
 	unavailable := gem.IsEndpointUnavailable(*endpoint, 1)
@@ -107,7 +110,7 @@ func TestGlobalEndpointManagerMarkEndpointUnavailableForWrite(t *testing.T) {
 	gem, err := newGlobalEndpointManager(srv.URL(), pl, []string{"West US", "Central US"}, 5*time.Minute, true)
 	assert.NoError(t, err)
 
-	err = gem.MarkEndpointUnavailableForWrite(*endpoint)
+	_, err = gem.MarkEndpointUnavailableForWrite(*endpoint)
 	assert.NoError(t, err)
 
 	unavailable := gem.IsEndpointUnavailable(*endpoint, 2)
@@ -148,7 +151,7 @@ func TestGlobalEndpointManagerGetEndpointLocation(t *testing.T) {
 
 	location := gem.GetEndpointLocation(*serverEndpoint)
 
-	expectedLocation := "West US"
+	expectedLocation := newRegionId("West US")
 	assert.Equal(t, expectedLocation, location)
 }
 
@@ -286,13 +289,13 @@ func TestGlobalEndpointManagerResolveEndpointSingleMasterDocumentOperation(t *te
 	writeOperation := false
 	selectedEndpoint := mockGem.ResolveServiceEndpoint(0, resourceTypeDocument, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "central-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "centralus"))
 
 	// Writes should go to primary endpoint
 	writeOperation = true
 	selectedEndpoint = mockGem.ResolveServiceEndpoint(0, resourceTypeDocument, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "east-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "eastus"))
 }
 
 func TestGlobalEndpointManagerResolveEndpointMultiMasterDocumentOperation(t *testing.T) {
@@ -311,13 +314,13 @@ func TestGlobalEndpointManagerResolveEndpointMultiMasterDocumentOperation(t *tes
 	writeOperation := false
 	selectedEndpoint := mockGem.ResolveServiceEndpoint(0, resourceTypeDocument, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "central-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "centralus"))
 
 	// Writes should go to primary endpoint
 	writeOperation = true
 	selectedEndpoint = mockGem.ResolveServiceEndpoint(0, resourceTypeDocument, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "central-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "centralus"))
 }
 
 func TestGlobalEndpointManagerResolveEndpointSingleMasterMetadataOperation(t *testing.T) {
@@ -336,13 +339,13 @@ func TestGlobalEndpointManagerResolveEndpointSingleMasterMetadataOperation(t *te
 	writeOperation := false
 	selectedEndpoint := mockGem.ResolveServiceEndpoint(0, resourceTypeCollection, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "central-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "centralus"))
 
 	// Writes should go to primary endpoint
 	writeOperation = true
 	selectedEndpoint = mockGem.ResolveServiceEndpoint(0, resourceTypeCollection, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "east-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "eastus"))
 }
 
 func TestGlobalEndpointManagerResolveEndpointMultiMasterMetadataOperation(t *testing.T) {
@@ -361,13 +364,13 @@ func TestGlobalEndpointManagerResolveEndpointMultiMasterMetadataOperation(t *tes
 	writeOperation := false
 	selectedEndpoint := mockGem.ResolveServiceEndpoint(0, resourceTypeCollection, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "central-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "centralus"))
 
 	// Writes should go to primary endpoint
 	writeOperation = true
 	selectedEndpoint = mockGem.ResolveServiceEndpoint(0, resourceTypeCollection, writeOperation, false)
 
-	assert.True(t, strings.Contains(selectedEndpoint.Host, "east-us"))
+	assert.True(t, strings.Contains(selectedEndpoint.Host, "eastus"))
 }
 
 // A policy that captures all requests made.
@@ -447,31 +450,112 @@ func TestRequestToUpdateGEMPreservesIncomingContextWithoutCancellation(t *testin
 	}
 }
 
-func createLocationCacheForGem(defaultEndpoint url.URL, isMultiMaster bool) *locationCache {
-	availableWriteLocs := []string{"East US"}
-	if isMultiMaster {
-		availableWriteLocs = []string{"East US", "Central US"}
+func TestAddedAllowTentativeHeaderGEMPolicy(t *testing.T) {
+	type contextKey string
+
+	gemServer, gemClose := mock.NewTLSServer()
+	defer gemClose()
+	gemServer.SetResponse(mock.WithStatusCode(200))
+	serverEndpoint, _ := url.Parse("https://myaccount.documents.azure.com:443/")
+	mocked_response := "{\"_self\":\"\",\"id\":\"my_account\",\"_rid\":\"my_account-westus.sql.cosmos.azure.com\",\"media\":\"//media/\",\"addresses\":\"//addresses/\",\"_dbs\":\"//dbs/\",\"writableLocations\":[{\"name\":\"West US\",\"databaseAccountEndpoint\":\"https://my_account-westus.documents.azure.com:443/\"},{\"name\":\"West US 3\",\"databaseAccountEndpoint\":\"https://my_account-westus3.documents.azure.com:443/\"}],\"readableLocations\":[{\"name\":\"West US\",\"databaseAccountEndpoint\":\"https://my_account-westus.documents.azure.com:443/\"},{\"name\":\"West US 3\",\"databaseAccountEndpoint\":\"https://my_account-westus3.documents.azure.com:443/\"}], \"enableMultipleWriteLocations\":true}"
+
+	gemServer.SetResponse(mock.WithBody([]byte(mocked_response)))
+	mockLc := createLocationCacheForGem(*serverEndpoint, true)
+
+	// The GEM needs it's own pipeline that doesn't have the GEM policy in it to avoid deadlocking.
+	capturePolicy := &requestCollector{}
+	gemPipeline := azruntime.NewPipeline("azcosmosgemtest", "v1.0.0", azruntime.PipelineOptions{}, &policy.ClientOptions{Transport: gemServer, PerCallPolicies: []policy.Policy{capturePolicy}})
+	mockGem := &globalEndpointManager{
+		clientEndpoint:      gemServer.URL(),
+		pipeline:            gemPipeline,
+		preferredLocations:  []string{"Central US"},
+		locationCache:       mockLc,
+		refreshTimeInterval: 5 * time.Minute,
 	}
-	availableReadLocs := []string{"East US", "Central US", "East US 2"}
-	availableWriteEndpointsByLoc := map[string]url.URL{}
-	availableReadEndpointsByLoc := map[string]url.URL{}
+
+	gemPolicy := &globalEndpointManagerPolicy{
+		gem: mockGem,
+	}
+
+	// For the "main" pipeline under test, we can insert the GEM policy, which will cause GEM updates to run (through the GEM pipeline).
+	testPipeline := azruntime.NewPipeline("azcosmosgemtest", "v1.0.0", azruntime.PipelineOptions{}, &policy.ClientOptions{Transport: gemServer, PerCallPolicies: []policy.Policy{gemPolicy}})
+
+	ctx, cancel := context.WithCancel(context.WithValue(context.Background(), contextKey("test"), "testValue"))
+	defer cancel()
+
+	// Issue a test request
+	req, err := azruntime.NewRequest(ctx, http.MethodGet, gemServer.URL())
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
+	resp, _ := testPipeline.Do(req)
+	// tentative write header should be sent for multi write account
+	if resp.Request.Header.Get(cosmosHeaderAllowTentativeWrites) == "" {
+		t.Fatalf("expected %s header to be set", cosmosHeaderAllowTentativeWrites)
+	}
+
+	// tentative write header should not be sent if the account is not multi-write
+	mocked_response = "{\"_self\":\"\",\"id\":\"my_account\",\"_rid\":\"my_account-westus.sql.cosmos.azure.com\",\"media\":\"//media/\",\"addresses\":\"//addresses/\",\"_dbs\":\"//dbs/\",\"writableLocations\":[{\"name\":\"West US\",\"databaseAccountEndpoint\":\"https://my_account-westus.documents.azure.com:443/\"},{\"name\":\"West US 3\",\"databaseAccountEndpoint\":\"https://my_account-westus3.documents.azure.com:443/\"}],\"readableLocations\":[{\"name\":\"West US\",\"databaseAccountEndpoint\":\"https://my_account-westus.documents.azure.com:443/\"},{\"name\":\"West US 3\",\"databaseAccountEndpoint\":\"https://my_account-westus3.documents.azure.com:443/\"}], \"enableMultipleWriteLocations\":false}"
+	gemServer.SetResponse(mock.WithBody([]byte(mocked_response)))
+	// change time to trigger another get account properties call
+	mockGem.lastUpdateTime = time.Now().Add(-10 * time.Minute)
+	mockGem.lastAttemptTime = time.Now().Add(-10 * time.Minute)
+
+	// Issue another test request
+	req, err = azruntime.NewRequest(ctx, http.MethodGet, gemServer.URL())
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
+
+	// Used to trigger another get account properties call in the background
+	_, err = testPipeline.Do(req)
+	if err != nil {
+		t.Fatalf("testPipeline.Do failed: %v", err)
+	}
+
+	// Wait for the background async refresh to complete so the locationCache
+	// reflects the new (non-multi-write) topology before the next request.
+	require.Eventually(t, func() bool {
+		return !mockGem.CanUseMultipleWriteLocations()
+	}, 2*time.Second, 5*time.Millisecond, "async GEM refresh must update locationCache within 2s")
+
+	// Issue another test request that will use the updated account properties
+	req, err = azruntime.NewRequest(ctx, http.MethodGet, gemServer.URL())
+	if err != nil {
+		t.Fatalf("failed to create request: %v", err)
+	}
+
+	resp, _ = testPipeline.Do(req)
+	if resp.Request.Header.Get(cosmosHeaderAllowTentativeWrites) != "" {
+		t.Fatalf("expected %s header not to be set", cosmosHeaderAllowTentativeWrites)
+	}
+}
+
+func createLocationCacheForGem(defaultEndpoint url.URL, isMultiMaster bool) *locationCache {
+	availableWriteLocs := []regionId{newRegionId("East US")}
+	if isMultiMaster {
+		availableWriteLocs = []regionId{newRegionId("East US"), newRegionId("Central US")}
+	}
+	availableReadLocs := []regionId{newRegionId("East US"), newRegionId("Central US"), newRegionId("East US 2")}
+	availableWriteEndpointsByLoc := map[regionId]url.URL{}
+	availableReadEndpointsByLoc := map[regionId]url.URL{}
 	writeEndpoints := []url.URL{}
 	readEndpoints := []url.URL{}
 
-	for _, value := range availableWriteLocs {
-		regionalEndpoint, _ := url.Parse(defaultEndpoint.Scheme + "://" + defaultEndpoint.Hostname() + "-" + strings.ToLower(strings.ReplaceAll(value, " ", "-")))
-		availableWriteEndpointsByLoc[value] = *regionalEndpoint
+	for _, region := range availableWriteLocs {
+		regionalEndpoint, _ := url.Parse(defaultEndpoint.Scheme + "://" + defaultEndpoint.Hostname() + "-" + region.String())
+		availableWriteEndpointsByLoc[region] = *regionalEndpoint
 		writeEndpoints = append(writeEndpoints, *regionalEndpoint)
 	}
 
-	for _, value := range availableReadLocs {
-		regionalEndpoint, _ := url.Parse(defaultEndpoint.Scheme + "://" + defaultEndpoint.Hostname() + "-" + strings.ToLower(strings.ReplaceAll(value, " ", "-")))
-		availableReadEndpointsByLoc[value] = *regionalEndpoint
+	for _, region := range availableReadLocs {
+		regionalEndpoint, _ := url.Parse(defaultEndpoint.Scheme + "://" + defaultEndpoint.Hostname() + "-" + region.String())
+		availableReadEndpointsByLoc[region] = *regionalEndpoint
 		readEndpoints = append(readEndpoints, *regionalEndpoint)
 	}
 
 	dbAccountLocationInfo := &databaseAccountLocationsInfo{
-		prefLocations:                 []string{"Central US"},
+		prefLocations:                 []regionId{newRegionId("Central US")},
 		availWriteLocations:           availableWriteLocs,
 		availReadLocations:            availableReadLocs,
 		availWriteEndpointsByLocation: availableWriteEndpointsByLoc,

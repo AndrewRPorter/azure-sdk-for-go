@@ -18,6 +18,8 @@ import (
 
 // PrivateCloudsClient contains the methods for the PrivateClouds group.
 // Don't use this type directly, use NewPrivateCloudsClient() instead.
+//
+// Generated from API version 2026-03-01
 type PrivateCloudsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type PrivateCloudsClient struct {
 // NewPrivateCloudsClient creates a new instance of PrivateCloudsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewPrivateCloudsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PrivateCloudsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewPrivateCloudsClient(subscriptionID string, credential azcore.TokenCreden
 
 // BeginCreateOrUpdate - Create a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - privateCloud - Resource create parameters.
@@ -66,10 +69,8 @@ func (client *PrivateCloudsClient) BeginCreateOrUpdate(ctx context.Context, reso
 	}
 }
 
-// CreateOrUpdate - Create a PrivateCloud
+// createOrUpdate - Create a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *PrivateCloudsClient) createOrUpdate(ctx context.Context, resourceGroupName string, privateCloudName string, privateCloud PrivateCloud, options *PrivateCloudsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateCloudsClient.BeginCreateOrUpdate"
@@ -91,11 +92,11 @@ func (client *PrivateCloudsClient) createOrUpdate(ctx context.Context, resourceG
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *PrivateCloudsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, privateCloud PrivateCloud, _ *PrivateCloudsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -111,8 +112,8 @@ func (client *PrivateCloudsClient) createOrUpdateCreateRequest(ctx context.Conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, privateCloud); err != nil {
@@ -123,8 +124,6 @@ func (client *PrivateCloudsClient) createOrUpdateCreateRequest(ctx context.Conte
 
 // BeginDelete - Delete a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - options - PrivateCloudsClientBeginDeleteOptions contains the optional parameters for the PrivateCloudsClient.BeginDelete
@@ -146,10 +145,8 @@ func (client *PrivateCloudsClient) BeginDelete(ctx context.Context, resourceGrou
 	}
 }
 
-// Delete - Delete a PrivateCloud
+// deleteOperation - Delete a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *PrivateCloudsClient) deleteOperation(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateCloudsClient.BeginDelete"
@@ -171,11 +168,11 @@ func (client *PrivateCloudsClient) deleteOperation(ctx context.Context, resource
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *PrivateCloudsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -191,259 +188,13 @@ func (client *PrivateCloudsClient) deleteCreateRequest(ctx context.Context, reso
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a PrivateCloud
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - privateCloudName - Name of the private cloud
-//   - options - PrivateCloudsClientGetOptions contains the optional parameters for the PrivateCloudsClient.Get method.
-func (client *PrivateCloudsClient) Get(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientGetOptions) (PrivateCloudsClientGetResponse, error) {
-	var err error
-	const operationName = "PrivateCloudsClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, privateCloudName, options)
-	if err != nil {
-		return PrivateCloudsClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return PrivateCloudsClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return PrivateCloudsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *PrivateCloudsClient) getCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if privateCloudName == "" {
-		return nil, errors.New("parameter privateCloudName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *PrivateCloudsClient) getHandleResponse(resp *http.Response) (PrivateCloudsClientGetResponse, error) {
-	result := PrivateCloudsClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloud); err != nil {
-		return PrivateCloudsClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListPager - List PrivateCloud resources by resource group
-//
-// Generated from API version 2024-09-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - options - PrivateCloudsClientListOptions contains the optional parameters for the PrivateCloudsClient.NewListPager method.
-func (client *PrivateCloudsClient) NewListPager(resourceGroupName string, options *PrivateCloudsClientListOptions) *runtime.Pager[PrivateCloudsClientListResponse] {
-	return runtime.NewPager(runtime.PagingHandler[PrivateCloudsClientListResponse]{
-		More: func(page PrivateCloudsClientListResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *PrivateCloudsClientListResponse) (PrivateCloudsClientListResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "PrivateCloudsClient.NewListPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
-			if err != nil {
-				return PrivateCloudsClientListResponse{}, err
-			}
-			return client.listHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listCreateRequest creates the List request.
-func (client *PrivateCloudsClient) listCreateRequest(ctx context.Context, resourceGroupName string, _ *PrivateCloudsClientListOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listHandleResponse handles the List response.
-func (client *PrivateCloudsClient) listHandleResponse(resp *http.Response) (PrivateCloudsClientListResponse, error) {
-	result := PrivateCloudsClientListResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloudList); err != nil {
-		return PrivateCloudsClientListResponse{}, err
-	}
-	return result, nil
-}
-
-// ListAdminCredentials - List the admin credentials for the private cloud
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - privateCloudName - Name of the private cloud
-//   - options - PrivateCloudsClientListAdminCredentialsOptions contains the optional parameters for the PrivateCloudsClient.ListAdminCredentials
-//     method.
-func (client *PrivateCloudsClient) ListAdminCredentials(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientListAdminCredentialsOptions) (PrivateCloudsClientListAdminCredentialsResponse, error) {
-	var err error
-	const operationName = "PrivateCloudsClient.ListAdminCredentials"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.listAdminCredentialsCreateRequest(ctx, resourceGroupName, privateCloudName, options)
-	if err != nil {
-		return PrivateCloudsClientListAdminCredentialsResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return PrivateCloudsClientListAdminCredentialsResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return PrivateCloudsClientListAdminCredentialsResponse{}, err
-	}
-	resp, err := client.listAdminCredentialsHandleResponse(httpResp)
-	return resp, err
-}
-
-// listAdminCredentialsCreateRequest creates the ListAdminCredentials request.
-func (client *PrivateCloudsClient) listAdminCredentialsCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientListAdminCredentialsOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/listAdminCredentials"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if privateCloudName == "" {
-		return nil, errors.New("parameter privateCloudName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listAdminCredentialsHandleResponse handles the ListAdminCredentials response.
-func (client *PrivateCloudsClient) listAdminCredentialsHandleResponse(resp *http.Response) (PrivateCloudsClientListAdminCredentialsResponse, error) {
-	result := PrivateCloudsClientListAdminCredentialsResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.AdminCredentials); err != nil {
-		return PrivateCloudsClientListAdminCredentialsResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListInSubscriptionPager - List PrivateCloud resources by subscription ID
-//
-// Generated from API version 2024-09-01
-//   - options - PrivateCloudsClientListInSubscriptionOptions contains the optional parameters for the PrivateCloudsClient.NewListInSubscriptionPager
-//     method.
-func (client *PrivateCloudsClient) NewListInSubscriptionPager(options *PrivateCloudsClientListInSubscriptionOptions) *runtime.Pager[PrivateCloudsClientListInSubscriptionResponse] {
-	return runtime.NewPager(runtime.PagingHandler[PrivateCloudsClientListInSubscriptionResponse]{
-		More: func(page PrivateCloudsClientListInSubscriptionResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *PrivateCloudsClientListInSubscriptionResponse) (PrivateCloudsClientListInSubscriptionResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "PrivateCloudsClient.NewListInSubscriptionPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listInSubscriptionCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return PrivateCloudsClientListInSubscriptionResponse{}, err
-			}
-			return client.listInSubscriptionHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listInSubscriptionCreateRequest creates the ListInSubscription request.
-func (client *PrivateCloudsClient) listInSubscriptionCreateRequest(ctx context.Context, _ *PrivateCloudsClientListInSubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.AVS/privateClouds"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listInSubscriptionHandleResponse handles the ListInSubscription response.
-func (client *PrivateCloudsClient) listInSubscriptionHandleResponse(resp *http.Response) (PrivateCloudsClientListInSubscriptionResponse, error) {
-	result := PrivateCloudsClientListInSubscriptionResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloudList); err != nil {
-		return PrivateCloudsClientListInSubscriptionResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginRotateNsxtPassword - Rotate the NSX-T Manager password
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - options - PrivateCloudsClientBeginRotateNsxtPasswordOptions contains the optional parameters for the PrivateCloudsClient.BeginRotateNsxtPassword
@@ -465,10 +216,8 @@ func (client *PrivateCloudsClient) BeginRotateNsxtPassword(ctx context.Context, 
 	}
 }
 
-// RotateNsxtPassword - Rotate the NSX-T Manager password
+// rotateNsxtPassword - Rotate the NSX-T Manager password
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *PrivateCloudsClient) rotateNsxtPassword(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientBeginRotateNsxtPasswordOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateCloudsClient.BeginRotateNsxtPassword"
@@ -490,11 +239,11 @@ func (client *PrivateCloudsClient) rotateNsxtPassword(ctx context.Context, resou
 	return httpResp, nil
 }
 
-// rotateNsxtPasswordCreateRequest creates the RotateNsxtPassword request.
+// rotateNsxtPasswordCreateRequest creates the rotateNsxtPassword request.
 func (client *PrivateCloudsClient) rotateNsxtPasswordCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientBeginRotateNsxtPasswordOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/rotateNsxtPassword"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -510,16 +259,13 @@ func (client *PrivateCloudsClient) rotateNsxtPasswordCreateRequest(ctx context.C
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // BeginRotateVcenterPassword - Rotate the vCenter password
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - options - PrivateCloudsClientBeginRotateVcenterPasswordOptions contains the optional parameters for the PrivateCloudsClient.BeginRotateVcenterPassword
@@ -541,10 +287,8 @@ func (client *PrivateCloudsClient) BeginRotateVcenterPassword(ctx context.Contex
 	}
 }
 
-// RotateVcenterPassword - Rotate the vCenter password
+// rotateVcenterPassword - Rotate the vCenter password
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *PrivateCloudsClient) rotateVcenterPassword(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientBeginRotateVcenterPasswordOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateCloudsClient.BeginRotateVcenterPassword"
@@ -566,11 +310,11 @@ func (client *PrivateCloudsClient) rotateVcenterPassword(ctx context.Context, re
 	return httpResp, nil
 }
 
-// rotateVcenterPasswordCreateRequest creates the RotateVcenterPassword request.
+// rotateVcenterPasswordCreateRequest creates the rotateVcenterPassword request.
 func (client *PrivateCloudsClient) rotateVcenterPasswordCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientBeginRotateVcenterPasswordOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/rotateVcenterPassword"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -586,16 +330,13 @@ func (client *PrivateCloudsClient) rotateVcenterPasswordCreateRequest(ctx contex
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // BeginUpdate - Update a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - privateCloudName - Name of the private cloud
 //   - privateCloudUpdate - The resource properties to be updated.
@@ -619,10 +360,8 @@ func (client *PrivateCloudsClient) BeginUpdate(ctx context.Context, resourceGrou
 	}
 }
 
-// Update - Update a PrivateCloud
+// update - Update a PrivateCloud
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-01
 func (client *PrivateCloudsClient) update(ctx context.Context, resourceGroupName string, privateCloudName string, privateCloudUpdate PrivateCloudUpdate, options *PrivateCloudsClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateCloudsClient.BeginUpdate"
@@ -644,11 +383,11 @@ func (client *PrivateCloudsClient) update(ctx context.Context, resourceGroupName
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *PrivateCloudsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, privateCloudUpdate PrivateCloudUpdate, _ *PrivateCloudsClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -664,12 +403,335 @@ func (client *PrivateCloudsClient) updateCreateRequest(ctx context.Context, reso
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, privateCloudUpdate); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a PrivateCloud
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - privateCloudName - Name of the private cloud
+//   - options - PrivateCloudsClientGetOptions contains the optional parameters for the PrivateCloudsClient.Get method.
+func (client *PrivateCloudsClient) Get(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientGetOptions) (PrivateCloudsClientGetResponse, error) {
+	var err error
+	const operationName = "PrivateCloudsClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, privateCloudName, options)
+	if err != nil {
+		return PrivateCloudsClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return PrivateCloudsClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *PrivateCloudsClient) getCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if privateCloudName == "" {
+		return nil, errors.New("parameter privateCloudName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *PrivateCloudsClient) getHandleResponse(resp *http.Response, successCodes ...int) (PrivateCloudsClientGetResponse, error) {
+	result := PrivateCloudsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloud); err != nil {
+		return PrivateCloudsClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// GetVcfLicense - Get the license for the private cloud
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - privateCloudName - Name of the private cloud
+//   - options - PrivateCloudsClientGetVcfLicenseOptions contains the optional parameters for the PrivateCloudsClient.GetVcfLicense
+//     method.
+func (client *PrivateCloudsClient) GetVcfLicense(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientGetVcfLicenseOptions) (PrivateCloudsClientGetVcfLicenseResponse, error) {
+	var err error
+	const operationName = "PrivateCloudsClient.GetVcfLicense"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getVcfLicenseCreateRequest(ctx, resourceGroupName, privateCloudName, options)
+	if err != nil {
+		return PrivateCloudsClientGetVcfLicenseResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return PrivateCloudsClientGetVcfLicenseResponse{}, err
+	}
+	resp, err := client.getVcfLicenseHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getVcfLicenseCreateRequest creates the GetVcfLicense request.
+func (client *PrivateCloudsClient) getVcfLicenseCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientGetVcfLicenseOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/getVcfLicense"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if privateCloudName == "" {
+		return nil, errors.New("parameter privateCloudName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getVcfLicenseHandleResponse handles the GetVcfLicense response.
+func (client *PrivateCloudsClient) getVcfLicenseHandleResponse(resp *http.Response, successCodes ...int) (PrivateCloudsClientGetVcfLicenseResponse, error) {
+	result := PrivateCloudsClientGetVcfLicenseResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result); err != nil {
+		return PrivateCloudsClientGetVcfLicenseResponse{}, err
+	}
+	return result, nil
+}
+
+// ListAdminCredentials - List the admin credentials for the private cloud
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - privateCloudName - Name of the private cloud
+//   - options - PrivateCloudsClientListAdminCredentialsOptions contains the optional parameters for the PrivateCloudsClient.ListAdminCredentials
+//     method.
+func (client *PrivateCloudsClient) ListAdminCredentials(ctx context.Context, resourceGroupName string, privateCloudName string, options *PrivateCloudsClientListAdminCredentialsOptions) (PrivateCloudsClientListAdminCredentialsResponse, error) {
+	var err error
+	const operationName = "PrivateCloudsClient.ListAdminCredentials"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.listAdminCredentialsCreateRequest(ctx, resourceGroupName, privateCloudName, options)
+	if err != nil {
+		return PrivateCloudsClientListAdminCredentialsResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return PrivateCloudsClientListAdminCredentialsResponse{}, err
+	}
+	resp, err := client.listAdminCredentialsHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// listAdminCredentialsCreateRequest creates the ListAdminCredentials request.
+func (client *PrivateCloudsClient) listAdminCredentialsCreateRequest(ctx context.Context, resourceGroupName string, privateCloudName string, _ *PrivateCloudsClientListAdminCredentialsOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/listAdminCredentials"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if privateCloudName == "" {
+		return nil, errors.New("parameter privateCloudName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{privateCloudName}", url.PathEscape(privateCloudName))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// listAdminCredentialsHandleResponse handles the ListAdminCredentials response.
+func (client *PrivateCloudsClient) listAdminCredentialsHandleResponse(resp *http.Response, successCodes ...int) (PrivateCloudsClientListAdminCredentialsResponse, error) {
+	result := PrivateCloudsClientListAdminCredentialsResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.AdminCredentials); err != nil {
+		return PrivateCloudsClientListAdminCredentialsResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListInSubscriptionPager - List PrivateCloud resources by subscription ID
+//   - options - PrivateCloudsClientListInSubscriptionOptions contains the optional parameters for the PrivateCloudsClient.NewListInSubscriptionPager
+//     method.
+func (client *PrivateCloudsClient) NewListInSubscriptionPager(options *PrivateCloudsClientListInSubscriptionOptions) *runtime.Pager[PrivateCloudsClientListInSubscriptionResponse] {
+	return runtime.NewPager(runtime.PagingHandler[PrivateCloudsClientListInSubscriptionResponse]{
+		More: func(page PrivateCloudsClientListInSubscriptionResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *PrivateCloudsClientListInSubscriptionResponse) (PrivateCloudsClientListInSubscriptionResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "PrivateCloudsClient.NewListInSubscriptionPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listInSubscriptionCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return PrivateCloudsClientListInSubscriptionResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return PrivateCloudsClientListInSubscriptionResponse{}, err
+			}
+			return client.listInSubscriptionHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listInSubscriptionCreateRequest creates the ListInSubscription request.
+func (client *PrivateCloudsClient) listInSubscriptionCreateRequest(ctx context.Context, nextLink string, _ *PrivateCloudsClientListInSubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.AVS/privateClouds"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listInSubscriptionHandleResponse handles the ListInSubscription response.
+func (client *PrivateCloudsClient) listInSubscriptionHandleResponse(resp *http.Response, successCodes ...int) (PrivateCloudsClientListInSubscriptionResponse, error) {
+	result := PrivateCloudsClientListInSubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloudList); err != nil {
+		return PrivateCloudsClientListInSubscriptionResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListPager - List PrivateCloud resources by resource group
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - options - PrivateCloudsClientListOptions contains the optional parameters for the PrivateCloudsClient.NewListPager method.
+func (client *PrivateCloudsClient) NewListPager(resourceGroupName string, options *PrivateCloudsClientListOptions) *runtime.Pager[PrivateCloudsClientListResponse] {
+	return runtime.NewPager(runtime.PagingHandler[PrivateCloudsClientListResponse]{
+		More: func(page PrivateCloudsClientListResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *PrivateCloudsClientListResponse) (PrivateCloudsClientListResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "PrivateCloudsClient.NewListPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listCreateRequest(ctx, resourceGroupName, nextLink, options)
+			if err != nil {
+				return PrivateCloudsClientListResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return PrivateCloudsClientListResponse{}, err
+			}
+			return client.listHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listCreateRequest creates the List request.
+func (client *PrivateCloudsClient) listCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *PrivateCloudsClientListOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listHandleResponse handles the List response.
+func (client *PrivateCloudsClient) listHandleResponse(resp *http.Response, successCodes ...int) (PrivateCloudsClientListResponse, error) {
+	result := PrivateCloudsClientListResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateCloudList); err != nil {
+		return PrivateCloudsClientListResponse{}, err
+	}
+	return result, nil
 }

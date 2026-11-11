@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -9,9 +6,20 @@ package share_test
 import (
 	"context"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/file"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/fileerror"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/testcommon"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/sas"
@@ -19,20 +27,18 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/share"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"strconv"
-	"testing"
-	"time"
 )
 
 func Test(t *testing.T) {
 	recordMode := recording.GetRecordMode()
 	t.Logf("Running share Tests in %s mode\n", recordMode)
-	if recordMode == recording.LiveMode {
+	switch recordMode {
+	case recording.LiveMode:
 		suite.Run(t, &ShareRecordedTestsSuite{})
 		suite.Run(t, &ShareUnrecordedTestsSuite{})
-	} else if recordMode == recording.PlaybackMode {
+	case recording.PlaybackMode:
 		suite.Run(t, &ShareRecordedTestsSuite{})
-	} else if recordMode == recording.RecordingMode {
+	case recording.RecordingMode:
 		suite.Run(t, &ShareRecordedTestsSuite{})
 	}
 }
@@ -473,6 +479,207 @@ func (s *ShareRecordedTestsSuite) TestShareCreateNegativeInvalidMetadata() {
 	_require.Error(err)
 }
 
+func (s *ShareRecordedTestsSuite) TestShareCreateWithSMBDirectoryLeaseDisabled() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	cred, err := testcommon.GetGenericSharedKeyCredential(testcommon.TestAccountDefault)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareURL := "https://" + cred.AccountName() + ".file.core.windows.net/" + shareName
+	options := &share.ClientOptions{}
+	testcommon.SetClientOptions(s.T(), &options.ClientOptions)
+	shareClient, err := share.NewClientWithSharedKeyCredential(shareURL, cred, options)
+	_require.NoError(err)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	// Create share with directory leases disabled
+	resp, err := shareClient.Create(context.Background(), &share.CreateOptions{
+		EnableSMBDirectoryLease: to.Ptr(false),
+	})
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+
+	// Verify with GetProperties
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(getResp.ETag)
+	_require.NotNil(getResp.LastModified)
+	if getResp.EnableSMBDirectoryLease == nil {
+		s.T().Skip("service did not return EnableSMBDirectoryLease; SMB directory lease is not supported on this account or service version")
+	}
+	_require.Equal(false, *getResp.EnableSMBDirectoryLease)
+}
+
+func (s *ShareRecordedTestsSuite) TestShareCreateWithSMBDirectoryLeaseEnabled() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	cred, err := testcommon.GetGenericSharedKeyCredential(testcommon.TestAccountDefault)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareURL := "https://" + cred.AccountName() + ".file.core.windows.net/" + shareName
+	options := &share.ClientOptions{}
+	testcommon.SetClientOptions(s.T(), &options.ClientOptions)
+	shareClient, err := share.NewClientWithSharedKeyCredential(shareURL, cred, options)
+	_require.NoError(err)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	// Create share with directory leases explicitly enabled
+	resp, err := shareClient.Create(context.Background(), &share.CreateOptions{
+		EnableSMBDirectoryLease: to.Ptr(true),
+	})
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+
+	// Verify with GetProperties
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	if getResp.EnableSMBDirectoryLease == nil {
+		s.T().Skip("service did not return EnableSMBDirectoryLease; SMB directory lease is not supported on this account or service version")
+	}
+	_require.Equal(true, *getResp.EnableSMBDirectoryLease)
+}
+
+func (s *ShareRecordedTestsSuite) TestShareCreateWithSMBDirectoryLeaseDefault() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	cred, err := testcommon.GetGenericSharedKeyCredential(testcommon.TestAccountDefault)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareURL := "https://" + cred.AccountName() + ".file.core.windows.net/" + shareName
+	options := &share.ClientOptions{}
+	testcommon.SetClientOptions(s.T(), &options.ClientOptions)
+	shareClient, err := share.NewClientWithSharedKeyCredential(shareURL, cred, options)
+	_require.NoError(err)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	// Create share with no explicit option (should default to true)
+	resp, err := shareClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+
+	// Verify with GetProperties
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	if getResp.EnableSMBDirectoryLease == nil {
+		s.T().Skip("service did not return EnableSMBDirectoryLease; SMB directory lease is not supported on this account or service version")
+	}
+	_require.Equal(true, *getResp.EnableSMBDirectoryLease)
+}
+
+const (
+	changeFeedEnabledHeader   = "x-ms-file-enable-change-feed"
+	changeFeedRetentionHeader = "x-ms-file-change-feed-retention-in-days"
+	changeFeedContainerHeader = "x-ms-file-blob-container-for-xfiles-change-feed"
+	changeFeedContainerPrefix = "$fileschangefeed-"
+)
+
+func (s *ShareRecordedTestsSuite) TestShareCreateWithChangeFeed() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareClient := svcClient.NewShareClient(shareName)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	_, err = shareClient.Create(context.Background(), &share.CreateOptions{
+		EnableChangeFeed:          to.Ptr(true),
+		ChangeFeedRetentionInDays: to.Ptr(int32(3)),
+	})
+	_require.NoError(err)
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(getResp.EnableChangeFeed)
+	_require.True(*getResp.EnableChangeFeed)
+	_require.NotNil(getResp.ChangeFeedRetentionInDays)
+	_require.Equal(int32(3), *getResp.ChangeFeedRetentionInDays)
+	_require.NotNil(getResp.ChangeFeedBlobContainerName)
+	_require.True(strings.HasPrefix(*getResp.ChangeFeedBlobContainerName, changeFeedContainerPrefix))
+}
+
+func (s *ShareRecordedTestsSuite) TestShareSetPropertiesChangeFeed() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, testcommon.GenerateShareName(testName), svcClient)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{
+		EnableChangeFeed:          to.Ptr(true),
+		ChangeFeedRetentionInDays: to.Ptr(int32(5)),
+	})
+	_require.NoError(err)
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(getResp.EnableChangeFeed)
+	_require.True(*getResp.EnableChangeFeed)
+	_require.NotNil(getResp.ChangeFeedRetentionInDays)
+	_require.Equal(int32(5), *getResp.ChangeFeedRetentionInDays)
+	_require.NotNil(getResp.ChangeFeedBlobContainerName)
+	_require.True(strings.HasPrefix(*getResp.ChangeFeedBlobContainerName, changeFeedContainerPrefix))
+}
+
+func (s *ShareRecordedTestsSuite) TestShareSetPropertiesChangeFeedRetentionInDaysOnly() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, testcommon.GenerateShareName(testName), svcClient)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{
+		EnableChangeFeed:          to.Ptr(true),
+		ChangeFeedRetentionInDays: to.Ptr(int32(5)),
+	})
+	_require.NoError(err)
+
+	// update only the retention period, leaving change feed enabled
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{
+		ChangeFeedRetentionInDays: to.Ptr(int32(30)),
+	})
+	_require.NoError(err)
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(getResp.EnableChangeFeed)
+	_require.True(*getResp.EnableChangeFeed)
+	_require.NotNil(getResp.ChangeFeedRetentionInDays)
+	_require.Equal(int32(30), *getResp.ChangeFeedRetentionInDays)
+}
+
+func (s *ShareRecordedTestsSuite) TestShareCreateWithoutChangeFeed() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, testcommon.GenerateShareName(testName), svcClient)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	if getResp.EnableChangeFeed != nil {
+		_require.False(*getResp.EnableChangeFeed)
+	}
+	_require.Nil(getResp.ChangeFeedBlobContainerName)
+}
+
 func (s *ShareRecordedTestsSuite) TestShareDeleteNegativeNonExistent() {
 	_require := require.New(s.T())
 	testName := s.T().Name()
@@ -674,6 +881,62 @@ func (s *ShareRecordedTestsSuite) TestShareSetQuotaNegative() {
 	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{Quota: to.Ptr(int32(-1))})
 	_require.Error(err)
 	testcommon.ValidateFileErrorCode(_require, err, fileerror.InvalidHeaderValue)
+}
+
+func (s *ShareRecordedTestsSuite) TestShareGetPropertiesCreationTime() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, shareName, svcClient)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	props, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(props.ETag)
+	_require.NotNil(props.CreationTime)
+	_require.False(props.CreationTime.IsZero())
+}
+
+// newMockShareClient returns a Client whose mock server returns a single response built from opts.
+func newMockShareClient(t *testing.T, opts ...mock.ResponseOption) *share.Client {
+	srv, clientOptions := testcommon.NewMockServer(t)
+	srv.AppendResponse(opts...)
+	client, err := share.NewClientWithNoCredential("https://account.file.core.windows.net/share", &share.ClientOptions{
+		ClientOptions: clientOptions,
+	})
+	require.NoError(t, err)
+	return client
+}
+
+func TestShareGetPropertiesCreationTimeMocked(t *testing.T) {
+	_require := require.New(t)
+	client := newMockShareClient(t, mock.WithStatusCode(http.StatusOK),
+		mock.WithHeader("x-ms-share-creation-time", "Tue, 13 Oct 2026 10:20:30 GMT"))
+
+	props, err := client.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(props.CreationTime)
+	_require.True(time.Date(2026, time.October, 13, 10, 20, 30, 0, time.UTC).Equal(*props.CreationTime))
+}
+
+func TestShareGetPropertiesCreationTimeMissingMocked(t *testing.T) {
+	_require := require.New(t)
+	client := newMockShareClient(t, mock.WithStatusCode(http.StatusOK))
+
+	props, err := client.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.Nil(props.CreationTime)
+}
+
+func TestShareGetPropertiesCreationTimeInvalidMocked(t *testing.T) {
+	client := newMockShareClient(t, mock.WithStatusCode(http.StatusOK),
+		mock.WithHeader("x-ms-share-creation-time", "not a date"))
+
+	_, err := client.GetProperties(context.Background(), nil)
+	require.Error(t, err)
 }
 
 func (s *ShareRecordedTestsSuite) TestShareGetPropertiesNegative() {
@@ -881,6 +1144,8 @@ func (s *ShareRecordedTestsSuite) TestShareSetAccessPolicyMoreThanFive() {
 }
 
 func (s *ShareRecordedTestsSuite) TestShareGetSetAccessPolicyDefault() {
+	// TODO: rerecord test and remove recording.SetDefaultMatcher
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(), &recording.SetDefaultMatcherOptions{CompareBodies: to.Ptr(false), ExcludedHeaders: []string{"Accept", "Content-Type"}}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -973,6 +1238,8 @@ func (s *ShareRecordedTestsSuite) TestShareSetAccessPolicyNonDefaultDeleteAndMod
 }
 
 func (s *ShareRecordedTestsSuite) TestShareSetAccessPolicyDeleteAllPolicies() {
+	// TODO: rerecord test and remove recording.SetDefaultMatcher
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(), &recording.SetDefaultMatcherOptions{CompareBodies: to.Ptr(false), ExcludedHeaders: []string{"Accept", "Content-Type"}}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -1359,7 +1626,7 @@ func (s *ShareUnrecordedTestsSuite) TestShareCreateSnapshotDefault() {
 	_, err = fClient.StartCopyFromURL(context.Background(), sourceURL, nil)
 	_require.NoError(err)
 
-	time.Sleep(2 * time.Second)
+	recording.Sleep(2 * time.Second)
 
 	// After restore
 	_, err = fClient.GetProperties(context.Background(), nil)
@@ -1369,6 +1636,72 @@ func (s *ShareUnrecordedTestsSuite) TestShareCreateSnapshotDefault() {
 		ShareSnapshot: snapshotShare.Snapshot,
 	})
 	_require.NoError(err)
+}
+
+// TestGetSASURLShareSnapshotAgainstService is a regression test - run against the live service -
+// for a bug where GetSASURL() on a share.Client or file.Client returned by WithSnapshot()
+// concatenated a second "?" onto a URL that already carried a "sharesnapshot" query parameter,
+// producing a malformed SAS URL (e.g. "...?sharesnapshot=X?sv=...&sig=..."). It also confirms
+// end-to-end that the resulting (well-formed) SAS URL correctly authenticates against the
+// snapshot's content.
+func (s *ShareUnrecordedTestsSuite) TestGetSASURLShareSnapshotAgainstService() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, shareName, svcClient)
+	defer deleteShare(context.Background(), _require, shareClient, &share.DeleteOptions{DeleteSnapshots: to.Ptr(share.DeleteSnapshotsOptionTypeInclude)})
+
+	fileName := testcommon.GenerateFileName(testName)
+	const oldContent = "old-snapshot-content"
+	fClient := testcommon.CreateNewFileFromShare(context.Background(), _require, fileName, int64(len(oldContent)), shareClient)
+	_, err = fClient.UploadRange(context.Background(), 0, streaming.NopCloser(strings.NewReader(oldContent)), nil)
+	_require.NoError(err)
+
+	snapResp, err := shareClient.CreateSnapshot(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(snapResp.Snapshot)
+
+	// Overwrite the live file's content after taking the snapshot.
+	const newContent = "current-live-content-longer"
+	_, err = fClient.Resize(context.Background(), int64(len(newContent)), nil)
+	_require.NoError(err)
+	_, err = fClient.UploadRange(context.Background(), 0, streaming.NopCloser(strings.NewReader(newContent)), nil)
+	_require.NoError(err)
+
+	// GetSASURL on a share client scoped to the snapshot must not produce a duplicated "?".
+	snapshotShareClient, err := shareClient.WithSnapshot(*snapResp.Snapshot)
+	_require.NoError(err)
+	_require.Contains(snapshotShareClient.URL(), "sharesnapshot=")
+	_require.Contains(snapshotShareClient.URL(), "?")
+
+	shareSASURL, err := snapshotShareClient.GetSASURL(sas.SharePermissions{Read: true, List: true}, time.Now().Add(time.Hour), nil)
+	_require.NoError(err)
+	_require.Equal(1, strings.Count(shareSASURL, "?"),
+		"share SAS URL must not contain a duplicated '?': %s", shareSASURL)
+
+	// GetSASURL on a file client derived from the snapshot-scoped share must also not produce a
+	// duplicated "?", and the resulting SAS URL must download the OLD (snapshotted) content.
+	snapshotFileClient := snapshotShareClient.NewRootDirectoryClient().NewFileClient(fileName)
+	_require.Contains(snapshotFileClient.URL(), "sharesnapshot=")
+	_require.Contains(snapshotFileClient.URL(), "?")
+
+	fileSASURL, err := snapshotFileClient.GetSASURL(sas.FilePermissions{Read: true}, time.Now().Add(time.Hour), nil)
+	_require.NoError(err)
+	_require.Equal(1, strings.Count(fileSASURL, "?"),
+		"file SAS URL must not contain a duplicated '?': %s", fileSASURL)
+
+	anonFileClient, err := file.NewClientWithNoCredential(fileSASURL, nil)
+	_require.NoError(err)
+
+	downloadResp, err := anonFileClient.DownloadStream(context.Background(), nil)
+	_require.NoError(err)
+	data, err := io.ReadAll(downloadResp.Body)
+	_require.NoError(err)
+	_require.Equal(oldContent, string(data))
 }
 
 func (s *ShareRecordedTestsSuite) TestShareCreateSnapshotNegativeShareNotExist() {
@@ -1562,7 +1895,7 @@ func (s *ShareRecordedTestsSuite) TestShareRestoreSuccess() {
 	_require.NoError(err)
 
 	// wait for share deletion
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	pager := svcClient.NewListSharesPager(&service.ListSharesOptions{
 		Include: service.ListSharesInclude{Deleted: true},
@@ -1640,7 +1973,7 @@ func (s *ShareRecordedTestsSuite) TestShareRestoreWithSnapshotsAgain() {
 	_require.NoError(err)
 
 	// wait for share deletion
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	pager := svcClient.NewListSharesPager(&service.ListSharesOptions{
 		Include: service.ListSharesInclude{Deleted: true},
@@ -1823,7 +2156,7 @@ func (s *ShareUnrecordedTestsSuite) TestShareSASUsingAccessPolicy() {
 	_require.NoError(err)
 	_require.Len(gResp.SignedIdentifiers, 1)
 
-	time.Sleep(30 * time.Second)
+	recording.Sleep(30 * time.Second)
 
 	sasQueryParams, err := sas.SignatureValues{
 		Protocol:   sas.ProtocolHTTPS,
@@ -1850,6 +2183,13 @@ func (s *ShareUnrecordedTestsSuite) TestShareSASUsingAccessPolicy() {
 
 	_, err = fileClient.Delete(context.Background(), nil)
 	_require.NoError(err)
+
+	_, err = shareClient.SetAccessPolicy(context.Background(), nil)
+	_require.NoError(err)
+
+	resp2, err := shareClient.GetAccessPolicy(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(resp2.SignedIdentifiers, 0)
 }
 
 func (s *ShareRecordedTestsSuite) TestPremiumShareBandwidth() {
@@ -1978,4 +2318,122 @@ func (s *ShareUnrecordedTestsSuite) TestShareClientAudienceNegative() {
 	_, err = shareClientAudience.CreatePermission(context.Background(), testcommon.SampleSDDL, nil)
 	_require.Error(err)
 	testcommon.ValidateFileErrorCode(_require, err, fileerror.InvalidAuthenticationInfo)
+}
+
+// changeFeedTransport records the requests it handles and answers each with the configured response headers.
+type changeFeedTransport struct {
+	requests []*http.Request
+	header   http.Header
+}
+
+func (c *changeFeedTransport) Do(req *http.Request) (*http.Response, error) {
+	c.requests = append(c.requests, req)
+	header := c.header
+	if header == nil {
+		header = http.Header{}
+	}
+	status := http.StatusOK
+	if req.Method == http.MethodPut && req.URL.Query().Get("comp") == "" {
+		status = http.StatusCreated
+	}
+	return &http.Response{
+		Request:    req,
+		StatusCode: status,
+		Status:     http.StatusText(status),
+		Header:     header.Clone(),
+		Body:       io.NopCloser(strings.NewReader("")),
+	}, nil
+}
+
+// rawHeader returns the request header value as set by the generated client, which uses lowercase header keys.
+func rawHeader(req *http.Request, key string) string {
+	if v := req.Header[key]; len(v) > 0 {
+		return v[0]
+	}
+	return ""
+}
+
+func newChangeFeedShareClient(t *testing.T, transport policy.Transporter) *share.Client {
+	shareClient, err := share.NewClientWithNoCredential("https://account.file.core.windows.net/share", &share.ClientOptions{ClientOptions: policy.ClientOptions{
+		Transport: transport,
+		Retry:     policy.RetryOptions{MaxRetries: -1},
+	}})
+	require.NoError(t, err)
+	return shareClient
+}
+
+func TestShareChangeFeedRequestHeaders(t *testing.T) {
+	transport := &changeFeedTransport{}
+	shareClient := newChangeFeedShareClient(t, transport)
+
+	_, err := shareClient.Create(context.Background(), &share.CreateOptions{
+		EnableChangeFeed:          to.Ptr(true),
+		ChangeFeedRetentionInDays: to.Ptr(int32(7)),
+	})
+	require.NoError(t, err)
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{
+		EnableChangeFeed:          to.Ptr(false),
+		ChangeFeedRetentionInDays: to.Ptr(int32(365)),
+	})
+	require.NoError(t, err)
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{
+		ChangeFeedRetentionInDays: to.Ptr(int32(1)),
+	})
+	require.NoError(t, err)
+
+	require.Len(t, transport.requests, 3)
+	require.Equal(t, "true", rawHeader(transport.requests[0], changeFeedEnabledHeader))
+	require.Equal(t, "7", rawHeader(transport.requests[0], changeFeedRetentionHeader))
+	require.Equal(t, "false", rawHeader(transport.requests[1], changeFeedEnabledHeader))
+	require.Equal(t, "365", rawHeader(transport.requests[1], changeFeedRetentionHeader))
+	require.NotContains(t, transport.requests[2].Header, changeFeedEnabledHeader)
+	require.Equal(t, "1", rawHeader(transport.requests[2], changeFeedRetentionHeader))
+}
+
+func TestShareChangeFeedRequestHeadersOmittedByDefault(t *testing.T) {
+	transport := &changeFeedTransport{}
+	shareClient := newChangeFeedShareClient(t, transport)
+
+	_, err := shareClient.Create(context.Background(), nil)
+	require.NoError(t, err)
+	_, err = shareClient.Create(context.Background(), &share.CreateOptions{Quota: to.Ptr(int32(10))})
+	require.NoError(t, err)
+	_, err = shareClient.SetProperties(context.Background(), nil)
+	require.NoError(t, err)
+	_, err = shareClient.SetProperties(context.Background(), &share.SetPropertiesOptions{Quota: to.Ptr(int32(10))})
+	require.NoError(t, err)
+
+	require.Len(t, transport.requests, 4)
+	for _, req := range transport.requests {
+		require.NotContains(t, req.Header, changeFeedEnabledHeader)
+		require.NotContains(t, req.Header, changeFeedRetentionHeader)
+	}
+}
+
+func TestShareGetPropertiesChangeFeedResponseHeaders(t *testing.T) {
+	containerName := changeFeedContainerPrefix + "8f2a6c1e-3b4d-4e5f-9a0b-1c2d3e4f5a6b"
+	shareClient := newChangeFeedShareClient(t, &changeFeedTransport{header: http.Header{
+		http.CanonicalHeaderKey(changeFeedEnabledHeader):   []string{"true"},
+		http.CanonicalHeaderKey(changeFeedRetentionHeader): []string{"30"},
+		http.CanonicalHeaderKey(changeFeedContainerHeader): []string{containerName},
+	}})
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	require.NoError(t, err)
+	require.NotNil(t, getResp.EnableChangeFeed)
+	require.True(t, *getResp.EnableChangeFeed)
+	require.NotNil(t, getResp.ChangeFeedRetentionInDays)
+	require.Equal(t, int32(30), *getResp.ChangeFeedRetentionInDays)
+	require.NotNil(t, getResp.ChangeFeedBlobContainerName)
+	require.Equal(t, containerName, *getResp.ChangeFeedBlobContainerName)
+}
+
+func TestShareGetPropertiesChangeFeedResponseHeadersAbsent(t *testing.T) {
+	shareClient := newChangeFeedShareClient(t, &changeFeedTransport{})
+
+	getResp, err := shareClient.GetProperties(context.Background(), nil)
+	require.NoError(t, err)
+	require.Nil(t, getResp.EnableChangeFeed)
+	require.Nil(t, getResp.ChangeFeedRetentionInDays)
+	require.Nil(t, getResp.ChangeFeedBlobContainerName)
 }

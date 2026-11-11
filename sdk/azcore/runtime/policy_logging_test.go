@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -10,8 +7,10 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -31,7 +30,7 @@ func TestPolicyLoggingSuccess(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
+	pl := exported.NewPipeline(nil, srv, NewLogPolicy(nil))
 	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -87,7 +86,7 @@ func TestPolicyLoggingError(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetError(errors.New("bogus error"))
-	pl := exported.NewPipeline(srv, NewLogPolicy(nil))
+	pl := exported.NewPipeline(nil, srv, NewLogPolicy(nil))
 	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -209,6 +208,32 @@ func TestWithAllowedHeadersQueryParams(t *testing.T) {
 	require.Regexp(t, `Client-Allowed: received2\s+Content-Length: 0\s+Date: (?:[a-zA-Z0-9:,\s]+)\s+Pipeline-Allowed: received1\s+Redacted-Header: REDACTED`, rawlog[log.EventResponse])
 }
 
+func TestDefaultAllowedHeaders(t *testing.T) {
+	rawlog := map[log.Event]string{}
+	log.SetListener(func(cls log.Event, s string) {
+		rawlog[cls] = s
+	})
+
+	srv, close := mock.NewServer()
+	defer close()
+	srv.AppendResponse(mock.WithHeader("Azure-Deprecating", "sunset=2025-01-01; id=foo; scope=all; link=https://example.com/deprecation"))
+
+	pl := NewPipeline("", "", PipelineOptions{}, &policy.ClientOptions{
+		Transport: srv,
+	})
+
+	req, err := NewRequest(context.Background(), http.MethodGet, srv.URL())
+	require.NoError(t, err)
+
+	_, err = pl.Do(req)
+	require.NoError(t, err)
+
+	logResp, ok := rawlog[log.EventResponse]
+	require.True(t, ok, "missing LogResponse")
+	require.Contains(t, logResp, "sunset=2025-01-01")
+	require.NotContains(t, logResp, "REDACTED")
+}
+
 func TestSkipWriteReqBody(t *testing.T) {
 	req, err := exported.NewRequest(context.Background(), http.MethodGet, "https://contoso.com")
 	require.NoError(t, err)
@@ -307,4 +332,55 @@ func TestWriteRespBodyReadError(t *testing.T) {
 	resp.Body = exported.NopCloser(&readSeekerFailer{failRead: true})
 	require.Error(t, writeRespBody(resp, &buf))
 	require.Contains(t, buf.String(), "Failed to read response body: read failed")
+}
+
+func TestSanitizeURLInError(t *testing.T) {
+	rawlog := map[log.Event]string{}
+	log.SetListener(func(cls log.Event, s string) {
+		rawlog[cls] = s
+	})
+	srv, close := mock.NewServer()
+	defer close()
+
+	const (
+		allowedQP  = "allowed-qp"
+		redactedQP = "redacted-qp"
+	)
+
+	pl := NewPipeline("", "", PipelineOptions{}, &policy.ClientOptions{
+		Logging: policy.LogOptions{
+			AllowedQueryParams: []string{allowedQP},
+		},
+		Retry: policy.RetryOptions{
+			RetryDelay: 1,
+		},
+		Transport: srv,
+	})
+
+	qp := url.Values{}
+	qp.Set(allowedQP, "allow_me")
+	qp.Set(redactedQP, "redact_me")
+
+	srvURLWithQP := srv.URL() + "?" + qp.Encode()
+
+	srv.SetError(fmt.Errorf("bogus error for %s test endpoint", srvURLWithQP))
+
+	req, err := NewRequest(context.Background(), http.MethodGet, srvURLWithQP)
+	require.NoError(t, err)
+	resp, err := pl.Do(req)
+	require.Error(t, err)
+	require.Nil(t, resp)
+	if logReq, ok := rawlog[log.EventResponse]; ok {
+		if !strings.Contains(logReq, "bogus error for") {
+			t.Fatal("missing expected error message")
+		}
+		if strings.Contains(logReq, "redact_me") {
+			t.Fatal("query param wasn't redacted")
+		}
+		if !strings.Contains(logReq, "allow_me") {
+			t.Fatal("missing expected query param")
+		}
+	} else {
+		t.Fatal("missing LogRequest")
+	}
 }

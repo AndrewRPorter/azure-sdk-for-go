@@ -19,6 +19,8 @@ import (
 
 // OperatorAPIPlansClient contains the methods for the OperatorAPIPlans group.
 // Don't use this type directly, use NewOperatorAPIPlansClient() instead.
+//
+// Generated from API version 2024-01-15-preview
 type OperatorAPIPlansClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -27,8 +29,11 @@ type OperatorAPIPlansClient struct {
 // NewOperatorAPIPlansClient creates a new instance of OperatorAPIPlansClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewOperatorAPIPlansClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*OperatorAPIPlansClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -42,8 +47,6 @@ func NewOperatorAPIPlansClient(subscriptionID string, credential azcore.TokenCre
 
 // Get - Get an OperatorApiPlan resource by name.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-01-15-preview
 //   - operatorAPIPlanName - APC Gateway Plan Name.
 //   - options - OperatorAPIPlansClientGetOptions contains the optional parameters for the OperatorAPIPlansClient.Get method.
 func (client *OperatorAPIPlansClient) Get(ctx context.Context, operatorAPIPlanName string, options *OperatorAPIPlansClientGetOptions) (OperatorAPIPlansClientGetResponse, error) {
@@ -60,11 +63,7 @@ func (client *OperatorAPIPlansClient) Get(ctx context.Context, operatorAPIPlanNa
 	if err != nil {
 		return OperatorAPIPlansClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return OperatorAPIPlansClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -72,7 +71,7 @@ func (client *OperatorAPIPlansClient) Get(ctx context.Context, operatorAPIPlanNa
 func (client *OperatorAPIPlansClient) getCreateRequest(ctx context.Context, operatorAPIPlanName string, _ *OperatorAPIPlansClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ProgrammableConnectivity/operatorApiPlans/{operatorApiPlanName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if operatorAPIPlanName == "" {
@@ -84,15 +83,18 @@ func (client *OperatorAPIPlansClient) getCreateRequest(ctx context.Context, oper
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-01-15-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240115Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *OperatorAPIPlansClient) getHandleResponse(resp *http.Response) (OperatorAPIPlansClientGetResponse, error) {
+func (client *OperatorAPIPlansClient) getHandleResponse(resp *http.Response, successCodes ...int) (OperatorAPIPlansClientGetResponse, error) {
 	result := OperatorAPIPlansClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.OperatorAPIPlan); err != nil {
 		return OperatorAPIPlansClientGetResponse{}, err
 	}
@@ -100,8 +102,6 @@ func (client *OperatorAPIPlansClient) getHandleResponse(resp *http.Response) (Op
 }
 
 // NewListBySubscriptionPager - List OperatorApiPlan resources by subscription ID.
-//
-// Generated from API version 2024-01-15-preview
 //   - options - OperatorAPIPlansClientListBySubscriptionOptions contains the optional parameters for the OperatorAPIPlansClient.NewListBySubscriptionPager
 //     method.
 func (client *OperatorAPIPlansClient) NewListBySubscriptionPager(options *OperatorAPIPlansClientListBySubscriptionOptions) *runtime.Pager[OperatorAPIPlansClientListBySubscriptionResponse] {
@@ -115,48 +115,62 @@ func (client *OperatorAPIPlansClient) NewListBySubscriptionPager(options *Operat
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return OperatorAPIPlansClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return OperatorAPIPlansClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *OperatorAPIPlansClient) listBySubscriptionCreateRequest(ctx context.Context, options *OperatorAPIPlansClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ProgrammableConnectivity/operatorApiPlans"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *OperatorAPIPlansClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, options *OperatorAPIPlansClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ProgrammableConnectivity/operatorApiPlans"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	if options != nil && options.Filter != nil {
-		reqQP.Set("$filter", *options.Filter)
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		if options != nil && options.Filter != nil {
+			reqQP.Set("$filter", *options.Filter)
+		}
+		if options != nil && options.Skip != nil {
+			reqQP.Set("$skip", strconv.FormatInt(int64(*options.Skip), 10))
+		}
+		if options != nil && options.Top != nil {
+			reqQP.Set("$top", strconv.FormatInt(int64(*options.Top), 10))
+		}
+		reqQP.Set("api-version", version20240115Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
 	}
-	if options != nil && options.Skip != nil {
-		reqQP.Set("$skip", strconv.FormatInt(int64(*options.Skip), 10))
-	}
-	if options != nil && options.Top != nil {
-		reqQP.Set("$top", strconv.FormatInt(int64(*options.Top), 10))
-	}
-	reqQP.Set("api-version", "2024-01-15-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *OperatorAPIPlansClient) listBySubscriptionHandleResponse(resp *http.Response) (OperatorAPIPlansClientListBySubscriptionResponse, error) {
+func (client *OperatorAPIPlansClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (OperatorAPIPlansClientListBySubscriptionResponse, error) {
 	result := OperatorAPIPlansClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.OperatorAPIPlanListResult); err != nil {
 		return OperatorAPIPlansClientListBySubscriptionResponse{}, err
 	}

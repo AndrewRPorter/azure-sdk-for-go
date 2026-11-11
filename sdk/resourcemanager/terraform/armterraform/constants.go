@@ -5,8 +5,7 @@
 package armterraform
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/terraform/armterraform"
-	moduleVersion = "v0.1.0"
+	version20260901Preview string = "2026-09-01-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -21,6 +20,53 @@ const (
 func PossibleActionTypeValues() []ActionType {
 	return []ActionType{
 		ActionTypeInternal,
+	}
+}
+
+// AuthorizationScopeFilter - The Azure Resource Graph Authorization Scope Filter parameter
+type AuthorizationScopeFilter string
+
+const (
+	// AuthorizationScopeFilterAtScopeAboveAndBelow - Returns assignments for the given scope, all parent scopes, and all child
+	// scopes.
+	AuthorizationScopeFilterAtScopeAboveAndBelow AuthorizationScopeFilter = "AtScopeAboveAndBelow"
+	// AuthorizationScopeFilterAtScopeAndAbove - Returns assignments for the given scope and all parent scopes, but not child
+	// scopes.
+	AuthorizationScopeFilterAtScopeAndAbove AuthorizationScopeFilter = "AtScopeAndAbove"
+	// AuthorizationScopeFilterAtScopeAndBelow - Returns assignments for the given scope and all child scopes.
+	AuthorizationScopeFilterAtScopeAndBelow AuthorizationScopeFilter = "AtScopeAndBelow"
+	// AuthorizationScopeFilterAtScopeExact - Returns assignments only for the given scope; no parent or child scopes are included.
+	AuthorizationScopeFilterAtScopeExact AuthorizationScopeFilter = "AtScopeExact"
+)
+
+// PossibleAuthorizationScopeFilterValues returns the possible values for the AuthorizationScopeFilter const type.
+func PossibleAuthorizationScopeFilterValues() []AuthorizationScopeFilter {
+	return []AuthorizationScopeFilter{
+		AuthorizationScopeFilterAtScopeAboveAndBelow,
+		AuthorizationScopeFilterAtScopeAndAbove,
+		AuthorizationScopeFilterAtScopeAndBelow,
+		AuthorizationScopeFilterAtScopeExact,
+	}
+}
+
+// AzureExtensionResourceType - The Azure extension resource type
+type AzureExtensionResourceType string
+
+const (
+	// AzureExtensionResourceTypeDiagnosticSettings - The Azure diagnostic settings extension resource type
+	AzureExtensionResourceTypeDiagnosticSettings AzureExtensionResourceType = "diagnostic-settings"
+	// AzureExtensionResourceTypeLocks - The Azure lock extension resource type
+	AzureExtensionResourceTypeLocks AzureExtensionResourceType = "locks"
+	// AzureExtensionResourceTypeRoleAssignments - The Azure role assignment extension resource type
+	AzureExtensionResourceTypeRoleAssignments AzureExtensionResourceType = "role-assignments"
+)
+
+// PossibleAzureExtensionResourceTypeValues returns the possible values for the AzureExtensionResourceType const type.
+func PossibleAzureExtensionResourceTypeValues() []AzureExtensionResourceType {
+	return []AzureExtensionResourceType{
+		AzureExtensionResourceTypeDiagnosticSettings,
+		AzureExtensionResourceTypeLocks,
+		AzureExtensionResourceTypeRoleAssignments,
 	}
 }
 

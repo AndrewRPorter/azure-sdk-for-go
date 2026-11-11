@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -100,7 +97,7 @@ func TestPollSucceeded(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](exported.NewPipeline(nil, shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{"Succeeded"}},
@@ -126,7 +123,7 @@ func TestPollError(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](exported.NewPipeline(nil, shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{poller.StatusFailed}},
@@ -151,7 +148,7 @@ func TestPollFailed(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](exported.NewPipeline(nil, shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Header:     http.Header{shared.HeaderFakePollerStatus: []string{poller.StatusFailed}},
@@ -175,7 +172,7 @@ func TestPollErrorNoHeader(t *testing.T) {
 	pollCtx := context.WithValue(context.Background(), shared.CtxAPINameKey{}, "FakeAPI")
 	resp := initialResponse(pollCtx, http.MethodPatch, http.NoBody)
 	resp.Header.Set(shared.HeaderFakePollerStatus, poller.StatusInProgress)
-	poller, err := New[widget](exported.NewPipeline(shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
+	poller, err := New[widget](exported.NewPipeline(nil, shared.TransportFunc(func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Body:       io.NopCloser(strings.NewReader(`{ "error": { "code": "NotFound", "message": "the item doesn't exist" } }`)),

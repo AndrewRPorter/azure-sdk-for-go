@@ -8,10 +8,10 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
-	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/plumbing/storer"
+	"github.com/go-git/go-git/v6"
+	"github.com/go-git/go-git/v6/config"
+	"github.com/go-git/go-git/v6/plumbing"
+	"github.com/go-git/go-git/v6/plumbing/storer"
 )
 
 type WorkTree interface {
@@ -57,13 +57,14 @@ func NewWorkTree(path string) (WorkTree, error) {
 	return &repository{
 		Repository: r,
 		wt:         wt,
-		root:       wt.Filesystem.Root(),
+		root:       wt.Filesystem().Root(),
 	}, nil
 }
 
 func CloneWorkTree(repoURL, workingPath string) (WorkTree, error) {
-	r, err := git.PlainClone(workingPath, false, &git.CloneOptions{
-		URL: repoURL,
+	r, err := git.PlainClone(workingPath, &git.CloneOptions{
+		Bare: false,
+		URL:  repoURL,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("cannot clone '%s' to '%s': %+v", repoURL, workingPath, err)
@@ -76,7 +77,7 @@ func CloneWorkTree(repoURL, workingPath string) (WorkTree, error) {
 	return &repository{
 		Repository: r,
 		wt:         wt,
-		root:       wt.Filesystem.Root(),
+		root:       wt.Filesystem().Root(),
 	}, nil
 }
 
@@ -90,7 +91,7 @@ func (r *repository) Add(path string) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -107,7 +108,7 @@ func (r *repository) Commit(message string) error {
 				message: m,
 			}
 		}
-		return fmt.Errorf(m)
+		return fmt.Errorf("%s", m)
 	}
 	return nil
 }
@@ -133,7 +134,7 @@ func (r *repository) checkoutBranch(branch string, create bool) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -143,7 +144,7 @@ func (r *repository) checkoutHash(hash string) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -153,7 +154,7 @@ func (r *repository) CheckoutTag(tag string) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -163,7 +164,7 @@ func (r *repository) CreateBranch(branch *Branch) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -174,7 +175,7 @@ func (r *repository) DeleteBranch(name string) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -185,7 +186,7 @@ func (r *repository) CherryPick(commit string) error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -196,7 +197,7 @@ func (r *repository) Stash() error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }
@@ -207,7 +208,7 @@ func (r *repository) StashPop() error {
 	cmd.Dir = r.root
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return fmt.Errorf("%s", string(output))
 	}
 	return nil
 }

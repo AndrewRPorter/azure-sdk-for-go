@@ -1,7 +1,5 @@
 # Azure Queue Storage SDK for Go
 
-> Service Version: 2018-03-28
-
 Azure Queue storage is a service for storing large numbers of messages that can be accessed from anywhere in 
 the world via authenticated calls using HTTP or HTTPS. 
 A single queue message can be up to 64 KiB in size, and a queue can contain millions of messages, 
@@ -16,7 +14,7 @@ up to the total capacity limit of a storage account.
 Install the Azure Queue Storage SDK for Go with [go get][goget]:
 
 ```Powershell
-go get github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue
+go get github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/v2
 ```
 
 If you're going to authenticate with Azure Active Directory (recommended), install the [azidentity][azidentity] module.

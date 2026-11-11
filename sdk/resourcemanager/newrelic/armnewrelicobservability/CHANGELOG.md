@@ -1,5 +1,32 @@
 # Release History
 
+## 2.0.0 (2026-08-21)
+### Breaking Changes
+
+- Type of `PlanData.BillingCycle` has been changed from `*BillingCycle` to `*string`
+- Enum `BillingCycle` has been removed
+- Operation `*MonitorsClient.Update` has been changed to LRO, use `*MonitorsClient.BeginUpdate` instead.
+- Parameter order for `*MonitorsClient.BeginDelete` has changed from `resourceGroupName, monitorName, userEmail` to `resourceGroupName, userEmail, monitorName`.
+
+### Features Added
+
+- New function `*ClientFactory.NewSaaSClient() *SaaSClient`
+- New function `*MonitorsClient.LatestLinkedSaaS(ctx context.Context, resourceGroupName string, monitorName string, options *MonitorsClientLatestLinkedSaaSOptions) (MonitorsClientLatestLinkedSaaSResponse, error)`
+- New function `*MonitorsClient.BeginLinkSaaS(ctx context.Context, resourceGroupName string, monitorName string, body SaaSData, options *MonitorsClientBeginLinkSaaSOptions) (*runtime.Poller[MonitorsClientLinkSaaSResponse], error)`
+- New function `*MonitorsClient.RefreshIngestionKey(ctx context.Context, resourceGroupName string, monitorName string, options *MonitorsClientRefreshIngestionKeyOptions) (MonitorsClientRefreshIngestionKeyResponse, error)`
+- New function `*MonitorsClient.BeginResubscribe(ctx context.Context, resourceGroupName string, monitorName string, options *MonitorsClientBeginResubscribeOptions) (*runtime.Poller[MonitorsClientResubscribeResponse], error)`
+- New function `NewSaaSClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SaaSClient, error)`
+- New function `*SaaSClient.ActivateResource(ctx context.Context, request ActivateSaaSParameterRequest, options *SaaSClientActivateResourceOptions) (SaaSClientActivateResourceResponse, error)`
+- New struct `ActivateSaaSParameterRequest`
+- New struct `LatestLinkedSaaSResponse`
+- New struct `ResubscribeProperties`
+- New struct `SaaSData`
+- New struct `SaaSResourceDetailsResponse`
+- New field `OfferID`, `PublisherID` in struct `MarketplaceSaaSInfo`
+- New field `SaaSData` in struct `MonitorProperties`
+- New field `SystemData` in struct `MonitoredSubscriptionProperties`
+- New field `SaaSData` in struct `NewRelicMonitorResourceUpdateProperties`
+
 ## 1.2.0 (2024-03-22)
 ### Features Added
 

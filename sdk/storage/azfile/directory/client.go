@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -43,6 +40,7 @@ func NewClient(directoryURL string, cred azcore.TokenCredential, options *Client
 		InsecureAllowCredentialWithHTTP: conOptions.InsecureAllowCredentialWithHTTP,
 	})
 	plOpts := runtime.PipelineOptions{
+		PerCall:  []policy.Policy{shared.NewRangePolicy()},
 		PerRetry: []policy.Policy{authPolicy},
 	}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
@@ -61,7 +59,7 @@ func NewClient(directoryURL string, cred azcore.TokenCredential, options *Client
 //   - options - client options; pass nil to accept the default values
 func NewClientWithNoCredential(directoryURL string, options *ClientOptions) (*Client, error) {
 	conOptions := shared.GetClientOptions(options)
-	plOpts := runtime.PipelineOptions{}
+	plOpts := runtime.PipelineOptions{PerCall: []policy.Policy{shared.NewRangePolicy()}}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
 
 	azClient, err := azcore.NewClient(exported.ModuleName, exported.ModuleVersion, plOpts, &conOptions.ClientOptions)
@@ -80,6 +78,7 @@ func NewClientWithSharedKeyCredential(directoryURL string, cred *SharedKeyCreden
 	authPolicy := exported.NewSharedKeyCredPolicy(cred)
 	conOptions := shared.GetClientOptions(options)
 	plOpts := runtime.PipelineOptions{
+		PerCall:  []policy.Policy{shared.NewRangePolicy()},
 		PerRetry: []policy.Policy{authPolicy},
 	}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
@@ -134,8 +133,15 @@ func (d *Client) URL() string {
 	return d.generated().Endpoint()
 }
 
+func (d *Client) checkAddressing(operation string, addressing base.Addressing) error {
+	return base.CheckAddressing(d.URL(), "directory.Client."+operation, addressing)
+}
+
 // NewSubdirectoryClient creates a new Client object by concatenating subDirectoryName to the end of this Client's URL.
 // The new subdirectory Client uses the same request policy pipeline as the parent directory Client.
+//
+// The path of a directory addressed by its file ID is not known, so if this Client addresses the directory by its
+// file ID, every operation on the returned Client returns an error wrapping fileerror.FileIDNotSupported.
 func (d *Client) NewSubdirectoryClient(subDirectoryName string) *Client {
 	subDirectoryName = url.PathEscape(strings.TrimRight(subDirectoryName, "/"))
 	subDirectoryURL := runtime.JoinPaths(d.URL(), subDirectoryName)
@@ -144,6 +150,9 @@ func (d *Client) NewSubdirectoryClient(subDirectoryName string) *Client {
 
 // NewFileClient creates a new file.Client object by concatenating fileName to the end of this Client's URL.
 // The new file.Client uses the same request policy pipeline as the Client.
+//
+// The path of a directory addressed by its file ID is not known, so if this Client addresses the directory by its
+// file ID, every operation on the returned file.Client returns an error wrapping fileerror.FileIDNotSupported.
 func (d *Client) NewFileClient(fileName string) *file.Client {
 	fileName = url.PathEscape(fileName)
 	fileURL := runtime.JoinPaths(d.URL(), fileName)
@@ -154,18 +163,22 @@ func (d *Client) NewFileClient(fileName string) *file.Client {
 // file.ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/create-directory.
 func (d *Client) Create(ctx context.Context, options *CreateOptions) (CreateResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().Create(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("Create", base.PathOnly); err != nil {
+		return CreateResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().Create(ctx, opts)
 }
 
 // Delete operation removes the specified empty directory. Note that the directory must be empty before it can be deleted.
 // Deleting directories that aren't empty returns error 409 (Directory Not Empty).
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-directory.
 func (d *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().Delete(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("Delete", base.PathOnly); err != nil {
+		return DeleteResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().Delete(ctx, opts)
 }
 
 // Rename operation renames a directory, and can optionally set system properties for the directory.
@@ -173,12 +186,15 @@ func (d *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResp
 //
 // For more information, see https://learn.microsoft.com/rest/api/storageservices/rename-directory.
 func (d *Client) Rename(ctx context.Context, destinationPath string, options *RenameOptions) (RenameResponse, error) {
+	if err := d.checkAddressing("Rename", base.PathOnly); err != nil {
+		return RenameResponse{}, err
+	}
 	destinationPath = strings.Trim(strings.TrimSpace(destinationPath), "/")
 	if len(destinationPath) == 0 {
 		return RenameResponse{}, errors.New("destination path must not be empty")
 	}
 
-	opts, destLease, smbInfo := options.format()
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot, d.getClientOptions().AllowSourceTrailingDot)
 
 	urlParts, err := sas.ParseURL(d.URL())
 	if err != nil {
@@ -201,7 +217,7 @@ func (d *Client) Rename(ctx context.Context, destinationPath string, options *Re
 
 	destDirClient := (*Client)(base.NewDirectoryClient(destURL, d.generated().InternalClient(), d.sharedKey(), d.getClientOptions()))
 
-	resp, err := destDirClient.generated().Rename(ctx, d.URL(), opts, nil, destLease, smbInfo)
+	resp, err := destDirClient.generated().Rename(ctx, d.URL(), opts)
 	return RenameResponse{
 		DirectoryClientRenameResponse: resp,
 	}, err
@@ -211,26 +227,32 @@ func (d *Client) Rename(ctx context.Context, destinationPath string, options *Re
 // file.ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/get-directory-properties.
 func (d *Client) GetProperties(ctx context.Context, options *GetPropertiesOptions) (GetPropertiesResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().GetProperties(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("GetProperties", base.PathOrFileID); err != nil {
+		return GetPropertiesResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().GetProperties(ctx, opts)
 }
 
 // SetProperties operation sets system properties for the specified directory.
 // file.ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/set-directory-properties.
 func (d *Client) SetProperties(ctx context.Context, options *SetPropertiesOptions) (SetPropertiesResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().SetProperties(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("SetProperties", base.PathOnly); err != nil {
+		return SetPropertiesResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().SetProperties(ctx, opts)
 }
 
 // SetMetadata operation sets user-defined metadata for the specified directory.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/set-directory-metadata.
 func (d *Client) SetMetadata(ctx context.Context, options *SetMetadataOptions) (SetMetadataResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().SetMetadata(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("SetMetadata", base.PathOnly); err != nil {
+		return SetMetadataResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().SetMetadata(ctx, opts)
 }
 
 // ForceCloseHandles operation closes a handle or handles opened on a directory.
@@ -238,23 +260,29 @@ func (d *Client) SetMetadata(ctx context.Context, options *SetMetadataOptions) (
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/force-close-handles.
 func (d *Client) ForceCloseHandles(ctx context.Context, handleID string, options *ForceCloseHandlesOptions) (ForceCloseHandlesResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().ForceCloseHandles(ctx, handleID, opts)
-	return resp, err
+	if err := d.checkAddressing("ForceCloseHandles", base.PathOnly); err != nil {
+		return ForceCloseHandlesResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().ForceCloseHandles(ctx, handleID, opts)
 }
 
 // ListHandles operation returns a list of open handles on a directory.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/list-handles.
 func (d *Client) ListHandles(ctx context.Context, options *ListHandlesOptions) (ListHandlesResponse, error) {
-	opts := options.format()
-	resp, err := d.generated().ListHandles(ctx, opts)
-	return resp, err
+	if err := d.checkAddressing("ListHandles", base.PathOnly); err != nil {
+		return ListHandlesResponse{}, err
+	}
+	opts := options.format(d.getClientOptions().FileRequestIntent, d.getClientOptions().AllowTrailingDot)
+	return d.generated().ListHandles(ctx, opts)
 }
 
 // NewListFilesAndDirectoriesPager operation returns a pager for the files and directories starting from the specified Marker.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/list-directories-and-files.
 func (d *Client) NewListFilesAndDirectoriesPager(options *ListFilesAndDirectoriesOptions) *runtime.Pager[ListFilesAndDirectoriesResponse] {
 	listOptions := generated.DirectoryClientListFilesAndDirectoriesSegmentOptions{}
+	listOptions.FileRequestIntent = d.getClientOptions().FileRequestIntent
+	listOptions.AllowTrailingDot = d.getClientOptions().AllowTrailingDot
 	if options != nil {
 		listOptions.Include = options.Include.format()
 		listOptions.IncludeExtendedInfo = options.IncludeExtendedInfo
@@ -262,6 +290,8 @@ func (d *Client) NewListFilesAndDirectoriesPager(options *ListFilesAndDirectorie
 		listOptions.Maxresults = options.MaxResults
 		listOptions.Prefix = options.Prefix
 		listOptions.Sharesnapshot = options.ShareSnapshot
+		listOptions.FileRequestIntent = d.getClientOptions().FileRequestIntent
+		listOptions.AllowTrailingDot = d.getClientOptions().AllowTrailingDot
 	}
 
 	return runtime.NewPager(runtime.PagingHandler[ListFilesAndDirectoriesResponse]{
@@ -269,6 +299,9 @@ func (d *Client) NewListFilesAndDirectoriesPager(options *ListFilesAndDirectorie
 			return page.NextMarker != nil && len(*page.NextMarker) > 0
 		},
 		Fetcher: func(ctx context.Context, page *ListFilesAndDirectoriesResponse) (ListFilesAndDirectoriesResponse, error) {
+			if err := d.checkAddressing("NewListFilesAndDirectoriesPager", base.PathOnly); err != nil {
+				return ListFilesAndDirectoriesResponse{}, err
+			}
 			var req *policy.Request
 			var err error
 			if page == nil {

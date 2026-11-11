@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -36,12 +33,13 @@ import (
 func Test(t *testing.T) {
 	recordMode := recording.GetRecordMode()
 	t.Logf("Running container Tests in %s mode\n", recordMode)
-	if recordMode == recording.LiveMode {
+	switch recordMode {
+	case recording.LiveMode:
 		suite.Run(t, &ContainerRecordedTestsSuite{})
 		suite.Run(t, &ContainerUnrecordedTestsSuite{})
-	} else if recordMode == recording.PlaybackMode {
+	case recording.PlaybackMode:
 		suite.Run(t, &ContainerRecordedTestsSuite{})
-	} else if recordMode == recording.RecordingMode {
+	case recording.RecordingMode:
 		suite.Run(t, &ContainerRecordedTestsSuite{})
 	}
 }
@@ -839,6 +837,84 @@ func (s *ContainerRecordedTestsSuite) TestContainerListHierarchyBlobsInvalidBlob
 	}
 }
 
+func (s *ContainerRecordedTestsSuite) TestContainerListBlobsHierarchyStartFrom() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	// Create two blobs that will be listed in lexicographic order.
+	firstBlobName := "dir/a.txt"
+	secondBlobName := "dir/b.txt"
+
+	testcommon.CreateNewBlockBlob(context.Background(), _require, firstBlobName, containerClient)
+	testcommon.CreateNewBlockBlob(context.Background(), _require, secondBlobName, containerClient)
+
+	// Start listing from the secondBlobName.
+	startFrom := secondBlobName
+	pager := containerClient.NewListBlobsHierarchyPager("", &container.ListBlobsHierarchyOptions{
+		StartFrom: &startFrom,
+	})
+
+	var seen []string
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+
+		for _, blob := range resp.Segment.BlobItems {
+			seen = append(seen, *blob.Name)
+		}
+	}
+
+	// If StartFrom is wired correctly, we should see only secondBlobName, not firstBlobName.
+	_require.Contains(seen, secondBlobName)
+	_require.NotContains(seen, firstBlobName)
+}
+
+func (s *ContainerRecordedTestsSuite) TestContainerListBlobsFlatStartFrom() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	// Create two blobs that will be listed in lexicographic order.
+	firstBlobName := "a.txt"
+	secondBlobName := "b.txt"
+
+	testcommon.CreateNewBlockBlob(context.Background(), _require, firstBlobName, containerClient)
+	testcommon.CreateNewBlockBlob(context.Background(), _require, secondBlobName, containerClient)
+
+	// Start listing from the secondBlobName.
+	startFrom := secondBlobName
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		StartFrom: &startFrom,
+	})
+
+	var seen []string
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+
+		for _, blob := range resp.Segment.BlobItems {
+			seen = append(seen, *blob.Name)
+		}
+	}
+
+	// If StartFrom is wired correctly, we should see only secondBlobName, not firstBlobName.
+	_require.Contains(seen, secondBlobName)
+	_require.NotContains(seen, firstBlobName)
+}
+
 func (s *ContainerRecordedTestsSuite) TestContainerListBlobsWithSnapshots() {
 	_require := require.New(s.T())
 	testName := s.T().Name()
@@ -1003,7 +1079,7 @@ func (s *ContainerRecordedTestsSuite) TestContainerListBlobsIncludeMultipleImpl(
 	_require.NoError(err)
 
 	// Copy should finish within one minute
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	bbClient3 := testcommon.CreateNewBlockBlob(context.Background(), _require, "deleted"+blobName, containerClient)
 	_, err = bbClient3.Delete(context.Background(), nil)
@@ -1365,8 +1441,8 @@ func (s *ContainerRecordedTestsSuite) TestListBlobIncludeMetadata() {
 		resp, err := pager.NextPage(context.Background())
 		_require.NoError(err)
 
-		_require.Len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems, 6)
-		for _, blob := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
+		_require.Len(resp.Segment.BlobItems, 6)
+		for _, blob := range resp.Segment.BlobItems {
 			_require.NotNil(blob.Metadata)
 			_require.Len(blob.Metadata, len(testcommon.BasicMetadata))
 		}
@@ -1427,8 +1503,8 @@ func (s *ContainerRecordedTestsSuite) TestListBlobIncludeMetadataEmptyValue() {
 		resp, err := pager.NextPage(context.Background())
 		_require.NoError(err)
 
-		_require.Len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems, 6)
-		for _, blob := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
+		_require.Len(resp.Segment.BlobItems, 6)
+		for _, blob := range resp.Segment.BlobItems {
 			_require.NotNil(blob.Metadata)
 			_require.Len(blob.Metadata, len(metadata))
 		}
@@ -1685,6 +1761,12 @@ func (s *ContainerUnrecordedTestsSuite) TestSetNullAccessPolicy() {
 }
 
 func (s *ContainerRecordedTestsSuite) TestContainerGetSetPermissionsMultiplePolicies() {
+	// NOTE: this is temporary and should be removed when tests are re-recorded
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(),
+		&recording.SetDefaultMatcherOptions{
+			CompareBodies:   to.Ptr(false),
+			ExcludedHeaders: []string{"Accept"},
+		}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -1896,6 +1978,11 @@ func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsPublicAccessCon
 // }
 
 func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsACLMoreThanFive() {
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(),
+		&recording.SetDefaultMatcherOptions{
+			CompareBodies:   to.Ptr(false),
+			ExcludedHeaders: []string{"Accept"},
+		}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -1934,6 +2021,11 @@ func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsACLMoreThanFive
 }
 
 func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsDeleteAndModifyACL() {
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(),
+		&recording.SetDefaultMatcherOptions{
+			CompareBodies:   to.Ptr(false),
+			ExcludedHeaders: []string{"Accept"},
+		}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -1989,6 +2081,11 @@ func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsDeleteAndModify
 }
 
 func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsDeleteAllPolicies() {
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(),
+		&recording.SetDefaultMatcherOptions{
+			CompareBodies:   to.Ptr(false),
+			ExcludedHeaders: []string{"Accept"},
+		}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -2085,6 +2182,11 @@ func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsNilPolicySlice(
 }
 
 func (s *ContainerRecordedTestsSuite) TestContainerSetPermissionsSignedIdentifierTooLong() {
+	require.NoError(s.T(), recording.SetDefaultMatcher(s.T(),
+		&recording.SetDefaultMatcherOptions{
+			CompareBodies:   to.Ptr(false),
+			ExcludedHeaders: []string{"Accept"},
+		}))
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
@@ -2250,7 +2352,7 @@ func (s *ContainerRecordedTestsSuite) TestContainerUndelete() {
 
 	// it appears that deleting the container involves acquiring a lease.
 	// since leases can only be 15-60s or infinite, we just wait for 60 seconds.
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	prefix := testcommon.ContainerPrefix
 	listOptions := service.ListContainersOptions{Prefix: &prefix, Include: service.ListContainersInclude{Metadata: true, Deleted: true}}
@@ -2284,7 +2386,7 @@ func (s *ContainerRecordedTestsSuite) TestContainerUndelete() {
 			break
 		} else if bloberror.HasCode(err, bloberror.Code("ConcurrentContainerOperationInProgress")) {
 			// the container is still being restored, sleep a bit then try again
-			time.Sleep(10 * time.Second)
+			recording.Sleep(10 * time.Second)
 		} else {
 			// some other error
 			break
@@ -2476,15 +2578,15 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsByBasicTags() {
 	createResp, err := abClient.Create(context.Background(), &createAppendBlobOptions)
 	_require.NoError(err)
 	_require.NotNil(createResp.VersionID)
-	time.Sleep(10 * time.Second)
+	recording.Sleep(10 * time.Second)
 
 	// Use container client to filter blobs by tag
 	where := "\"azure\"='blob'"
 	opts := container.FilterBlobsOptions{MaxResults: to.Ptr(int32(10)), Marker: to.Ptr("")}
 	lResp, err := containerSasClient.FilterBlobs(context.Background(), where, &opts)
 	_require.NoError(err)
-	_require.Equal(*lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[0].Key, "azure")
-	_require.Equal(*lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[0].Value, "blob")
+	_require.Equal(*lResp.Blobs[0].Tags.BlobTagSet[0].Key, "azure")
+	_require.Equal(*lResp.Blobs[0].Tags.BlobTagSet[0].Value, "blob")
 }
 
 func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsBySpecialCharTags() {
@@ -2524,7 +2626,7 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsBySpecialCharTags() {
 	createResp, err := abClient.Create(context.Background(), &createAppendBlobOptions)
 	_require.NoError(err)
 	_require.NotNil(createResp.VersionID)
-	time.Sleep(10 * time.Second)
+	recording.Sleep(10 * time.Second)
 
 	// Use container client to filter blobs by tag
 
@@ -2532,9 +2634,9 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsBySpecialCharTags() {
 	opts := container.FilterBlobsOptions{MaxResults: to.Ptr(int32(10))}
 	lResp, err := containerSasClient.FilterBlobs(context.Background(), where, &opts)
 	_require.NoError(err)
-	_require.Len(lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet, 1)
-	_require.Equal(*lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[0].Key, "go")
-	_require.Equal(*lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[0].Value, "written in golang")
+	_require.Len(lResp.Blobs[0].Tags.BlobTagSet, 1)
+	_require.Equal(*lResp.Blobs[0].Tags.BlobTagSet[0].Key, "go")
+	_require.Equal(*lResp.Blobs[0].Tags.BlobTagSet[0].Value, "written in golang")
 }
 
 func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsByTagsNegative() {
@@ -2573,7 +2675,7 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsByTagsNegative() {
 	createResp, err := abClient.Create(context.Background(), &createAppendBlobOptions)
 	_require.NoError(err)
 	_require.NotNil(createResp.VersionID)
-	time.Sleep(10 * time.Second)
+	recording.Sleep(10 * time.Second)
 
 	// Use container client to filter blobs by tag
 	where := "\"azure\"='blob'"
@@ -2609,7 +2711,7 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsOnContainer() {
 	blobClient2 := testcommon.CreateNewBlockBlob(context.Background(), _require, blobName2, containerClient)
 	_, err = blobClient2.SetTags(context.Background(), blobTagsMap2, nil)
 	_require.NoError(err)
-	time.Sleep(10 * time.Second)
+	recording.Sleep(10 * time.Second)
 
 	blobTagsResp, err := blobClient2.GetTags(context.Background(), nil)
 	_require.NoError(err)
@@ -2626,9 +2728,9 @@ func (s *ContainerUnrecordedTestsSuite) TestFilterBlobsOnContainer() {
 	where = "\"tag1\"='firsttag'AND\"tag2\"='secondtag'"
 	lResp, err = containerClient.FilterBlobs(context.Background(), where, nil)
 	_require.NoError(err)
-	_require.Len(lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet, 2)
-	_require.Equal(lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[0], blobTagsSet[0])
-	_require.Equal(lResp.FilterBlobSegment.Blobs[0].Tags.BlobTagSet[1], blobTagsSet[1])
+	_require.Len(lResp.Blobs[0].Tags.BlobTagSet, 2)
+	_require.Equal(lResp.Blobs[0].Tags.BlobTagSet[0], blobTagsSet[0])
+	_require.Equal(lResp.Blobs[0].Tags.BlobTagSet[1], blobTagsSet[1])
 }
 
 func (s *ContainerUnrecordedTestsSuite) TestSASContainerClientTags() {
@@ -2705,7 +2807,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteSuccessUsing
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 10)
 
@@ -2727,7 +2829,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteSuccessUsing
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 }
@@ -2760,10 +2862,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierPartialFail
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -2799,16 +2902,81 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierPartialFail
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
 	}
 	_require.Equal(ctrHot, 0)
 	_require.Equal(ctrCool, 10)
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierSmartUsingSharedKey() {
+	// Smart access tier is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Smart access tier is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	bb, err := containerClient.NewBatchBuilder()
+	_require.NoError(err)
+
+	for i := 0; i < 10; i++ {
+		bbName := getBlobNameForBatch(i)
+		_ = testcommon.CreateNewBlockBlob(context.Background(), _require, bbName, containerClient)
+		err = bb.SetTier(bbName, blob.AccessTierSmart, nil)
+		_require.NoError(err)
+	}
+
+	// Verify all blobs are in Hot tier before batch
+	pager := containerClient.NewListBlobsFlatPager(nil)
+	var ctrHot = 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		handleError(err)
+		for _, blobItem := range resp.Segment.BlobItems {
+			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+				ctrHot++
+			}
+		}
+	}
+	_require.Equal(ctrHot, 10)
+
+	resp, err := containerClient.SubmitBatch(context.Background(), bb, nil)
+	_require.NoError(err)
+	_require.NotNil(resp.RequestID)
+
+	for _, subResp := range resp.Responses {
+		_require.NotNil(subResp.ContentID)
+		_require.NotNil(subResp.ContainerName)
+		_require.NotNil(subResp.BlobName)
+		_require.NotNil(subResp.RequestID)
+		_require.NotNil(subResp.Version)
+		_require.NoError(subResp.Error)
+	}
+
+	// Verify all blobs are now in Smart tier
+	pager = containerClient.NewListBlobsFlatPager(nil)
+	var ctrSmart = 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		handleError(err)
+		for _, blobItem := range resp.Segment.BlobItems {
+			if *blobItem.Properties.AccessTier == container.AccessTierSmart {
+				ctrSmart++
+			}
+		}
+	}
+	_require.Equal(ctrSmart, 10)
 }
 
 func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingTokenCredential() {
@@ -2843,7 +3011,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingTokenCr
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 10)
 
@@ -2856,7 +3024,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingTokenCr
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 }
@@ -2893,10 +3061,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingTokenC
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -2914,10 +3083,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingTokenC
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -2961,7 +3131,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingAccount
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 10)
 
@@ -2974,7 +3144,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingAccount
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 }
@@ -3014,10 +3184,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingAccoun
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3035,10 +3206,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingAccoun
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3078,7 +3250,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingService
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 10)
 
@@ -3091,7 +3263,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingService
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 }
@@ -3127,10 +3299,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingServic
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3148,10 +3321,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingServic
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3197,7 +3371,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingUserDel
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 10)
 
@@ -3210,7 +3384,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteUsingUserDel
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 }
@@ -3252,10 +3426,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingUserDe
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3273,10 +3448,11 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchSetTierUsingUserDe
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		for _, blobItem := range resp.ListBlobsFlatSegmentResponse.Segment.BlobItems {
-			if *blobItem.Properties.AccessTier == container.AccessTierHot {
+		for _, blobItem := range resp.Segment.BlobItems {
+			switch *blobItem.Properties.AccessTier {
+			case container.AccessTierHot:
 				ctrHot++
-			} else if *blobItem.Properties.AccessTier == container.AccessTierCool {
+			case container.AccessTierCool:
 				ctrCool++
 			}
 		}
@@ -3310,7 +3486,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteMoreThan256(
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 256)
 
@@ -3326,7 +3502,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteMoreThan256(
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 
@@ -3365,7 +3541,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteForOneBlob()
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 1)
 
@@ -3380,7 +3556,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerBlobBatchDeleteForOneBlob()
 	for pager.More() {
 		resp, err := pager.NextPage(context.Background())
 		handleError(err)
-		ctr += len(resp.ListBlobsFlatSegmentResponse.Segment.BlobItems)
+		ctr += len(resp.Segment.BlobItems)
 	}
 	_require.Equal(ctr, 0)
 
@@ -3457,7 +3633,7 @@ func (s *ContainerUnrecordedTestsSuite) TestContainerSASUsingAccessPolicy() {
 	_require.NoError(err)
 	_require.Len(gResp.SignedIdentifiers, 1)
 
-	time.Sleep(30 * time.Second)
+	recording.Sleep(30 * time.Second)
 
 	sasQueryParams, err := sas.BlobSignatureValues{
 		Protocol:      sas.ProtocolHTTPS,
@@ -3529,4 +3705,370 @@ func (s *ContainerRecordedTestsSuite) TestContainerClientCustomAudience() {
 
 	_, err = containerClientAudience.GetProperties(context.Background(), nil)
 	_require.NoError(err)
+}
+
+// Arrow format integration tests — require a Photon-enabled storage account.
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowFormat() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	const blobCount = 5
+	for i := 0; i < blobCount; i++ {
+		blobName := fmt.Sprintf("arrowblob%d", i)
+		testcommon.CreateNewBlockBlob(context.Background(), _require, blobName, containerClient)
+	}
+
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+	})
+
+	count := 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		count += len(resp.Segment.BlobItems)
+		for _, blob := range resp.Segment.BlobItems {
+			_require.NotNil(blob.Name)
+			_require.NotNil(blob.Properties)
+		}
+	}
+	_require.Equal(blobCount, count)
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowFormatFallbackToXML() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	testcommon.CreateNewBlockBlob(context.Background(), _require, "fallbackblob", containerClient)
+
+	// When the account doesn't support Arrow, it should fall back to XML transparently.
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+	})
+
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		_require.GreaterOrEqual(len(resp.Segment.BlobItems), 1)
+	}
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowEmptyContainer() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+	})
+
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		_require.Empty(resp.Segment.BlobItems)
+	}
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowWithPrefix() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	// Create blobs with different prefixes
+	for i := 0; i < 3; i++ {
+		testcommon.CreateNewBlockBlob(context.Background(), _require, fmt.Sprintf("prefix1/blob%d", i), containerClient)
+	}
+	for i := 0; i < 2; i++ {
+		testcommon.CreateNewBlockBlob(context.Background(), _require, fmt.Sprintf("prefix2/blob%d", i), containerClient)
+	}
+
+	prefix := "prefix1/"
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+		Prefix:         &prefix,
+	})
+
+	count := 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		count += len(resp.Segment.BlobItems)
+		for _, blob := range resp.Segment.BlobItems {
+			_require.True(strings.HasPrefix(*blob.Name, prefix))
+		}
+	}
+	_require.Equal(3, count)
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowWithMetadata() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	blobName := "metadatablob"
+	bbClient := containerClient.NewBlockBlobClient(blobName)
+	_, err = bbClient.Upload(context.Background(), streaming.NopCloser(strings.NewReader(testcommon.BlockBlobDefaultData)),
+		&blockblob.UploadOptions{Metadata: testcommon.BasicMetadata})
+	_require.NoError(err)
+
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+		Include:        container.ListBlobsInclude{Metadata: true},
+	})
+
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		_require.Len(resp.Segment.BlobItems, 1)
+
+		item := resp.Segment.BlobItems[0]
+		_require.Equal(blobName, *item.Name)
+		_require.NotNil(item.Metadata)
+		_require.Len(item.Metadata, len(testcommon.BasicMetadata))
+	}
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowPagination() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	const blobCount = 10
+	for i := 0; i < blobCount; i++ {
+		testcommon.CreateNewBlockBlob(context.Background(), _require, fmt.Sprintf("pageblob%02d", i), containerClient)
+	}
+
+	maxResults := int32(3)
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+		MaxResults:     &maxResults,
+	})
+
+	totalCount := 0
+	pageCount := 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		totalCount += len(resp.Segment.BlobItems)
+		pageCount++
+	}
+	_require.Equal(blobCount, totalCount)
+	_require.GreaterOrEqual(pageCount, 2) // Should have at least 2 pages with max 3 per page
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsHierarchyArrowFormat() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	// Create blobs in a hierarchy
+	testcommon.CreateNewBlockBlob(context.Background(), _require, "topblob.txt", containerClient)
+	testcommon.CreateNewBlockBlob(context.Background(), _require, "dir1/file1.txt", containerClient)
+	testcommon.CreateNewBlockBlob(context.Background(), _require, "dir1/file2.txt", containerClient)
+	testcommon.CreateNewBlockBlob(context.Background(), _require, "dir2/file3.txt", containerClient)
+
+	pager := containerClient.NewListBlobsHierarchyPager("/", &container.ListBlobsHierarchyOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+	})
+
+	var allItems []*container.BlobItem
+	var allPrefixes []*container.BlobPrefix
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		allItems = append(allItems, resp.Segment.BlobItems...)
+		allPrefixes = append(allPrefixes, resp.Segment.BlobPrefixes...)
+	}
+
+	// Should have 1 top-level blob and 2 prefixes (dir1/, dir2/)
+	_require.Len(allItems, 1)
+	_require.Equal("topblob.txt", *allItems[0].Name)
+	_require.Len(allPrefixes, 2)
+
+	prefixNames := []string{*allPrefixes[0].Name, *allPrefixes[1].Name}
+	sort.Strings(prefixNames)
+	_require.Equal("dir1/", prefixNames[0])
+	_require.Equal("dir2/", prefixNames[1])
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowStartFromEndBefore() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	// Create blobs with names that sort lexicographically: a, b, c, d, e
+	for _, name := range []string{"a", "b", "c", "d", "e"} {
+		testcommon.CreateNewBlockBlob(context.Background(), _require, name, containerClient)
+	}
+
+	startFrom := "b"
+	endBefore := "d"
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+		StartFrom:      &startFrom,
+		EndBefore:      &endBefore,
+	})
+
+	var names []string
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, item := range resp.Segment.BlobItems {
+			names = append(names, *item.Name)
+		}
+	}
+
+	// Should include b, c (startFrom is inclusive, endBefore is exclusive)
+	_require.Equal([]string{"b", "c"}, names)
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowWithSnapshots() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	blobName := "snapblob"
+	testcommon.CreateNewBlockBlob(context.Background(), _require, blobName, containerClient)
+
+	// Create a snapshot
+	blobClient := containerClient.NewBlobClient(blobName)
+	_, err = blobClient.CreateSnapshot(context.Background(), nil)
+	_require.NoError(err)
+
+	pager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+		Include:        container.ListBlobsInclude{Snapshots: true},
+	})
+
+	count := 0
+	snapshotCount := 0
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, item := range resp.Segment.BlobItems {
+			count++
+			if item.Snapshot != nil && *item.Snapshot != "" {
+				snapshotCount++
+			}
+		}
+	}
+
+	_require.GreaterOrEqual(count, 2)         // At least the blob + 1 snapshot
+	_require.GreaterOrEqual(snapshotCount, 1) // At least 1 snapshot entry
+}
+
+func (s *ContainerUnrecordedTestsSuite) TestContainerListBlobsFlatArrowMatchesXML() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	containerClient := testcommon.CreateNewContainer(context.Background(), _require, containerName, svcClient)
+	defer testcommon.DeleteContainer(context.Background(), _require, containerClient)
+
+	const blobCount = 5
+	for i := 0; i < blobCount; i++ {
+		testcommon.CreateNewBlockBlob(context.Background(), _require, fmt.Sprintf("matchblob%d", i), containerClient)
+	}
+
+	// List with XML (default)
+	xmlPager := containerClient.NewListBlobsFlatPager(nil)
+	var xmlNames []string
+	for xmlPager.More() {
+		resp, err := xmlPager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, item := range resp.Segment.BlobItems {
+			xmlNames = append(xmlNames, *item.Name)
+		}
+	}
+
+	// List with Arrow
+	arrowPager := containerClient.NewListBlobsFlatPager(&container.ListBlobsFlatOptions{
+		ResponseFormat: container.StorageResponseFormatArrow,
+	})
+	var arrowNames []string
+	for arrowPager.More() {
+		resp, err := arrowPager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, item := range resp.Segment.BlobItems {
+			arrowNames = append(arrowNames, *item.Name)
+		}
+	}
+
+	sort.Strings(xmlNames)
+	sort.Strings(arrowNames)
+	_require.Equal(xmlNames, arrowNames)
+}
+
+// TestContainerGetSASURLPreservesCustomQueryParams is a regression test for GetSASURL()
+// appending a duplicated "?" to the resulting URL when the client's URL already contained a
+// query string (e.g. a customer-provided endpoint with pre-existing custom query parameters),
+// which previously produced a malformed SAS URL.
+func TestContainerGetSASURLPreservesCustomQueryParams(t *testing.T) {
+	_require := require.New(t)
+	const accountName = "fakestorageaccount"
+	// base64-encoded fake key; not a real secret.
+	const accountKey = "PSA7dl59RwZBFEBhBEtdrsq/g7VpjMFeSPzdC4SoBiQI3xVLg2y8HRoAF3PidfB8/i9v67QCNSAdVdJdKrmqSw=="
+	cred, err := container.NewSharedKeyCredential(accountName, accountKey)
+	_require.NoError(err)
+
+	containerURL := fmt.Sprintf("https://%s.blob.core.windows.net/container?customparam=value", accountName)
+	containerClient, err := container.NewClientWithSharedKeyCredential(containerURL, cred, nil)
+	_require.NoError(err)
+
+	sasURL, err := containerClient.GetSASURL(sas.ContainerPermissions{Read: true}, time.Now().Add(time.Hour), nil)
+	_require.NoError(err)
+
+	_require.Equal(1, strings.Count(sasURL, "?"), "SAS URL must not contain a duplicated '?': %s", sasURL)
+	_require.Contains(sasURL, "customparam=value")
+	_require.Contains(sasURL, "sig=")
 }

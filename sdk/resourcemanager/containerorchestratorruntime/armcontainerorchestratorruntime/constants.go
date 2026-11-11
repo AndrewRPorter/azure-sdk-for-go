@@ -5,8 +5,7 @@
 package armcontainerorchestratorruntime
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerorchestratorruntime/armcontainerorchestratorruntime"
-	moduleVersion = "v0.1.0"
+	version20240301 string = "2024-03-01"
 )
 
 // AccessMode - Storage Class Access Mode

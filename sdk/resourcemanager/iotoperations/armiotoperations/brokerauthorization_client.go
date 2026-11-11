@@ -18,6 +18,8 @@ import (
 
 // BrokerAuthorizationClient contains the methods for the BrokerAuthorization group.
 // Don't use this type directly, use NewBrokerAuthorizationClient() instead.
+//
+// Generated from API version 2026-07-01
 type BrokerAuthorizationClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type BrokerAuthorizationClient struct {
 // NewBrokerAuthorizationClient creates a new instance of BrokerAuthorizationClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewBrokerAuthorizationClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*BrokerAuthorizationClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewBrokerAuthorizationClient(subscriptionID string, credential azcore.Token
 
 // BeginCreateOrUpdate - Create a BrokerAuthorizationResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - instanceName - Name of instance.
 //   - brokerName - Name of broker.
@@ -67,10 +70,8 @@ func (client *BrokerAuthorizationClient) BeginCreateOrUpdate(ctx context.Context
 	}
 }
 
-// CreateOrUpdate - Create a BrokerAuthorizationResource
+// createOrUpdate - Create a BrokerAuthorizationResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 func (client *BrokerAuthorizationClient) createOrUpdate(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, authorizationName string, resource BrokerAuthorizationResource, options *BrokerAuthorizationClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "BrokerAuthorizationClient.BeginCreateOrUpdate"
@@ -92,11 +93,11 @@ func (client *BrokerAuthorizationClient) createOrUpdate(ctx context.Context, res
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *BrokerAuthorizationClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, authorizationName string, resource BrokerAuthorizationResource, _ *BrokerAuthorizationClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTOperations/instances/{instanceName}/brokers/{brokerName}/authorizations/{authorizationName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -120,8 +121,8 @@ func (client *BrokerAuthorizationClient) createOrUpdateCreateRequest(ctx context
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -132,8 +133,6 @@ func (client *BrokerAuthorizationClient) createOrUpdateCreateRequest(ctx context
 
 // BeginDelete - Delete a BrokerAuthorizationResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - instanceName - Name of instance.
 //   - brokerName - Name of broker.
@@ -157,10 +156,8 @@ func (client *BrokerAuthorizationClient) BeginDelete(ctx context.Context, resour
 	}
 }
 
-// Delete - Delete a BrokerAuthorizationResource
+// deleteOperation - Delete a BrokerAuthorizationResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 func (client *BrokerAuthorizationClient) deleteOperation(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, authorizationName string, options *BrokerAuthorizationClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "BrokerAuthorizationClient.BeginDelete"
@@ -182,11 +179,11 @@ func (client *BrokerAuthorizationClient) deleteOperation(ctx context.Context, re
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *BrokerAuthorizationClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, authorizationName string, _ *BrokerAuthorizationClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTOperations/instances/{instanceName}/brokers/{brokerName}/authorizations/{authorizationName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -210,16 +207,13 @@ func (client *BrokerAuthorizationClient) deleteCreateRequest(ctx context.Context
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260701)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a BrokerAuthorizationResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - instanceName - Name of instance.
 //   - brokerName - Name of broker.
@@ -239,11 +233,7 @@ func (client *BrokerAuthorizationClient) Get(ctx context.Context, resourceGroupN
 	if err != nil {
 		return BrokerAuthorizationClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return BrokerAuthorizationClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -251,7 +241,7 @@ func (client *BrokerAuthorizationClient) Get(ctx context.Context, resourceGroupN
 func (client *BrokerAuthorizationClient) getCreateRequest(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, authorizationName string, _ *BrokerAuthorizationClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTOperations/instances/{instanceName}/brokers/{brokerName}/authorizations/{authorizationName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -275,15 +265,18 @@ func (client *BrokerAuthorizationClient) getCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *BrokerAuthorizationClient) getHandleResponse(resp *http.Response) (BrokerAuthorizationClientGetResponse, error) {
+func (client *BrokerAuthorizationClient) getHandleResponse(resp *http.Response, successCodes ...int) (BrokerAuthorizationClientGetResponse, error) {
 	result := BrokerAuthorizationClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.BrokerAuthorizationResource); err != nil {
 		return BrokerAuthorizationClientGetResponse{}, err
 	}
@@ -291,8 +284,6 @@ func (client *BrokerAuthorizationClient) getHandleResponse(resp *http.Response) 
 }
 
 // NewListByResourceGroupPager - List BrokerAuthorizationResource resources by BrokerResource
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - instanceName - Name of instance.
 //   - brokerName - Name of broker.
@@ -309,51 +300,65 @@ func (client *BrokerAuthorizationClient) NewListByResourceGroupPager(resourceGro
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, instanceName, brokerName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, instanceName, brokerName, nextLink, options)
 			if err != nil {
 				return BrokerAuthorizationClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return BrokerAuthorizationClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *BrokerAuthorizationClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, _ *BrokerAuthorizationClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTOperations/instances/{instanceName}/brokers/{brokerName}/authorizations"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *BrokerAuthorizationClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, instanceName string, brokerName string, nextLink string, _ *BrokerAuthorizationClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTOperations/instances/{instanceName}/brokers/{brokerName}/authorizations"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if instanceName == "" {
+			return nil, errors.New("parameter instanceName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{instanceName}", url.PathEscape(instanceName))
+		if brokerName == "" {
+			return nil, errors.New("parameter brokerName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{brokerName}", url.PathEscape(brokerName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if instanceName == "" {
-		return nil, errors.New("parameter instanceName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{instanceName}", url.PathEscape(instanceName))
-	if brokerName == "" {
-		return nil, errors.New("parameter brokerName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{brokerName}", url.PathEscape(brokerName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *BrokerAuthorizationClient) listByResourceGroupHandleResponse(resp *http.Response) (BrokerAuthorizationClientListByResourceGroupResponse, error) {
+func (client *BrokerAuthorizationClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (BrokerAuthorizationClientListByResourceGroupResponse, error) {
 	result := BrokerAuthorizationClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.BrokerAuthorizationResourceListResult); err != nil {
 		return BrokerAuthorizationClientListByResourceGroupResponse{}, err
 	}

@@ -48,6 +48,22 @@ func (c *ClientFactory) NewAutoUpgradeProfilesClient() *AutoUpgradeProfilesClien
 	}
 }
 
+// NewClusterMeshProfilesClient creates a new instance of ClusterMeshProfilesClient.
+func (c *ClientFactory) NewClusterMeshProfilesClient() *ClusterMeshProfilesClient {
+	return &ClusterMeshProfilesClient{
+		subscriptionID: c.subscriptionID,
+		internal:       c.internal,
+	}
+}
+
+// NewFleetManagedNamespacesClient creates a new instance of FleetManagedNamespacesClient.
+func (c *ClientFactory) NewFleetManagedNamespacesClient() *FleetManagedNamespacesClient {
+	return &FleetManagedNamespacesClient{
+		subscriptionID: c.subscriptionID,
+		internal:       c.internal,
+	}
+}
+
 // NewFleetMembersClient creates a new instance of FleetMembersClient.
 func (c *ClientFactory) NewFleetMembersClient() *FleetMembersClient {
 	return &FleetMembersClient{
@@ -67,6 +83,14 @@ func (c *ClientFactory) NewFleetUpdateStrategiesClient() *FleetUpdateStrategiesC
 // NewFleetsClient creates a new instance of FleetsClient.
 func (c *ClientFactory) NewFleetsClient() *FleetsClient {
 	return &FleetsClient{
+		subscriptionID: c.subscriptionID,
+		internal:       c.internal,
+	}
+}
+
+// NewGatesClient creates a new instance of GatesClient.
+func (c *ClientFactory) NewGatesClient() *GatesClient {
+	return &GatesClient{
 		subscriptionID: c.subscriptionID,
 		internal:       c.internal,
 	}

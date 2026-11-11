@@ -189,6 +189,12 @@ type HostsClientListResponse struct {
 	HostListResult
 }
 
+// HostsClientUpdateResponse contains the response from method HostsClient.Update.
+type HostsClientUpdateResponse struct {
+	// A host resource
+	Host
+}
+
 // IscsiPathsClientCreateOrUpdateResponse contains the response from method IscsiPathsClient.BeginCreateOrUpdate.
 type IscsiPathsClientCreateOrUpdateResponse struct {
 	// An iSCSI path resource
@@ -212,6 +218,35 @@ type IscsiPathsClientListByPrivateCloudResponse struct {
 	IscsiPathListResult
 }
 
+// LicensesClientCreateOrUpdateResponse contains the response from method LicensesClient.BeginCreateOrUpdate.
+type LicensesClientCreateOrUpdateResponse struct {
+	// A license resource
+	License
+}
+
+// LicensesClientDeleteResponse contains the response from method LicensesClient.BeginDelete.
+type LicensesClientDeleteResponse struct {
+	// placeholder for future response values
+}
+
+// LicensesClientGetPropertiesResponse contains the response from method LicensesClient.GetProperties.
+type LicensesClientGetPropertiesResponse struct {
+	// The properties of a license
+	LicensePropertiesClassification
+}
+
+// LicensesClientGetResponse contains the response from method LicensesClient.Get.
+type LicensesClientGetResponse struct {
+	// A license resource
+	License
+}
+
+// LicensesClientListResponse contains the response from method LicensesClient.NewListPager.
+type LicensesClientListResponse struct {
+	// The response of a License list operation.
+	LicenseListResult
+}
+
 // LocationsClientCheckQuotaAvailabilityResponse contains the response from method LocationsClient.CheckQuotaAvailability.
 type LocationsClientCheckQuotaAvailabilityResponse struct {
 	// Subscription quotas
@@ -222,6 +257,36 @@ type LocationsClientCheckQuotaAvailabilityResponse struct {
 type LocationsClientCheckTrialAvailabilityResponse struct {
 	// Subscription trial availability
 	Trial
+}
+
+// MaintenancesClientGetResponse contains the response from method MaintenancesClient.Get.
+type MaintenancesClientGetResponse struct {
+	// A cluster resource
+	Maintenance
+}
+
+// MaintenancesClientInitiateChecksResponse contains the response from method MaintenancesClient.InitiateChecks.
+type MaintenancesClientInitiateChecksResponse struct {
+	// A cluster resource
+	Maintenance
+}
+
+// MaintenancesClientListResponse contains the response from method MaintenancesClient.NewListPager.
+type MaintenancesClientListResponse struct {
+	// The response of a Maintenance list operation.
+	MaintenanceListResult
+}
+
+// MaintenancesClientRescheduleResponse contains the response from method MaintenancesClient.Reschedule.
+type MaintenancesClientRescheduleResponse struct {
+	// A cluster resource
+	Maintenance
+}
+
+// MaintenancesClientScheduleResponse contains the response from method MaintenancesClient.Schedule.
+type MaintenancesClientScheduleResponse struct {
+	// A cluster resource
+	Maintenance
 }
 
 // OperationsClientListResponse contains the response from method OperationsClient.NewListPager.
@@ -274,6 +339,12 @@ type PrivateCloudsClientDeleteResponse struct {
 type PrivateCloudsClientGetResponse struct {
 	// A private cloud resource
 	PrivateCloud
+}
+
+// PrivateCloudsClientGetVcfLicenseResponse contains the response from method PrivateCloudsClient.GetVcfLicense.
+type PrivateCloudsClientGetVcfLicenseResponse struct {
+	// A VMware Cloud Foundation license
+	VcfLicenseClassification
 }
 
 // PrivateCloudsClientListAdminCredentialsResponse contains the response from method PrivateCloudsClient.ListAdminCredentials.

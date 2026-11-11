@@ -18,6 +18,8 @@ import (
 
 // StandbyVirtualMachinesClient contains the methods for the StandbyVirtualMachines group.
 // Don't use this type directly, use NewStandbyVirtualMachinesClient() instead.
+//
+// Generated from API version 2025-10-01
 type StandbyVirtualMachinesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type StandbyVirtualMachinesClient struct {
 // NewStandbyVirtualMachinesClient creates a new instance of StandbyVirtualMachinesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewStandbyVirtualMachinesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*StandbyVirtualMachinesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewStandbyVirtualMachinesClient(subscriptionID string, credential azcore.To
 
 // Get - Get a StandbyVirtualMachineResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyVirtualMachinePoolName - Name of the standby virtual machine pool
 //   - standbyVirtualMachineName - Name of the standby virtual machine
@@ -62,11 +65,7 @@ func (client *StandbyVirtualMachinesClient) Get(ctx context.Context, resourceGro
 	if err != nil {
 		return StandbyVirtualMachinesClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return StandbyVirtualMachinesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -74,7 +73,7 @@ func (client *StandbyVirtualMachinesClient) Get(ctx context.Context, resourceGro
 func (client *StandbyVirtualMachinesClient) getCreateRequest(ctx context.Context, resourceGroupName string, standbyVirtualMachinePoolName string, standbyVirtualMachineName string, _ *StandbyVirtualMachinesClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyVirtualMachinePools/{standbyVirtualMachinePoolName}/standbyVirtualMachines/{standbyVirtualMachineName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -94,15 +93,18 @@ func (client *StandbyVirtualMachinesClient) getCreateRequest(ctx context.Context
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20251001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *StandbyVirtualMachinesClient) getHandleResponse(resp *http.Response) (StandbyVirtualMachinesClientGetResponse, error) {
+func (client *StandbyVirtualMachinesClient) getHandleResponse(resp *http.Response, successCodes ...int) (StandbyVirtualMachinesClientGetResponse, error) {
 	result := StandbyVirtualMachinesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyVirtualMachineResource); err != nil {
 		return StandbyVirtualMachinesClientGetResponse{}, err
 	}
@@ -110,8 +112,6 @@ func (client *StandbyVirtualMachinesClient) getHandleResponse(resp *http.Respons
 }
 
 // NewListByStandbyVirtualMachinePoolResourcePager - List StandbyVirtualMachineResource resources by StandbyVirtualMachinePoolResource
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyVirtualMachinePoolName - Name of the standby virtual machine pool
 //   - options - StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceOptions contains the optional parameters for
@@ -127,47 +127,61 @@ func (client *StandbyVirtualMachinesClient) NewListByStandbyVirtualMachinePoolRe
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByStandbyVirtualMachinePoolResourceCreateRequest(ctx, resourceGroupName, standbyVirtualMachinePoolName, options)
-			}, nil)
+			req, err := client.listByStandbyVirtualMachinePoolResourceCreateRequest(ctx, resourceGroupName, standbyVirtualMachinePoolName, nextLink, options)
 			if err != nil {
 				return StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse{}, err
 			}
-			return client.listByStandbyVirtualMachinePoolResourceHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse{}, err
+			}
+			return client.listByStandbyVirtualMachinePoolResourceHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByStandbyVirtualMachinePoolResourceCreateRequest creates the ListByStandbyVirtualMachinePoolResource request.
-func (client *StandbyVirtualMachinesClient) listByStandbyVirtualMachinePoolResourceCreateRequest(ctx context.Context, resourceGroupName string, standbyVirtualMachinePoolName string, _ *StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyVirtualMachinePools/{standbyVirtualMachinePoolName}/standbyVirtualMachines"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *StandbyVirtualMachinesClient) listByStandbyVirtualMachinePoolResourceCreateRequest(ctx context.Context, resourceGroupName string, standbyVirtualMachinePoolName string, nextLink string, _ *StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyVirtualMachinePools/{standbyVirtualMachinePoolName}/standbyVirtualMachines"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if standbyVirtualMachinePoolName == "" {
+			return nil, errors.New("parameter standbyVirtualMachinePoolName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{standbyVirtualMachinePoolName}", url.PathEscape(standbyVirtualMachinePoolName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if standbyVirtualMachinePoolName == "" {
-		return nil, errors.New("parameter standbyVirtualMachinePoolName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{standbyVirtualMachinePoolName}", url.PathEscape(standbyVirtualMachinePoolName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20251001)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByStandbyVirtualMachinePoolResourceHandleResponse handles the ListByStandbyVirtualMachinePoolResource response.
-func (client *StandbyVirtualMachinesClient) listByStandbyVirtualMachinePoolResourceHandleResponse(resp *http.Response) (StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse, error) {
+func (client *StandbyVirtualMachinesClient) listByStandbyVirtualMachinePoolResourceHandleResponse(resp *http.Response, successCodes ...int) (StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse, error) {
 	result := StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyVirtualMachineResourceListResult); err != nil {
 		return StandbyVirtualMachinesClientListByStandbyVirtualMachinePoolResourceResponse{}, err
 	}

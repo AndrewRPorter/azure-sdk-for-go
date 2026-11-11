@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -11,7 +8,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/internal/generated"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/generated"
 )
 
 // Setting is a setting, defined by a unique combination of a Key and Label.
@@ -31,12 +28,15 @@ type Setting struct {
 	// Providing a proper content-type can enable transformations of values when they are retrieved by applications.
 	ContentType *string
 
+	// A description of the configuration setting.
+	Description *string
+
 	// An ETag indicating the state of a configuration setting within a configuration store.
 	ETag *azcore.ETag
 
 	// A dictionary of tags used to assign additional properties to a configuration setting.
 	// These can be used to indicate how a configuration setting may be applied.
-	Tags map[string]string
+	Tags map[string]*string
 
 	// The last time a modifying operation was performed on the given configuration setting.
 	LastModified *time.Time
@@ -47,20 +47,14 @@ type Setting struct {
 }
 
 func settingFromGenerated(kv generated.KeyValue) Setting {
-	tags := make(map[string]string)
-	for k, v := range kv.Tags {
-		if v != nil {
-			tags[k] = *v
-		}
-	}
-
 	return Setting{
 		Key:          kv.Key,
 		Value:        kv.Value,
 		Label:        kv.Label,
 		ContentType:  kv.ContentType,
+		Description:  kv.Description,
 		ETag:         (*azcore.ETag)(kv.Etag),
-		Tags:         tags,
+		Tags:         kv.Tags,
 		LastModified: kv.LastModified,
 		IsReadOnly:   kv.Locked,
 	}
@@ -76,19 +70,15 @@ func toGeneratedETagString(etag *azcore.ETag) *string {
 }
 
 func (cs Setting) toGenerated() generated.KeyValue {
-	tags := make(map[string]*string)
-	for k, v := range cs.Tags {
-		tags[k] = &v
-	}
-
 	return generated.KeyValue{
 		ContentType:  cs.ContentType,
+		Description:  cs.Description,
 		Etag:         (*string)(cs.ETag),
 		Key:          cs.Key,
 		Label:        cs.Label,
 		LastModified: cs.LastModified,
 		Locked:       cs.IsReadOnly,
-		Tags:         tags,
+		Tags:         cs.Tags,
 		Value:        cs.Value,
 	}
 }

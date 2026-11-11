@@ -18,6 +18,8 @@ import (
 
 // WorkloadImpactsClient contains the methods for the WorkloadImpacts group.
 // Don't use this type directly, use NewWorkloadImpactsClient() instead.
+//
+// Generated from API version 2024-05-01-preview
 type WorkloadImpactsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type WorkloadImpactsClient struct {
 // NewWorkloadImpactsClient creates a new instance of WorkloadImpactsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewWorkloadImpactsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*WorkloadImpactsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewWorkloadImpactsClient(subscriptionID string, credential azcore.TokenCred
 
 // BeginCreate - Create a WorkloadImpact
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - workloadImpactName - workloadImpact resource
 //   - resource - Resource create parameters.
 //   - options - WorkloadImpactsClientBeginCreateOptions contains the optional parameters for the WorkloadImpactsClient.BeginCreate
@@ -64,10 +67,8 @@ func (client *WorkloadImpactsClient) BeginCreate(ctx context.Context, workloadIm
 	}
 }
 
-// Create - Create a WorkloadImpact
+// create - Create a WorkloadImpact
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 func (client *WorkloadImpactsClient) create(ctx context.Context, workloadImpactName string, resource WorkloadImpact, options *WorkloadImpactsClientBeginCreateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "WorkloadImpactsClient.BeginCreate"
@@ -89,11 +90,11 @@ func (client *WorkloadImpactsClient) create(ctx context.Context, workloadImpactN
 	return httpResp, nil
 }
 
-// createCreateRequest creates the Create request.
+// createCreateRequest creates the create request.
 func (client *WorkloadImpactsClient) createCreateRequest(ctx context.Context, workloadImpactName string, resource WorkloadImpact, _ *WorkloadImpactsClientBeginCreateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/workloadImpacts/{workloadImpactName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if workloadImpactName == "" {
@@ -105,8 +106,8 @@ func (client *WorkloadImpactsClient) createCreateRequest(ctx context.Context, wo
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -117,8 +118,6 @@ func (client *WorkloadImpactsClient) createCreateRequest(ctx context.Context, wo
 
 // Delete - Delete a WorkloadImpact
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - workloadImpactName - workloadImpact resource
 //   - options - WorkloadImpactsClientDeleteOptions contains the optional parameters for the WorkloadImpactsClient.Delete method.
 func (client *WorkloadImpactsClient) Delete(ctx context.Context, workloadImpactName string, options *WorkloadImpactsClientDeleteOptions) (WorkloadImpactsClientDeleteResponse, error) {
@@ -146,7 +145,7 @@ func (client *WorkloadImpactsClient) Delete(ctx context.Context, workloadImpactN
 func (client *WorkloadImpactsClient) deleteCreateRequest(ctx context.Context, workloadImpactName string, _ *WorkloadImpactsClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/workloadImpacts/{workloadImpactName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if workloadImpactName == "" {
@@ -158,16 +157,13 @@ func (client *WorkloadImpactsClient) deleteCreateRequest(ctx context.Context, wo
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a WorkloadImpact
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - workloadImpactName - workloadImpact resource
 //   - options - WorkloadImpactsClientGetOptions contains the optional parameters for the WorkloadImpactsClient.Get method.
 func (client *WorkloadImpactsClient) Get(ctx context.Context, workloadImpactName string, options *WorkloadImpactsClientGetOptions) (WorkloadImpactsClientGetResponse, error) {
@@ -184,11 +180,7 @@ func (client *WorkloadImpactsClient) Get(ctx context.Context, workloadImpactName
 	if err != nil {
 		return WorkloadImpactsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return WorkloadImpactsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -196,7 +188,7 @@ func (client *WorkloadImpactsClient) Get(ctx context.Context, workloadImpactName
 func (client *WorkloadImpactsClient) getCreateRequest(ctx context.Context, workloadImpactName string, _ *WorkloadImpactsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/workloadImpacts/{workloadImpactName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if workloadImpactName == "" {
@@ -208,15 +200,18 @@ func (client *WorkloadImpactsClient) getCreateRequest(ctx context.Context, workl
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *WorkloadImpactsClient) getHandleResponse(resp *http.Response) (WorkloadImpactsClientGetResponse, error) {
+func (client *WorkloadImpactsClient) getHandleResponse(resp *http.Response, successCodes ...int) (WorkloadImpactsClientGetResponse, error) {
 	result := WorkloadImpactsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.WorkloadImpact); err != nil {
 		return WorkloadImpactsClientGetResponse{}, err
 	}
@@ -224,8 +219,6 @@ func (client *WorkloadImpactsClient) getHandleResponse(resp *http.Response) (Wor
 }
 
 // NewListBySubscriptionPager - List WorkloadImpact resources by subscription ID
-//
-// Generated from API version 2024-05-01-preview
 //   - options - WorkloadImpactsClientListBySubscriptionOptions contains the optional parameters for the WorkloadImpactsClient.NewListBySubscriptionPager
 //     method.
 func (client *WorkloadImpactsClient) NewListBySubscriptionPager(options *WorkloadImpactsClientListBySubscriptionOptions) *runtime.Pager[WorkloadImpactsClientListBySubscriptionResponse] {
@@ -239,39 +232,53 @@ func (client *WorkloadImpactsClient) NewListBySubscriptionPager(options *Workloa
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return WorkloadImpactsClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return WorkloadImpactsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *WorkloadImpactsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *WorkloadImpactsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/workloadImpacts"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *WorkloadImpactsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *WorkloadImpactsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/workloadImpacts"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20240501Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *WorkloadImpactsClient) listBySubscriptionHandleResponse(resp *http.Response) (WorkloadImpactsClientListBySubscriptionResponse, error) {
+func (client *WorkloadImpactsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (WorkloadImpactsClientListBySubscriptionResponse, error) {
 	result := WorkloadImpactsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.WorkloadImpactListResult); err != nil {
 		return WorkloadImpactsClientListBySubscriptionResponse{}, err
 	}

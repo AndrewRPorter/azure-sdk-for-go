@@ -1,14 +1,14 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 package sas
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/v2/internal/exported"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAccountPermissions_String(t *testing.T) {
@@ -167,3 +167,32 @@ func TestAccountResourceTypes_ParseNegative(t *testing.T) {
 // Negative Case
 // Version not provided
 // SignWithSharedKey tests
+
+func TestAccountSignatureValues_SignWithSharedKeyNonUTCTimes(t *testing.T) {
+	cred, err := exported.NewSharedKeyCredential("fakeaccountname", "AKIAIOSFODNN7EXAMPLE")
+	require.NoError(t, err)
+
+	sign := func(t *testing.T, start, expiry time.Time) QueryParameters {
+		t.Helper()
+		qp, err := AccountSignatureValues{
+			Version:       "2020-10-02",
+			Protocol:      ProtocolHTTPS,
+			StartTime:     start,
+			ExpiryTime:    expiry,
+			Permissions:   "r",
+			ResourceTypes: "o",
+		}.SignWithSharedKey(cred)
+		require.NoError(t, err)
+		return qp
+	}
+
+	start := time.Date(2026, 10, 15, 11, 0, 0, 0, time.UTC)
+	expiry := start.Add(time.Hour)
+	expected := sign(t, start, expiry)
+	for _, loc := range []*time.Location{time.FixedZone("UTC+09:00", 9*60*60), time.FixedZone("UTC-05:00", -5*60*60)} {
+		t.Run(loc.String(), func(t *testing.T) {
+			actual := sign(t, start.In(loc), expiry.In(loc))
+			require.Equal(t, expected.Encode(), actual.Encode())
+		})
+	}
+}

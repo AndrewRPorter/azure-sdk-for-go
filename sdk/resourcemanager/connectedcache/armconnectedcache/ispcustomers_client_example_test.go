@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_CreateOrUpdate_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_CreateOrUpdate_MaximumSet_Gen.json
 func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -45,11 +45,12 @@ func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 			AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
 				CustomerEmail:                 to.Ptr("zdjgibsidydyzm"),
 				CustomerTransitAsn:            to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+				CustomerTransitState:          to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 				CustomerAsn:                   to.Ptr("hgrelgnrtdkleisnepfolu"),
 				CustomerEntitlementSKUID:      to.Ptr("b"),
 				CustomerEntitlementSKUGUID:    to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 				CustomerEntitlementSKUName:    to.Ptr("waaqfijr"),
-				CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t }()),
+				CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 				OptionalProperty1:             to.Ptr("qhmwxza"),
 				OptionalProperty2:             to.Ptr("l"),
 				OptionalProperty3:             to.Ptr("mblwwvbie"),
@@ -67,13 +68,13 @@ func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCustomersClientCreateOrUpdateResponse{
-	// 	IspCustomerResource: &armconnectedcache.IspCustomerResource{
+	// 	IspCustomerResource: armconnectedcache.IspCustomerResource{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest2"),
 	// 		Name: to.Ptr("MCCTPTest2"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers"),
@@ -93,21 +94,20 @@ func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 	// 				DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 	// 				ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				IsEnterpriseManaged: to.Ptr(true),
 	// 				ShouldMigrate: to.Ptr(true),
 	// 				ResendSignupCode: to.Ptr(true),
 	// 				VerifySignupCode: to.Ptr(true),
 	// 			},
 	// 			AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-	// 				PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 	// 				CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 	// 				CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 	// 				CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 	// 				CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 	// 				CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 	// 				SignupStatus: to.Ptr(true),
@@ -115,16 +115,17 @@ func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 	// 				SignupStatusText: to.Ptr("dccv"),
 	// 				SignupPhaseStatusCode: to.Ptr[int32](4),
 	// 				SignupPhaseStatusText: to.Ptr("q"),
-	// 				PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 	// 				CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 	// 				CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+	// 				CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 	// 				CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 	// 				CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 	// 				CustomerEntitlementSKUID: to.Ptr("b"),
 	// 				CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 	// 				CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-	// 				CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				OptionalProperty1: to.Ptr("qhmwxza"),
 	// 				OptionalProperty2: to.Ptr("l"),
 	// 				OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -148,16 +149,16 @@ func ExampleIspCustomersClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_Delete_MaximumSet_Gen.json
 func ExampleIspCustomersClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -174,11 +175,11 @@ func ExampleIspCustomersClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_Get_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_Get_MaximumSet_Gen.json
 func ExampleIspCustomersClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -197,7 +198,7 @@ func ExampleIspCustomersClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCustomersClientGetResponse{
-	// 	IspCustomerResource: &armconnectedcache.IspCustomerResource{
+	// 	IspCustomerResource: armconnectedcache.IspCustomerResource{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest2"),
 	// 		Name: to.Ptr("MCCTPTest2"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers"),
@@ -217,20 +218,19 @@ func ExampleIspCustomersClient_Get() {
 	// 				DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 	// 				ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				IsEnterpriseManaged: to.Ptr(true),
 	// 				ShouldMigrate: to.Ptr(true),
 	// 				VerifySignupCode: to.Ptr(true),
 	// 			},
 	// 			AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-	// 				PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 	// 				CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 	// 				CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 	// 				CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 	// 				CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 	// 				CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 	// 				SignupStatus: to.Ptr(true),
@@ -238,16 +238,17 @@ func ExampleIspCustomersClient_Get() {
 	// 				SignupStatusText: to.Ptr("dccv"),
 	// 				SignupPhaseStatusCode: to.Ptr[int32](4),
 	// 				SignupPhaseStatusText: to.Ptr("q"),
-	// 				PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 	// 				CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 	// 				CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+	// 				CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 	// 				CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 	// 				CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 	// 				CustomerEntitlementSKUID: to.Ptr("b"),
 	// 				CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 	// 				CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-	// 				CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				OptionalProperty1: to.Ptr("qhmwxza"),
 	// 				OptionalProperty2: to.Ptr("l"),
 	// 				OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -271,16 +272,16 @@ func ExampleIspCustomersClient_Get() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_ListByResourceGroup_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_ListByResourceGroup_MaximumSet_Gen.json
 func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -325,21 +326,20 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 						DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 		// 						ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 		// 						SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-		// 						LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						IsEnterpriseManaged: to.Ptr(true),
 		// 						ShouldMigrate: to.Ptr(true),
 		// 						ResendSignupCode: to.Ptr(true),
 		// 						VerifySignupCode: to.Ptr(true),
 		// 					},
 		// 					AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-		// 						PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 		// 						CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 		// 						CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 		// 						CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 		// 						CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 		// 						CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 		// 						SignupStatus: to.Ptr(true),
@@ -347,16 +347,17 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 						SignupStatusText: to.Ptr("dccv"),
 		// 						SignupPhaseStatusCode: to.Ptr[int32](4),
 		// 						SignupPhaseStatusText: to.Ptr("q"),
-		// 						PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 		// 						CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 		// 						CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+		// 						CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 		// 						CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 		// 						CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 		// 						CustomerEntitlementSKUID: to.Ptr("b"),
 		// 						CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 		// 						CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-		// 						CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						OptionalProperty1: to.Ptr("qhmwxza"),
 		// 						OptionalProperty2: to.Ptr("l"),
 		// 						OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -380,10 +381,10 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 				SystemData: &armconnectedcache.SystemData{
 		// 					CreatedBy: to.Ptr("gambtqj"),
 		// 					CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 		// 					LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 				},
 		// 			},
 		// 			{
@@ -406,21 +407,20 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 						DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 		// 						ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 		// 						SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-		// 						LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						IsEnterpriseManaged: to.Ptr(true),
 		// 						ShouldMigrate: to.Ptr(true),
 		// 						ResendSignupCode: to.Ptr(true),
 		// 						VerifySignupCode: to.Ptr(true),
 		// 					},
 		// 					AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-		// 						PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 		// 						CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 		// 						CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 		// 						CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 		// 						CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 		// 						CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 		// 						SignupStatus: to.Ptr(true),
@@ -428,16 +428,17 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 						SignupStatusText: to.Ptr("dccv"),
 		// 						SignupPhaseStatusCode: to.Ptr[int32](4),
 		// 						SignupPhaseStatusText: to.Ptr("q"),
-		// 						PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 		// 						CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 		// 						CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+		// 						CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 		// 						CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 		// 						CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 		// 						CustomerEntitlementSKUID: to.Ptr("b"),
 		// 						CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 		// 						CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-		// 						CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						OptionalProperty1: to.Ptr("qhmwxza"),
 		// 						OptionalProperty2: to.Ptr("l"),
 		// 						OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -461,10 +462,10 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 		// 				SystemData: &armconnectedcache.SystemData{
 		// 					CreatedBy: to.Ptr("gambtqj"),
 		// 					CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 		// 					LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -474,7 +475,7 @@ func ExampleIspCustomersClient_NewListByResourceGroupPager() {
 	}
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_ListBySubscription_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_ListBySubscription_MaximumSet_Gen.json
 func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -519,21 +520,20 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 						DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 		// 						ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 		// 						SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-		// 						LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						IsEnterpriseManaged: to.Ptr(true),
 		// 						ShouldMigrate: to.Ptr(true),
 		// 						ResendSignupCode: to.Ptr(true),
 		// 						VerifySignupCode: to.Ptr(true),
 		// 					},
 		// 					AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-		// 						PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 		// 						CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 		// 						CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 		// 						CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 		// 						CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 		// 						CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 		// 						SignupStatus: to.Ptr(true),
@@ -541,16 +541,17 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 						SignupStatusText: to.Ptr("dccv"),
 		// 						SignupPhaseStatusCode: to.Ptr[int32](4),
 		// 						SignupPhaseStatusText: to.Ptr("q"),
-		// 						PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 		// 						CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 		// 						CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+		// 						CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 		// 						CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 		// 						CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 		// 						CustomerEntitlementSKUID: to.Ptr("b"),
 		// 						CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 		// 						CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-		// 						CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						OptionalProperty1: to.Ptr("qhmwxza"),
 		// 						OptionalProperty2: to.Ptr("l"),
 		// 						OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -574,10 +575,10 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 				SystemData: &armconnectedcache.SystemData{
 		// 					CreatedBy: to.Ptr("gambtqj"),
 		// 					CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 		// 					LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 				},
 		// 			},
 		// 			{
@@ -600,21 +601,20 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 						DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 		// 						ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 		// 						SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-		// 						LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						IsEnterpriseManaged: to.Ptr(true),
 		// 						ShouldMigrate: to.Ptr(true),
 		// 						ResendSignupCode: to.Ptr(true),
 		// 						VerifySignupCode: to.Ptr(true),
 		// 					},
 		// 					AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-		// 						PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 		// 						CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 		// 						CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 		// 						CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 		// 						CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 		// 						CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 		// 						SignupStatus: to.Ptr(true),
@@ -622,16 +622,17 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 						SignupStatusText: to.Ptr("dccv"),
 		// 						SignupPhaseStatusCode: to.Ptr[int32](4),
 		// 						SignupPhaseStatusText: to.Ptr("q"),
-		// 						PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 		// 						CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 		// 						CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+		// 						CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 		// 						CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 		// 						CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 		// 						CustomerEntitlementSKUID: to.Ptr("b"),
 		// 						CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 		// 						CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-		// 						CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+		// 						CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 		// 						OptionalProperty1: to.Ptr("qhmwxza"),
 		// 						OptionalProperty2: to.Ptr("l"),
 		// 						OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -655,10 +656,10 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 		// 				SystemData: &armconnectedcache.SystemData{
 		// 					CreatedBy: to.Ptr("gambtqj"),
 		// 					CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 		// 					LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -668,7 +669,7 @@ func ExampleIspCustomersClient_NewListBySubscriptionPager() {
 	}
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCustomers_Update_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCustomers_Update_MaximumSet_Gen.json
 func ExampleIspCustomersClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -691,7 +692,7 @@ func ExampleIspCustomersClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCustomersClientUpdateResponse{
-	// 	IspCustomerResource: &armconnectedcache.IspCustomerResource{
+	// 	IspCustomerResource: armconnectedcache.IspCustomerResource{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest2"),
 	// 		Name: to.Ptr("MCCTPTest2"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers"),
@@ -711,21 +712,20 @@ func ExampleIspCustomersClient_Update() {
 	// 				DeleteAsyncOperationID: to.Ptr("ajtdyoyecybeaxzyztjkvvtx"),
 	// 				ClientTenantID: to.Ptr("fproidkpgvpdnac"),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](17),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				IsEnterpriseManaged: to.Ptr(true),
 	// 				ShouldMigrate: to.Ptr(true),
 	// 				ResendSignupCode: to.Ptr(true),
 	// 				VerifySignupCode: to.Ptr(true),
 	// 			},
 	// 			AdditionalCustomerProperties: &armconnectedcache.AdditionalCustomerProperties{
-	// 				PeeringDbLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
 	// 				CustomerPropertiesOverviewCacheEfficiency: to.Ptr[float32](20),
 	// 				CustomerPropertiesOverviewAverageEgressMbps: to.Ptr[float32](8),
 	// 				CustomerPropertiesOverviewAverageMissMbps: to.Ptr[float32](19),
 	// 				CustomerPropertiesOverviewEgressMbpsMax: to.Ptr[float32](15),
-	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewEgressMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewMissMbpsMax: to.Ptr[float32](28),
-	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerPropertiesOverviewMissMbpsMaxDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerPropertiesOverviewCacheNodesHealthyCount: to.Ptr[int32](24),
 	// 				CustomerPropertiesOverviewCacheNodesUnhealthyCount: to.Ptr[int32](15),
 	// 				SignupStatus: to.Ptr(true),
@@ -733,16 +733,17 @@ func ExampleIspCustomersClient_Update() {
 	// 				SignupStatusText: to.Ptr("dccv"),
 	// 				SignupPhaseStatusCode: to.Ptr[int32](4),
 	// 				SignupPhaseStatusText: to.Ptr("q"),
-	// 				PeeringDbLastUpdateDate: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				PeeringDbLastUpdateDate: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				CustomerOrgName: to.Ptr("nshrwjhhggmdaqlpc"),
 	// 				CustomerEmail: to.Ptr("zdjgibsidydyzm"),
 	// 				CustomerTransitAsn: to.Ptr("habgklnxqzmozqpazoyejwiphezpi"),
+	// 				CustomerTransitState: to.Ptr(armconnectedcache.CustomerTransitState("voblixkxfejbmhxilb")),
 	// 				CustomerAsn: to.Ptr("hgrelgnrtdkleisnepfolu"),
 	// 				CustomerAsnEstimatedEgressPeekGbps: to.Ptr[float32](10),
 	// 				CustomerEntitlementSKUID: to.Ptr("b"),
 	// 				CustomerEntitlementSKUGUID: to.Ptr("rvzmdpxyflgqetvpwupnfaxsweiiz"),
 	// 				CustomerEntitlementSKUName: to.Ptr("waaqfijr"),
-	// 				CustomerEntitlementExpiration: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.773Z"); return t}()),
+	// 				CustomerEntitlementExpiration: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 773000000, time.UTC)),
 	// 				OptionalProperty1: to.Ptr("qhmwxza"),
 	// 				OptionalProperty2: to.Ptr("l"),
 	// 				OptionalProperty3: to.Ptr("mblwwvbie"),
@@ -760,10 +761,10 @@ func ExampleIspCustomersClient_Update() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

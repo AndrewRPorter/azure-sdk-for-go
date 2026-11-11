@@ -18,6 +18,8 @@ import (
 
 // MapsClient contains the methods for the Maps group.
 // Don't use this type directly, use NewMapsClient() instead.
+//
+// Generated from API version 2025-01-31-preview
 type MapsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type MapsClient struct {
 // NewMapsClient creates a new instance of MapsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewMapsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*MapsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewMapsClient(subscriptionID string, credential azcore.TokenCredential, opt
 
 // BeginCreateOrUpdate - Create a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *MapsClient) BeginCreateOrUpdate(ctx context.Context, resourceGroup
 	}
 }
 
-// CreateOrUpdate - Create a MapsResource
+// createOrUpdate - Create a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) createOrUpdate(ctx context.Context, resourceGroupName string, mapName string, resource MapsResource, options *MapsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginCreateOrUpdate"
@@ -90,11 +91,11 @@ func (client *MapsClient) createOrUpdate(ctx context.Context, resourceGroupName 
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *MapsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, mapName string, resource MapsResource, _ *MapsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,8 @@ func (client *MapsClient) createOrUpdateCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -122,8 +123,6 @@ func (client *MapsClient) createOrUpdateCreateRequest(ctx context.Context, resou
 
 // BeginDelete - Delete a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - options - MapsClientBeginDeleteOptions contains the optional parameters for the MapsClient.BeginDelete method.
@@ -144,10 +143,8 @@ func (client *MapsClient) BeginDelete(ctx context.Context, resourceGroupName str
 	}
 }
 
-// Delete - Delete a MapsResource
+// deleteOperation - Delete a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) deleteOperation(ctx context.Context, resourceGroupName string, mapName string, options *MapsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginDelete"
@@ -169,11 +166,11 @@ func (client *MapsClient) deleteOperation(ctx context.Context, resourceGroupName
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *MapsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, mapName string, _ *MapsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -189,16 +186,13 @@ func (client *MapsClient) deleteCreateRequest(ctx context.Context, resourceGroup
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // BeginExportDependencies - Export dependencies
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - body - The content of the action request
@@ -221,10 +215,8 @@ func (client *MapsClient) BeginExportDependencies(ctx context.Context, resourceG
 	}
 }
 
-// ExportDependencies - Export dependencies
+// exportDependencies - Export dependencies
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) exportDependencies(ctx context.Context, resourceGroupName string, mapName string, body ExportDependenciesRequest, options *MapsClientBeginExportDependenciesOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginExportDependencies"
@@ -239,18 +231,18 @@ func (client *MapsClient) exportDependencies(ctx context.Context, resourceGroupN
 	if err != nil {
 		return nil, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusAccepted) {
+	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
 		err = runtime.NewResponseError(httpResp)
 		return nil, err
 	}
 	return httpResp, nil
 }
 
-// exportDependenciesCreateRequest creates the ExportDependencies request.
+// exportDependenciesCreateRequest creates the exportDependencies request.
 func (client *MapsClient) exportDependenciesCreateRequest(ctx context.Context, resourceGroupName string, mapName string, body ExportDependenciesRequest, _ *MapsClientBeginExportDependenciesOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/exportDependencies"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -266,8 +258,8 @@ func (client *MapsClient) exportDependenciesCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, body); err != nil {
@@ -276,74 +268,8 @@ func (client *MapsClient) exportDependenciesCreateRequest(ctx context.Context, r
 	return req, nil
 }
 
-// Get - Get a MapsResource
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - mapName - Maps resource name
-//   - options - MapsClientGetOptions contains the optional parameters for the MapsClient.Get method.
-func (client *MapsClient) Get(ctx context.Context, resourceGroupName string, mapName string, options *MapsClientGetOptions) (MapsClientGetResponse, error) {
-	var err error
-	const operationName = "MapsClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, mapName, options)
-	if err != nil {
-		return MapsClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return MapsClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return MapsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *MapsClient) getCreateRequest(ctx context.Context, resourceGroupName string, mapName string, _ *MapsClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if mapName == "" {
-		return nil, errors.New("parameter mapName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *MapsClient) getHandleResponse(resp *http.Response) (MapsClientGetResponse, error) {
-	result := MapsClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResource); err != nil {
-		return MapsClientGetResponse{}, err
-	}
-	return result, nil
-}
-
 // BeginGetConnectionsForProcessOnFocusedMachine - Get network connections of a process
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - body - The content of the action request
@@ -366,10 +292,8 @@ func (client *MapsClient) BeginGetConnectionsForProcessOnFocusedMachine(ctx cont
 	}
 }
 
-// GetConnectionsForProcessOnFocusedMachine - Get network connections of a process
+// getConnectionsForProcessOnFocusedMachine - Get network connections of a process
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) getConnectionsForProcessOnFocusedMachine(ctx context.Context, resourceGroupName string, mapName string, body GetConnectionsForProcessOnFocusedMachineRequest, options *MapsClientBeginGetConnectionsForProcessOnFocusedMachineOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginGetConnectionsForProcessOnFocusedMachine"
@@ -391,11 +315,11 @@ func (client *MapsClient) getConnectionsForProcessOnFocusedMachine(ctx context.C
 	return httpResp, nil
 }
 
-// getConnectionsForProcessOnFocusedMachineCreateRequest creates the GetConnectionsForProcessOnFocusedMachine request.
+// getConnectionsForProcessOnFocusedMachineCreateRequest creates the getConnectionsForProcessOnFocusedMachine request.
 func (client *MapsClient) getConnectionsForProcessOnFocusedMachineCreateRequest(ctx context.Context, resourceGroupName string, mapName string, body GetConnectionsForProcessOnFocusedMachineRequest, _ *MapsClientBeginGetConnectionsForProcessOnFocusedMachineOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/getConnectionsForProcessOnFocusedMachine"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -411,9 +335,8 @@ func (client *MapsClient) getConnectionsForProcessOnFocusedMachineCreateRequest(
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, body); err != nil {
 		return nil, err
@@ -423,8 +346,6 @@ func (client *MapsClient) getConnectionsForProcessOnFocusedMachineCreateRequest(
 
 // BeginGetConnectionsWithConnectedMachineForFocusedMachine - Get network connections between machines
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - body - The content of the action request
@@ -447,10 +368,8 @@ func (client *MapsClient) BeginGetConnectionsWithConnectedMachineForFocusedMachi
 	}
 }
 
-// GetConnectionsWithConnectedMachineForFocusedMachine - Get network connections between machines
+// getConnectionsWithConnectedMachineForFocusedMachine - Get network connections between machines
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) getConnectionsWithConnectedMachineForFocusedMachine(ctx context.Context, resourceGroupName string, mapName string, body GetConnectionsWithConnectedMachineForFocusedMachineRequest, options *MapsClientBeginGetConnectionsWithConnectedMachineForFocusedMachineOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginGetConnectionsWithConnectedMachineForFocusedMachine"
@@ -472,11 +391,11 @@ func (client *MapsClient) getConnectionsWithConnectedMachineForFocusedMachine(ct
 	return httpResp, nil
 }
 
-// getConnectionsWithConnectedMachineForFocusedMachineCreateRequest creates the GetConnectionsWithConnectedMachineForFocusedMachine request.
+// getConnectionsWithConnectedMachineForFocusedMachineCreateRequest creates the getConnectionsWithConnectedMachineForFocusedMachine request.
 func (client *MapsClient) getConnectionsWithConnectedMachineForFocusedMachineCreateRequest(ctx context.Context, resourceGroupName string, mapName string, body GetConnectionsWithConnectedMachineForFocusedMachineRequest, _ *MapsClientBeginGetConnectionsWithConnectedMachineForFocusedMachineOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/getConnectionsWithConnectedMachineForFocusedMachine"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -492,9 +411,8 @@ func (client *MapsClient) getConnectionsWithConnectedMachineForFocusedMachineCre
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, body); err != nil {
 		return nil, err
@@ -504,8 +422,6 @@ func (client *MapsClient) getConnectionsWithConnectedMachineForFocusedMachineCre
 
 // BeginGetDependencyViewForFocusedMachine - Get dependency map of single machine
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - body - The content of the action request
@@ -528,10 +444,8 @@ func (client *MapsClient) BeginGetDependencyViewForFocusedMachine(ctx context.Co
 	}
 }
 
-// GetDependencyViewForFocusedMachine - Get dependency map of single machine
+// getDependencyViewForFocusedMachine - Get dependency map of single machine
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) getDependencyViewForFocusedMachine(ctx context.Context, resourceGroupName string, mapName string, body GetDependencyViewForFocusedMachineRequest, options *MapsClientBeginGetDependencyViewForFocusedMachineOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginGetDependencyViewForFocusedMachine"
@@ -553,11 +467,11 @@ func (client *MapsClient) getDependencyViewForFocusedMachine(ctx context.Context
 	return httpResp, nil
 }
 
-// getDependencyViewForFocusedMachineCreateRequest creates the GetDependencyViewForFocusedMachine request.
+// getDependencyViewForFocusedMachineCreateRequest creates the getDependencyViewForFocusedMachine request.
 func (client *MapsClient) getDependencyViewForFocusedMachineCreateRequest(ctx context.Context, resourceGroupName string, mapName string, body GetDependencyViewForFocusedMachineRequest, _ *MapsClientBeginGetDependencyViewForFocusedMachineOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}/getDependencyViewForFocusedMachine"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -573,9 +487,8 @@ func (client *MapsClient) getDependencyViewForFocusedMachineCreateRequest(ctx co
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, body); err != nil {
 		return nil, err
@@ -583,125 +496,8 @@ func (client *MapsClient) getDependencyViewForFocusedMachineCreateRequest(ctx co
 	return req, nil
 }
 
-// NewListByResourceGroupPager - List MapsResource resources by resource group
-//
-// Generated from API version 2025-01-31-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - options - MapsClientListByResourceGroupOptions contains the optional parameters for the MapsClient.NewListByResourceGroupPager
-//     method.
-func (client *MapsClient) NewListByResourceGroupPager(resourceGroupName string, options *MapsClientListByResourceGroupOptions) *runtime.Pager[MapsClientListByResourceGroupResponse] {
-	return runtime.NewPager(runtime.PagingHandler[MapsClientListByResourceGroupResponse]{
-		More: func(page MapsClientListByResourceGroupResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *MapsClientListByResourceGroupResponse) (MapsClientListByResourceGroupResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "MapsClient.NewListByResourceGroupPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
-			if err != nil {
-				return MapsClientListByResourceGroupResponse{}, err
-			}
-			return client.listByResourceGroupHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *MapsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *MapsClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *MapsClient) listByResourceGroupHandleResponse(resp *http.Response) (MapsClientListByResourceGroupResponse, error) {
-	result := MapsClientListByResourceGroupResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResourceListResult); err != nil {
-		return MapsClientListByResourceGroupResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListBySubscriptionPager - List MapsResource resources by subscription ID
-//
-// Generated from API version 2025-01-31-preview
-//   - options - MapsClientListBySubscriptionOptions contains the optional parameters for the MapsClient.NewListBySubscriptionPager
-//     method.
-func (client *MapsClient) NewListBySubscriptionPager(options *MapsClientListBySubscriptionOptions) *runtime.Pager[MapsClientListBySubscriptionResponse] {
-	return runtime.NewPager(runtime.PagingHandler[MapsClientListBySubscriptionResponse]{
-		More: func(page MapsClientListBySubscriptionResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *MapsClientListBySubscriptionResponse) (MapsClientListBySubscriptionResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "MapsClient.NewListBySubscriptionPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return MapsClientListBySubscriptionResponse{}, err
-			}
-			return client.listBySubscriptionHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *MapsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *MapsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DependencyMap/maps"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *MapsClient) listBySubscriptionHandleResponse(resp *http.Response) (MapsClientListBySubscriptionResponse, error) {
-	result := MapsClientListBySubscriptionResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResourceListResult); err != nil {
-		return MapsClientListBySubscriptionResponse{}, err
-	}
-	return result, nil
-}
-
 // BeginUpdate - Update a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mapName - Maps resource name
 //   - properties - The resource properties to be updated.
@@ -723,10 +519,8 @@ func (client *MapsClient) BeginUpdate(ctx context.Context, resourceGroupName str
 	}
 }
 
-// Update - Update a MapsResource
+// update - Update a MapsResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-01-31-preview
 func (client *MapsClient) update(ctx context.Context, resourceGroupName string, mapName string, properties MapsResourceTagsUpdate, options *MapsClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "MapsClient.BeginUpdate"
@@ -748,11 +542,11 @@ func (client *MapsClient) update(ctx context.Context, resourceGroupName string, 
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *MapsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, mapName string, properties MapsResourceTagsUpdate, _ *MapsClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -768,12 +562,212 @@ func (client *MapsClient) updateCreateRequest(ctx context.Context, resourceGroup
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-01-31-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a MapsResource
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - mapName - Maps resource name
+//   - options - MapsClientGetOptions contains the optional parameters for the MapsClient.Get method.
+func (client *MapsClient) Get(ctx context.Context, resourceGroupName string, mapName string, options *MapsClientGetOptions) (MapsClientGetResponse, error) {
+	var err error
+	const operationName = "MapsClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, mapName, options)
+	if err != nil {
+		return MapsClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return MapsClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *MapsClient) getCreateRequest(ctx context.Context, resourceGroupName string, mapName string, _ *MapsClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps/{mapName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if mapName == "" {
+		return nil, errors.New("parameter mapName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{mapName}", url.PathEscape(mapName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20250131Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *MapsClient) getHandleResponse(resp *http.Response, successCodes ...int) (MapsClientGetResponse, error) {
+	result := MapsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResource); err != nil {
+		return MapsClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByResourceGroupPager - List MapsResource resources by resource group
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - options - MapsClientListByResourceGroupOptions contains the optional parameters for the MapsClient.NewListByResourceGroupPager
+//     method.
+func (client *MapsClient) NewListByResourceGroupPager(resourceGroupName string, options *MapsClientListByResourceGroupOptions) *runtime.Pager[MapsClientListByResourceGroupResponse] {
+	return runtime.NewPager(runtime.PagingHandler[MapsClientListByResourceGroupResponse]{
+		More: func(page MapsClientListByResourceGroupResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *MapsClientListByResourceGroupResponse) (MapsClientListByResourceGroupResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "MapsClient.NewListByResourceGroupPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
+			if err != nil {
+				return MapsClientListByResourceGroupResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return MapsClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
+func (client *MapsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *MapsClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DependencyMap/maps"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20250131Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
+func (client *MapsClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (MapsClientListByResourceGroupResponse, error) {
+	result := MapsClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResourceListResult); err != nil {
+		return MapsClientListByResourceGroupResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListBySubscriptionPager - List MapsResource resources by subscription ID
+//   - options - MapsClientListBySubscriptionOptions contains the optional parameters for the MapsClient.NewListBySubscriptionPager
+//     method.
+func (client *MapsClient) NewListBySubscriptionPager(options *MapsClientListBySubscriptionOptions) *runtime.Pager[MapsClientListBySubscriptionResponse] {
+	return runtime.NewPager(runtime.PagingHandler[MapsClientListBySubscriptionResponse]{
+		More: func(page MapsClientListBySubscriptionResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *MapsClientListBySubscriptionResponse) (MapsClientListBySubscriptionResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "MapsClient.NewListBySubscriptionPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return MapsClientListBySubscriptionResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return MapsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listBySubscriptionCreateRequest creates the ListBySubscription request.
+func (client *MapsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *MapsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DependencyMap/maps"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20250131Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listBySubscriptionHandleResponse handles the ListBySubscription response.
+func (client *MapsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (MapsClientListBySubscriptionResponse, error) {
+	result := MapsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.MapsResourceListResult); err != nil {
+		return MapsClientListBySubscriptionResponse{}, err
+	}
+	return result, nil
 }

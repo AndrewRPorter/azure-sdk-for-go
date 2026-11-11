@@ -1,12 +1,37 @@
 # Release History
 
-## 1.4.0 (Unreleased)
+## 1.6.0-beta.2 (Unreleased)
 
 ### Features Added
 
 ### Breaking Changes
 
 ### Bugs Fixed
+
+### Other Changes
+
+## 1.6.0-beta.1 (2026-06-09)
+
+### Features Added
+* Added the `SecureWrapKey` and `SecureUnwrapKey` operations
+* Added the `JSONWebKeyWrapAlgorithm` type and the `ExternalKey`, `SecureKeyOperationResult`,
+  `SecureKeyUnWrapOperationParameters`, and `SecureKeyWrapOperationParameters` models
+* Added the `ExternalKey` and `KeySize` fields to `KeyAttributes`
+
+### Other Changes
+* Upgraded to API service version `2026-01-01-preview`
+* Upgraded dependencies
+* The tests now require a new environment variable when recording: `EKM_EXTERNAL_ID` (name of an external key exposed by the EKM proxy)
+
+## 1.5.0 (2026-05-25)
+
+### Other Changes
+* Upgraded to API service version `2025-07-01`
+
+## 1.4.0 (2025-06-12)
+
+### Features Added
+* Add fakes support (https://github.com/Azure/azure-sdk-for-go/tree/main/sdk/samples/fakes)
 
 ### Other Changes
 * Upgraded to API service version `7.6`

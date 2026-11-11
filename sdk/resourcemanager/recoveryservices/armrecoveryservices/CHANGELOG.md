@@ -1,5 +1,69 @@
 # Release History
 
+## 3.2.1 (2026-10-30)
+### Other Changes
+
+- Upgraded the service API version to 2026-11-01.
+
+
+## 3.2.0 (2026-08-13)
+### Features Added
+
+- New struct `RegionOfChoiceSettings`
+- New field `RegionOfChoiceSettings` in struct `VaultProperties`
+
+
+## 3.1.0 (2026-07-07)
+### Features Added
+
+- New enum type `GranularityLevel` with values `GranularityLevelProtectedItemLevel`, `GranularityLevelProtectedItemWithParentTag`, `GranularityLevelVaultLevel`
+- New enum type `ImmutabilityType` with values `ImmutabilityTypeAsPerPolicy`, `ImmutabilityTypeTimeBased`
+- New function `*ClientFactory.NewDeletedVaultsClient() *DeletedVaultsClient`
+- New function `NewDeletedVaultsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*DeletedVaultsClient, error)`
+- New function `*DeletedVaultsClient.Get(ctx context.Context, location string, deletedVaultName string, options *DeletedVaultsClientGetOptions) (DeletedVaultsClientGetResponse, error)`
+- New function `*DeletedVaultsClient.GetOperationStatus(ctx context.Context, location string, deletedVaultName string, operationID string, options *DeletedVaultsClientGetOperationStatusOptions) (DeletedVaultsClientGetOperationStatusResponse, error)`
+- New function `*DeletedVaultsClient.NewListBySubscriptionIDPager(location string, options *DeletedVaultsClientListBySubscriptionIDOptions) *runtime.Pager[DeletedVaultsClientListBySubscriptionIDResponse]`
+- New function `*DeletedVaultsClient.BeginUndelete(ctx context.Context, location string, deletedVaultName string, body DeletedVaultUndeleteInput, options *DeletedVaultsClientBeginUndeleteOptions) (*runtime.Poller[DeletedVaultsClientUndeleteResponse], error)`
+- New struct `CostManagementSettings`
+- New struct `DeletedVault`
+- New struct `DeletedVaultList`
+- New struct `DeletedVaultProperties`
+- New struct `DeletedVaultUndeleteInput`
+- New struct `DeletedVaultUndeleteInputProperties`
+- New struct `ImmutabilityConfiguration`
+- New field `Configuration` in struct `ImmutabilitySettings`
+- New field `CostManagementSettings` in struct `VaultProperties`
+
+
+## 3.0.0 (2026-06-24)
+### Breaking Changes
+
+- Struct `ErrorDetail` has been removed
+- Struct `ErrorResponse` has been removed
+- Struct `PatchTrackedResource` has been removed
+- Struct `Resource` has been removed
+- Struct `ResourceCapabilitiesBase` has been removed
+- Struct `TrackedResource` has been removed
+
+### Features Added
+
+- New field `SystemData` in struct `PatchVault`
+- New field `SystemData` in struct `PrivateLinkResource`
+- New field `NextLink` in struct `ReplicationUsageList`
+- New field `SystemData` in struct `VaultExtendedInfoResource`
+- New field `NextLink` in struct `VaultUsageList`
+
+
+## 2.1.0 (2025-06-12)
+### Features Added
+
+- New enum type `IdentityType` with values `IdentityTypeSystemAssigned`, `IdentityTypeUserAssigned`
+- New enum type `State` with values `StateDisabled`, `StateEnabled`, `StateInvalid`
+- New struct `AssociatedIdentity`
+- New struct `SourceScanConfiguration`
+- New field `SourceScanConfiguration` in struct `SecuritySettings`
+
+
 ## 2.0.0 (2024-05-24)
 ### Breaking Changes
 

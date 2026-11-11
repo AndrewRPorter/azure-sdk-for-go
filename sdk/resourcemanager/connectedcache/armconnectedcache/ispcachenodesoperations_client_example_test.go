@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_CreateOrUpdate_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_CreateOrUpdate_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -61,7 +61,6 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 				ProxyURLConfiguration: &armconnectedcache.ProxyURLConfiguration{
 					ProxyURL: to.Ptr("hplstyg"),
 				},
-				ProxyURL:          to.Ptr("qhux"),
 				OptionalProperty1: to.Ptr("hvpmt"),
 				OptionalProperty2: to.Ptr("talanelmsgxvksrzoeeontqkjzbpv"),
 				OptionalProperty3: to.Ptr("bxkoxq"),
@@ -82,13 +81,13 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCacheNodesOperationsClientCreateOrUpdateResponse{
-	// 	IspCacheNodeResource: &armconnectedcache.IspCacheNodeResource{
+	// 	IspCacheNodeResource: armconnectedcache.IspCacheNodeResource{
 	// 		Location: to.Ptr("westus"),
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/DOTest/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
 	// 		Name: to.Ptr("MccRPTest1"),
@@ -113,15 +112,15 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	// 				ClientTenantID: to.Ptr("ds"),
 	// 				Category: to.Ptr("rixlfzbl"),
 	// 				ReleaseVersion: to.Ptr[int32](30),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](11),
 	// 				ContainerConfigurations: to.Ptr("waygqqgfzvnvlbufilldsqavwlshzt"),
 	// 				CidrCSV: []*string{
 	// 					to.Ptr("nlqlvrthafvvljuupcbcw"),
 	// 				},
-	// 				CidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpCidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpLastReportedTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				CidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpCidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpLastReportedTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				BgpReviewStateText: to.Ptr("xduneialocyri"),
 	// 				BgpReviewState: to.Ptr(armconnectedcache.BgpReviewStateEnumNotConfigured),
 	// 				BgpReviewFeedback: to.Ptr("us"),
@@ -140,7 +139,7 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	// 				ConfigurationStateText: to.Ptr("arugukqjcxmkbgfambg"),
 	// 				AddressSpace: to.Ptr[int32](11),
 	// 				WorkerConnections: to.Ptr[int32](18),
-	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				ContainerResyncTrigger: to.Ptr[int32](13),
 	// 				ImageURI: to.Ptr("ezbwyfaainatxtlplyoailzxlhxy"),
 	// 			},
@@ -170,7 +169,6 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	// 				ProxyURLConfiguration: &armconnectedcache.ProxyURLConfiguration{
 	// 					ProxyURL: to.Ptr("hplstyg"),
 	// 				},
-	// 				ProxyURL: to.Ptr("qhux"),
 	// 				OptionalProperty1: to.Ptr("hvpmt"),
 	// 				OptionalProperty2: to.Ptr("talanelmsgxvksrzoeeontqkjzbpv"),
 	// 				OptionalProperty3: to.Ptr("bxkoxq"),
@@ -188,16 +186,16 @@ func ExampleIspCacheNodesOperationsClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_Delete_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -214,11 +212,11 @@ func ExampleIspCacheNodesOperationsClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_Get_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_Get_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -237,7 +235,7 @@ func ExampleIspCacheNodesOperationsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCacheNodesOperationsClientGetResponse{
-	// 	IspCacheNodeResource: &armconnectedcache.IspCacheNodeResource{
+	// 	IspCacheNodeResource: armconnectedcache.IspCacheNodeResource{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
 	// 		Name: to.Ptr("MccRPTest1"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers/ispCacheNodes"),
@@ -262,15 +260,15 @@ func ExampleIspCacheNodesOperationsClient_Get() {
 	// 				ClientTenantID: to.Ptr("ds"),
 	// 				Category: to.Ptr("rixlfzbl"),
 	// 				ReleaseVersion: to.Ptr[int32](30),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](11),
 	// 				ContainerConfigurations: to.Ptr("waygqqgfzvnvlbufilldsqavwlshzt"),
 	// 				CidrCSV: []*string{
 	// 					to.Ptr("nlqlvrthafvvljuupcbcw"),
 	// 				},
-	// 				CidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpCidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpLastReportedTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				CidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpCidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpLastReportedTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				BgpReviewStateText: to.Ptr("xduneialocyri"),
 	// 				BgpReviewState: to.Ptr(armconnectedcache.BgpReviewStateEnumNotConfigured),
 	// 				BgpReviewFeedback: to.Ptr("us"),
@@ -289,7 +287,7 @@ func ExampleIspCacheNodesOperationsClient_Get() {
 	// 				ConfigurationStateText: to.Ptr("arugukqjcxmkbgfambg"),
 	// 				AddressSpace: to.Ptr[int32](11),
 	// 				WorkerConnections: to.Ptr[int32](18),
-	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				ContainerResyncTrigger: to.Ptr[int32](13),
 	// 				ImageURI: to.Ptr("ezbwyfaainatxtlplyoailzxlhxy"),
 	// 			},
@@ -319,7 +317,6 @@ func ExampleIspCacheNodesOperationsClient_Get() {
 	// 				ProxyURLConfiguration: &armconnectedcache.ProxyURLConfiguration{
 	// 					ProxyURL: to.Ptr("hplstyg"),
 	// 				},
-	// 				ProxyURL: to.Ptr("qhux"),
 	// 				OptionalProperty1: to.Ptr("hvpmt"),
 	// 				OptionalProperty2: to.Ptr("talanelmsgxvksrzoeeontqkjzbpv"),
 	// 				OptionalProperty3: to.Ptr("bxkoxq"),
@@ -343,16 +340,16 @@ func ExampleIspCacheNodesOperationsClient_Get() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_GetBgpCidrs_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_GetBgpCidrs_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_GetBgpCidrs() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -371,7 +368,7 @@ func ExampleIspCacheNodesOperationsClient_GetBgpCidrs() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCacheNodesOperationsClientGetBgpCidrsResponse{
-	// 	MccCacheNodeBgpCidrDetails: &armconnectedcache.MccCacheNodeBgpCidrDetails{
+	// 	MccCacheNodeBgpCidrDetails: armconnectedcache.MccCacheNodeBgpCidrDetails{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers/ispCacheNodes"),
 	// 		Location: to.Ptr("westus"),
@@ -387,16 +384,80 @@ func ExampleIspCacheNodesOperationsClient_GetBgpCidrs() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_GetCacheNodeInstallDetails_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_GetCacheNodeAutoUpdateHistory_MaximumSet_Gen.json
+func ExampleIspCacheNodesOperationsClient_GetCacheNodeAutoUpdateHistory() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armconnectedcache.NewClientFactory("12345678-1234-1234-1234-123456789098", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	res, err := clientFactory.NewIspCacheNodesOperationsClient().GetCacheNodeAutoUpdateHistory(ctx, "rgConnectedCache", "MccRPTest1", "MCCCachenode1", nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armconnectedcache.IspCacheNodesOperationsClientGetCacheNodeAutoUpdateHistoryResponse{
+	// 	MccCacheNodeAutoUpdateHistory: armconnectedcache.MccCacheNodeAutoUpdateHistory{
+	// 		Properties: &armconnectedcache.MccCacheNodeAutoUpdateHistoryProperties{
+	// 			CustomerID: to.Ptr("fqyulypmqacwoifqnddnkcexbgm"),
+	// 			CacheNodeID: to.Ptr("elwtomk"),
+	// 			AutoUpdateHistory: []*armconnectedcache.MccCacheNodeAutoUpdateInfo{
+	// 				{
+	// 					ImageURIBeforeUpdate: to.Ptr("ne"),
+	// 					ImageURITargeted: to.Ptr("zqgjxlqoucwyjf"),
+	// 					ImageURITerminal: to.Ptr("akng"),
+	// 					AutoUpdateRingType: to.Ptr[int32](16),
+	// 					MovedToTerminalStateDateTime: to.Ptr(time.Date(2025, time.April, 8, 7, 1, 45, 657000000, time.UTC)),
+	// 					RuleRequestedWeek: to.Ptr[int32](1),
+	// 					RuleRequestedDay: to.Ptr[int32](9),
+	// 					CreatedDateTimeUTC: to.Ptr(time.Date(2025, time.April, 8, 7, 1, 45, 657000000, time.UTC)),
+	// 					UpdatedRegistryDateTimeUTC: to.Ptr(time.Date(2025, time.April, 8, 7, 1, 45, 657000000, time.UTC)),
+	// 					PlanChangeLogText: to.Ptr("uhfsokrwx"),
+	// 					AutoUpdateLastAppliedStatus: to.Ptr[int32](24),
+	// 					AutoUpdateLastAppliedStatusText: to.Ptr("cwoy"),
+	// 					AutoUpdateLastAppliedStatusDetailedText: to.Ptr("oicfonhqlnrc"),
+	// 					PlanID: to.Ptr[int64](17),
+	// 					TimeToGoLiveDateTime: to.Ptr("wqhjexgtkqzu"),
+	// 					RuleRequestedMinute: to.Ptr("ewoqhdmofybbpf"),
+	// 					RuleRequestedHour: to.Ptr("degiarxknlfqfgwz"),
+	// 				},
+	// 			},
+	// 		},
+	// 		Tags: map[string]*string{
+	// 			"key5753": to.Ptr("ubrjiectme"),
+	// 		},
+	// 		Location: to.Ptr("westus"),
+	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
+	// 		Name: to.Ptr("cgy"),
+	// 		Type: to.Ptr("kqbnkmxgllkdxfnsogmmdogjtotj"),
+	// 		SystemData: &armconnectedcache.SystemData{
+	// 			CreatedBy: to.Ptr("gambtqj"),
+	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
+	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_GetCacheNodeInstallDetails_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_GetCacheNodeInstallDetails() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -415,7 +476,7 @@ func ExampleIspCacheNodesOperationsClient_GetCacheNodeInstallDetails() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCacheNodesOperationsClientGetCacheNodeInstallDetailsResponse{
-	// 	MccCacheNodeInstallDetails: &armconnectedcache.MccCacheNodeInstallDetails{
+	// 	MccCacheNodeInstallDetails: armconnectedcache.MccCacheNodeInstallDetails{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers/ispCacheNodes"),
 	// 		Location: to.Ptr("westus"),
@@ -432,16 +493,69 @@ func ExampleIspCacheNodesOperationsClient_GetCacheNodeInstallDetails() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_ListByIspCustomerResource_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_GetCacheNodeMccIssueDetailsHistory_MaximumSet_Gen.json
+func ExampleIspCacheNodesOperationsClient_GetCacheNodeMccIssueDetailsHistory() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armconnectedcache.NewClientFactory("12345678-1234-1234-1234-123456789098", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	res, err := clientFactory.NewIspCacheNodesOperationsClient().GetCacheNodeMccIssueDetailsHistory(ctx, "rgConnectedCache", "MccRPTest1", "MCCCachenode1", nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	// You could use response here. We use blank identifier for just demo purposes.
+	_ = res
+	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
+	// res = armconnectedcache.IspCacheNodesOperationsClientGetCacheNodeMccIssueDetailsHistoryResponse{
+	// 	MccCacheNodeIssueHistory: armconnectedcache.MccCacheNodeIssueHistory{
+	// 		Properties: &armconnectedcache.MccCacheNodeIssueHistoryProperties{
+	// 			CustomerID: to.Ptr("xqsblxpzcdxwwlzejepoyqrhbrpqgz"),
+	// 			CacheNodeID: to.Ptr("enw"),
+	// 			MccIssueHistory: []*armconnectedcache.MccIssue{
+	// 				{
+	// 					MccIssueType: to.Ptr("uznqingg"),
+	// 					ToastString: to.Ptr("tkaajhrpptywiwfjnh"),
+	// 					DetailString: to.Ptr("rziwfs"),
+	// 					HelpLink: to.Ptr("fd"),
+	// 					IssueStartDate: to.Ptr(time.Date(2025, time.April, 8, 7, 1, 40, 167000000, time.UTC)),
+	// 					IssueEndDate: to.Ptr(time.Date(2025, time.April, 8, 7, 1, 40, 167000000, time.UTC)),
+	// 				},
+	// 			},
+	// 		},
+	// 		Tags: map[string]*string{
+	// 			"key587": to.Ptr("tcgetdmzjjwtbvghsskfzzrmnrexgx"),
+	// 		},
+	// 		Location: to.Ptr("msgrhbbqoannzbfuplaxnl"),
+	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
+	// 		Name: to.Ptr("fizavvfblaoosm"),
+	// 		Type: to.Ptr("bkkjnjpkvvlnrcfurjsfdspsnoozu"),
+	// 		SystemData: &armconnectedcache.SystemData{
+	// 			CreatedBy: to.Ptr("gambtqj"),
+	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
+	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
+	// 		},
+	// 	},
+	// }
+}
+
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_ListByIspCustomerResource_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -491,15 +605,15 @@ func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 		// 						ClientTenantID: to.Ptr("ds"),
 		// 						Category: to.Ptr("rixlfzbl"),
 		// 						ReleaseVersion: to.Ptr[int32](30),
-		// 						LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+		// 						LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 		// 						SynchWithAzureAttemptsCount: to.Ptr[int32](11),
 		// 						ContainerConfigurations: to.Ptr("waygqqgfzvnvlbufilldsqavwlshzt"),
 		// 						CidrCSV: []*string{
 		// 							to.Ptr("nlqlvrthafvvljuupcbcw"),
 		// 						},
-		// 						CidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-		// 						BgpCidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-		// 						BgpLastReportedTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+		// 						CidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+		// 						BgpCidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+		// 						BgpLastReportedTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 		// 						BgpReviewStateText: to.Ptr("xduneialocyri"),
 		// 						BgpReviewState: to.Ptr(armconnectedcache.BgpReviewStateEnumNotConfigured),
 		// 						BgpReviewFeedback: to.Ptr("us"),
@@ -518,7 +632,7 @@ func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 		// 						ConfigurationStateText: to.Ptr("arugukqjcxmkbgfambg"),
 		// 						AddressSpace: to.Ptr[int32](11),
 		// 						WorkerConnections: to.Ptr[int32](18),
-		// 						WorkerConnectionsLastUpdatedDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+		// 						WorkerConnectionsLastUpdatedDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 		// 						ContainerResyncTrigger: to.Ptr[int32](13),
 		// 						ImageURI: to.Ptr("ezbwyfaainatxtlplyoailzxlhxy"),
 		// 					},
@@ -548,7 +662,6 @@ func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 		// 						ProxyURLConfiguration: &armconnectedcache.ProxyURLConfiguration{
 		// 							ProxyURL: to.Ptr("hplstyg"),
 		// 						},
-		// 						ProxyURL: to.Ptr("qhux"),
 		// 						OptionalProperty1: to.Ptr("hvpmt"),
 		// 						OptionalProperty2: to.Ptr("talanelmsgxvksrzoeeontqkjzbpv"),
 		// 						OptionalProperty3: to.Ptr("bxkoxq"),
@@ -572,10 +685,10 @@ func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 		// 				SystemData: &armconnectedcache.SystemData{
 		// 					CreatedBy: to.Ptr("gambtqj"),
 		// 					CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 		// 					LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -585,7 +698,7 @@ func ExampleIspCacheNodesOperationsClient_NewListByIspCustomerResourcePager() {
 	}
 }
 
-// Generated from example definition: 2023-05-01-preview/IspCacheNodesOperations_Update_MaximumSet_Gen.json
+// Generated from example definition: 2026-06-01/IspCacheNodesOperations_Update_MaximumSet_Gen.json
 func ExampleIspCacheNodesOperationsClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -608,7 +721,7 @@ func ExampleIspCacheNodesOperationsClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armconnectedcache.IspCacheNodesOperationsClientUpdateResponse{
-	// 	IspCacheNodeResource: &armconnectedcache.IspCacheNodeResource{
+	// 	IspCacheNodeResource: armconnectedcache.IspCacheNodeResource{
 	// 		ID: to.Ptr("/subscriptions/12345678-1234-1234-1234-123456789098/resourceGroups/rgConnectedCache/providers/Microsoft.ConnectedCache/ispCustomers/MccRPTest1/ispCacheNodes/MCCCachenode1"),
 	// 		Name: to.Ptr("MccRPTest1"),
 	// 		Type: to.Ptr("Microsoft.ConnectedCache/ispCustomers/ispCacheNodes"),
@@ -633,15 +746,15 @@ func ExampleIspCacheNodesOperationsClient_Update() {
 	// 				ClientTenantID: to.Ptr("ds"),
 	// 				Category: to.Ptr("rixlfzbl"),
 	// 				ReleaseVersion: to.Ptr[int32](30),
-	// 				LastSyncWithAzureTimestamp: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				LastSyncWithAzureTimestamp: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				SynchWithAzureAttemptsCount: to.Ptr[int32](11),
 	// 				ContainerConfigurations: to.Ptr("waygqqgfzvnvlbufilldsqavwlshzt"),
 	// 				CidrCSV: []*string{
 	// 					to.Ptr("127.0.0.1/20"),
 	// 				},
-	// 				CidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpCidrCSVLastUpdateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
-	// 				BgpLastReportedTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				CidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpCidrCSVLastUpdateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
+	// 				BgpLastReportedTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				BgpReviewStateText: to.Ptr("xduneialocyri"),
 	// 				BgpReviewState: to.Ptr(armconnectedcache.BgpReviewStateEnumNotConfigured),
 	// 				BgpReviewFeedback: to.Ptr("us"),
@@ -660,7 +773,7 @@ func ExampleIspCacheNodesOperationsClient_Update() {
 	// 				ConfigurationStateText: to.Ptr("arugukqjcxmkbgfambg"),
 	// 				AddressSpace: to.Ptr[int32](11),
 	// 				WorkerConnections: to.Ptr[int32](18),
-	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.777Z"); return t}()),
+	// 				WorkerConnectionsLastUpdatedDateTime: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 777000000, time.UTC)),
 	// 				ContainerResyncTrigger: to.Ptr[int32](13),
 	// 				ImageURI: to.Ptr("ezbwyfaainatxtlplyoailzxlhxy"),
 	// 			},
@@ -690,7 +803,6 @@ func ExampleIspCacheNodesOperationsClient_Update() {
 	// 				ProxyURLConfiguration: &armconnectedcache.ProxyURLConfiguration{
 	// 					ProxyURL: to.Ptr("hplstyg"),
 	// 				},
-	// 				ProxyURL: to.Ptr("qhux"),
 	// 				OptionalProperty1: to.Ptr("hvpmt"),
 	// 				OptionalProperty2: to.Ptr("talanelmsgxvksrzoeeontqkjzbpv"),
 	// 				OptionalProperty3: to.Ptr("bxkoxq"),
@@ -714,10 +826,10 @@ func ExampleIspCacheNodesOperationsClient_Update() {
 	// 		SystemData: &armconnectedcache.SystemData{
 	// 			CreatedBy: to.Ptr("gambtqj"),
 	// 			CreatedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qomgaceiessgnuogz"),
 	// 			LastModifiedByType: to.Ptr(armconnectedcache.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T00:54:04.771Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 0, 54, 4, 771000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

@@ -29,7 +29,7 @@ This project uses [Go modules](https://github.com/golang/go/wiki/Modules) for ve
 Install the Azure Compute Schedule module:
 
 ```sh
-go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/computeschedule/armcomputeschedule
+go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/computeschedule/armcomputeschedule/v2
 ```
 
 ## Authorization
@@ -66,7 +66,7 @@ clientFactory, err := armcomputeschedule.NewClientFactory(<subscription ID>, cre
 A client groups a set of related APIs, providing access to its functionality. Create one or more clients to access the APIs you require using client factory.
 
 ```go
-client := clientFactory.NewScheduledActionsClient()
+client := clientFactory.NewOccurrencesClient()
 ```
 
 ## Fakes

@@ -5,8 +5,7 @@
 package armdurabletask
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/durabletask/armdurabletask"
-	moduleVersion = "v0.2.0"
+	version20260701Preview string = "2026-07-01-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -48,6 +47,141 @@ func PossibleCreatedByTypeValues() []CreatedByType {
 	}
 }
 
+// DetectorRenderingType - The rendering type for a detector dataset.
+type DetectorRenderingType int32
+
+const (
+	// DetectorRenderingTypeDataSummary - A data summary rendering.
+	DetectorRenderingTypeDataSummary DetectorRenderingType = 5
+	// DetectorRenderingTypeDynamicInsight - A dynamic insight rendering.
+	DetectorRenderingTypeDynamicInsight DetectorRenderingType = 8
+	// DetectorRenderingTypeEmailSnippet - An email snippet rendering.
+	DetectorRenderingTypeEmailSnippet DetectorRenderingType = 6
+	// DetectorRenderingTypeInsight - An insight rendering.
+	DetectorRenderingTypeInsight DetectorRenderingType = 7
+	// DetectorRenderingTypeMarkdown - A Markdown rendering.
+	DetectorRenderingTypeMarkdown DetectorRenderingType = 9
+	// DetectorRenderingTypePieChart - A pie chart rendering.
+	DetectorRenderingTypePieChart DetectorRenderingType = 4
+	// DetectorRenderingTypeTable - A table rendering.
+	DetectorRenderingTypeTable DetectorRenderingType = 1
+	// DetectorRenderingTypeTimeSeriesGraph - A time series graph rendering.
+	DetectorRenderingTypeTimeSeriesGraph DetectorRenderingType = 2
+	// DetectorRenderingTypeTimeSeriesPerInstanceGraph - A time series per-instance graph rendering.
+	DetectorRenderingTypeTimeSeriesPerInstanceGraph DetectorRenderingType = 3
+)
+
+// PossibleDetectorRenderingTypeValues returns the possible values for the DetectorRenderingType const type.
+func PossibleDetectorRenderingTypeValues() []DetectorRenderingType {
+	return []DetectorRenderingType{
+		DetectorRenderingTypeDataSummary,
+		DetectorRenderingTypeDynamicInsight,
+		DetectorRenderingTypeEmailSnippet,
+		DetectorRenderingTypeInsight,
+		DetectorRenderingTypeMarkdown,
+		DetectorRenderingTypePieChart,
+		DetectorRenderingTypeTable,
+		DetectorRenderingTypeTimeSeriesGraph,
+		DetectorRenderingTypeTimeSeriesPerInstanceGraph,
+	}
+}
+
+// DetectorStatusID - The status of a detector result.
+type DetectorStatusID int32
+
+const (
+	// DetectorStatusIDCritical - A critical issue was detected.
+	DetectorStatusIDCritical DetectorStatusID = 0
+	// DetectorStatusIDInfo - An informational result was returned.
+	DetectorStatusIDInfo DetectorStatusID = 2
+	// DetectorStatusIDNone - The detector did not run or returned no insights.
+	DetectorStatusIDNone DetectorStatusID = 4
+	// DetectorStatusIDSuccess - The detector completed without detecting an issue.
+	DetectorStatusIDSuccess DetectorStatusID = 3
+	// DetectorStatusIDWarning - A warning was detected.
+	DetectorStatusIDWarning DetectorStatusID = 1
+)
+
+// PossibleDetectorStatusIDValues returns the possible values for the DetectorStatusID const type.
+func PossibleDetectorStatusIDValues() []DetectorStatusID {
+	return []DetectorStatusID{
+		DetectorStatusIDCritical,
+		DetectorStatusIDInfo,
+		DetectorStatusIDNone,
+		DetectorStatusIDSuccess,
+		DetectorStatusIDWarning,
+	}
+}
+
+// DetectorType - The kind of diagnostic response.
+type DetectorType string
+
+const (
+	// DetectorTypeAnalysis - A diagnostic analysis.
+	DetectorTypeAnalysis DetectorType = "Analysis"
+	// DetectorTypeCategoryOverview - A diagnostic category overview.
+	DetectorTypeCategoryOverview DetectorType = "CategoryOverview"
+	// DetectorTypeDetector - A diagnostic detector.
+	DetectorTypeDetector DetectorType = "Detector"
+)
+
+// PossibleDetectorTypeValues returns the possible values for the DetectorType const type.
+func PossibleDetectorTypeValues() []DetectorType {
+	return []DetectorType{
+		DetectorTypeAnalysis,
+		DetectorTypeCategoryOverview,
+		DetectorTypeDetector,
+	}
+}
+
+// FailoverState - The current state of the failover operation
+type FailoverState string
+
+const (
+	// FailoverStateFailed - The failover operation failed
+	FailoverStateFailed FailoverState = "Failed"
+	// FailoverStateInProgress - The failover operation is in progress
+	FailoverStateInProgress FailoverState = "InProgress"
+	// FailoverStateNone - No failover operation is active
+	FailoverStateNone FailoverState = "None"
+	// FailoverStateSucceeded - The failover operation completed successfully
+	FailoverStateSucceeded FailoverState = "Succeeded"
+)
+
+// PossibleFailoverStateValues returns the possible values for the FailoverState const type.
+func PossibleFailoverStateValues() []FailoverState {
+	return []FailoverState{
+		FailoverStateFailed,
+		FailoverStateInProgress,
+		FailoverStateNone,
+		FailoverStateSucceeded,
+	}
+}
+
+// ManagedServiceIdentityType - Type of managed service identity (where both SystemAssigned and UserAssigned types are allowed).
+type ManagedServiceIdentityType string
+
+const (
+	// ManagedServiceIdentityTypeNone - No managed identity.
+	ManagedServiceIdentityTypeNone ManagedServiceIdentityType = "None"
+	// ManagedServiceIdentityTypeSystemAssigned - System assigned managed identity.
+	ManagedServiceIdentityTypeSystemAssigned ManagedServiceIdentityType = "SystemAssigned"
+	// ManagedServiceIdentityTypeSystemAssignedUserAssigned - System and user assigned managed identity.
+	ManagedServiceIdentityTypeSystemAssignedUserAssigned ManagedServiceIdentityType = "SystemAssigned,UserAssigned"
+	// ManagedServiceIdentityTypeUserAssigned - User assigned managed identity.
+	ManagedServiceIdentityTypeUserAssigned ManagedServiceIdentityType = "UserAssigned"
+)
+
+// PossibleManagedServiceIdentityTypeValues returns the possible values for the ManagedServiceIdentityType const type.
+func PossibleManagedServiceIdentityTypeValues() []ManagedServiceIdentityType {
+	return []ManagedServiceIdentityType{
+		ManagedServiceIdentityTypeNone,
+		ManagedServiceIdentityTypeSystemAssigned,
+		ManagedServiceIdentityTypeSystemAssignedUserAssigned,
+		ManagedServiceIdentityTypeUserAssigned,
+	}
+}
+
 // Origin - The intended executor of the operation; as in Resource Based Access Control (RBAC) and audit logs UX. Default
 // value is "user,system"
 type Origin string
@@ -67,6 +201,51 @@ func PossibleOriginValues() []Origin {
 		OriginSystem,
 		OriginUser,
 		OriginUserSystem,
+	}
+}
+
+// PrivateEndpointConnectionProvisioningState - The current provisioning state.
+type PrivateEndpointConnectionProvisioningState string
+
+const (
+	// PrivateEndpointConnectionProvisioningStateCreating - Connection is being created
+	PrivateEndpointConnectionProvisioningStateCreating PrivateEndpointConnectionProvisioningState = "Creating"
+	// PrivateEndpointConnectionProvisioningStateDeleting - Connection is being deleted
+	PrivateEndpointConnectionProvisioningStateDeleting PrivateEndpointConnectionProvisioningState = "Deleting"
+	// PrivateEndpointConnectionProvisioningStateFailed - Connection provisioning has failed
+	PrivateEndpointConnectionProvisioningStateFailed PrivateEndpointConnectionProvisioningState = "Failed"
+	// PrivateEndpointConnectionProvisioningStateSucceeded - Connection has been provisioned
+	PrivateEndpointConnectionProvisioningStateSucceeded PrivateEndpointConnectionProvisioningState = "Succeeded"
+)
+
+// PossiblePrivateEndpointConnectionProvisioningStateValues returns the possible values for the PrivateEndpointConnectionProvisioningState const type.
+func PossiblePrivateEndpointConnectionProvisioningStateValues() []PrivateEndpointConnectionProvisioningState {
+	return []PrivateEndpointConnectionProvisioningState{
+		PrivateEndpointConnectionProvisioningStateCreating,
+		PrivateEndpointConnectionProvisioningStateDeleting,
+		PrivateEndpointConnectionProvisioningStateFailed,
+		PrivateEndpointConnectionProvisioningStateSucceeded,
+	}
+}
+
+// PrivateEndpointServiceConnectionStatus - The private endpoint connection status.
+type PrivateEndpointServiceConnectionStatus string
+
+const (
+	// PrivateEndpointServiceConnectionStatusApproved - Connection approved
+	PrivateEndpointServiceConnectionStatusApproved PrivateEndpointServiceConnectionStatus = "Approved"
+	// PrivateEndpointServiceConnectionStatusPending - Connection waiting for approval or rejection
+	PrivateEndpointServiceConnectionStatusPending PrivateEndpointServiceConnectionStatus = "Pending"
+	// PrivateEndpointServiceConnectionStatusRejected - Connection Rejected
+	PrivateEndpointServiceConnectionStatusRejected PrivateEndpointServiceConnectionStatus = "Rejected"
+)
+
+// PossiblePrivateEndpointServiceConnectionStatusValues returns the possible values for the PrivateEndpointServiceConnectionStatus const type.
+func PossiblePrivateEndpointServiceConnectionStatusValues() []PrivateEndpointServiceConnectionStatus {
+	return []PrivateEndpointServiceConnectionStatus{
+		PrivateEndpointServiceConnectionStatusApproved,
+		PrivateEndpointServiceConnectionStatusPending,
+		PrivateEndpointServiceConnectionStatusRejected,
 	}
 }
 
@@ -103,11 +282,29 @@ func PossibleProvisioningStateValues() []ProvisioningState {
 	}
 }
 
+// PublicNetworkAccess - State of the public network access.
+type PublicNetworkAccess string
+
+const (
+	// PublicNetworkAccessDisabled - The public network access is disabled
+	PublicNetworkAccessDisabled PublicNetworkAccess = "Disabled"
+	// PublicNetworkAccessEnabled - The public network access is enabled
+	PublicNetworkAccessEnabled PublicNetworkAccess = "Enabled"
+)
+
+// PossiblePublicNetworkAccessValues returns the possible values for the PublicNetworkAccess const type.
+func PossiblePublicNetworkAccessValues() []PublicNetworkAccess {
+	return []PublicNetworkAccess{
+		PublicNetworkAccessDisabled,
+		PublicNetworkAccessEnabled,
+	}
+}
+
 // PurgeableOrchestrationState - Purgeable orchestration state to be used in retention policies
 type PurgeableOrchestrationState string
 
 const (
-	// PurgeableOrchestrationStateCanceled - The orchestration is terminated
+	// PurgeableOrchestrationStateCanceled - The orchestration is canceled
 	PurgeableOrchestrationStateCanceled PurgeableOrchestrationState = "Canceled"
 	// PurgeableOrchestrationStateCompleted - The orchestration is completed
 	PurgeableOrchestrationStateCompleted PurgeableOrchestrationState = "Completed"
@@ -142,5 +339,59 @@ func PossibleRedundancyStateValues() []RedundancyState {
 	return []RedundancyState{
 		RedundancyStateNone,
 		RedundancyStateZone,
+	}
+}
+
+// ReplicationRole - The replication role of the scheduler
+type ReplicationRole string
+
+const (
+	// ReplicationRolePrimary - The parent scheduler is the primary in the failover configuration
+	ReplicationRolePrimary ReplicationRole = "Primary"
+	// ReplicationRoleSecondary - The parent scheduler is the secondary in the failover configuration
+	ReplicationRoleSecondary ReplicationRole = "Secondary"
+)
+
+// PossibleReplicationRoleValues returns the possible values for the ReplicationRole const type.
+func PossibleReplicationRoleValues() []ReplicationRole {
+	return []ReplicationRole{
+		ReplicationRolePrimary,
+		ReplicationRoleSecondary,
+	}
+}
+
+// SchedulerSKUName - The name of the Stock Keeping Unit (SKU) of a Durable Task Scheduler
+type SchedulerSKUName string
+
+const (
+	// SchedulerSKUNameConsumption - Consumption SKU
+	SchedulerSKUNameConsumption SchedulerSKUName = "Consumption"
+	// SchedulerSKUNameDedicated - Dedicated SKU
+	SchedulerSKUNameDedicated SchedulerSKUName = "Dedicated"
+)
+
+// PossibleSchedulerSKUNameValues returns the possible values for the SchedulerSKUName const type.
+func PossibleSchedulerSKUNameValues() []SchedulerSKUName {
+	return []SchedulerSKUName{
+		SchedulerSKUNameConsumption,
+		SchedulerSKUNameDedicated,
+	}
+}
+
+// TransparentDataEncryptionKeySource - The key source for the transparent data encryption
+type TransparentDataEncryptionKeySource string
+
+const (
+	// TransparentDataEncryptionKeySourceCustomerManaged - The key source is customer-managed
+	TransparentDataEncryptionKeySourceCustomerManaged TransparentDataEncryptionKeySource = "CustomerManaged"
+	// TransparentDataEncryptionKeySourceMicrosoftManaged - The key source is Microsoft-managed
+	TransparentDataEncryptionKeySourceMicrosoftManaged TransparentDataEncryptionKeySource = "MicrosoftManaged"
+)
+
+// PossibleTransparentDataEncryptionKeySourceValues returns the possible values for the TransparentDataEncryptionKeySource const type.
+func PossibleTransparentDataEncryptionKeySourceValues() []TransparentDataEncryptionKeySource {
+	return []TransparentDataEncryptionKeySource{
+		TransparentDataEncryptionKeySourceCustomerManaged,
+		TransparentDataEncryptionKeySourceMicrosoftManaged,
 	}
 }

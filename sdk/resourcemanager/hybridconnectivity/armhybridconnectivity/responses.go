@@ -53,7 +53,14 @@ type EndpointsClientUpdateResponse struct {
 
 // GenerateAwsTemplateClientPostResponse contains the response from method GenerateAwsTemplateClient.Post.
 type GenerateAwsTemplateClientPostResponse struct {
-	PostResponse
+	// The HybridConnectivity post operation response
+	GenerateAwsTemplateResponse
+}
+
+// GenerateGCPTemplateClientPostResponse contains the response from method GenerateGCPTemplateClient.Post.
+type GenerateGCPTemplateClientPostResponse struct {
+	// The HybridConnectivity post operation response
+	GenerateGCPTemplateResponse
 }
 
 // InventoryClientGetResponse contains the response from method InventoryClient.Get.

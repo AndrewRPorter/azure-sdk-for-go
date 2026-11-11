@@ -12,7 +12,30 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2024-09-01/VirtualMachines_Get.json
+// Generated from example definition: 2026-03-01/VirtualMachines_RestrictMovement.json
+func ExampleVirtualMachinesClient_BeginRestrictMovement() {
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
+	if err != nil {
+		log.Fatalf("failed to obtain a credential: %v", err)
+	}
+	ctx := context.Background()
+	clientFactory, err := armavs.NewClientFactory("00000000-0000-0000-0000-000000000000", cred, nil)
+	if err != nil {
+		log.Fatalf("failed to create client: %v", err)
+	}
+	poller, err := clientFactory.NewVirtualMachinesClient().BeginRestrictMovement(ctx, "group1", "cloud1", "cluster1", "vm-209", armavs.VirtualMachineRestrictMovement{
+		RestrictMovement: to.Ptr(armavs.VirtualMachineRestrictMovementStateEnabled),
+	}, nil)
+	if err != nil {
+		log.Fatalf("failed to finish the request: %v", err)
+	}
+	_, err = poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		log.Fatalf("failed to poll the result: %v", err)
+	}
+}
+
+// Generated from example definition: 2026-03-01/VirtualMachines_Get.json
 func ExampleVirtualMachinesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -31,7 +54,7 @@ func ExampleVirtualMachinesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armavs.VirtualMachinesClientGetResponse{
-	// 	VirtualMachine: &armavs.VirtualMachine{
+	// 	VirtualMachine: armavs.VirtualMachine{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/group1/providers/Microsoft.AVS/privateClouds/cloud1/clusters/cluster1/virtualMachines/vm-209"),
 	// 		Name: to.Ptr("vm-209"),
 	// 		Type: to.Ptr("Microsoft.AVS/privateClouds/clusters/virtualMachines"),
@@ -45,7 +68,7 @@ func ExampleVirtualMachinesClient_Get() {
 	// }
 }
 
-// Generated from example definition: 2024-09-01/VirtualMachines_List.json
+// Generated from example definition: 2026-03-01/VirtualMachines_List.json
 func ExampleVirtualMachinesClient_NewListPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -95,28 +118,5 @@ func ExampleVirtualMachinesClient_NewListPager() {
 		// 		},
 		// 	},
 		// }
-	}
-}
-
-// Generated from example definition: 2024-09-01/VirtualMachines_RestrictMovement.json
-func ExampleVirtualMachinesClient_BeginRestrictMovement() {
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		log.Fatalf("failed to obtain a credential: %v", err)
-	}
-	ctx := context.Background()
-	clientFactory, err := armavs.NewClientFactory("00000000-0000-0000-0000-000000000000", cred, nil)
-	if err != nil {
-		log.Fatalf("failed to create client: %v", err)
-	}
-	poller, err := clientFactory.NewVirtualMachinesClient().BeginRestrictMovement(ctx, "group1", "cloud1", "cluster1", "vm-209", armavs.VirtualMachineRestrictMovement{
-		RestrictMovement: to.Ptr(armavs.VirtualMachineRestrictMovementStateEnabled),
-	}, nil)
-	if err != nil {
-		log.Fatalf("failed to finish the request: %v", err)
-	}
-	_, err = poller.PollUntilDone(ctx, nil)
-	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
 	}
 }

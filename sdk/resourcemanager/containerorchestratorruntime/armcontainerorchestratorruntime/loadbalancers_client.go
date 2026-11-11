@@ -18,13 +18,15 @@ import (
 
 // LoadBalancersClient contains the methods for the LoadBalancers group.
 // Don't use this type directly, use NewLoadBalancersClient() instead.
+//
+// Generated from API version 2024-03-01
 type LoadBalancersClient struct {
 	internal *arm.Client
 }
 
 // NewLoadBalancersClient creates a new instance of LoadBalancersClient with the specified values.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewLoadBalancersClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*LoadBalancersClient, error) {
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
@@ -38,8 +40,6 @@ func NewLoadBalancersClient(credential azcore.TokenCredential, options *arm.Clie
 
 // BeginCreateOrUpdate - Create a LoadBalancer
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - loadBalancerName - The name of the LoadBalancer
 //   - resource - Resource create parameters.
@@ -63,10 +63,8 @@ func (client *LoadBalancersClient) BeginCreateOrUpdate(ctx context.Context, reso
 	}
 }
 
-// CreateOrUpdate - Create a LoadBalancer
+// createOrUpdate - Create a LoadBalancer
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 func (client *LoadBalancersClient) createOrUpdate(ctx context.Context, resourceURI string, loadBalancerName string, resource LoadBalancer, options *LoadBalancersClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "LoadBalancersClient.BeginCreateOrUpdate"
@@ -88,7 +86,7 @@ func (client *LoadBalancersClient) createOrUpdate(ctx context.Context, resourceU
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *LoadBalancersClient) createOrUpdateCreateRequest(ctx context.Context, resourceURI string, loadBalancerName string, resource LoadBalancer, _ *LoadBalancersClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/loadBalancers/{loadBalancerName}"
 	if resourceURI == "" {
@@ -104,8 +102,8 @@ func (client *LoadBalancersClient) createOrUpdateCreateRequest(ctx context.Conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -116,8 +114,6 @@ func (client *LoadBalancersClient) createOrUpdateCreateRequest(ctx context.Conte
 
 // Delete - Delete a LoadBalancer
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - loadBalancerName - The name of the LoadBalancer
 //   - options - LoadBalancersClientDeleteOptions contains the optional parameters for the LoadBalancersClient.Delete method.
@@ -158,16 +154,13 @@ func (client *LoadBalancersClient) deleteCreateRequest(ctx context.Context, reso
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a LoadBalancer
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - loadBalancerName - The name of the LoadBalancer
 //   - options - LoadBalancersClientGetOptions contains the optional parameters for the LoadBalancersClient.Get method.
@@ -185,11 +178,7 @@ func (client *LoadBalancersClient) Get(ctx context.Context, resourceURI string, 
 	if err != nil {
 		return LoadBalancersClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return LoadBalancersClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -209,15 +198,18 @@ func (client *LoadBalancersClient) getCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *LoadBalancersClient) getHandleResponse(resp *http.Response) (LoadBalancersClientGetResponse, error) {
+func (client *LoadBalancersClient) getHandleResponse(resp *http.Response, successCodes ...int) (LoadBalancersClientGetResponse, error) {
 	result := LoadBalancersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.LoadBalancer); err != nil {
 		return LoadBalancersClientGetResponse{}, err
 	}
@@ -225,8 +217,6 @@ func (client *LoadBalancersClient) getHandleResponse(resp *http.Response) (LoadB
 }
 
 // NewListPager - List LoadBalancer resources by parent
-//
-// Generated from API version 2024-03-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - options - LoadBalancersClientListOptions contains the optional parameters for the LoadBalancersClient.NewListPager method.
 func (client *LoadBalancersClient) NewListPager(resourceURI string, options *LoadBalancersClientListOptions) *runtime.Pager[LoadBalancersClientListResponse] {
@@ -240,39 +230,53 @@ func (client *LoadBalancersClient) NewListPager(resourceURI string, options *Loa
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listCreateRequest(ctx, resourceURI, options)
-			}, nil)
+			req, err := client.listCreateRequest(ctx, resourceURI, nextLink, options)
 			if err != nil {
 				return LoadBalancersClientListResponse{}, err
 			}
-			return client.listHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return LoadBalancersClientListResponse{}, err
+			}
+			return client.listHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listCreateRequest creates the List request.
-func (client *LoadBalancersClient) listCreateRequest(ctx context.Context, resourceURI string, _ *LoadBalancersClientListOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/loadBalancers"
-	if resourceURI == "" {
-		return nil, errors.New("parameter resourceURI cannot be empty")
+func (client *LoadBalancersClient) listCreateRequest(ctx context.Context, resourceURI string, nextLink string, _ *LoadBalancersClientListOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/{resourceUri}/providers/Microsoft.KubernetesRuntime/loadBalancers"
+		if resourceURI == "" {
+			return nil, errors.New("parameter resourceURI cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20240301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listHandleResponse handles the List response.
-func (client *LoadBalancersClient) listHandleResponse(resp *http.Response) (LoadBalancersClientListResponse, error) {
+func (client *LoadBalancersClient) listHandleResponse(resp *http.Response, successCodes ...int) (LoadBalancersClientListResponse, error) {
 	result := LoadBalancersClientListResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.LoadBalancerListResult); err != nil {
 		return LoadBalancersClientListResponse{}, err
 	}

@@ -15,6 +15,12 @@ import (
 
 // ServerFactory is a fake server for instances of the armdurabletask.ClientFactory type.
 type ServerFactory struct {
+	// DetectorsServer contains the fakes for client DetectorsClient
+	DetectorsServer DetectorsServer
+
+	// FailoverInstancesServer contains the fakes for client FailoverInstancesClient
+	FailoverInstancesServer FailoverInstancesServer
+
 	// OperationsServer contains the fakes for client OperationsClient
 	OperationsServer OperationsServer
 
@@ -26,6 +32,12 @@ type ServerFactory struct {
 
 	// TaskHubsServer contains the fakes for client TaskHubsClient
 	TaskHubsServer TaskHubsServer
+
+	// TaskQueuesServer contains the fakes for client TaskQueuesClient
+	TaskQueuesServer TaskQueuesServer
+
+	// TransparentDataEncryptionsServer contains the fakes for client TransparentDataEncryptionsClient
+	TransparentDataEncryptionsServer TransparentDataEncryptionsServer
 }
 
 // NewServerFactoryTransport creates a new instance of ServerFactoryTransport with the provided implementation.
@@ -40,12 +52,16 @@ func NewServerFactoryTransport(srv *ServerFactory) *ServerFactoryTransport {
 // ServerFactoryTransport connects instances of armdurabletask.ClientFactory to instances of ServerFactory.
 // Don't use this type directly, use NewServerFactoryTransport instead.
 type ServerFactoryTransport struct {
-	srv                       *ServerFactory
-	trMu                      sync.Mutex
-	trOperationsServer        *OperationsServerTransport
-	trRetentionPoliciesServer *RetentionPoliciesServerTransport
-	trSchedulersServer        *SchedulersServerTransport
-	trTaskHubsServer          *TaskHubsServerTransport
+	srv                                *ServerFactory
+	trMu                               sync.Mutex
+	trDetectorsServer                  *DetectorsServerTransport
+	trFailoverInstancesServer          *FailoverInstancesServerTransport
+	trOperationsServer                 *OperationsServerTransport
+	trRetentionPoliciesServer          *RetentionPoliciesServerTransport
+	trSchedulersServer                 *SchedulersServerTransport
+	trTaskHubsServer                   *TaskHubsServerTransport
+	trTaskQueuesServer                 *TaskQueuesServerTransport
+	trTransparentDataEncryptionsServer *TransparentDataEncryptionsServerTransport
 }
 
 // Do implements the policy.Transporter interface for ServerFactoryTransport.
@@ -53,7 +69,7 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	client := method[:strings.Index(method, ".")]
@@ -61,20 +77,36 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	var err error
 
 	switch client {
+	case "DetectorsClient":
+		initServer(&s.trMu, &s.trDetectorsServer, func() *DetectorsServerTransport { return NewDetectorsServerTransport(&s.srv.DetectorsServer) })
+		resp, err = s.trDetectorsServer.Do(req)
+	case "FailoverInstancesClient":
+		initServer(&s.trMu, &s.trFailoverInstancesServer, func() *FailoverInstancesServerTransport {
+			return NewFailoverInstancesServerTransport(&s.srv.FailoverInstancesServer)
+		})
+		resp, err = s.trFailoverInstancesServer.Do(req)
 	case "OperationsClient":
-		initServer(s, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
+		initServer(&s.trMu, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
 		resp, err = s.trOperationsServer.Do(req)
 	case "RetentionPoliciesClient":
-		initServer(s, &s.trRetentionPoliciesServer, func() *RetentionPoliciesServerTransport {
+		initServer(&s.trMu, &s.trRetentionPoliciesServer, func() *RetentionPoliciesServerTransport {
 			return NewRetentionPoliciesServerTransport(&s.srv.RetentionPoliciesServer)
 		})
 		resp, err = s.trRetentionPoliciesServer.Do(req)
 	case "SchedulersClient":
-		initServer(s, &s.trSchedulersServer, func() *SchedulersServerTransport { return NewSchedulersServerTransport(&s.srv.SchedulersServer) })
+		initServer(&s.trMu, &s.trSchedulersServer, func() *SchedulersServerTransport { return NewSchedulersServerTransport(&s.srv.SchedulersServer) })
 		resp, err = s.trSchedulersServer.Do(req)
 	case "TaskHubsClient":
-		initServer(s, &s.trTaskHubsServer, func() *TaskHubsServerTransport { return NewTaskHubsServerTransport(&s.srv.TaskHubsServer) })
+		initServer(&s.trMu, &s.trTaskHubsServer, func() *TaskHubsServerTransport { return NewTaskHubsServerTransport(&s.srv.TaskHubsServer) })
 		resp, err = s.trTaskHubsServer.Do(req)
+	case "TaskQueuesClient":
+		initServer(&s.trMu, &s.trTaskQueuesServer, func() *TaskQueuesServerTransport { return NewTaskQueuesServerTransport(&s.srv.TaskQueuesServer) })
+		resp, err = s.trTaskQueuesServer.Do(req)
+	case "TransparentDataEncryptionsClient":
+		initServer(&s.trMu, &s.trTransparentDataEncryptionsServer, func() *TransparentDataEncryptionsServerTransport {
+			return NewTransparentDataEncryptionsServerTransport(&s.srv.TransparentDataEncryptionsServer)
+		})
+		resp, err = s.trTransparentDataEncryptionsServer.Do(req)
 	default:
 		err = fmt.Errorf("unhandled client %s", client)
 	}
@@ -84,12 +116,4 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
-}
-
-func initServer[T any](s *ServerFactoryTransport, dst **T, src func() *T) {
-	s.trMu.Lock()
-	if *dst == nil {
-		*dst = src()
-	}
-	s.trMu.Unlock()
 }

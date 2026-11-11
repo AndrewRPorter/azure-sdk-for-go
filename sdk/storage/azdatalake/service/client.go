@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,6 +5,10 @@ package service
 
 import (
 	"context"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
@@ -20,9 +21,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/generated_blob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/sas"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // FOR SERVICE CLIENT WE STORE THE GENERATED BLOB LAYER IN ORDER TO USE FS LISTING AND THE TRANSFORMS IT HAS
@@ -56,14 +54,19 @@ func NewClient(serviceURL string, cred azcore.TokenCredential, options *ClientOp
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobServiceClientOpts := service.ClientOptions{
 		ClientOptions: options.ClientOptions,
+		// sessions apply only to the requests this client sends to the blob endpoint
+		Session: conOptions.Session,
 	}
-	blobSvcClient, _ := service.NewClient(blobServiceURL, cred, &blobServiceClientOpts)
+	blobSvcClient, err := service.NewClient(blobServiceURL, cred, &blobServiceClientOpts)
+	if err != nil {
+		return nil, err
+	}
 	svcClient := base.NewServiceClient(datalakeServiceURL, blobServiceURL, blobSvcClient, azClient, nil, &cred, (*base.ClientOptions)(conOptions))
 
 	return (*Client)(svcClient), nil
@@ -87,10 +90,10 @@ func NewClientWithNoCredential(serviceURL string, options *ClientOptions) (*Clie
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobServiceClientOpts := service.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -122,10 +125,10 @@ func NewClientWithSharedKeyCredential(serviceURL string, cred *SharedKeyCredenti
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobServiceClientOpts := service.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -293,10 +296,7 @@ func (s *Client) NewListFileSystemsPager(o *ListFileSystemsOptions) *runtime.Pag
 			if err != nil {
 				return ListFileSystemsResponse{}, exported.ConvertToDFSError(err)
 			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return ListFileSystemsResponse{}, exported.ConvertToDFSError(runtime.NewResponseError(resp))
-			}
-			resp1, err := s.generatedServiceClientWithBlob().ListContainersSegmentHandleResponse(resp)
+			resp1, err := s.generatedServiceClientWithBlob().ListContainersSegmentHandleResponse(resp, http.StatusOK)
 			return resp1, exported.ConvertToDFSError(err)
 		},
 	})

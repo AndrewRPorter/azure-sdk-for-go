@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,16 +5,18 @@ package armdevcenter_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/devcenter/armdevcenter/v2"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/devcenter/armdevcenter/v3"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/internal/v3/testutil"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armdeployments"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -74,6 +73,11 @@ func (testsuite *DevcenterTestSuite) TearDownSuite() {
 
 func TestDevcenterTestSuite(t *testing.T) {
 	suite.Run(t, new(DevcenterTestSuite))
+}
+
+func isResourceQuotaExceeded(err error) bool {
+	var respErr *azcore.ResponseError
+	return errors.As(err, &respErr) && strings.EqualFold(respErr.ErrorCode, "ResourceQuotaExceeded")
 }
 
 func (testsuite *DevcenterTestSuite) Prepare() {
@@ -147,7 +151,7 @@ func (testsuite *DevcenterTestSuite) Prepare() {
 			map[string]any{
 				"name":       "[parameters('virtualNetworksName')]",
 				"type":       "Microsoft.Network/virtualNetworks",
-				"apiVersion": "2021-05-01",
+				"apiVersion": "2024-07-01",
 				"location":   "[parameters('location')]",
 				"properties": map[string]any{
 					"addressSpace": map[string]any{
@@ -159,7 +163,8 @@ func (testsuite *DevcenterTestSuite) Prepare() {
 						map[string]any{
 							"name": "default",
 							"properties": map[string]any{
-								"addressPrefix": "10.0.0.0/24",
+								"addressPrefix":         "10.0.0.0/24",
+								"defaultOutboundAccess": false,
 							},
 						},
 					},
@@ -168,10 +173,10 @@ func (testsuite *DevcenterTestSuite) Prepare() {
 			},
 		},
 	}
-	deployment := armresources.Deployment{
-		Properties: &armresources.DeploymentProperties{
+	deployment := armdeployments.Deployment{
+		Properties: &armdeployments.DeploymentProperties{
 			Template: template,
-			Mode:     to.Ptr(armresources.DeploymentModeIncremental),
+			Mode:     to.Ptr(armdeployments.DeploymentModeIncremental),
 		},
 	}
 	deploymentExtend, err := testutil.CreateDeployment(testsuite.ctx, testsuite.subscriptionId, testsuite.cred, testsuite.options, testsuite.resourceGroupName, "Create_Subnet", &deployment)
@@ -193,9 +198,15 @@ func (testsuite *DevcenterTestSuite) Prepare() {
 			NetworkingResourceGroupName: to.Ptr("NetworkInterfaces"),
 		},
 	}, nil)
+	if isResourceQuotaExceeded(err) {
+		testsuite.T().Skipf("skipping devcenter live test due to regional quota limits for networkConnections in %s: %v", testsuite.location, err)
+	}
 	testsuite.Require().NoError(err)
 	var networkConnectionsClientCreateOrUpdateResponse *armdevcenter.NetworkConnectionsClientCreateOrUpdateResponse
 	networkConnectionsClientCreateOrUpdateResponse, err = testutil.PollForTest(testsuite.ctx, networkConnectionsClientCreateOrUpdateResponsePoller)
+	if isResourceQuotaExceeded(err) {
+		testsuite.T().Skipf("skipping devcenter live test due to regional quota limits for networkConnections in %s: %v", testsuite.location, err)
+	}
 	testsuite.Require().NoError(err)
 	testsuite.networkConnectionId = *networkConnectionsClientCreateOrUpdateResponse.ID
 

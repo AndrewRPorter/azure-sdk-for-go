@@ -39,6 +39,12 @@ type FleetsClientListVirtualMachineScaleSetsResponse struct {
 	VirtualMachineScaleSetListResult
 }
 
+// FleetsClientListVirtualMachinesResponse contains the response from method FleetsClient.NewListVirtualMachinesPager.
+type FleetsClientListVirtualMachinesResponse struct {
+	// The response of a virtual machine list operation.
+	VirtualMachineListResult
+}
+
 // FleetsClientUpdateResponse contains the response from method FleetsClient.BeginUpdate.
 type FleetsClientUpdateResponse struct {
 	// An Compute Fleet resource

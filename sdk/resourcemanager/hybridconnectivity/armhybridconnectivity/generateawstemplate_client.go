@@ -18,6 +18,8 @@ import (
 
 // GenerateAwsTemplateClient contains the methods for the GenerateAwsTemplate group.
 // Don't use this type directly, use NewGenerateAwsTemplateClient() instead.
+//
+// Generated from API version 2027-01-01
 type GenerateAwsTemplateClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type GenerateAwsTemplateClient struct {
 // NewGenerateAwsTemplateClient creates a new instance of GenerateAwsTemplateClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewGenerateAwsTemplateClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*GenerateAwsTemplateClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewGenerateAwsTemplateClient(subscriptionID string, credential azcore.Token
 
 // Post - Retrieve AWS Cloud Formation template
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - generateAwsTemplateRequest - ConnectorId and SolutionTypes and their properties to Generate AWS CFT Template.
 //   - options - GenerateAwsTemplateClientPostOptions contains the optional parameters for the GenerateAwsTemplateClient.Post
 //     method.
@@ -60,11 +63,7 @@ func (client *GenerateAwsTemplateClient) Post(ctx context.Context, generateAwsTe
 	if err != nil {
 		return GenerateAwsTemplateClientPostResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return GenerateAwsTemplateClientPostResponse{}, err
-	}
-	resp, err := client.postHandleResponse(httpResp)
+	resp, err := client.postHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -72,7 +71,7 @@ func (client *GenerateAwsTemplateClient) Post(ctx context.Context, generateAwsTe
 func (client *GenerateAwsTemplateClient) postCreateRequest(ctx context.Context, generateAwsTemplateRequest GenerateAwsTemplateRequest, _ *GenerateAwsTemplateClientPostOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.HybridConnectivity/generateAwsTemplate"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
@@ -80,8 +79,8 @@ func (client *GenerateAwsTemplateClient) postCreateRequest(ctx context.Context, 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, generateAwsTemplateRequest); err != nil {
@@ -91,9 +90,12 @@ func (client *GenerateAwsTemplateClient) postCreateRequest(ctx context.Context, 
 }
 
 // postHandleResponse handles the Post response.
-func (client *GenerateAwsTemplateClient) postHandleResponse(resp *http.Response) (GenerateAwsTemplateClientPostResponse, error) {
+func (client *GenerateAwsTemplateClient) postHandleResponse(resp *http.Response, successCodes ...int) (GenerateAwsTemplateClientPostResponse, error) {
 	result := GenerateAwsTemplateClientPostResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.PostResponse); err != nil {
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.GenerateAwsTemplateResponse); err != nil {
 		return GenerateAwsTemplateClientPostResponse{}, err
 	}
 	return result, nil

@@ -18,6 +18,8 @@ import (
 
 // IspCustomersClient contains the methods for the IspCustomers group.
 // Don't use this type directly, use NewIspCustomersClient() instead.
+//
+// Generated from API version 2026-06-01
 type IspCustomersClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type IspCustomersClient struct {
 // NewIspCustomersClient creates a new instance of IspCustomersClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewIspCustomersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*IspCustomersClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewIspCustomersClient(subscriptionID string, credential azcore.TokenCredent
 
 // BeginCreateOrUpdate - This api creates an ispCustomer with the specified create parameters
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *IspCustomersClient) BeginCreateOrUpdate(ctx context.Context, resou
 	}
 }
 
-// CreateOrUpdate - This api creates an ispCustomer with the specified create parameters
+// createOrUpdate - This api creates an ispCustomer with the specified create parameters
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 func (client *IspCustomersClient) createOrUpdate(ctx context.Context, resourceGroupName string, customerResourceName string, resource IspCustomerResource, options *IspCustomersClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "IspCustomersClient.BeginCreateOrUpdate"
@@ -90,11 +91,11 @@ func (client *IspCustomersClient) createOrUpdate(ctx context.Context, resourceGr
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *IspCustomersClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, resource IspCustomerResource, _ *IspCustomersClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,8 @@ func (client *IspCustomersClient) createOrUpdateCreateRequest(ctx context.Contex
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -122,8 +123,6 @@ func (client *IspCustomersClient) createOrUpdateCreateRequest(ctx context.Contex
 
 // BeginDelete - This api deletes an existing ispCustomer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - options - IspCustomersClientBeginDeleteOptions contains the optional parameters for the IspCustomersClient.BeginDelete
@@ -145,10 +144,8 @@ func (client *IspCustomersClient) BeginDelete(ctx context.Context, resourceGroup
 	}
 }
 
-// Delete - This api deletes an existing ispCustomer resource
+// deleteOperation - This api deletes an existing ispCustomer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 func (client *IspCustomersClient) deleteOperation(ctx context.Context, resourceGroupName string, customerResourceName string, options *IspCustomersClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "IspCustomersClient.BeginDelete"
@@ -170,11 +167,11 @@ func (client *IspCustomersClient) deleteOperation(ctx context.Context, resourceG
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *IspCustomersClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, _ *IspCustomersClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -190,16 +187,13 @@ func (client *IspCustomersClient) deleteCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Gets the ispCustomer resource information using this get call
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - options - IspCustomersClientGetOptions contains the optional parameters for the IspCustomersClient.Get method.
@@ -217,11 +211,7 @@ func (client *IspCustomersClient) Get(ctx context.Context, resourceGroupName str
 	if err != nil {
 		return IspCustomersClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return IspCustomersClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -229,7 +219,7 @@ func (client *IspCustomersClient) Get(ctx context.Context, resourceGroupName str
 func (client *IspCustomersClient) getCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, _ *IspCustomersClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -245,15 +235,18 @@ func (client *IspCustomersClient) getCreateRequest(ctx context.Context, resource
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *IspCustomersClient) getHandleResponse(resp *http.Response) (IspCustomersClientGetResponse, error) {
+func (client *IspCustomersClient) getHandleResponse(resp *http.Response, successCodes ...int) (IspCustomersClientGetResponse, error) {
 	result := IspCustomersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.IspCustomerResource); err != nil {
 		return IspCustomersClientGetResponse{}, err
 	}
@@ -262,8 +255,6 @@ func (client *IspCustomersClient) getHandleResponse(resp *http.Response) (IspCus
 
 // NewListByResourceGroupPager - This api gets the information about all ispCustomer resources under the given subscription
 // and resource group
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - options - IspCustomersClientListByResourceGroupOptions contains the optional parameters for the IspCustomersClient.NewListByResourceGroupPager
 //     method.
@@ -278,43 +269,57 @@ func (client *IspCustomersClient) NewListByResourceGroupPager(resourceGroupName 
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
 			if err != nil {
 				return IspCustomersClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return IspCustomersClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *IspCustomersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *IspCustomersClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *IspCustomersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *IspCustomersClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260601)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *IspCustomersClient) listByResourceGroupHandleResponse(resp *http.Response) (IspCustomersClientListByResourceGroupResponse, error) {
+func (client *IspCustomersClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (IspCustomersClientListByResourceGroupResponse, error) {
 	result := IspCustomersClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.IspCustomerResourceListResult); err != nil {
 		return IspCustomersClientListByResourceGroupResponse{}, err
 	}
@@ -322,8 +327,6 @@ func (client *IspCustomersClient) listByResourceGroupHandleResponse(resp *http.R
 }
 
 // NewListBySubscriptionPager - This api gets information about all ispCustomer resources under the given subscription
-//
-// Generated from API version 2023-05-01-preview
 //   - options - IspCustomersClientListBySubscriptionOptions contains the optional parameters for the IspCustomersClient.NewListBySubscriptionPager
 //     method.
 func (client *IspCustomersClient) NewListBySubscriptionPager(options *IspCustomersClientListBySubscriptionOptions) *runtime.Pager[IspCustomersClientListBySubscriptionResponse] {
@@ -337,39 +340,53 @@ func (client *IspCustomersClient) NewListBySubscriptionPager(options *IspCustome
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return IspCustomersClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return IspCustomersClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *IspCustomersClient) listBySubscriptionCreateRequest(ctx context.Context, _ *IspCustomersClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ConnectedCache/ispCustomers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *IspCustomersClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *IspCustomersClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ConnectedCache/ispCustomers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260601)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *IspCustomersClient) listBySubscriptionHandleResponse(resp *http.Response) (IspCustomersClientListBySubscriptionResponse, error) {
+func (client *IspCustomersClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (IspCustomersClientListBySubscriptionResponse, error) {
 	result := IspCustomersClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.IspCustomerResourceListResult); err != nil {
 		return IspCustomersClientListBySubscriptionResponse{}, err
 	}
@@ -378,8 +395,6 @@ func (client *IspCustomersClient) listBySubscriptionHandleResponse(resp *http.Re
 
 // Update - This api updates an existing ispCustomer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - properties - The resource properties to be updated.
@@ -398,11 +413,7 @@ func (client *IspCustomersClient) Update(ctx context.Context, resourceGroupName 
 	if err != nil {
 		return IspCustomersClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return IspCustomersClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -410,7 +421,7 @@ func (client *IspCustomersClient) Update(ctx context.Context, resourceGroupName 
 func (client *IspCustomersClient) updateCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, properties PatchResource, _ *IspCustomersClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/ispCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -426,8 +437,8 @@ func (client *IspCustomersClient) updateCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -437,8 +448,11 @@ func (client *IspCustomersClient) updateCreateRequest(ctx context.Context, resou
 }
 
 // updateHandleResponse handles the Update response.
-func (client *IspCustomersClient) updateHandleResponse(resp *http.Response) (IspCustomersClientUpdateResponse, error) {
+func (client *IspCustomersClient) updateHandleResponse(resp *http.Response, successCodes ...int) (IspCustomersClientUpdateResponse, error) {
 	result := IspCustomersClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.IspCustomerResource); err != nil {
 		return IspCustomersClientUpdateResponse{}, err
 	}

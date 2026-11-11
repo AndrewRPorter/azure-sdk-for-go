@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -19,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob"
@@ -46,12 +44,13 @@ type AZBlobUnrecordedTestsSuite struct {
 func Test(t *testing.T) {
 	recordMode := recording.GetRecordMode()
 	t.Logf("Running azblob Tests in %s mode\n", recordMode)
-	if recordMode == recording.LiveMode {
+	switch recordMode {
+	case recording.LiveMode:
 		suite.Run(t, &AZBlobRecordedTestsSuite{})
 		suite.Run(t, &AZBlobUnrecordedTestsSuite{})
-	} else if recordMode == recording.PlaybackMode {
+	case recording.PlaybackMode:
 		suite.Run(t, &AZBlobRecordedTestsSuite{})
-	} else if recordMode == recording.RecordingMode {
+	case recording.RecordingMode:
 		suite.Run(t, &AZBlobRecordedTestsSuite{})
 	}
 }
@@ -172,6 +171,42 @@ func (s *AZBlobUnrecordedTestsSuite) TestUploadStreamToBlockBlobInChunksChecksum
 	_require := require.New(s.T())
 	testName := s.T().Name()
 	performUploadStreamToBlockBlobTestWithChecksums(s.T(), _require, testName, blobSize, bufferSize, maxBuffers)
+}
+
+func (s *AZBlobUnrecordedTestsSuite) TestUploadStreamWithStructuredMessageCRC64() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	client, err := testcommon.GetClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	containerName := testcommon.GenerateContainerName(testName)
+	_, err = client.CreateContainer(context.Background(), containerName, nil)
+	_require.NoError(err)
+	defer func() {
+		_, err := client.DeleteContainer(context.Background(), containerName, nil)
+		_require.NoError(err)
+	}()
+
+	blobName := testcommon.GenerateBlobName(testName)
+
+	blobContentReader, blobData := testcommon.GenerateData(8 * 1024)
+
+	_, err = client.UploadStream(ctx, containerName, blobName, blobContentReader,
+		&blockblob.UploadStreamOptions{
+			BlockSize:               1024,
+			Concurrency:             3,
+			TransactionalValidation: blob.TransferValidationTypeComputeStructuredMessageCRC64(0),
+		})
+	_require.NoError(err)
+
+	// Download and verify data was persisted correctly
+	downloadResp, err := client.DownloadStream(context.Background(), containerName, blobName, nil)
+	_require.NoError(err)
+
+	downloadedData, err := io.ReadAll(downloadResp.Body)
+	_require.NoError(err)
+	_require.Equal(blobData, downloadedData)
 }
 
 func performUploadStreamToBlockBlobTest(t *testing.T, _require *require.Assertions, testName string, blobSize, bufferSize, maxBuffers int) {
@@ -582,6 +617,7 @@ func performUploadAndDownloadBufferTest(t *testing.T, _require *require.Assertio
 		containerName,
 		blobName,
 		destBuffer, &blob.DownloadBufferOptions{
+			LayoutAwareRouting: to.Ptr(false),
 			Range: azblob.HTTPRange{
 				Count:  int64(downloadCount),
 				Offset: int64(downloadOffset),
@@ -768,7 +804,7 @@ func (s *AZBlobUnrecordedTestsSuite) TestDoBatchTransferWithError() {
 		Operation: func(ctx context.Context, offset int64, chunkSize int64) error {
 			// simulate doing some work (HTTP call in real scenarios)
 			// later chunks later longer to finish
-			time.Sleep(time.Second * time.Duration(offset))
+			recording.Sleep(time.Second * time.Duration(offset))
 			// simulate having gotten data and write it to the memory mapped file
 			mmf.write("input")
 
@@ -793,7 +829,7 @@ func (s *AZBlobUnrecordedTestsSuite) TestDoBatchTransferWithError() {
 
 	// simulate closing the mmf and make sure no panic occurs (as reported in #139)
 	mmf.isClosed = true
-	time.Sleep(time.Second * 5)
+	recording.Sleep(time.Second * 5)
 }
 
 func (s *AZBlobRecordedTestsSuite) TestAzBlobClientDefaultAudience() {
@@ -890,6 +926,12 @@ func (s *AZBlobRecordedTestsSuite) TestDownloadBufferWithLargeData() {
 	downloadOffset := 0
 	downloadCount := 7 * 1024 * 1024
 	_require := require.New(s.T())
+	// The blob is larger than the block size, so it's uploaded in blocks whose IDs are random UUIDs.
+	// Ignore them, in the URL and in the Put Block List body, so the upload matches its recording.
+	_require.NoError(recording.SetDefaultMatcher(s.T(), &recording.SetDefaultMatcherOptions{
+		CompareBodies:          to.Ptr(false),
+		IgnoredQueryParameters: []string{"blockid"},
+	}))
 	testName := s.T().Name()
 	performUploadAndDownloadBufferTest(s.T(), _require, testName, blobSize, blockSize, concurrency, downloadOffset, downloadCount)
 }

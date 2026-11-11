@@ -18,6 +18,8 @@ import (
 
 // AssetsClient contains the methods for the Assets group.
 // Don't use this type directly, use NewAssetsClient() instead.
+//
+// Generated from API version 2026-03-01-preview
 type AssetsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type AssetsClient struct {
 // NewAssetsClient creates a new instance of AssetsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewAssetsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*AssetsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewAssetsClient(subscriptionID string, credential azcore.TokenCredential, o
 
 // BeginCreateOrReplace - Create a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - assetName - Asset name parameter.
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *AssetsClient) BeginCreateOrReplace(ctx context.Context, resourceGr
 	}
 }
 
-// CreateOrReplace - Create a Asset
+// createOrReplace - Create a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 func (client *AssetsClient) createOrReplace(ctx context.Context, resourceGroupName string, assetName string, resource Asset, options *AssetsClientBeginCreateOrReplaceOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AssetsClient.BeginCreateOrReplace"
@@ -90,11 +91,11 @@ func (client *AssetsClient) createOrReplace(ctx context.Context, resourceGroupNa
 	return httpResp, nil
 }
 
-// createOrReplaceCreateRequest creates the CreateOrReplace request.
+// createOrReplaceCreateRequest creates the createOrReplace request.
 func (client *AssetsClient) createOrReplaceCreateRequest(ctx context.Context, resourceGroupName string, assetName string, resource Asset, _ *AssetsClientBeginCreateOrReplaceOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets/{assetName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,8 @@ func (client *AssetsClient) createOrReplaceCreateRequest(ctx context.Context, re
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -122,8 +123,6 @@ func (client *AssetsClient) createOrReplaceCreateRequest(ctx context.Context, re
 
 // BeginDelete - Delete a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - assetName - Asset name parameter.
 //   - options - AssetsClientBeginDeleteOptions contains the optional parameters for the AssetsClient.BeginDelete method.
@@ -144,10 +143,8 @@ func (client *AssetsClient) BeginDelete(ctx context.Context, resourceGroupName s
 	}
 }
 
-// Delete - Delete a Asset
+// deleteOperation - Delete a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 func (client *AssetsClient) deleteOperation(ctx context.Context, resourceGroupName string, assetName string, options *AssetsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AssetsClient.BeginDelete"
@@ -169,11 +166,11 @@ func (client *AssetsClient) deleteOperation(ctx context.Context, resourceGroupNa
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *AssetsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, assetName string, _ *AssetsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets/{assetName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -189,195 +186,13 @@ func (client *AssetsClient) deleteCreateRequest(ctx context.Context, resourceGro
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a Asset
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - assetName - Asset name parameter.
-//   - options - AssetsClientGetOptions contains the optional parameters for the AssetsClient.Get method.
-func (client *AssetsClient) Get(ctx context.Context, resourceGroupName string, assetName string, options *AssetsClientGetOptions) (AssetsClientGetResponse, error) {
-	var err error
-	const operationName = "AssetsClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, assetName, options)
-	if err != nil {
-		return AssetsClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return AssetsClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return AssetsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *AssetsClient) getCreateRequest(ctx context.Context, resourceGroupName string, assetName string, _ *AssetsClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets/{assetName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if assetName == "" {
-		return nil, errors.New("parameter assetName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{assetName}", url.PathEscape(assetName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *AssetsClient) getHandleResponse(resp *http.Response) (AssetsClientGetResponse, error) {
-	result := AssetsClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.Asset); err != nil {
-		return AssetsClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByResourceGroupPager - List Asset resources by resource group
-//
-// Generated from API version 2024-11-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - options - AssetsClientListByResourceGroupOptions contains the optional parameters for the AssetsClient.NewListByResourceGroupPager
-//     method.
-func (client *AssetsClient) NewListByResourceGroupPager(resourceGroupName string, options *AssetsClientListByResourceGroupOptions) *runtime.Pager[AssetsClientListByResourceGroupResponse] {
-	return runtime.NewPager(runtime.PagingHandler[AssetsClientListByResourceGroupResponse]{
-		More: func(page AssetsClientListByResourceGroupResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *AssetsClientListByResourceGroupResponse) (AssetsClientListByResourceGroupResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AssetsClient.NewListByResourceGroupPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
-			if err != nil {
-				return AssetsClientListByResourceGroupResponse{}, err
-			}
-			return client.listByResourceGroupHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *AssetsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *AssetsClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *AssetsClient) listByResourceGroupHandleResponse(resp *http.Response) (AssetsClientListByResourceGroupResponse, error) {
-	result := AssetsClientListByResourceGroupResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.AssetListResult); err != nil {
-		return AssetsClientListByResourceGroupResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListBySubscriptionPager - List Asset resources by subscription ID
-//
-// Generated from API version 2024-11-01
-//   - options - AssetsClientListBySubscriptionOptions contains the optional parameters for the AssetsClient.NewListBySubscriptionPager
-//     method.
-func (client *AssetsClient) NewListBySubscriptionPager(options *AssetsClientListBySubscriptionOptions) *runtime.Pager[AssetsClientListBySubscriptionResponse] {
-	return runtime.NewPager(runtime.PagingHandler[AssetsClientListBySubscriptionResponse]{
-		More: func(page AssetsClientListBySubscriptionResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *AssetsClientListBySubscriptionResponse) (AssetsClientListBySubscriptionResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AssetsClient.NewListBySubscriptionPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
-			if err != nil {
-				return AssetsClientListBySubscriptionResponse{}, err
-			}
-			return client.listBySubscriptionHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *AssetsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *AssetsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DeviceRegistry/assets"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *AssetsClient) listBySubscriptionHandleResponse(resp *http.Response) (AssetsClientListBySubscriptionResponse, error) {
-	result := AssetsClientListBySubscriptionResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.AssetListResult); err != nil {
-		return AssetsClientListBySubscriptionResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginUpdate - Update a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - assetName - Asset name parameter.
 //   - properties - The resource properties to be updated.
@@ -399,10 +214,8 @@ func (client *AssetsClient) BeginUpdate(ctx context.Context, resourceGroupName s
 	}
 }
 
-// Update - Update a Asset
+// update - Update a Asset
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01
 func (client *AssetsClient) update(ctx context.Context, resourceGroupName string, assetName string, properties AssetUpdate, options *AssetsClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AssetsClient.BeginUpdate"
@@ -424,11 +237,11 @@ func (client *AssetsClient) update(ctx context.Context, resourceGroupName string
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *AssetsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, assetName string, properties AssetUpdate, _ *AssetsClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets/{assetName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -444,12 +257,212 @@ func (client *AssetsClient) updateCreateRequest(ctx context.Context, resourceGro
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a Asset
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - assetName - Asset name parameter.
+//   - options - AssetsClientGetOptions contains the optional parameters for the AssetsClient.Get method.
+func (client *AssetsClient) Get(ctx context.Context, resourceGroupName string, assetName string, options *AssetsClientGetOptions) (AssetsClientGetResponse, error) {
+	var err error
+	const operationName = "AssetsClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, assetName, options)
+	if err != nil {
+		return AssetsClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return AssetsClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *AssetsClient) getCreateRequest(ctx context.Context, resourceGroupName string, assetName string, _ *AssetsClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets/{assetName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if assetName == "" {
+		return nil, errors.New("parameter assetName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{assetName}", url.PathEscape(assetName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260301Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *AssetsClient) getHandleResponse(resp *http.Response, successCodes ...int) (AssetsClientGetResponse, error) {
+	result := AssetsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.Asset); err != nil {
+		return AssetsClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByResourceGroupPager - List Asset resources by resource group
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - options - AssetsClientListByResourceGroupOptions contains the optional parameters for the AssetsClient.NewListByResourceGroupPager
+//     method.
+func (client *AssetsClient) NewListByResourceGroupPager(resourceGroupName string, options *AssetsClientListByResourceGroupOptions) *runtime.Pager[AssetsClientListByResourceGroupResponse] {
+	return runtime.NewPager(runtime.PagingHandler[AssetsClientListByResourceGroupResponse]{
+		More: func(page AssetsClientListByResourceGroupResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *AssetsClientListByResourceGroupResponse) (AssetsClientListByResourceGroupResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AssetsClient.NewListByResourceGroupPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
+			if err != nil {
+				return AssetsClientListByResourceGroupResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return AssetsClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByResourceGroupCreateRequest creates the ListByResourceGroup request.
+func (client *AssetsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *AssetsClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DeviceRegistry/assets"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByResourceGroupHandleResponse handles the ListByResourceGroup response.
+func (client *AssetsClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (AssetsClientListByResourceGroupResponse, error) {
+	result := AssetsClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.AssetListResult); err != nil {
+		return AssetsClientListByResourceGroupResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListBySubscriptionPager - List Asset resources by subscription ID
+//   - options - AssetsClientListBySubscriptionOptions contains the optional parameters for the AssetsClient.NewListBySubscriptionPager
+//     method.
+func (client *AssetsClient) NewListBySubscriptionPager(options *AssetsClientListBySubscriptionOptions) *runtime.Pager[AssetsClientListBySubscriptionResponse] {
+	return runtime.NewPager(runtime.PagingHandler[AssetsClientListBySubscriptionResponse]{
+		More: func(page AssetsClientListBySubscriptionResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *AssetsClientListBySubscriptionResponse) (AssetsClientListBySubscriptionResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AssetsClient.NewListBySubscriptionPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
+			if err != nil {
+				return AssetsClientListBySubscriptionResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return AssetsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listBySubscriptionCreateRequest creates the ListBySubscription request.
+func (client *AssetsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *AssetsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.DeviceRegistry/assets"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listBySubscriptionHandleResponse handles the ListBySubscription response.
+func (client *AssetsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (AssetsClientListBySubscriptionResponse, error) {
+	result := AssetsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.AssetListResult); err != nil {
+		return AssetsClientListBySubscriptionResponse{}, err
+	}
+	return result, nil
 }

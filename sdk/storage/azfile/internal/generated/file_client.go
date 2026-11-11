@@ -1,17 +1,18 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 package generated
 
 import (
+	"context"
+	"net/http"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
 func (client *FileClient) Endpoint() string {
-	return client.endpoint
+	return client.url
 }
 
 func (client *FileClient) InternalClient() *azcore.Client {
@@ -20,17 +21,19 @@ func (client *FileClient) InternalClient() *azcore.Client {
 
 // NewFileClient creates a new instance of FileClient with the specified values.
 //   - endpoint - The URL of the service account, share, directory or file that is the target of the desired operation.
-//   - allowTrailingDot - If true, the trailing dot will not be trimmed from the target URI.
-//   - fileRequestIntent - Valid value is backup
-//   - allowSourceTrailingDot - If true, the trailing dot will not be trimmed from the source URI.
 //   - azClient - azcore.Client is a basic HTTP client.  It consists of a pipeline and tracing provider.
-func NewFileClient(endpoint string, allowTrailingDot *bool, fileRequestIntent *ShareTokenIntent, allowSourceTrailingDot *bool, azClient *azcore.Client) *FileClient {
+func (client *FileClient) ListAllRangesCreateRequest(ctx context.Context, options *FileClientListAllRangesOptions) (*policy.Request, error) {
+	return client.listAllRangesCreateRequest(ctx, options)
+}
+
+func (client *FileClient) ListAllRangesHandleResponse(resp *http.Response) (FileClientListAllRangesResponse, error) {
+	return client.listAllRangesHandleResponse(resp, http.StatusOK)
+}
+
+func NewFileClient(endpoint string, azClient *azcore.Client) *FileClient {
 	client := &FileClient{
-		internal:               azClient,
-		endpoint:               endpoint,
-		allowTrailingDot:       allowTrailingDot,
-		fileRequestIntent:      fileRequestIntent,
-		allowSourceTrailingDot: allowSourceTrailingDot,
+		internal: azClient,
+		url:      endpoint,
 	}
 	return client
 }

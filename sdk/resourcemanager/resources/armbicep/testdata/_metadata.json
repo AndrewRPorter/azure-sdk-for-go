@@ -1,0 +1,6 @@
+{
+  "apiVersions": {
+    "BicepClient": "2023-11-01"
+  },
+  "emitterVersion": "0.18.0"
+}

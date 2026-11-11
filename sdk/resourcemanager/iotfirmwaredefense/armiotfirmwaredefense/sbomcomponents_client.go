@@ -18,6 +18,8 @@ import (
 
 // SbomComponentsClient contains the methods for the SbomComponents group.
 // Don't use this type directly, use NewSbomComponentsClient() instead.
+//
+// Generated from API version 2025-08-02
 type SbomComponentsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type SbomComponentsClient struct {
 // NewSbomComponentsClient creates a new instance of SbomComponentsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewSbomComponentsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SbomComponentsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -40,8 +45,6 @@ func NewSbomComponentsClient(subscriptionID string, credential azcore.TokenCrede
 }
 
 // NewListByFirmwarePager - Lists sbom analysis results of a firmware.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - firmwareID - The id of the firmware.
@@ -58,51 +61,65 @@ func (client *SbomComponentsClient) NewListByFirmwarePager(resourceGroupName str
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByFirmwareCreateRequest(ctx, resourceGroupName, workspaceName, firmwareID, options)
-			}, nil)
+			req, err := client.listByFirmwareCreateRequest(ctx, resourceGroupName, workspaceName, firmwareID, nextLink, options)
 			if err != nil {
 				return SbomComponentsClientListByFirmwareResponse{}, err
 			}
-			return client.listByFirmwareHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SbomComponentsClientListByFirmwareResponse{}, err
+			}
+			return client.listByFirmwareHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByFirmwareCreateRequest creates the ListByFirmware request.
-func (client *SbomComponentsClient) listByFirmwareCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, _ *SbomComponentsClientListByFirmwareOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}/sbomComponents"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *SbomComponentsClient) listByFirmwareCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, nextLink string, _ *SbomComponentsClientListByFirmwareOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}/sbomComponents"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if workspaceName == "" {
+			return nil, errors.New("parameter workspaceName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{workspaceName}", url.PathEscape(workspaceName))
+		if firmwareID == "" {
+			return nil, errors.New("parameter firmwareID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{firmwareId}", url.PathEscape(firmwareID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if workspaceName == "" {
-		return nil, errors.New("parameter workspaceName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{workspaceName}", url.PathEscape(workspaceName))
-	if firmwareID == "" {
-		return nil, errors.New("parameter firmwareID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{firmwareId}", url.PathEscape(firmwareID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20250802)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByFirmwareHandleResponse handles the ListByFirmware response.
-func (client *SbomComponentsClient) listByFirmwareHandleResponse(resp *http.Response) (SbomComponentsClientListByFirmwareResponse, error) {
+func (client *SbomComponentsClient) listByFirmwareHandleResponse(resp *http.Response, successCodes ...int) (SbomComponentsClientListByFirmwareResponse, error) {
 	result := SbomComponentsClientListByFirmwareResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.SbomComponentResourceListResult); err != nil {
 		return SbomComponentsClientListByFirmwareResponse{}, err
 	}

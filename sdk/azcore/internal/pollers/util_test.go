@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -114,7 +111,7 @@ func TestPollHelper(t *testing.T) {
 	})
 	require.Error(t, err)
 
-	pl := exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl := exported.NewPipeline(nil, shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return nil, errors.New("failed")
 	}))
 	err = PollHelper(context.Background(), fakeEndpoint, pl, func(*http.Response) (string, error) {
@@ -124,7 +121,7 @@ func TestPollHelper(t *testing.T) {
 	require.Error(t, err)
 
 	require.Error(t, err)
-	pl = exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl = exported.NewPipeline(nil, shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusNotFound,
 			Body:       http.NoBody,
@@ -136,7 +133,7 @@ func TestPollHelper(t *testing.T) {
 	require.Error(t, err)
 
 	require.Error(t, err)
-	pl = exported.NewPipeline(shared.TransportFunc(func(*http.Request) (*http.Response, error) {
+	pl = exported.NewPipeline(nil, shared.TransportFunc(func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: http.StatusOK,
 			Body:       http.NoBody,

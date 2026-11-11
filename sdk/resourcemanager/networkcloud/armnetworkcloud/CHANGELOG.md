@@ -1,5 +1,344 @@
 # Release History
 
+## 2.0.0 (2026-08-18)
+### Breaking Changes
+
+- Type of `ClusterPatchProperties.AggregatorOrSingleRackDefinition` has been changed from `*RackDefinition` to `*RackDefinitionPatch`
+- Type of `ClusterPatchProperties.ClusterServicePrincipal` has been changed from `*ServicePrincipalInformation` to `*ServicePrincipalInformationPatch`
+- Type of `ClusterPatchProperties.ComputeDeploymentThreshold` has been changed from `*ValidationThreshold` to `*ValidationThresholdPatch`
+- Type of `ClusterPatchProperties.ComputeRackDefinitions` has been changed from `[]*RackDefinition` to `[]*RackDefinitionPatch`
+- Type of `ClusterPatchProperties.RuntimeProtectionConfiguration` has been changed from `*RuntimeProtectionConfiguration` to `*RuntimeProtectionConfigurationPatch`
+- Type of `ClusterPatchProperties.SecretArchive` has been changed from `*ClusterSecretArchive` to `*ClusterSecretArchivePatch`
+- Type of `ClusterPatchProperties.UpdateStrategy` has been changed from `*ClusterUpdateStrategy` to `*ClusterUpdateStrategyPatch`
+- Type of `ConsolePatchProperties.SSHPublicKey` has been changed from `*SSHPublicKey` to `*SSHPublicKeyPatch`
+- Type of `VirtualMachinePatchProperties.VMImageRepositoryCredentials` has been changed from `*ImageRepositoryCredentials` to `*ImageRepositoryCredentialsPatch`
+
+### Features Added
+
+- New value `CloudServicesNetworkStorageStatusStatusInitializing`, `CloudServicesNetworkStorageStatusStatusNone`, `CloudServicesNetworkStorageStatusStatusRepairing` added to enum type `CloudServicesNetworkStorageStatusStatus`
+- New value `CommandOutputTypeClusterSupportAdministrativeActions` added to enum type `CommandOutputType`
+- New enum type `AccessBridgeAllowedName` with values `AccessBridgeAllowedNameBastion`, `AccessBridgeAllowedNamePrivateVault`, `AccessBridgeAllowedNameStorageDashboard`
+- New enum type `AccessBridgeDetailedStatus` with values `AccessBridgeDetailedStatusDegraded`, `AccessBridgeDetailedStatusFailed`, `AccessBridgeDetailedStatusRunning`
+- New enum type `AccessBridgeProvisioningState` with values `AccessBridgeProvisioningStateAccepted`, `AccessBridgeProvisioningStateCanceled`, `AccessBridgeProvisioningStateFailed`, `AccessBridgeProvisioningStateProvisioning`, `AccessBridgeProvisioningStateSucceeded`
+- New enum type `BareMetalMachineMonitoringConfigurationStatusLogLevel` with values `BareMetalMachineMonitoringConfigurationStatusLogLevelDefault`, `BareMetalMachineMonitoringConfigurationStatusLogLevelNexus`
+- New enum type `BareMetalMachineMonitoringConfigurationStatusMetricsLevel` with values `BareMetalMachineMonitoringConfigurationStatusMetricsLevelDefault`, `BareMetalMachineMonitoringConfigurationStatusMetricsLevelNexus`
+- New enum type `BareMetalMachineReimageSafeguardMode` with values `BareMetalMachineReimageSafeguardModeAll`, `BareMetalMachineReimageSafeguardModeNone`
+- New enum type `ClusterContinueUpdateVersionSafeguardMode` with values `ClusterContinueUpdateVersionSafeguardModeAll`, `ClusterContinueUpdateVersionSafeguardModeNone`
+- New enum type `ClusterInspectAdditionalAction` with values `ClusterInspectAdditionalActionResetHardware`
+- New enum type `ClusterUpdateVersionSafeguardMode` with values `ClusterUpdateVersionSafeguardModeAll`, `ClusterUpdateVersionSafeguardModeNone`
+- New enum type `DeploymentType` with values `DeploymentTypeAzureLocal`, `DeploymentTypeNexus`
+- New enum type `KubernetesVersionProvisioningState` with values `KubernetesVersionProvisioningStateAccepted`, `KubernetesVersionProvisioningStateCanceled`, `KubernetesVersionProvisioningStateFailed`, `KubernetesVersionProvisioningStateSucceeded`
+- New enum type `RelayPrivateEndpointConnectionState` with values `RelayPrivateEndpointConnectionStateApproved`, `RelayPrivateEndpointConnectionStateRejected`
+- New enum type `RuntimeProtectionAgentHealthStatus` with values `RuntimeProtectionAgentHealthStatusHealthy`, `RuntimeProtectionAgentHealthStatusUnhealthy`
+- New enum type `RuntimeProtectionAgentLicenseStatus` with values `RuntimeProtectionAgentLicenseStatusLicensed`, `RuntimeProtectionAgentLicenseStatusUnlicensed`
+- New enum type `RuntimeProtectionDefinitionUpdateMode` with values `RuntimeProtectionDefinitionUpdateModeAutomatic`, `RuntimeProtectionDefinitionUpdateModeNone`
+- New enum type `SecurityRuleDirection` with values `SecurityRuleDirectionInbound`, `SecurityRuleDirectionOutbound`
+- New enum type `StorageApplianceMonitoringConfigurationStatusLogLevel` with values `StorageApplianceMonitoringConfigurationStatusLogLevelDefault`, `StorageApplianceMonitoringConfigurationStatusLogLevelNexus`
+- New enum type `StorageApplianceMonitoringConfigurationStatusMetricsLevel` with values `StorageApplianceMonitoringConfigurationStatusMetricsLevelDefault`, `StorageApplianceMonitoringConfigurationStatusMetricsLevelNexus`
+- New enum type `TransportProtocol` with values `TransportProtocolTCP`, `TransportProtocolUDP`
+- New function `NewAccessBridgesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*AccessBridgesClient, error)`
+- New function `*AccessBridgesClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, accessBridge AccessBridge, options *AccessBridgesClientBeginCreateOrUpdateOptions) (*runtime.Poller[AccessBridgesClientCreateOrUpdateResponse], error)`
+- New function `*AccessBridgesClient.BeginDelete(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, options *AccessBridgesClientBeginDeleteOptions) (*runtime.Poller[AccessBridgesClientDeleteResponse], error)`
+- New function `*AccessBridgesClient.Get(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, options *AccessBridgesClientGetOptions) (AccessBridgesClientGetResponse, error)`
+- New function `*AccessBridgesClient.NewListByResourceGroupPager(resourceGroupName string, options *AccessBridgesClientListByResourceGroupOptions) *runtime.Pager[AccessBridgesClientListByResourceGroupResponse]`
+- New function `*AccessBridgesClient.NewListBySubscriptionPager(options *AccessBridgesClientListBySubscriptionOptions) *runtime.Pager[AccessBridgesClientListBySubscriptionResponse]`
+- New function `*AccessBridgesClient.BeginUpdate(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, accessBridgeUpdateParameters AccessBridgePatchParameters, options *AccessBridgesClientBeginUpdateOptions) (*runtime.Poller[AccessBridgesClientUpdateResponse], error)`
+- New function `*ClientFactory.NewAccessBridgesClient() *AccessBridgesClient`
+- New function `*ClientFactory.NewKubernetesVersionsClient() *KubernetesVersionsClient`
+- New function `*ClusterManagersClient.BeginUpdateRelayPrivateEndpointConnection(ctx context.Context, resourceGroupName string, clusterManagerName string, options *ClusterManagersClientBeginUpdateRelayPrivateEndpointConnectionOptions) (*runtime.Poller[ClusterManagersClientUpdateRelayPrivateEndpointConnectionResponse], error)`
+- New function `*ClustersClient.BeginInspect(ctx context.Context, resourceGroupName string, clusterName string, options *ClustersClientBeginInspectOptions) (*runtime.Poller[ClustersClientInspectResponse], error)`
+- New function `*ClustersClient.BeginRotateCredential(ctx context.Context, resourceGroupName string, clusterName string, body ClusterRotateCredentialParameters, options *ClustersClientBeginRotateCredentialOptions) (*runtime.Poller[ClustersClientRotateCredentialResponse], error)`
+- New function `NewKubernetesVersionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*KubernetesVersionsClient, error)`
+- New function `*KubernetesVersionsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, kubernetesVersionName string, kubernetesVersionParameters KubernetesVersion, options *KubernetesVersionsClientBeginCreateOrUpdateOptions) (*runtime.Poller[KubernetesVersionsClientCreateOrUpdateResponse], error)`
+- New function `*KubernetesVersionsClient.BeginDelete(ctx context.Context, resourceGroupName string, kubernetesVersionName string, options *KubernetesVersionsClientBeginDeleteOptions) (*runtime.Poller[KubernetesVersionsClientDeleteResponse], error)`
+- New function `*KubernetesVersionsClient.Get(ctx context.Context, resourceGroupName string, kubernetesVersionName string, options *KubernetesVersionsClientGetOptions) (KubernetesVersionsClientGetResponse, error)`
+- New function `*KubernetesVersionsClient.NewListByResourceGroupPager(resourceGroupName string, options *KubernetesVersionsClientListByResourceGroupOptions) *runtime.Pager[KubernetesVersionsClientListByResourceGroupResponse]`
+- New function `*KubernetesVersionsClient.NewListBySubscriptionPager(options *KubernetesVersionsClientListBySubscriptionOptions) *runtime.Pager[KubernetesVersionsClientListBySubscriptionResponse]`
+- New function `*KubernetesVersionsClient.BeginUpdate(ctx context.Context, resourceGroupName string, kubernetesVersionName string, kubernetesVersionPatchParameters KubernetesVersionPatchParameters, options *KubernetesVersionsClientBeginUpdateOptions) (*runtime.Poller[KubernetesVersionsClientUpdateResponse], error)`
+- New struct `AccessBridge`
+- New struct `AccessBridgeEndpoint`
+- New struct `AccessBridgeList`
+- New struct `AccessBridgePatchParameters`
+- New struct `AccessBridgePatchProperties`
+- New struct `AccessBridgeProperties`
+- New struct `AccessBridgeSecurityRule`
+- New struct `AdministrativeCredentialsPatch`
+- New struct `BareMetalMachineConfigurationDataPatch`
+- New struct `BareMetalMachineMonitoringConfigurationStatus`
+- New struct `BareMetalMachineReimageParameters`
+- New struct `ClusterInspectParameters`
+- New struct `ClusterManagerRelayConfiguration`
+- New struct `ClusterManagerUpdateRelayPrivateEndpointConnectionParameters`
+- New struct `ClusterRotateCredentialParameters`
+- New struct `ClusterSecretArchivePatch`
+- New struct `ClusterUpdateStrategyPatch`
+- New struct `FilterDevices`
+- New struct `ImageRepositoryCredentialsPatch`
+- New struct `KubernetesVersion`
+- New struct `KubernetesVersionList`
+- New struct `KubernetesVersionPatchParameters`
+- New struct `KubernetesVersionProperties`
+- New struct `KubernetesVersionValue`
+- New struct `RackDefinitionPatch`
+- New struct `RuntimeProtectionConfigurationPatch`
+- New struct `SSHPublicKeyPatch`
+- New struct `ServicePrincipalInformationPatch`
+- New struct `StorageApplianceConfigurationDataPatch`
+- New struct `StorageApplianceExpansionShelf`
+- New struct `StorageApplianceMonitoringConfigurationStatus`
+- New struct `ValidationThresholdPatch`
+- New field `BmcIPv4Address`, `BmcIPv6Address`, `MonitoringConfigurationStatus` in struct `BareMetalMachineProperties`
+- New field `Body` in struct `BareMetalMachinesClientBeginReimageOptions`
+- New field `Kind` in struct `Cluster`
+- New field `SafeguardMode` in struct `ClusterContinueUpdateVersionParameters`
+- New field `Kind` in struct `ClusterManager`
+- New field `RelayConfiguration` in struct `ClusterManagerProperties`
+- New field `LastSuccessfulVersionUpdateTime`, `ManagedCredentials` in struct `ClusterProperties`
+- New field `SafeguardMode` in struct `ClusterUpdateVersionParameters`
+- New field `DeploymentType` in struct `RackSKUProperties`
+- New field `DefinitionUpdateMode` in struct `RuntimeProtectionConfiguration`
+- New field `AgentHealthStatus`, `AgentHealthStatusIssues`, `AgentLicenseStatus`, `DefinitionUpdateMode`, `EnforcementLevel` in struct `RuntimeProtectionStatus`
+- New field `ExpansionShelves`, `MonitoringConfigurationStatus` in struct `StorageApplianceProperties`
+- New field `AssignedStorageApplianceID` in struct `VolumeProperties`
+
+
+## 1.5.0-beta.1 (2026-05-06)
+### Features Added
+
+- New value `CloudServicesNetworkStorageStatusStatusInitializing`, `CloudServicesNetworkStorageStatusStatusNone`, `CloudServicesNetworkStorageStatusStatusRepairing` added to enum type `CloudServicesNetworkStorageStatusStatus`
+- New value `CommandOutputTypeClusterSupportAdministrativeActions` added to enum type `CommandOutputType`
+- New enum type `AccessBridgeAllowedName` with values `AccessBridgeAllowedNameBastion`, `AccessBridgeAllowedNamePrivateVault`, `AccessBridgeAllowedNameStorageDashboard`
+- New enum type `AccessBridgeDetailedStatus` with values `AccessBridgeDetailedStatusDegraded`, `AccessBridgeDetailedStatusFailed`, `AccessBridgeDetailedStatusRunning`
+- New enum type `AccessBridgeProvisioningState` with values `AccessBridgeProvisioningStateAccepted`, `AccessBridgeProvisioningStateCanceled`, `AccessBridgeProvisioningStateFailed`, `AccessBridgeProvisioningStateProvisioning`, `AccessBridgeProvisioningStateSucceeded`
+- New enum type `BareMetalMachineMetricsConfigurationStatusLogLevel` with values `BareMetalMachineMetricsConfigurationStatusLogLevelDefault`, `BareMetalMachineMetricsConfigurationStatusLogLevelNexus`
+- New enum type `BareMetalMachineMetricsConfigurationStatusMetricsLevel` with values `BareMetalMachineMetricsConfigurationStatusMetricsLevelDefault`, `BareMetalMachineMetricsConfigurationStatusMetricsLevelNexus`
+- New enum type `BareMetalMachineReimageSafeguardMode` with values `BareMetalMachineReimageSafeguardModeAll`, `BareMetalMachineReimageSafeguardModeNone`
+- New enum type `ClusterContinueUpdateVersionSafeguardMode` with values `ClusterContinueUpdateVersionSafeguardModeAll`, `ClusterContinueUpdateVersionSafeguardModeNone`
+- New enum type `ClusterInspectAdditionalAction` with values `ClusterInspectAdditionalActionResetHardware`
+- New enum type `ClusterUpdateVersionSafeguardMode` with values `ClusterUpdateVersionSafeguardModeAll`, `ClusterUpdateVersionSafeguardModeNone`
+- New enum type `DeploymentType` with values `DeploymentTypeAzureLocal`, `DeploymentTypeNexus`
+- New enum type `KubernetesVersionProvisioningState` with values `KubernetesVersionProvisioningStateAccepted`, `KubernetesVersionProvisioningStateCanceled`, `KubernetesVersionProvisioningStateFailed`, `KubernetesVersionProvisioningStateSucceeded`
+- New enum type `RelayPrivateEndpointConnectionState` with values `RelayPrivateEndpointConnectionStateApproved`, `RelayPrivateEndpointConnectionStateRejected`
+- New enum type `RuntimeProtectionAgentHealthStatus` with values `RuntimeProtectionAgentHealthStatusHealthy`, `RuntimeProtectionAgentHealthStatusUnhealthy`
+- New enum type `RuntimeProtectionAgentLicenseStatus` with values `RuntimeProtectionAgentLicenseStatusLicensed`, `RuntimeProtectionAgentLicenseStatusUnlicensed`
+- New enum type `RuntimeProtectionDefinitionUpdateMode` with values `RuntimeProtectionDefinitionUpdateModeAutomatic`, `RuntimeProtectionDefinitionUpdateModeNone`
+- New enum type `SecurityRuleDirection` with values `SecurityRuleDirectionInbound`, `SecurityRuleDirectionOutbound`
+- New enum type `StorageApplianceMetricsConfigurationStatusLogLevel` with values `StorageApplianceMetricsConfigurationStatusLogLevelDefault`, `StorageApplianceMetricsConfigurationStatusLogLevelNexus`
+- New enum type `StorageApplianceMetricsConfigurationStatusMetricsLevel` with values `StorageApplianceMetricsConfigurationStatusMetricsLevelDefault`, `StorageApplianceMetricsConfigurationStatusMetricsLevelNexus`
+- New enum type `TransportProtocol` with values `TransportProtocolTCP`, `TransportProtocolUDP`
+- New function `NewAccessBridgesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*AccessBridgesClient, error)`
+- New function `*AccessBridgesClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, accessBridge AccessBridge, options *AccessBridgesClientBeginCreateOrUpdateOptions) (*runtime.Poller[AccessBridgesClientCreateOrUpdateResponse], error)`
+- New function `*AccessBridgesClient.BeginDelete(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, options *AccessBridgesClientBeginDeleteOptions) (*runtime.Poller[AccessBridgesClientDeleteResponse], error)`
+- New function `*AccessBridgesClient.Get(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, options *AccessBridgesClientGetOptions) (AccessBridgesClientGetResponse, error)`
+- New function `*AccessBridgesClient.NewListByResourceGroupPager(resourceGroupName string, options *AccessBridgesClientListByResourceGroupOptions) *runtime.Pager[AccessBridgesClientListByResourceGroupResponse]`
+- New function `*AccessBridgesClient.NewListBySubscriptionPager(options *AccessBridgesClientListBySubscriptionOptions) *runtime.Pager[AccessBridgesClientListBySubscriptionResponse]`
+- New function `*AccessBridgesClient.BeginUpdate(ctx context.Context, resourceGroupName string, accessBridgeName AccessBridgeAllowedName, accessBridgeUpdateParameters AccessBridgePatchParameters, options *AccessBridgesClientBeginUpdateOptions) (*runtime.Poller[AccessBridgesClientUpdateResponse], error)`
+- New function `*ClientFactory.NewAccessBridgesClient() *AccessBridgesClient`
+- New function `*ClientFactory.NewKubernetesVersionsClient() *KubernetesVersionsClient`
+- New function `*ClusterManagersClient.BeginUpdateRelayPrivateEndpointConnection(ctx context.Context, resourceGroupName string, clusterManagerName string, options *ClusterManagersClientBeginUpdateRelayPrivateEndpointConnectionOptions) (*runtime.Poller[ClusterManagersClientUpdateRelayPrivateEndpointConnectionResponse], error)`
+- New function `*ClustersClient.BeginInspect(ctx context.Context, resourceGroupName string, clusterName string, options *ClustersClientBeginInspectOptions) (*runtime.Poller[ClustersClientInspectResponse], error)`
+- New function `*ClustersClient.BeginRotateCredential(ctx context.Context, resourceGroupName string, clusterName string, body ClusterRotateCredentialParameters, options *ClustersClientBeginRotateCredentialOptions) (*runtime.Poller[ClustersClientRotateCredentialResponse], error)`
+- New function `NewKubernetesVersionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*KubernetesVersionsClient, error)`
+- New function `*KubernetesVersionsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, kubernetesVersionName string, kubernetesVersionParameters KubernetesVersion, options *KubernetesVersionsClientBeginCreateOrUpdateOptions) (*runtime.Poller[KubernetesVersionsClientCreateOrUpdateResponse], error)`
+- New function `*KubernetesVersionsClient.BeginDelete(ctx context.Context, resourceGroupName string, kubernetesVersionName string, options *KubernetesVersionsClientBeginDeleteOptions) (*runtime.Poller[KubernetesVersionsClientDeleteResponse], error)`
+- New function `*KubernetesVersionsClient.Get(ctx context.Context, resourceGroupName string, kubernetesVersionName string, options *KubernetesVersionsClientGetOptions) (KubernetesVersionsClientGetResponse, error)`
+- New function `*KubernetesVersionsClient.NewListByResourceGroupPager(resourceGroupName string, options *KubernetesVersionsClientListByResourceGroupOptions) *runtime.Pager[KubernetesVersionsClientListByResourceGroupResponse]`
+- New function `*KubernetesVersionsClient.NewListBySubscriptionPager(options *KubernetesVersionsClientListBySubscriptionOptions) *runtime.Pager[KubernetesVersionsClientListBySubscriptionResponse]`
+- New function `*KubernetesVersionsClient.BeginUpdate(ctx context.Context, resourceGroupName string, kubernetesVersionName string, kubernetesVersionPatchParameters KubernetesVersionPatchParameters, options *KubernetesVersionsClientBeginUpdateOptions) (*runtime.Poller[KubernetesVersionsClientUpdateResponse], error)`
+- New struct `AccessBridge`
+- New struct `AccessBridgeEndpoint`
+- New struct `AccessBridgeList`
+- New struct `AccessBridgePatchParameters`
+- New struct `AccessBridgePatchProperties`
+- New struct `AccessBridgeProperties`
+- New struct `AccessBridgeSecurityRule`
+- New struct `BareMetalMachineMonitoringConfigurationStatus`
+- New struct `BareMetalMachineReimageParameters`
+- New struct `ClusterInspectParameters`
+- New struct `ClusterManagerRelayConfiguration`
+- New struct `ClusterManagerUpdateRelayPrivateEndpointConnectionParameters`
+- New struct `ClusterRotateCredentialParameters`
+- New struct `FilterDevices`
+- New struct `KubernetesVersion`
+- New struct `KubernetesVersionList`
+- New struct `KubernetesVersionPatchParameters`
+- New struct `KubernetesVersionProperties`
+- New struct `KubernetesVersionValue`
+- New struct `StorageApplianceExpansionShelf`
+- New struct `StorageApplianceMonitoringConfigurationStatus`
+- New field `BmcIPv4Address`, `BmcIPv6Address`, `MonitoringConfigurationStatus` in struct `BareMetalMachineProperties`
+- New field `Body` in struct `BareMetalMachinesClientBeginReimageOptions`
+- New field `Kind` in struct `Cluster`
+- New field `SafeguardMode` in struct `ClusterContinueUpdateVersionParameters`
+- New field `Kind` in struct `ClusterManager`
+- New field `RelayConfiguration` in struct `ClusterManagerProperties`
+- New field `LastSuccessfulVersionUpdateTime`, `ManagedCredentials` in struct `ClusterProperties`
+- New field `SafeguardMode` in struct `ClusterUpdateVersionParameters`
+- New field `DeploymentType` in struct `RackSKUProperties`
+- New field `DefinitionUpdateMode` in struct `RuntimeProtectionConfiguration`
+- New field `AgentHealthStatus`, `AgentHealthStatusIssues`, `AgentLicenseStatus`, `DefinitionUpdateMode`, `EnforcementLevel` in struct `RuntimeProtectionStatus`
+- New field `ExpansionShelves`, `MonitoringConfigurationStatus` in struct `StorageApplianceProperties`
+- New field `AssignedStorageApplianceID` in struct `VolumeProperties`
+
+
+## 1.4.0 (2025-12-26)
+### Features Added
+
+- New value `BareMetalMachineKeySetPrivilegeLevelOther` added to enum type `BareMetalMachineKeySetPrivilegeLevel`
+- New enum type `ActionStateStatus` with values `ActionStateStatusCompleted`, `ActionStateStatusFailed`, `ActionStateStatusInProgress`
+- New enum type `BareMetalMachineReplaceSafeguardMode` with values `BareMetalMachineReplaceSafeguardModeAll`, `BareMetalMachineReplaceSafeguardModeNone`
+- New enum type `BareMetalMachineReplaceStoragePolicy` with values `BareMetalMachineReplaceStoragePolicyDiscardAll`, `BareMetalMachineReplaceStoragePolicyPreserve`
+- New enum type `CloudServicesNetworkStorageMode` with values `CloudServicesNetworkStorageModeNone`, `CloudServicesNetworkStorageModeStandard`
+- New enum type `CloudServicesNetworkStorageStatusStatus` with values `CloudServicesNetworkStorageStatusStatusAvailable`, `CloudServicesNetworkStorageStatusStatusExpandingVolume`, `CloudServicesNetworkStorageStatusStatusExpansionFailed`
+- New enum type `CommandOutputType` with values `CommandOutputTypeBareMetalMachineRunCommand`, `CommandOutputTypeBareMetalMachineRunDataExtracts`, `CommandOutputTypeBareMetalMachineRunDataExtractsRestricted`, `CommandOutputTypeBareMetalMachineRunReadCommands`, `CommandOutputTypeStorageRunReadCommands`
+- New enum type `RelayType` with values `RelayTypePlatform`, `RelayTypePublic`
+- New enum type `StepStateStatus` with values `StepStateStatusCompleted`, `StepStateStatusFailed`, `StepStateStatusInProgress`, `StepStateStatusNotStarted`
+- New function `*BareMetalMachinesClient.BeginRunDataExtractsRestricted(ctx context.Context, resourceGroupName string, bareMetalMachineName string, bareMetalMachineRunDataExtractsRestrictedParameters BareMetalMachineRunDataExtractsParameters, options *BareMetalMachinesClientBeginRunDataExtractsRestrictedOptions) (*runtime.Poller[BareMetalMachinesClientRunDataExtractsRestrictedResponse], error)`
+- New function `*StorageAppliancesClient.BeginRunReadCommands(ctx context.Context, resourceGroupName string, storageApplianceName string, storageApplianceRunReadCommandsParameters StorageApplianceRunReadCommandsParameters, options *StorageAppliancesClientBeginRunReadCommandsOptions) (*runtime.Poller[StorageAppliancesClientRunReadCommandsResponse], error)`
+- New function `*VirtualMachinesClient.BeginAssignRelay(ctx context.Context, resourceGroupName string, virtualMachineName string, options *VirtualMachinesClientBeginAssignRelayOptions) (*runtime.Poller[VirtualMachinesClientAssignRelayResponse], error)`
+- New struct `ActionState`
+- New struct `CertificateInfo`
+- New struct `CloudServicesNetworkStorageOptions`
+- New struct `CloudServicesNetworkStorageOptionsPatch`
+- New struct `CloudServicesNetworkStorageStatus`
+- New struct `CommandOutputOverride`
+- New struct `StepState`
+- New struct `StorageApplianceCommandSpecification`
+- New struct `StorageApplianceRunReadCommandsParameters`
+- New struct `VirtualMachineAssignRelayParameters`
+- New field `SkipToken`, `Top` in struct `AgentPoolsClientListByKubernetesClusterOptions`
+- New field `PrivilegeLevelName` in struct `BareMetalMachineKeySetProperties`
+- New field `SkipToken`, `Top` in struct `BareMetalMachineKeySetsClientListByClusterOptions`
+- New field `ActionStates`, `CaCertificate` in struct `BareMetalMachineProperties`
+- New field `SafeguardMode`, `StoragePolicy` in struct `BareMetalMachineReplaceParameters`
+- New field `SkipToken`, `Top` in struct `BareMetalMachinesClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `BareMetalMachinesClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `BmcKeySetsClientListByClusterOptions`
+- New field `StorageOptions` in struct `CloudServicesNetworkPatchProperties`
+- New field `StorageOptions`, `StorageStatus` in struct `CloudServicesNetworkProperties`
+- New field `SkipToken`, `Top` in struct `CloudServicesNetworksClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `CloudServicesNetworksClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `ClusterManagersClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `ClusterManagersClientListBySubscriptionOptions`
+- New field `ActionStates` in struct `ClusterProperties`
+- New field `SkipToken`, `Top` in struct `ClustersClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `ClustersClientListBySubscriptionOptions`
+- New field `Overrides` in struct `CommandOutputSettings`
+- New field `SkipToken`, `Top` in struct `ConsolesClientListByVirtualMachineOptions`
+- New field `SkipToken`, `Top` in struct `KubernetesClusterFeaturesClientListByKubernetesClusterOptions`
+- New field `SkipToken`, `Top` in struct `KubernetesClustersClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `KubernetesClustersClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `L2NetworksClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `L2NetworksClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `L3NetworksClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `L3NetworksClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `MetricsConfigurationsClientListByClusterOptions`
+- New field `SkipToken`, `Top` in struct `RacksClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `RacksClientListBySubscriptionOptions`
+- New field `KeyVaultURI` in struct `SecretArchiveReference`
+- New field `CaCertificate` in struct `StorageApplianceProperties`
+- New field `SkipToken`, `Top` in struct `StorageAppliancesClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `StorageAppliancesClientListBySubscriptionOptions`
+- New field `SkipToken`, `Top` in struct `TrunkedNetworksClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `TrunkedNetworksClientListBySubscriptionOptions`
+- New field `Identity` in struct `VirtualMachine`
+- New field `Identity` in struct `VirtualMachinePatchParameters`
+- New field `NetworkDataContent`, `UserDataContent` in struct `VirtualMachineProperties`
+- New field `SkipToken`, `Top` in struct `VirtualMachinesClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `VirtualMachinesClientListBySubscriptionOptions`
+- New field `AllocatedSizeMiB`, `StorageApplianceID` in struct `VolumeProperties`
+- New field `SkipToken`, `Top` in struct `VolumesClientListByResourceGroupOptions`
+- New field `SkipToken`, `Top` in struct `VolumesClientListBySubscriptionOptions`
+
+
+## 1.3.0 (2025-06-13)
+### Features Added
+
+- New value `OsDiskCreateOptionPersistent` added to enum type `OsDiskCreateOption`
+- New value `StorageApplianceDetailedStatusDegraded` added to enum type `StorageApplianceDetailedStatus`
+- New value `VirtualMachineDeviceModelTypeT3` added to enum type `VirtualMachineDeviceModelType`
+- New enum type `VulnerabilityScanningSettingsContainerScan` with values `VulnerabilityScanningSettingsContainerScanDisabled`, `VulnerabilityScanningSettingsContainerScanEnabled`
+- New struct `AnalyticsOutputSettings`
+- New struct `SecretArchiveSettings`
+- New struct `VulnerabilityScanningSettings`
+- New struct `VulnerabilityScanningSettingsPatch`
+- New field `Etag` in struct `AgentPool`
+- New field `IfMatch`, `IfNoneMatch` in struct `AgentPoolsClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `AgentPoolsClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `AgentPoolsClientBeginUpdateOptions`
+- New field `Etag` in struct `BareMetalMachine`
+- New field `Etag` in struct `BareMetalMachineKeySet`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachineKeySetsClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachineKeySetsClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachineKeySetsClientBeginUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachinesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachinesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BareMetalMachinesClientBeginUpdateOptions`
+- New field `Etag` in struct `BmcKeySet`
+- New field `IfMatch`, `IfNoneMatch` in struct `BmcKeySetsClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BmcKeySetsClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `BmcKeySetsClientBeginUpdateOptions`
+- New field `Etag` in struct `CloudServicesNetwork`
+- New field `IfMatch`, `IfNoneMatch` in struct `CloudServicesNetworksClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `CloudServicesNetworksClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `CloudServicesNetworksClientBeginUpdateOptions`
+- New field `Etag` in struct `Cluster`
+- New field `Etag` in struct `ClusterManager`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClusterManagersClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClusterManagersClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClusterManagersClientUpdateOptions`
+- New field `Etag` in struct `ClusterMetricsConfiguration`
+- New field `AnalyticsOutputSettings`, `SecretArchiveSettings`, `VulnerabilityScanningSettings` in struct `ClusterPatchProperties`
+- New field `AnalyticsOutputSettings`, `SecretArchiveSettings`, `VulnerabilityScanningSettings` in struct `ClusterProperties`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClustersClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClustersClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ClustersClientBeginUpdateOptions`
+- New field `Etag` in struct `Console`
+- New field `IfMatch`, `IfNoneMatch` in struct `ConsolesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ConsolesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `ConsolesClientBeginUpdateOptions`
+- New field `Etag` in struct `KubernetesCluster`
+- New field `Etag` in struct `KubernetesClusterFeature`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClusterFeaturesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClusterFeaturesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClusterFeaturesClientBeginUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClustersClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClustersClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `KubernetesClustersClientBeginUpdateOptions`
+- New field `Etag` in struct `L2Network`
+- New field `IfMatch`, `IfNoneMatch` in struct `L2NetworksClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `L2NetworksClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `L2NetworksClientUpdateOptions`
+- New field `Etag` in struct `L3Network`
+- New field `IfMatch`, `IfNoneMatch` in struct `L3NetworksClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `L3NetworksClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `L3NetworksClientUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `MetricsConfigurationsClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `MetricsConfigurationsClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `MetricsConfigurationsClientBeginUpdateOptions`
+- New field `Etag` in struct `Rack`
+- New field `IfMatch`, `IfNoneMatch` in struct `RacksClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `RacksClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `RacksClientBeginUpdateOptions`
+- New field `Etag` in struct `StorageAppliance`
+- New field `IfMatch`, `IfNoneMatch` in struct `StorageAppliancesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `StorageAppliancesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `StorageAppliancesClientBeginUpdateOptions`
+- New field `Etag` in struct `TrunkedNetwork`
+- New field `IfMatch`, `IfNoneMatch` in struct `TrunkedNetworksClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `TrunkedNetworksClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `TrunkedNetworksClientUpdateOptions`
+- New field `Etag` in struct `VirtualMachine`
+- New field `ConsoleExtendedLocation` in struct `VirtualMachineProperties`
+- New field `IfMatch`, `IfNoneMatch` in struct `VirtualMachinesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `VirtualMachinesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `VirtualMachinesClientBeginUpdateOptions`
+- New field `Etag` in struct `Volume`
+- New field `IfMatch`, `IfNoneMatch` in struct `VolumesClientBeginCreateOrUpdateOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `VolumesClientBeginDeleteOptions`
+- New field `IfMatch`, `IfNoneMatch` in struct `VolumesClientUpdateOptions`
+
+
 ## 1.3.0-beta.1 (2025-04-07)
 ### Features Added
 

@@ -6,7 +6,196 @@ package armdurabletask
 
 import "time"
 
-// Operation - Details of a REST API operation, returned from the Resource Provider Operations API
+// Detector - A diagnostic detector resource belonging to the scheduler.
+type Detector struct {
+	// The resource-specific properties for this resource.
+	Properties *DetectorProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// DetectorDataset - A dataset produced by a detector.
+type DetectorDataset struct {
+	// READ-ONLY; The rendering information for the tabular data.
+	RenderingProperties *DetectorRenderingProperties
+
+	// READ-ONLY; The tabular data produced by the detector.
+	Table *DetectorTable
+}
+
+// DetectorListResult - The response of a Detector list operation.
+type DetectorListResult struct {
+	// REQUIRED; The Detector items on this page
+	Value []*Detector
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// DetectorMetadata - Metadata that identifies and describes a detector.
+type DetectorMetadata struct {
+	// READ-ONLY; The analysis identifiers for which the detector is enabled.
+	AnalysisTypes []*string
+
+	// READ-ONLY; The author of the detector when available for the caller.
+	Author *string
+
+	// READ-ONLY; The category of the detector.
+	Category *string
+
+	// READ-ONLY; A description of the detector.
+	Description *string
+
+	// READ-ONLY; The unique identifier of the detector.
+	ID *string
+
+	// READ-ONLY; The display name of the detector.
+	Name *string
+
+	// READ-ONLY; The match score when the detector is returned from a search.
+	Score *float64
+
+	// READ-ONLY; The case-submission support topic identifiers for which the detector is enabled.
+	SupportTopicList []*string
+
+	// READ-ONLY; The kind of diagnostic response.
+	Type *DetectorType
+}
+
+// DetectorProperties - The diagnostic response returned for a detector.
+type DetectorProperties struct {
+	// READ-ONLY; The datasets produced when the detector runs.
+	Dataset []*DetectorDataset
+
+	// READ-ONLY; Metadata that identifies and describes the detector.
+	Metadata *DetectorMetadata
+
+	// READ-ONLY; The provisioning state of the detector.
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; The overall result of the detector.
+	Status *DetectorStatus
+}
+
+// DetectorRenderingProperties - The rendering information for a detector dataset.
+type DetectorRenderingProperties struct {
+	// READ-ONLY; The optional description of the rendering block.
+	Description *string
+
+	// READ-ONLY; The optional title of the rendering block.
+	Title *string
+
+	// READ-ONLY; The rendering type for the dataset.
+	Type *DetectorRenderingType
+}
+
+// DetectorStatus - The overall result of a detector.
+type DetectorStatus struct {
+	// READ-ONLY; The optional message describing the detector result.
+	Message *string
+
+	// READ-ONLY; The status of the detector result.
+	StatusID *DetectorStatusID
+}
+
+// DetectorTable - A table included in a detector dataset.
+type DetectorTable struct {
+	// READ-ONLY; The column definitions for the table.
+	Columns []*DetectorTableColumn
+
+	// READ-ONLY; The rows in the table. Values use the types specified by their columns.
+	Rows [][]any
+
+	// READ-ONLY; The name of the table.
+	TableName *string
+}
+
+// DetectorTableColumn - A column definition in a detector table.
+type DetectorTableColumn struct {
+	// READ-ONLY; The name of the column.
+	ColumnName *string
+
+	// READ-ONLY; The optional semantic classification of the column.
+	ColumnType *string
+
+	// READ-ONLY; The data type of values in the column.
+	DataType *string
+}
+
+// FailoverInstance - A failover instance belonging to the scheduler
+type FailoverInstance struct {
+	// The resource-specific properties for this resource.
+	Properties *FailoverInstanceProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// FailoverInstanceListResult - The response of a FailoverInstance list operation.
+type FailoverInstanceListResult struct {
+	// REQUIRED; The FailoverInstance items on this page
+	Value []*FailoverInstance
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// FailoverInstanceProperties - The failover instance settings for the resource
+type FailoverInstanceProperties struct {
+	// REQUIRED; The resource ID of the partner scheduler in the failover configuration
+	PartnerSchedulerResourceID *string
+
+	// READ-ONLY; The current state of the failover operation
+	FailoverState *FailoverState
+
+	// READ-ONLY; The location of the partner scheduler in the failover configuration
+	PartnerSchedulerLocation *string
+
+	// READ-ONLY; The status of the last operation
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; The replication role of the parent scheduler
+	ReplicationRole *ReplicationRole
+}
+
+// ManagedServiceIdentity - Managed service identity (system assigned and/or user assigned identities)
+type ManagedServiceIdentity struct {
+	// REQUIRED; The type of managed identity assigned to this resource.
+	Type *ManagedServiceIdentityType
+
+	// The identities assigned to this resource by the user.
+	UserAssignedIdentities map[string]*UserAssignedIdentity
+
+	// READ-ONLY; The service principal ID of the system assigned identity. This property will only be provided for a system assigned
+	// identity.
+	PrincipalID *string
+
+	// READ-ONLY; The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.
+	TenantID *string
+}
+
+// Operation - REST API Operation
+//
+// Details of a REST API operation, returned from the Resource Provider Operations API
 type Operation struct {
 	// Localized display information for this particular operation.
 	Display *OperationDisplay
@@ -27,7 +216,7 @@ type Operation struct {
 	Origin *Origin
 }
 
-// OperationDisplay - Localized display information for and operation.
+// OperationDisplay - Localized display information for an operation.
 type OperationDisplay struct {
 	// READ-ONLY; The short, localized friendly description of the operation; suitable for tool tips and detailed views.
 	Description *string
@@ -55,16 +244,104 @@ type OperationListResult struct {
 	NextLink *string
 }
 
+// OptionalPropertiesUpdateableProperties - The template for adding optional properties.
+type OptionalPropertiesUpdateableProperties struct {
+	// The private endpoint resource.
+	PrivateEndpoint *PrivateEndpoint
+
+	// A collection of information about the state of the connection between service consumer and provider.
+	PrivateLinkServiceConnectionState *PrivateLinkServiceConnectionState
+}
+
+// PrivateEndpoint - The private endpoint resource.
+type PrivateEndpoint struct {
+	// READ-ONLY; The resource identifier of the private endpoint
+	ID *string
+}
+
+// PrivateEndpointConnection - A private endpoint connection resource
+type PrivateEndpointConnection struct {
+	// The private endpoint connection properties
+	Properties *PrivateEndpointConnectionProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// PrivateEndpointConnectionListResult - The response of a PrivateEndpointConnection list operation.
+type PrivateEndpointConnectionListResult struct {
+	// REQUIRED; The PrivateEndpointConnection items on this page
+	Value []*PrivateEndpointConnection
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// PrivateEndpointConnectionProperties - Properties of the private endpoint connection.
+type PrivateEndpointConnectionProperties struct {
+	// REQUIRED; A collection of information about the state of the connection between service consumer and provider.
+	PrivateLinkServiceConnectionState *PrivateLinkServiceConnectionState
+
+	// The private endpoint resource.
+	PrivateEndpoint *PrivateEndpoint
+
+	// READ-ONLY; The group ids for the private endpoint resource.
+	GroupIDs []*string
+
+	// READ-ONLY; The provisioning state of the private endpoint connection resource.
+	ProvisioningState *PrivateEndpointConnectionProvisioningState
+}
+
+// PrivateEndpointConnectionUpdate - PATCH model for private endpoint connections
+type PrivateEndpointConnectionUpdate struct {
+	// The private endpoint connection properties
+	Properties *OptionalPropertiesUpdateableProperties
+}
+
+// PrivateLinkResourceProperties - Properties of a private link resource.
+type PrivateLinkResourceProperties struct {
+	// The private link resource private link DNS zone name.
+	RequiredZoneNames []*string
+
+	// READ-ONLY; The private link resource group id.
+	GroupID *string
+
+	// READ-ONLY; The private link resource required member names.
+	RequiredMembers []*string
+}
+
+// PrivateLinkServiceConnectionState - A collection of information about the state of the connection between service consumer
+// and provider.
+type PrivateLinkServiceConnectionState struct {
+	// A message indicating if changes on the service provider require any updates on the consumer.
+	ActionsRequired *string
+
+	// The reason for approval/rejection of the connection.
+	Description *string
+
+	// Indicates whether the connection has been Approved/Rejected/Removed by the owner of the service.
+	Status *PrivateEndpointServiceConnectionStatus
+}
+
 // RetentionPolicy - A retention policy resource belonging to the scheduler
 type RetentionPolicy struct {
 	// The resource-specific properties for this resource.
 	Properties *RetentionPolicyProperties
 
-	// READ-ONLY; The name of the RetentionPolicy
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -105,17 +382,20 @@ type Scheduler struct {
 	// REQUIRED; The geo-location where the resource lives
 	Location *string
 
+	// The managed service identities assigned to this resource.
+	Identity *ManagedServiceIdentity
+
 	// The resource-specific properties for this resource.
 	Properties *SchedulerProperties
 
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; The name of the Scheduler
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -133,6 +413,33 @@ type SchedulerListResult struct {
 	NextLink *string
 }
 
+// SchedulerPrivateLinkResource - A private link resource.
+type SchedulerPrivateLinkResource struct {
+	// Resource properties.
+	Properties *PrivateLinkResourceProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// SchedulerPrivateLinkResourceListResult - The response of a SchedulerPrivateLinkResource list operation.
+type SchedulerPrivateLinkResourceListResult struct {
+	// REQUIRED; The SchedulerPrivateLinkResource items on this page
+	Value []*SchedulerPrivateLinkResource
+
+	// The link to the next page of items
+	NextLink *string
+}
+
 // SchedulerProperties - Details of the Scheduler
 type SchedulerProperties struct {
 	// REQUIRED; IP allow list for durable task scheduler. Values can be IPv4, IPv6 or CIDR
@@ -141,8 +448,14 @@ type SchedulerProperties struct {
 	// REQUIRED; SKU of the durable task scheduler
 	SKU *SchedulerSKU
 
+	// Allow or disallow public network access to durable task scheduler
+	PublicNetworkAccess *PublicNetworkAccess
+
 	// READ-ONLY; URL of the durable task scheduler
 	Endpoint *string
+
+	// READ-ONLY; The private endpoints exposed by this resource
+	PrivateEndpointConnections []*PrivateEndpointConnection
 
 	// READ-ONLY; The status of the last operation
 	ProvisioningState *ProvisioningState
@@ -152,6 +465,9 @@ type SchedulerProperties struct {
 type SchedulerPropertiesUpdate struct {
 	// IP allow list for durable task scheduler. Values can be IPv4, IPv6 or CIDR
 	IPAllowlist []*string
+
+	// Allow or disallow public network access to durable task scheduler
+	PublicNetworkAccess *PublicNetworkAccess
 
 	// SKU of the durable task scheduler
 	SKU *SchedulerSKUUpdate
@@ -166,7 +482,7 @@ type SchedulerPropertiesUpdate struct {
 // SchedulerSKU - The SKU (Stock Keeping Unit) assigned to this durable task scheduler
 type SchedulerSKU struct {
 	// REQUIRED; The name of the SKU
-	Name *string
+	Name *SchedulerSKUName
 
 	// The SKU capacity. This allows scale out/in for the resource and impacts zone redundancy
 	Capacity *int32
@@ -181,7 +497,7 @@ type SchedulerSKUUpdate struct {
 	Capacity *int32
 
 	// The name of the SKU
-	Name *string
+	Name *SchedulerSKUName
 
 	// READ-ONLY; Indicates whether the current SKU configuration is zone redundant
 	RedundancyState *RedundancyState
@@ -189,6 +505,9 @@ type SchedulerSKUUpdate struct {
 
 // SchedulerUpdate - The update request model for the Scheduler resource
 type SchedulerUpdate struct {
+	// The managed service identities assigned to this resource.
+	Identity *ManagedServiceIdentity
+
 	// The resource-specific properties for this resource.
 	Properties *SchedulerPropertiesUpdate
 
@@ -222,11 +541,11 @@ type TaskHub struct {
 	// The resource-specific properties for this resource.
 	Properties *TaskHubProperties
 
-	// READ-ONLY; The name of the TaskHub
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -246,9 +565,111 @@ type TaskHubListResult struct {
 
 // TaskHubProperties - The properties of Task Hub
 type TaskHubProperties struct {
+	// A set of Task Hub capabilities that can be enabled or disabled for a Task Hub
+	Capabilities []*string
+
 	// READ-ONLY; URL of the durable task scheduler dashboard
 	DashboardURL *string
 
 	// READ-ONLY; The status of the last operation
 	ProvisioningState *ProvisioningState
+}
+
+// TaskQueue - A Task Queue resource belonging to a Task Hub
+type TaskQueue struct {
+	// The resource-specific properties for this resource.
+	Properties *TaskQueueProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// TaskQueueListResult - The response of a TaskQueue list operation.
+type TaskQueueListResult struct {
+	// REQUIRED; The TaskQueue items on this page
+	Value []*TaskQueue
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// TaskQueueProperties - The properties of a Task Queue
+type TaskQueueProperties struct {
+	// The throughput configuration of the Task Queue
+	Throughput *TaskQueueThroughput
+
+	// READ-ONLY; The status of the last operation
+	ProvisioningState *ProvisioningState
+}
+
+// TaskQueueThroughput - The throughput configuration of a Task Queue
+type TaskQueueThroughput struct {
+	// The rate of work-item handouts per second
+	ActionsPerSecond *int32
+}
+
+// TaskQueueUpdate - The update request model for a Task Queue
+type TaskQueueUpdate struct {
+	// The resource-specific properties for this resource.
+	Properties *TaskQueueProperties
+}
+
+// TransparentDataEncryption - A transparent data encryption resource belonging to the scheduler
+type TransparentDataEncryption struct {
+	// The resource-specific properties for this resource.
+	Properties *TransparentDataEncryptionProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// TransparentDataEncryptionListResult - The response of a TransparentDataEncryption list operation.
+type TransparentDataEncryptionListResult struct {
+	// REQUIRED; The TransparentDataEncryption items on this page
+	Value []*TransparentDataEncryption
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// TransparentDataEncryptionProperties - The transparent data encryption settings for the resource
+type TransparentDataEncryptionProperties struct {
+	// REQUIRED; The key source for the transparent data encryption
+	KeySource *TransparentDataEncryptionKeySource
+
+	// Indicates whether auto-rotation of the customer-managed keys is enabled for transparent data encryption
+	AutoRotationEnabled *bool
+
+	// The URI of the key in Key Vault to be used for transparent data encryption
+	KeyVaultKeyURI *string
+
+	// READ-ONLY; The status of the last operation
+	ProvisioningState *ProvisioningState
+}
+
+// UserAssignedIdentity - User assigned identity properties
+type UserAssignedIdentity struct {
+	// READ-ONLY; The client ID of the assigned identity.
+	ClientID *string
+
+	// READ-ONLY; The principal ID of the assigned identity.
+	PrincipalID *string
 }

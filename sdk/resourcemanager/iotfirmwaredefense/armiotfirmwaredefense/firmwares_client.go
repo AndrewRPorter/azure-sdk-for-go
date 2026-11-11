@@ -18,6 +18,8 @@ import (
 
 // FirmwaresClient contains the methods for the Firmwares group.
 // Don't use this type directly, use NewFirmwaresClient() instead.
+//
+// Generated from API version 2025-08-02
 type FirmwaresClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type FirmwaresClient struct {
 // NewFirmwaresClient creates a new instance of FirmwaresClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewFirmwaresClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*FirmwaresClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewFirmwaresClient(subscriptionID string, credential azcore.TokenCredential
 
 // Create - The operation to create a firmware.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - firmwareID - The id of the firmware.
@@ -62,11 +65,7 @@ func (client *FirmwaresClient) Create(ctx context.Context, resourceGroupName str
 	if err != nil {
 		return FirmwaresClientCreateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusCreated) {
-		err = runtime.NewResponseError(httpResp)
-		return FirmwaresClientCreateResponse{}, err
-	}
-	resp, err := client.createHandleResponse(httpResp)
+	resp, err := client.createHandleResponse(httpResp, http.StatusOK, http.StatusCreated)
 	return resp, err
 }
 
@@ -74,7 +73,7 @@ func (client *FirmwaresClient) Create(ctx context.Context, resourceGroupName str
 func (client *FirmwaresClient) createCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, resource Firmware, _ *FirmwaresClientCreateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -94,8 +93,8 @@ func (client *FirmwaresClient) createCreateRequest(ctx context.Context, resource
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250802)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -105,8 +104,11 @@ func (client *FirmwaresClient) createCreateRequest(ctx context.Context, resource
 }
 
 // createHandleResponse handles the Create response.
-func (client *FirmwaresClient) createHandleResponse(resp *http.Response) (FirmwaresClientCreateResponse, error) {
+func (client *FirmwaresClient) createHandleResponse(resp *http.Response, successCodes ...int) (FirmwaresClientCreateResponse, error) {
 	result := FirmwaresClientCreateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.Firmware); err != nil {
 		return FirmwaresClientCreateResponse{}, err
 	}
@@ -115,8 +117,6 @@ func (client *FirmwaresClient) createHandleResponse(resp *http.Response) (Firmwa
 
 // Delete - The operation to delete a firmware.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - firmwareID - The id of the firmware.
@@ -146,7 +146,7 @@ func (client *FirmwaresClient) Delete(ctx context.Context, resourceGroupName str
 func (client *FirmwaresClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, _ *FirmwaresClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -166,16 +166,13 @@ func (client *FirmwaresClient) deleteCreateRequest(ctx context.Context, resource
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20250802)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get firmware.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - firmwareID - The id of the firmware.
@@ -194,11 +191,7 @@ func (client *FirmwaresClient) Get(ctx context.Context, resourceGroupName string
 	if err != nil {
 		return FirmwaresClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return FirmwaresClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -206,7 +199,7 @@ func (client *FirmwaresClient) Get(ctx context.Context, resourceGroupName string
 func (client *FirmwaresClient) getCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, _ *FirmwaresClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -226,15 +219,18 @@ func (client *FirmwaresClient) getCreateRequest(ctx context.Context, resourceGro
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250802)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *FirmwaresClient) getHandleResponse(resp *http.Response) (FirmwaresClientGetResponse, error) {
+func (client *FirmwaresClient) getHandleResponse(resp *http.Response, successCodes ...int) (FirmwaresClientGetResponse, error) {
 	result := FirmwaresClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.Firmware); err != nil {
 		return FirmwaresClientGetResponse{}, err
 	}
@@ -242,8 +238,6 @@ func (client *FirmwaresClient) getHandleResponse(resp *http.Response) (Firmwares
 }
 
 // NewListByWorkspacePager - Lists all of firmwares inside a workspace.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - options - FirmwaresClientListByWorkspaceOptions contains the optional parameters for the FirmwaresClient.NewListByWorkspacePager
@@ -259,47 +253,61 @@ func (client *FirmwaresClient) NewListByWorkspacePager(resourceGroupName string,
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByWorkspaceCreateRequest(ctx, resourceGroupName, workspaceName, options)
-			}, nil)
+			req, err := client.listByWorkspaceCreateRequest(ctx, resourceGroupName, workspaceName, nextLink, options)
 			if err != nil {
 				return FirmwaresClientListByWorkspaceResponse{}, err
 			}
-			return client.listByWorkspaceHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return FirmwaresClientListByWorkspaceResponse{}, err
+			}
+			return client.listByWorkspaceHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByWorkspaceCreateRequest creates the ListByWorkspace request.
-func (client *FirmwaresClient) listByWorkspaceCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, _ *FirmwaresClientListByWorkspaceOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *FirmwaresClient) listByWorkspaceCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, nextLink string, _ *FirmwaresClientListByWorkspaceOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if workspaceName == "" {
+			return nil, errors.New("parameter workspaceName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{workspaceName}", url.PathEscape(workspaceName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if workspaceName == "" {
-		return nil, errors.New("parameter workspaceName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{workspaceName}", url.PathEscape(workspaceName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20250802)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByWorkspaceHandleResponse handles the ListByWorkspace response.
-func (client *FirmwaresClient) listByWorkspaceHandleResponse(resp *http.Response) (FirmwaresClientListByWorkspaceResponse, error) {
+func (client *FirmwaresClient) listByWorkspaceHandleResponse(resp *http.Response, successCodes ...int) (FirmwaresClientListByWorkspaceResponse, error) {
 	result := FirmwaresClientListByWorkspaceResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.FirmwareListResult); err != nil {
 		return FirmwaresClientListByWorkspaceResponse{}, err
 	}
@@ -308,8 +316,6 @@ func (client *FirmwaresClient) listByWorkspaceHandleResponse(resp *http.Response
 
 // Update - The operation to update firmware.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - workspaceName - The name of the firmware analysis workspace.
 //   - firmwareID - The id of the firmware.
@@ -329,11 +335,7 @@ func (client *FirmwaresClient) Update(ctx context.Context, resourceGroupName str
 	if err != nil {
 		return FirmwaresClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return FirmwaresClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -341,7 +343,7 @@ func (client *FirmwaresClient) Update(ctx context.Context, resourceGroupName str
 func (client *FirmwaresClient) updateCreateRequest(ctx context.Context, resourceGroupName string, workspaceName string, firmwareID string, properties FirmwareUpdateDefinition, _ *FirmwaresClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.IoTFirmwareDefense/workspaces/{workspaceName}/firmwares/{firmwareId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -361,8 +363,8 @@ func (client *FirmwaresClient) updateCreateRequest(ctx context.Context, resource
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250802)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -372,8 +374,11 @@ func (client *FirmwaresClient) updateCreateRequest(ctx context.Context, resource
 }
 
 // updateHandleResponse handles the Update response.
-func (client *FirmwaresClient) updateHandleResponse(resp *http.Response) (FirmwaresClientUpdateResponse, error) {
+func (client *FirmwaresClient) updateHandleResponse(resp *http.Response, successCodes ...int) (FirmwaresClientUpdateResponse, error) {
 	result := FirmwaresClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.Firmware); err != nil {
 		return FirmwaresClientUpdateResponse{}, err
 	}

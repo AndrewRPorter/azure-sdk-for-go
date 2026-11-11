@@ -38,7 +38,7 @@ func ExampleTargetsClient_CreateOrUpdate() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdatabasewatcher.TargetsClientCreateOrUpdateResponse{
-	// 	Target: &armdatabasewatcher.Target{
+	// 	Target: armdatabasewatcher.Target{
 	// 		Properties: &armdatabasewatcher.SQLDbSingleDatabaseTargetProperties{
 	// 			TargetType: to.Ptr("SqlDb"),
 	// 			TargetAuthenticationType: to.Ptr(armdatabasewatcher.TargetAuthenticationTypeAAD),
@@ -52,10 +52,10 @@ func ExampleTargetsClient_CreateOrUpdate() {
 	// 		SystemData: &armdatabasewatcher.SystemData{
 	// 			CreatedBy: to.Ptr("enbpvlpqbwd"),
 	// 			CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("mxp"),
 	// 			LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -102,7 +102,7 @@ func ExampleTargetsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdatabasewatcher.TargetsClientGetResponse{
-	// 	Target: &armdatabasewatcher.Target{
+	// 	Target: armdatabasewatcher.Target{
 	// 		Properties: &armdatabasewatcher.SQLDbSingleDatabaseTargetProperties{
 	// 			TargetType: to.Ptr("SqlDb"),
 	// 			TargetAuthenticationType: to.Ptr(armdatabasewatcher.TargetAuthenticationTypeAAD),
@@ -116,10 +116,10 @@ func ExampleTargetsClient_Get() {
 	// 		SystemData: &armdatabasewatcher.SystemData{
 	// 			CreatedBy: to.Ptr("enbpvlpqbwd"),
 	// 			CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("mxp"),
 	// 			LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -164,10 +164,10 @@ func ExampleTargetsClient_NewListByWatcherPager() {
 		// 				SystemData: &armdatabasewatcher.SystemData{
 		// 					CreatedBy: to.Ptr("enbpvlpqbwd"),
 		// 					CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("mxp"),
 		// 					LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

@@ -1,5 +1,143 @@
 # Release History
 
+## 3.1.0-beta.1 (2026-08-04)
+### Features Added
+
+- New value `CloudHsmClusterSKUNameStandardB10V2`, `CloudHsmClusterSKUNameStandardB15V2`, `CloudHsmClusterSKUNameStandardB1V2`, `CloudHsmClusterSKUNameStandardB20V2`, `CloudHsmClusterSKUNameStandardB5V2` added to enum type `CloudHsmClusterSKUName`
+- New enum type `HsmState` with values `HsmStateConfiguringSlb`, `HsmStateDegraded`, `HsmStateDelayedDeletion`, `HsmStateDeleting`, `HsmStateDeletingSlbEntry`, `HsmStateDeploying`, `HsmStateFailed`, `HsmStateInitialProvisioning`, `HsmStateRelocating`, `HsmStateStarted`, `HsmStateStarting`, `HsmStateUnknown`, `HsmStateUpdating`
+- New enum type `PaymentHsmClusterSKUFamily` with values `PaymentHsmClusterSKUFamilyB`
+- New enum type `PaymentHsmClusterSKUName` with values `PaymentHsmClusterSKUNamePaymentsV2`
+- New function `*ClientFactory.NewPaymentHsmClusterPrivateEndpointConnectionsClient() *PaymentHsmClusterPrivateEndpointConnectionsClient`
+- New function `*ClientFactory.NewPaymentHsmClusterPrivateLinkResourcesClient() *PaymentHsmClusterPrivateLinkResourcesClient`
+- New function `*ClientFactory.NewPaymentHsmClustersClient() *PaymentHsmClustersClient`
+- New function `NewPaymentHsmClusterPrivateEndpointConnectionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PaymentHsmClusterPrivateEndpointConnectionsClient, error)`
+- New function `*PaymentHsmClusterPrivateEndpointConnectionsClient.Create(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, peConnectionName string, properties PaymentHsmClusterPrivateEndpointConnection, options *PaymentHsmClusterPrivateEndpointConnectionsClientCreateOptions) (PaymentHsmClusterPrivateEndpointConnectionsClientCreateResponse, error)`
+- New function `*PaymentHsmClusterPrivateEndpointConnectionsClient.BeginDelete(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, peConnectionName string, options *PaymentHsmClusterPrivateEndpointConnectionsClientBeginDeleteOptions) (*runtime.Poller[PaymentHsmClusterPrivateEndpointConnectionsClientDeleteResponse], error)`
+- New function `*PaymentHsmClusterPrivateEndpointConnectionsClient.Get(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, peConnectionName string, options *PaymentHsmClusterPrivateEndpointConnectionsClientGetOptions) (PaymentHsmClusterPrivateEndpointConnectionsClientGetResponse, error)`
+- New function `*PaymentHsmClusterPrivateEndpointConnectionsClient.NewListByPaymentHsmClusterPager(resourceGroupName string, paymentHsmClusterName string, options *PaymentHsmClusterPrivateEndpointConnectionsClientListByPaymentHsmClusterOptions) *runtime.Pager[PaymentHsmClusterPrivateEndpointConnectionsClientListByPaymentHsmClusterResponse]`
+- New function `NewPaymentHsmClusterPrivateLinkResourcesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PaymentHsmClusterPrivateLinkResourcesClient, error)`
+- New function `*PaymentHsmClusterPrivateLinkResourcesClient.NewListByPaymentHsmClusterPager(resourceGroupName string, paymentHsmClusterName string, options *PaymentHsmClusterPrivateLinkResourcesClientListByPaymentHsmClusterOptions) *runtime.Pager[PaymentHsmClusterPrivateLinkResourcesClientListByPaymentHsmClusterResponse]`
+- New function `NewPaymentHsmClustersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PaymentHsmClustersClient, error)`
+- New function `*PaymentHsmClustersClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, body PaymentHsmCluster, options *PaymentHsmClustersClientBeginCreateOrUpdateOptions) (*runtime.Poller[PaymentHsmClustersClientCreateOrUpdateResponse], error)`
+- New function `*PaymentHsmClustersClient.BeginDelete(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, options *PaymentHsmClustersClientBeginDeleteOptions) (*runtime.Poller[PaymentHsmClustersClientDeleteResponse], error)`
+- New function `*PaymentHsmClustersClient.Get(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, options *PaymentHsmClustersClientGetOptions) (PaymentHsmClustersClientGetResponse, error)`
+- New function `*PaymentHsmClustersClient.NewListByResourceGroupPager(resourceGroupName string, options *PaymentHsmClustersClientListByResourceGroupOptions) *runtime.Pager[PaymentHsmClustersClientListByResourceGroupResponse]`
+- New function `*PaymentHsmClustersClient.NewListBySubscriptionPager(options *PaymentHsmClustersClientListBySubscriptionOptions) *runtime.Pager[PaymentHsmClustersClientListBySubscriptionResponse]`
+- New function `*PaymentHsmClustersClient.BeginUpdate(ctx context.Context, resourceGroupName string, paymentHsmClusterName string, body PaymentHsmClusterPatchParameters, options *PaymentHsmClustersClientBeginUpdateOptions) (*runtime.Poller[PaymentHsmClustersClientUpdateResponse], error)`
+- New struct `PaymentHsmCluster`
+- New struct `PaymentHsmClusterListResult`
+- New struct `PaymentHsmClusterPatchParameters`
+- New struct `PaymentHsmClusterPrivateEndpointConnection`
+- New struct `PaymentHsmClusterPrivateEndpointConnectionListResult`
+- New struct `PaymentHsmClusterProperties`
+- New struct `PaymentHsmClusterSKU`
+- New struct `PaymentHsmProperties`
+
+
+## 3.0.0 (2026-06-24)
+### Breaking Changes
+
+- Operation `*CloudHsmClusterBackupStatusClient.BeginGet` has been changed to non-LRO, use `*CloudHsmClusterBackupStatusClient.Get` instead.
+- Operation `*CloudHsmClusterRestoreStatusClient.BeginGet` has been changed to non-LRO, use `*CloudHsmClusterRestoreStatusClient.Get` instead.
+- Field `XMSRequestID` of struct `CloudHsmClustersClientBackupResponse` has been removed
+- Field `XMSRequestID` of struct `CloudHsmClustersClientRestoreResponse` has been removed
+- Field `XMSRequestID` of struct `CloudHsmClustersClientValidateBackupPropertiesResponse` has been removed
+- Field `XMSRequestID` of struct `CloudHsmClustersClientValidateRestorePropertiesResponse` has been removed
+
+
+## 2.0.0 (2025-07-01)
+### Breaking Changes
+
+- Type of `SystemData.CreatedByType` has been changed from `*IdentityType` to `*CreatedByType`
+- Type of `SystemData.LastModifiedByType` has been changed from `*IdentityType` to `*CreatedByType`
+- Enum `IdentityType` has been removed
+- Struct `DedicatedHsmError` has been removed
+- Struct `DedicatedHsmOperation` has been removed
+- Struct `DedicatedHsmOperationDisplay` has been removed
+- Struct `DedicatedHsmOperationListResult` has been removed
+- Struct `Error` has been removed
+- Struct `Resource` has been removed
+- Struct `ResourceListResult` has been removed
+- Field `ID` of struct `APIEntityReference` has been removed
+- Field `ID` of struct `NetworkInterface` has been removed
+- Field `DedicatedHsmOperationListResult` of struct `OperationsClientListResponse` has been removed
+
+### Features Added
+
+- New enum type `ActionType` with values `ActionTypeInternal`
+- New enum type `ActivationState` with values `ActivationStateActive`, `ActivationStateFailed`, `ActivationStateNotActivated`, `ActivationStateNotDefined`, `ActivationStateUnknown`
+- New enum type `AutoGeneratedDomainNameLabelScope` with values `AutoGeneratedDomainNameLabelScopeNoReuse`, `AutoGeneratedDomainNameLabelScopeResourceGroupReuse`, `AutoGeneratedDomainNameLabelScopeSubscriptionReuse`, `AutoGeneratedDomainNameLabelScopeTenantReuse`
+- New enum type `BackupRestoreOperationStatus` with values `BackupRestoreOperationStatusCancelled`, `BackupRestoreOperationStatusFailed`, `BackupRestoreOperationStatusInProgress`, `BackupRestoreOperationStatusSucceeded`
+- New enum type `CloudHsmClusterSKUFamily` with values `CloudHsmClusterSKUFamilyB`
+- New enum type `CloudHsmClusterSKUName` with values `CloudHsmClusterSKUNameStandardB1`, `CloudHsmClusterSKUNameStandardB10`
+- New enum type `CreatedByType` with values `CreatedByTypeApplication`, `CreatedByTypeKey`, `CreatedByTypeManagedIdentity`, `CreatedByTypeUser`
+- New enum type `ManagedServiceIdentityType` with values `ManagedServiceIdentityTypeNone`, `ManagedServiceIdentityTypeSystemAssigned`, `ManagedServiceIdentityTypeSystemAssignedUserAssigned`, `ManagedServiceIdentityTypeUserAssigned`
+- New enum type `Origin` with values `OriginSystem`, `OriginUser`, `OriginUserSystem`
+- New enum type `PrivateEndpointConnectionProvisioningState` with values `PrivateEndpointConnectionProvisioningStateCanceled`, `PrivateEndpointConnectionProvisioningStateCreating`, `PrivateEndpointConnectionProvisioningStateDeleting`, `PrivateEndpointConnectionProvisioningStateFailed`, `PrivateEndpointConnectionProvisioningStateInternalError`, `PrivateEndpointConnectionProvisioningStateSucceeded`, `PrivateEndpointConnectionProvisioningStateUpdating`
+- New enum type `PrivateEndpointServiceConnectionStatus` with values `PrivateEndpointServiceConnectionStatusApproved`, `PrivateEndpointServiceConnectionStatusPending`, `PrivateEndpointServiceConnectionStatusRejected`
+- New enum type `ProvisioningState` with values `ProvisioningStateCanceled`, `ProvisioningStateDeleting`, `ProvisioningStateFailed`, `ProvisioningStateProvisioning`, `ProvisioningStateSucceeded`, `ProvisioningStateUpdating`
+- New enum type `PublicNetworkAccess` with values `PublicNetworkAccessDisabled`
+- New function `*ClientFactory.NewCloudHsmClusterBackupStatusClient() *CloudHsmClusterBackupStatusClient`
+- New function `*ClientFactory.NewCloudHsmClusterPrivateEndpointConnectionsClient() *CloudHsmClusterPrivateEndpointConnectionsClient`
+- New function `*ClientFactory.NewCloudHsmClusterPrivateLinkResourcesClient() *CloudHsmClusterPrivateLinkResourcesClient`
+- New function `*ClientFactory.NewCloudHsmClusterRestoreStatusClient() *CloudHsmClusterRestoreStatusClient`
+- New function `*ClientFactory.NewCloudHsmClustersClient() *CloudHsmClustersClient`
+- New function `*ClientFactory.NewPrivateEndpointConnectionsClient() *PrivateEndpointConnectionsClient`
+- New function `NewCloudHsmClusterBackupStatusClient(string, azcore.TokenCredential, *arm.ClientOptions) (*CloudHsmClusterBackupStatusClient, error)`
+- New function `*CloudHsmClusterBackupStatusClient.BeginGet(context.Context, string, string, string, *CloudHsmClusterBackupStatusClientBeginGetOptions) (*runtime.Poller[CloudHsmClusterBackupStatusClientGetResponse], error)`
+- New function `NewCloudHsmClusterPrivateEndpointConnectionsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*CloudHsmClusterPrivateEndpointConnectionsClient, error)`
+- New function `*CloudHsmClusterPrivateEndpointConnectionsClient.Create(context.Context, string, string, string, PrivateEndpointConnection, *CloudHsmClusterPrivateEndpointConnectionsClientCreateOptions) (CloudHsmClusterPrivateEndpointConnectionsClientCreateResponse, error)`
+- New function `*CloudHsmClusterPrivateEndpointConnectionsClient.BeginDelete(context.Context, string, string, string, *CloudHsmClusterPrivateEndpointConnectionsClientBeginDeleteOptions) (*runtime.Poller[CloudHsmClusterPrivateEndpointConnectionsClientDeleteResponse], error)`
+- New function `*CloudHsmClusterPrivateEndpointConnectionsClient.Get(context.Context, string, string, string, *CloudHsmClusterPrivateEndpointConnectionsClientGetOptions) (CloudHsmClusterPrivateEndpointConnectionsClientGetResponse, error)`
+- New function `NewCloudHsmClusterPrivateLinkResourcesClient(string, azcore.TokenCredential, *arm.ClientOptions) (*CloudHsmClusterPrivateLinkResourcesClient, error)`
+- New function `*CloudHsmClusterPrivateLinkResourcesClient.NewListByCloudHsmClusterPager(string, string, *CloudHsmClusterPrivateLinkResourcesClientListByCloudHsmClusterOptions) *runtime.Pager[CloudHsmClusterPrivateLinkResourcesClientListByCloudHsmClusterResponse]`
+- New function `NewCloudHsmClusterRestoreStatusClient(string, azcore.TokenCredential, *arm.ClientOptions) (*CloudHsmClusterRestoreStatusClient, error)`
+- New function `*CloudHsmClusterRestoreStatusClient.BeginGet(context.Context, string, string, string, *CloudHsmClusterRestoreStatusClientBeginGetOptions) (*runtime.Poller[CloudHsmClusterRestoreStatusClientGetResponse], error)`
+- New function `NewCloudHsmClustersClient(string, azcore.TokenCredential, *arm.ClientOptions) (*CloudHsmClustersClient, error)`
+- New function `*CloudHsmClustersClient.BeginCreateOrUpdate(context.Context, string, string, CloudHsmCluster, *CloudHsmClustersClientBeginCreateOrUpdateOptions) (*runtime.Poller[CloudHsmClustersClientCreateOrUpdateResponse], error)`
+- New function `*CloudHsmClustersClient.BeginDelete(context.Context, string, string, *CloudHsmClustersClientBeginDeleteOptions) (*runtime.Poller[CloudHsmClustersClientDeleteResponse], error)`
+- New function `*CloudHsmClustersClient.Get(context.Context, string, string, *CloudHsmClustersClientGetOptions) (CloudHsmClustersClientGetResponse, error)`
+- New function `*CloudHsmClustersClient.NewListByResourceGroupPager(string, *CloudHsmClustersClientListByResourceGroupOptions) *runtime.Pager[CloudHsmClustersClientListByResourceGroupResponse]`
+- New function `*CloudHsmClustersClient.NewListBySubscriptionPager(*CloudHsmClustersClientListBySubscriptionOptions) *runtime.Pager[CloudHsmClustersClientListBySubscriptionResponse]`
+- New function `*CloudHsmClustersClient.BeginRestore(context.Context, string, string, RestoreRequestProperties, *CloudHsmClustersClientBeginRestoreOptions) (*runtime.Poller[CloudHsmClustersClientRestoreResponse], error)`
+- New function `*CloudHsmClustersClient.BeginUpdate(context.Context, string, string, CloudHsmClusterPatchParameters, *CloudHsmClustersClientBeginUpdateOptions) (*runtime.Poller[CloudHsmClustersClientUpdateResponse], error)`
+- New function `*CloudHsmClustersClient.BeginValidateBackupProperties(context.Context, string, string, *CloudHsmClustersClientBeginValidateBackupPropertiesOptions) (*runtime.Poller[CloudHsmClustersClientValidateBackupPropertiesResponse], error)`
+- New function `*CloudHsmClustersClient.BeginValidateRestoreProperties(context.Context, string, string, *CloudHsmClustersClientBeginValidateRestorePropertiesOptions) (*runtime.Poller[CloudHsmClustersClientValidateRestorePropertiesResponse], error)`
+- New function `*CloudHsmClustersClient.BeginBackup(context.Context, string, string, *CloudHsmClustersClientBeginBackupOptions) (*runtime.Poller[CloudHsmClustersClientBackupResponse], error)`
+- New function `NewPrivateEndpointConnectionsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*PrivateEndpointConnectionsClient, error)`
+- New function `*PrivateEndpointConnectionsClient.NewListByCloudHsmClusterPager(string, string, *PrivateEndpointConnectionsClientListByCloudHsmClusterOptions) *runtime.Pager[PrivateEndpointConnectionsClientListByCloudHsmClusterResponse]`
+- New struct `BackupRequestProperties`
+- New struct `BackupRestoreBaseResultProperties`
+- New struct `BackupResult`
+- New struct `BackupResultProperties`
+- New struct `CloudHsmCluster`
+- New struct `CloudHsmClusterListResult`
+- New struct `CloudHsmClusterPatchParameters`
+- New struct `CloudHsmClusterProperties`
+- New struct `CloudHsmClusterSKU`
+- New struct `CloudHsmProperties`
+- New struct `ErrorAdditionalInfo`
+- New struct `ErrorDetail`
+- New struct `ManagedServiceIdentity`
+- New struct `Operation`
+- New struct `OperationDisplay`
+- New struct `OperationListResult`
+- New struct `PrivateEndpoint`
+- New struct `PrivateEndpointConnection`
+- New struct `PrivateEndpointConnectionListResult`
+- New struct `PrivateEndpointConnectionProperties`
+- New struct `PrivateLinkResource`
+- New struct `PrivateLinkResourceListResult`
+- New struct `PrivateLinkResourceProperties`
+- New struct `PrivateLinkServiceConnectionState`
+- New struct `RestoreRequestProperties`
+- New struct `RestoreResult`
+- New struct `UserAssignedIdentity`
+- New field `ResourceID` in struct `APIEntityReference`
+- New field `ResourceID` in struct `NetworkInterface`
+- New anonymous field `OperationListResult` in struct `OperationsClientListResponse`
+
+
 ## 2.0.0-beta.2 (2024-11-18)
 ### Breaking Changes
 

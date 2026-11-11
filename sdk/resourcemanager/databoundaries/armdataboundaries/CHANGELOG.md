@@ -1,5 +1,19 @@
 # Release History
 
+## 1.0.0 (2026-06-24)
+
+### Other Changes
+
+- General availability of the `github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/databoundaries/armdataboundaries` package.
+
+## 0.2.0 (2026-05-20)
+### Features Added
+
+- New function `*ClientFactory.NewOperationsClient() *OperationsClient`
+- New function `NewOperationsClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*OperationsClient, error)`
+- New function `*OperationsClient.NewListPager(options *OperationsClientListOptions) *runtime.Pager[OperationsClientListResponse]`
+
+
 ## 0.1.0 (2024-10-21)
 ### Other Changes
 

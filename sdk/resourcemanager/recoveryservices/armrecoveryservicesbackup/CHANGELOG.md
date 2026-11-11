@@ -1,5 +1,174 @@
 # Release History
 
+## 5.2.0 (2026-10-14)
+### Features Added
+
+- New value `BackupItemTypeSQLInstance` added to enum type `BackupItemType`
+- New value `DataSourceTypeSQLInstance` added to enum type `DataSourceType`
+- New value `RecoveryPointTierTypeIASnapshotRP` added to enum type `RecoveryPointTierType`
+- New value `WorkloadTypeSQLInstance` added to enum type `WorkloadType`
+- New enum type `ExistingBasicVMProtection` with values `ExistingBasicVMProtectionDisableWithDeleteRPsNow`
+- New enum type `InstanceProtectionReadiness` with values `InstanceProtectionReadinessPartialProtection`, `InstanceProtectionReadinessProtectionError`, `InstanceProtectionReadinessReady`, `InstanceProtectionReadinessScheduleDisabled`, `InstanceProtectionReadinessUnknown`
+- New enum type `ProtectionLevel` with values `ProtectionLevelDatabase`, `ProtectionLevelDatabaseUnderInstance`
+- New enum type `VMWorkloadPolicyType` with values `VMWorkloadPolicyTypeInvalid`, `VMWorkloadPolicyTypeSnapshotV1`, `VMWorkloadPolicyTypeSnapshotV2`, `VMWorkloadPolicyTypeStreaming`
+- New function `*AzureVMWorkloadSQLInstanceProtectedItem.GetAzureVMWorkloadProtectedItem() *AzureVMWorkloadProtectedItem`
+- New function `*AzureVMWorkloadSQLInstanceProtectedItem.GetProtectedItem() *ProtectedItem`
+- New function `*ClientFactory.NewProtectionContainerRefreshOperationStatusesClient() *ProtectionContainerRefreshOperationStatusesClient`
+- New function `*IaasVMRPExtendedInfo.GetRPExtendedInfo() *RPExtendedInfo`
+- New function `NewProtectionContainerRefreshOperationStatusesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ProtectionContainerRefreshOperationStatusesClient, error)`
+- New function `*ProtectionContainerRefreshOperationStatusesClient.Get(ctx context.Context, resourceGroupName string, vaultName string, fabricName string, operationID string, options *ProtectionContainerRefreshOperationStatusesClientGetOptions) (ProtectionContainerRefreshOperationStatusesClientGetResponse, error)`
+- New function `*RPExtendedInfo.GetRPExtendedInfo() *RPExtendedInfo`
+- New function `*RecoveryPointsClient.BeginGetRPExtendedInfo(ctx context.Context, resourceGroupName string, vaultName string, fabricName string, parameters GetRPExtendedInfoRequestResource, options *RecoveryPointsClientBeginGetRPExtendedInfoOptions) (*runtime.Poller[RecoveryPointsClientGetRPExtendedInfoResponse], error)`
+- New function `*RecoveryPointsClient.GetRPExtendedInfoOperationResult(ctx context.Context, resourceGroupName string, vaultName string, fabricName string, operationID string, options *RecoveryPointsClientGetRPExtendedInfoOperationResultOptions) (RecoveryPointsClientGetRPExtendedInfoOperationResultResponse, error)`
+- New function `*ValidateAzureWorkloadRestoreOperationRequest.GetValidateOperationRequest() *ValidateOperationRequest`
+- New struct `AzureVMWorkloadSQLInstanceProtectedItem`
+- New struct `DatabaseInRP`
+- New struct `DiskInfo`
+- New struct `FilesystemInfo`
+- New struct `GetRPExtendedInfoRequest`
+- New struct `GetRPExtendedInfoRequestResource`
+- New struct `IaasVMRPExtendedInfo`
+- New struct `RPExtendedInfoResource`
+- New struct `RPExtendedInfoResourceList`
+- New struct `SnapshotRecoveryPointInfo`
+- New struct `StorageSpaceInfo`
+- New struct `ValidateAzureWorkloadRestoreOperationRequest`
+- New field `ExistingBasicVMProtection` in struct `AzureIaaSClassicComputeVMProtectedItem`
+- New field `ExistingBasicVMProtection` in struct `AzureIaaSComputeVMProtectedItem`
+- New field `ExistingBasicVMProtection` in struct `AzureIaaSVMProtectedItem`
+- New field `InstantAccessDurationMinutes`, `InstantAccessSnapshotEnabled` in struct `AzureIaaSVMProtectionPolicy`
+- New field `VMWorkloadPolicyType` in struct `AzureVMWorkloadProtectionPolicy`
+- New field `ParentProtectedItem`, `ProtectionLevel` in struct `AzureVMWorkloadSQLDatabaseProtectedItem`
+- New field `IncludedDatabases`, `SnapshotRecoveryPointInfo` in struct `AzureWorkloadSQLRecoveryPointExtendedInfo`
+- New field `DiskSizeInGB`, `StorageType` in struct `DiskInformation`
+- New field `DisksToDetachOnClash` in struct `SnapshotRestoreParameters`
+
+
+## 5.1.0 (2026-08-31)
+### Features Added
+
+- New function `*ItemLevelRecoveryConnectionsClient.ListInstantItemRecoveryOperationResult(ctx context.Context, resourceGroupName string, vaultName string, fabricName string, containerName string, protectedItemName string, recoveryPointID string, body InstantItemRecoveryOperationResultRequest, options *ItemLevelRecoveryConnectionsClientListInstantItemRecoveryOperationResultOptions) (ItemLevelRecoveryConnectionsClientListInstantItemRecoveryOperationResultResponse, error)`
+- New struct `InstantItemRecoveryOperationResultRequest`
+
+
+## 5.0.0 (2026-08-13)
+### Breaking Changes
+
+- Enum `ContainerType` has been removed
+- Enum `HealthState` has been removed
+- Enum `IntentItemType` has been removed
+- Enum `JobOperationType` has been removed
+- Enum `JobStatus` has been removed
+- Enum `RestorePointQueryType` has been removed
+- Enum `Type` has been removed
+- Operation `*ProtectedItemsClient.CreateOrUpdate` has been changed to LRO, use `*ProtectedItemsClient.BeginCreateOrUpdate` instead.
+- Struct `BMSBackupEngineQueryObject` has been removed
+- Struct `BMSBackupEnginesQueryObject` has been removed
+- Struct `BMSBackupSummariesQueryObject` has been removed
+- Struct `BMSContainerQueryObject` has been removed
+- Struct `BMSContainersInquiryQueryObject` has been removed
+- Struct `BMSPOQueryObject` has been removed
+- Struct `BMSRPQueryObject` has been removed
+- Struct `BMSRefreshContainersQueryObject` has been removed
+- Struct `BMSWorkloadItemQueryObject` has been removed
+- Struct `ErrorAdditionalInfo` has been removed
+- Struct `GetProtectedItemQueryObject` has been removed
+- Struct `JobQueryObject` has been removed
+- Struct `NewErrorResponse` has been removed
+- Struct `NewErrorResponseError` has been removed
+- Struct `OperationWorkerResponse` has been removed
+- Struct `ProtectedItemQueryObject` has been removed
+- Struct `ProtectionIntentQueryObject` has been removed
+- Struct `ProtectionPolicyQueryObject` has been removed
+- Struct `Resource` has been removed
+- Struct `ResourceList` has been removed
+
+### Features Added
+
+- New enum type `AccessType` with values `AccessTypeIdentityBased`, `AccessTypeKeyBased`
+- New enum type `CreatedByType` with values `CreatedByTypeApplication`, `CreatedByTypeKey`, `CreatedByTypeManagedIdentity`, `CreatedByTypeUser`
+- New enum type `SourceScanAction` with values `SourceScanActionDisable`, `SourceScanActionEnable`
+- New enum type `SourceSideScanStatus` with values `SourceSideScanStatusConfigurationFailed`, `SourceSideScanStatusConfigured`, `SourceSideScanStatusNotApplicable`, `SourceSideScanStatusNotConfigured`
+- New enum type `SourceSideScanSummary` with values `SourceSideScanSummaryHealthy`, `SourceSideScanSummaryNoThreatsReported`, `SourceSideScanSummaryNotApplicable`, `SourceSideScanSummarySuspicious`, `SourceSideScanSummaryUnknown`
+- New enum type `ThreatSeverity` with values `ThreatSeverityCritical`, `ThreatSeverityHigh`, `ThreatSeverityInformational`, `ThreatSeverityWarning`
+- New enum type `ThreatState` with values `ThreatStateActive`, `ThreatStateIgnored`, `ThreatStateInProgress`, `ThreatStateResolved`
+- New enum type `ThreatStatus` with values `ThreatStatusHealthy`, `ThreatStatusNotAvailable`, `ThreatStatusUnHealthy`, `ThreatStatusUnknown`, `ThreatStatusWarning`
+- New function `*ClientFactory.NewConfigureSourceScanClient() *ConfigureSourceScanClient`
+- New function `NewConfigureSourceScanClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ConfigureSourceScanClient, error)`
+- New function `*ConfigureSourceScanClient.BeginExecute(ctx context.Context, resourceGroupName string, vaultName string, fabricName string, containerName string, protectedItemName string, body ProtectedItemConfigureSourceScanRequest, options *ConfigureSourceScanClientBeginExecuteOptions) (*runtime.Poller[ConfigureSourceScanClientExecuteResponse], error)`
+- New struct `DataDiskDetails`
+- New struct `DataDiskEncryptionSettings`
+- New struct `DiskDetails`
+- New struct `PerDiskEncryptionSetID`
+- New struct `ProtectedItemConfigureSourceScanRequest`
+- New struct `RecoveryPointImmutabilityProperties`
+- New struct `SourceSideScanInfo`
+- New struct `SystemData`
+- New struct `ThreatInfo`
+- New field `SourceLocation` in struct `AzureBackupServerContainer`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureFileShareRecoveryPoint`
+- New field `IdentityInfo` in struct `AzureFileShareRestoreRequest`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureFileshareProtectedItem`
+- New field `SourceLocation` in struct `AzureIaaSClassicComputeVMContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureIaaSClassicComputeVMProtectedItem`
+- New field `SourceLocation` in struct `AzureIaaSComputeVMContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureIaaSComputeVMProtectedItem`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureIaaSVMProtectedItem`
+- New field `SourceLocation` in struct `AzureSQLAGWorkloadContainerProtectionContainer`
+- New field `SourceLocation` in struct `AzureSQLContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureSQLProtectedItem`
+- New field `AccessType`, `IdentityInfo`, `SourceLocation` in struct `AzureStorageContainer`
+- New field `SourceLocation` in struct `AzureVMAppContainerProtectionContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureVMWorkloadProtectedItem`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureVMWorkloadSAPAseDatabaseProtectedItem`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureVMWorkloadSAPHanaDBInstanceProtectedItem`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureVMWorkloadSAPHanaDatabaseProtectedItem`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `AzureVMWorkloadSQLDatabaseProtectedItem`
+- New field `SourceLocation` in struct `AzureWorkloadContainer`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadPointInTimeRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSAPAsePointInTimeRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSAPAseRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSAPHanaPointInTimeRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSAPHanaRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSQLPointInTimeRecoveryPoint`
+- New field `ThreatInfo`, `ThreatStatus` in struct `AzureWorkloadSQLRecoveryPoint`
+- New field `SystemData` in struct `BackupEngineBaseResource`
+- New field `NextLink` in struct `BackupManagementUsageList`
+- New field `SystemData` in struct `BackupRequestResource`
+- New field `SystemData` in struct `BackupResourceConfigResource`
+- New field `SystemData` in struct `BackupResourceEncryptionConfigExtendedResource`
+- New field `SystemData` in struct `BackupResourceEncryptionConfigResource`
+- New field `SystemData` in struct `BackupResourceVaultConfigResource`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `DPMProtectedItem`
+- New field `SourceLocation` in struct `DpmContainer`
+- New field `SourceLocation` in struct `GenericContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `GenericProtectedItem`
+- New field `ThreatInfo`, `ThreatStatus` in struct `GenericRecoveryPoint`
+- New field `SystemData` in struct `ILRRequestResource`
+- New field `SourceLocation` in struct `IaaSVMContainer`
+- New field `DataDiskMetadata`, `ThreatInfo`, `ThreatStatus` in struct `IaasVMRecoveryPoint`
+- New field `SystemData` in struct `JobResource`
+- New field `SourceLocation` in struct `MabContainer`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `MabFileFolderProtectedItem`
+- New field `SystemData` in struct `PrivateEndpointConnectionResource`
+- New field `SystemData` in struct `ProtectableContainerResource`
+- New field `SourceLocation`, `SourceSideScanInfo` in struct `ProtectedItem`
+- New field `SystemData` in struct `ProtectedItemResource`
+- New field `SourceLocation` in struct `ProtectionContainer`
+- New field `SystemData` in struct `ProtectionContainerResource`
+- New field `SystemData` in struct `ProtectionIntentResource`
+- New field `SystemData` in struct `ProtectionPolicyResource`
+- New field `ThreatInfo`, `ThreatStatus` in struct `RecoveryPoint`
+- New field `ImmutabilityProperties` in struct `RecoveryPointProperties`
+- New field `SystemData` in struct `RecoveryPointResource`
+- New field `SystemData` in struct `ResourceGuardProxyBaseResource`
+- New field `SystemData` in struct `RestoreRequestResource`
+- New field `DataDiskEncryptionSettings` in struct `SecuredVMDetails`
+- New field `SystemData` in struct `WorkloadItemResource`
+- New field `SystemData` in struct `WorkloadProtectableItemResource`
+
+
 ## 4.2.0 (2025-04-24)
 ### Features Added
 

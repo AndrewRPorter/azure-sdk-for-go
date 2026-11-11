@@ -5,8 +5,7 @@
 package armcarbonoptimization
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/carbonoptimization/armcarbonoptimization"
-	moduleVersion = "v0.1.0"
+	version20250401 string = "2025-04-01"
 )
 
 // AccessDecisionEnum - Enum for Access Decision

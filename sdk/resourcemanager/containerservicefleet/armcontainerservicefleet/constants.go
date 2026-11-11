@@ -5,8 +5,7 @@
 package armcontainerservicefleet
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/containerservicefleet/armcontainerservicefleet"
-	moduleVersion = "v2.0.0"
+	version20260602Preview string = "2026-06-02-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -21,6 +20,27 @@ const (
 func PossibleActionTypeValues() []ActionType {
 	return []ActionType{
 		ActionTypeInternal,
+	}
+}
+
+// AdoptionPolicy - Action if the Namespace with the same name already exists.
+type AdoptionPolicy string
+
+const (
+	// AdoptionPolicyAlways - Always take over the existing Namespace to be managed by ARM, even if it is not identical.
+	AdoptionPolicyAlways AdoptionPolicy = "Always"
+	// AdoptionPolicyIfIdentical - If there is an identical Namespace, take over the existing Namespace to be managed by ARM.
+	AdoptionPolicyIfIdentical AdoptionPolicy = "IfIdentical"
+	// AdoptionPolicyNever - If the Namespace already exists, do not take over the existing Namespace to be managed by ARM.
+	AdoptionPolicyNever AdoptionPolicy = "Never"
+)
+
+// PossibleAdoptionPolicyValues returns the possible values for the AdoptionPolicy const type.
+func PossibleAdoptionPolicyValues() []AdoptionPolicy {
+	return []AdoptionPolicy{
+		AdoptionPolicyAlways,
+		AdoptionPolicyIfIdentical,
+		AdoptionPolicyNever,
 	}
 }
 
@@ -90,6 +110,54 @@ func PossibleAutoUpgradeProfileProvisioningStateValues() []AutoUpgradeProfilePro
 	}
 }
 
+// ClusterMeshProfileProvisioningState - The provisioning state of the cluster mesh profile resource.
+type ClusterMeshProfileProvisioningState string
+
+const (
+	// ClusterMeshProfileProvisioningStateCanceled - Resource creation was canceled.
+	ClusterMeshProfileProvisioningStateCanceled ClusterMeshProfileProvisioningState = "Canceled"
+	// ClusterMeshProfileProvisioningStateFailed - Resource creation failed.
+	ClusterMeshProfileProvisioningStateFailed ClusterMeshProfileProvisioningState = "Failed"
+	// ClusterMeshProfileProvisioningStateSucceeded - Resource has been created.
+	ClusterMeshProfileProvisioningStateSucceeded ClusterMeshProfileProvisioningState = "Succeeded"
+)
+
+// PossibleClusterMeshProfileProvisioningStateValues returns the possible values for the ClusterMeshProfileProvisioningState const type.
+func PossibleClusterMeshProfileProvisioningStateValues() []ClusterMeshProfileProvisioningState {
+	return []ClusterMeshProfileProvisioningState{
+		ClusterMeshProfileProvisioningStateCanceled,
+		ClusterMeshProfileProvisioningStateFailed,
+		ClusterMeshProfileProvisioningStateSucceeded,
+	}
+}
+
+// ClusterMeshState - Cluster mesh state.
+type ClusterMeshState string
+
+const (
+	// ClusterMeshStateApplying - The mesh is applying.
+	ClusterMeshStateApplying ClusterMeshState = "Applying"
+	// ClusterMeshStateConnected - The mesh is connected.
+	ClusterMeshStateConnected ClusterMeshState = "Connected"
+	// ClusterMeshStateDegraded - The mesh is degraded.
+	ClusterMeshStateDegraded ClusterMeshState = "Degraded"
+	// ClusterMeshStateFailed - The mesh failed to connect.
+	ClusterMeshStateFailed ClusterMeshState = "Failed"
+	// ClusterMeshStateNotConnected - The mesh is not connected.
+	ClusterMeshStateNotConnected ClusterMeshState = "NotConnected"
+)
+
+// PossibleClusterMeshStateValues returns the possible values for the ClusterMeshState const type.
+func PossibleClusterMeshStateValues() []ClusterMeshState {
+	return []ClusterMeshState{
+		ClusterMeshStateApplying,
+		ClusterMeshStateConnected,
+		ClusterMeshStateDegraded,
+		ClusterMeshStateFailed,
+		ClusterMeshStateNotConnected,
+	}
+}
+
 // CreatedByType - The kind of entity that created the resource.
 type CreatedByType string
 
@@ -111,6 +179,87 @@ func PossibleCreatedByTypeValues() []CreatedByType {
 		CreatedByTypeKey,
 		CreatedByTypeManagedIdentity,
 		CreatedByTypeUser,
+	}
+}
+
+// DayOfWeek - The days of a week.
+type DayOfWeek string
+
+const (
+	// DayOfWeekFriday - The day Friday.
+	DayOfWeekFriday DayOfWeek = "Friday"
+	// DayOfWeekMonday - The day Monday.
+	DayOfWeekMonday DayOfWeek = "Monday"
+	// DayOfWeekSaturday - The day Saturday.
+	DayOfWeekSaturday DayOfWeek = "Saturday"
+	// DayOfWeekSunday - The day Sunday.
+	DayOfWeekSunday DayOfWeek = "Sunday"
+	// DayOfWeekThursday - The day Thursday.
+	DayOfWeekThursday DayOfWeek = "Thursday"
+	// DayOfWeekTuesday - The day Tuesday.
+	DayOfWeekTuesday DayOfWeek = "Tuesday"
+	// DayOfWeekWednesday - The day Wednesday.
+	DayOfWeekWednesday DayOfWeek = "Wednesday"
+)
+
+// PossibleDayOfWeekValues returns the possible values for the DayOfWeek const type.
+func PossibleDayOfWeekValues() []DayOfWeek {
+	return []DayOfWeek{
+		DayOfWeekFriday,
+		DayOfWeekMonday,
+		DayOfWeekSaturday,
+		DayOfWeekSunday,
+		DayOfWeekThursday,
+		DayOfWeekTuesday,
+		DayOfWeekWednesday,
+	}
+}
+
+// DeletePolicy - Delete options for the ARM managed namespace.
+type DeletePolicy string
+
+const (
+	// DeletePolicyDelete - Delete both ARM resource and Namespace.
+	DeletePolicyDelete DeletePolicy = "Delete"
+	// DeletePolicyKeep - Delete the ARM resource but keep the Namespace.
+	DeletePolicyKeep DeletePolicy = "Keep"
+)
+
+// PossibleDeletePolicyValues returns the possible values for the DeletePolicy const type.
+func PossibleDeletePolicyValues() []DeletePolicy {
+	return []DeletePolicy{
+		DeletePolicyDelete,
+		DeletePolicyKeep,
+	}
+}
+
+// FleetManagedNamespaceProvisioningState - The provisioning state of the fleet managed namespace resource
+type FleetManagedNamespaceProvisioningState string
+
+const (
+	// FleetManagedNamespaceProvisioningStateCanceled - Resource creation was canceled.
+	FleetManagedNamespaceProvisioningStateCanceled FleetManagedNamespaceProvisioningState = "Canceled"
+	// FleetManagedNamespaceProvisioningStateCreating - The provisioning state of a fleet managed namespace being created.
+	FleetManagedNamespaceProvisioningStateCreating FleetManagedNamespaceProvisioningState = "Creating"
+	// FleetManagedNamespaceProvisioningStateDeleting - The provisioning state of a fleet managed namespace being deleted.
+	FleetManagedNamespaceProvisioningStateDeleting FleetManagedNamespaceProvisioningState = "Deleting"
+	// FleetManagedNamespaceProvisioningStateFailed - Resource creation failed.
+	FleetManagedNamespaceProvisioningStateFailed FleetManagedNamespaceProvisioningState = "Failed"
+	// FleetManagedNamespaceProvisioningStateSucceeded - Resource has been created.
+	FleetManagedNamespaceProvisioningStateSucceeded FleetManagedNamespaceProvisioningState = "Succeeded"
+	// FleetManagedNamespaceProvisioningStateUpdating - The provisioning state of a fleet managed namespace being updated.
+	FleetManagedNamespaceProvisioningStateUpdating FleetManagedNamespaceProvisioningState = "Updating"
+)
+
+// PossibleFleetManagedNamespaceProvisioningStateValues returns the possible values for the FleetManagedNamespaceProvisioningState const type.
+func PossibleFleetManagedNamespaceProvisioningStateValues() []FleetManagedNamespaceProvisioningState {
+	return []FleetManagedNamespaceProvisioningState{
+		FleetManagedNamespaceProvisioningStateCanceled,
+		FleetManagedNamespaceProvisioningStateCreating,
+		FleetManagedNamespaceProvisioningStateDeleting,
+		FleetManagedNamespaceProvisioningStateFailed,
+		FleetManagedNamespaceProvisioningStateSucceeded,
+		FleetManagedNamespaceProvisioningStateUpdating,
 	}
 }
 
@@ -195,6 +344,90 @@ func PossibleFleetUpdateStrategyProvisioningStateValues() []FleetUpdateStrategyP
 	}
 }
 
+// GateProvisioningState - The provisioning state of the Gate resource.
+type GateProvisioningState string
+
+const (
+	// GateProvisioningStateCanceled - Resource creation was canceled.
+	GateProvisioningStateCanceled GateProvisioningState = "Canceled"
+	// GateProvisioningStateFailed - Resource creation failed.
+	GateProvisioningStateFailed GateProvisioningState = "Failed"
+	// GateProvisioningStateSucceeded - Resource has been created.
+	GateProvisioningStateSucceeded GateProvisioningState = "Succeeded"
+)
+
+// PossibleGateProvisioningStateValues returns the possible values for the GateProvisioningState const type.
+func PossibleGateProvisioningStateValues() []GateProvisioningState {
+	return []GateProvisioningState{
+		GateProvisioningStateCanceled,
+		GateProvisioningStateFailed,
+		GateProvisioningStateSucceeded,
+	}
+}
+
+// GateState - The state of the Gate.
+type GateState string
+
+const (
+	// GateStateCompleted - An Completed Gate allows the staged rollout process to continue.
+	GateStateCompleted GateState = "Completed"
+	// GateStatePending - A Pending Gate will continue to block the staged rollout process it is controlling.
+	GateStatePending GateState = "Pending"
+	// GateStateSkipped - A Skipped Gate means that the staged rollout process it is controlling was skipped.
+	GateStateSkipped GateState = "Skipped"
+)
+
+// PossibleGateStateValues returns the possible values for the GateState const type.
+func PossibleGateStateValues() []GateState {
+	return []GateState{
+		GateStateCompleted,
+		GateStatePending,
+		GateStateSkipped,
+	}
+}
+
+// GateType - The type of the Gate determines how it is completed.
+type GateType string
+
+const (
+	// GateTypeApproval - An approval gate is completed by setting its state to be Completed.
+	GateTypeApproval GateType = "Approval"
+	// GateTypeScheduledStart - A scheduled start gate is automatically completed when the scheduled time is reached.
+	GateTypeScheduledStart GateType = "ScheduledStart"
+)
+
+// PossibleGateTypeValues returns the possible values for the GateType const type.
+func PossibleGateTypeValues() []GateType {
+	return []GateType{
+		GateTypeApproval,
+		GateTypeScheduledStart,
+	}
+}
+
+// LabelSelectorOperator - A label selector operator is the set of operators that can be used in a selector requirement.
+type LabelSelectorOperator string
+
+const (
+	// LabelSelectorOperatorDoesNotExist - Label Selector Operator DoesNotExist
+	LabelSelectorOperatorDoesNotExist LabelSelectorOperator = "DoesNotExist"
+	// LabelSelectorOperatorExists - Label Selector Operator Exists
+	LabelSelectorOperatorExists LabelSelectorOperator = "Exists"
+	// LabelSelectorOperatorIn - Label Selector Operator In
+	LabelSelectorOperatorIn LabelSelectorOperator = "In"
+	// LabelSelectorOperatorNotIn - Label Selector Operator NotIn
+	LabelSelectorOperatorNotIn LabelSelectorOperator = "NotIn"
+)
+
+// PossibleLabelSelectorOperatorValues returns the possible values for the LabelSelectorOperator const type.
+func PossibleLabelSelectorOperatorValues() []LabelSelectorOperator {
+	return []LabelSelectorOperator{
+		LabelSelectorOperatorDoesNotExist,
+		LabelSelectorOperatorExists,
+		LabelSelectorOperatorIn,
+		LabelSelectorOperatorNotIn,
+	}
+}
+
 // ManagedClusterUpgradeType - The type of upgrade to perform when targeting ManagedClusters.
 type ManagedClusterUpgradeType string
 
@@ -240,6 +473,30 @@ func PossibleManagedServiceIdentityTypeValues() []ManagedServiceIdentityType {
 		ManagedServiceIdentityTypeSystemAndUserAssigned,
 		ManagedServiceIdentityTypeSystemAssigned,
 		ManagedServiceIdentityTypeUserAssigned,
+	}
+}
+
+// MeshMemberState - Mesh member state.
+type MeshMemberState string
+
+const (
+	// MeshMemberStateConnected - The member is connected to the mesh.
+	MeshMemberStateConnected MeshMemberState = "Connected"
+	// MeshMemberStateConnecting - The member is connecting to the mesh.
+	MeshMemberStateConnecting MeshMemberState = "Connecting"
+	// MeshMemberStateDisconnecting - The member is disconnecting from the mesh.
+	MeshMemberStateDisconnecting MeshMemberState = "Disconnecting"
+	// MeshMemberStateFailed - The member failed to connect due to an error.
+	MeshMemberStateFailed MeshMemberState = "Failed"
+)
+
+// PossibleMeshMemberStateValues returns the possible values for the MeshMemberState const type.
+func PossibleMeshMemberStateValues() []MeshMemberState {
+	return []MeshMemberState{
+		MeshMemberStateConnected,
+		MeshMemberStateConnecting,
+		MeshMemberStateDisconnecting,
+		MeshMemberStateFailed,
 	}
 }
 
@@ -294,6 +551,131 @@ func PossibleOriginValues() []Origin {
 	}
 }
 
+// PlacementType - PlacementType identifies the type of placement.
+type PlacementType string
+
+const (
+	// PlacementTypePickAll - PickAll picks all clusters that satisfy the rules.
+	PlacementTypePickAll PlacementType = "PickAll"
+	// PlacementTypePickFixed - PickFixed picks a fixed set of clusters.
+	PlacementTypePickFixed PlacementType = "PickFixed"
+)
+
+// PossiblePlacementTypeValues returns the possible values for the PlacementType const type.
+func PossiblePlacementTypeValues() []PlacementType {
+	return []PlacementType{
+		PlacementTypePickAll,
+		PlacementTypePickFixed,
+	}
+}
+
+// PolicyRule - The possible values representing different network policy rules.
+type PolicyRule string
+
+const (
+	// PolicyRuleAllowAll - Allow all network traffic.
+	PolicyRuleAllowAll PolicyRule = "AllowAll"
+	// PolicyRuleAllowSameNamespace - Allow traffic within the same namespace.
+	PolicyRuleAllowSameNamespace PolicyRule = "AllowSameNamespace"
+	// PolicyRuleDenyAll - Deny all network traffic.
+	PolicyRuleDenyAll PolicyRule = "DenyAll"
+)
+
+// PossiblePolicyRuleValues returns the possible values for the PolicyRule const type.
+func PossiblePolicyRuleValues() []PolicyRule {
+	return []PolicyRule{
+		PolicyRuleAllowAll,
+		PolicyRuleAllowSameNamespace,
+		PolicyRuleDenyAll,
+	}
+}
+
+// PropagationType - How the namespace will be provisioned among the fleet members.
+type PropagationType string
+
+const (
+	// PropagationTypePlacement - Using ClusterResourcePlacement.
+	PropagationTypePlacement PropagationType = "Placement"
+)
+
+// PossiblePropagationTypeValues returns the possible values for the PropagationType const type.
+func PossiblePropagationTypeValues() []PropagationType {
+	return []PropagationType{
+		PropagationTypePlacement,
+	}
+}
+
+// PropertySelectorOperator - PropertySelectorOperator is the operator that can be used with PropertySelectorRequirements.
+type PropertySelectorOperator string
+
+const (
+	// PropertySelectorOperatorEq - Eq dictates Fleet to select cluster if its observed value of a given property is equal to
+	// the values specified in the requirement.
+	PropertySelectorOperatorEq PropertySelectorOperator = "Eq"
+	// PropertySelectorOperatorGe - Ge dictates Fleet to select cluster if its observed value of a given property is greater than
+	// or equal to the value specified in the requirement.
+	PropertySelectorOperatorGe PropertySelectorOperator = "Ge"
+	// PropertySelectorOperatorGt - Gt dictates Fleet to select cluster if its observed value of a given property is greater than
+	// the value specified in the requirement.
+	PropertySelectorOperatorGt PropertySelectorOperator = "Gt"
+	// PropertySelectorOperatorLe - Le dictates Fleet to select cluster if its observed value of a given property is less than
+	// or equal to the value specified in the requirement.
+	PropertySelectorOperatorLe PropertySelectorOperator = "Le"
+	// PropertySelectorOperatorLt - Lt dictates Fleet to select cluster if its observed value of a given property is less than
+	// the value specified in the requirement.
+	PropertySelectorOperatorLt PropertySelectorOperator = "Lt"
+	// PropertySelectorOperatorNe - Ne dictates Fleet to select cluster if its observed value of a given property is not equal
+	// to the values specified in the requirement.
+	PropertySelectorOperatorNe PropertySelectorOperator = "Ne"
+)
+
+// PossiblePropertySelectorOperatorValues returns the possible values for the PropertySelectorOperator const type.
+func PossiblePropertySelectorOperatorValues() []PropertySelectorOperator {
+	return []PropertySelectorOperator{
+		PropertySelectorOperatorEq,
+		PropertySelectorOperatorGe,
+		PropertySelectorOperatorGt,
+		PropertySelectorOperatorLe,
+		PropertySelectorOperatorLt,
+		PropertySelectorOperatorNe,
+	}
+}
+
+// RolloutStrategyType - The possible rollout strategy types.
+type RolloutStrategyType string
+
+const (
+	// RolloutStrategyTypeExternal - Use external rollout strategy via Staged Update Run.
+	RolloutStrategyTypeExternal RolloutStrategyType = "External"
+	// RolloutStrategyTypeRollingUpdate - Use rolling update strategy for rollout.
+	RolloutStrategyTypeRollingUpdate RolloutStrategyType = "RollingUpdate"
+)
+
+// PossibleRolloutStrategyTypeValues returns the possible values for the RolloutStrategyType const type.
+func PossibleRolloutStrategyTypeValues() []RolloutStrategyType {
+	return []RolloutStrategyType{
+		RolloutStrategyTypeExternal,
+		RolloutStrategyTypeRollingUpdate,
+	}
+}
+
+// TaintEffect - TaintEffect
+type TaintEffect string
+
+const (
+	// TaintEffectNoSchedule - Do not allow new pods to schedule onto the node unless they tolerate the taint, but allow all pods
+	// submitted to Kubelet without going through the scheduler to start, and allow all already-running pods to continue running.
+	// Enforced by the scheduler.
+	TaintEffectNoSchedule TaintEffect = "NoSchedule"
+)
+
+// PossibleTaintEffectValues returns the possible values for the TaintEffect const type.
+func PossibleTaintEffectValues() []TaintEffect {
+	return []TaintEffect{
+		TaintEffectNoSchedule,
+	}
+}
+
 // TargetType - The target type of a skip request.
 type TargetType string
 
@@ -315,6 +697,42 @@ func PossibleTargetTypeValues() []TargetType {
 		TargetTypeGroup,
 		TargetTypeMember,
 		TargetTypeStage,
+	}
+}
+
+// Timing - Whether the Gate is placed before or after the target.
+type Timing string
+
+const (
+	// TimingAfter - The Gate is after the target.
+	TimingAfter Timing = "After"
+	// TimingBefore - The Gate is before the target.
+	TimingBefore Timing = "Before"
+)
+
+// PossibleTimingValues returns the possible values for the Timing const type.
+func PossibleTimingValues() []Timing {
+	return []Timing{
+		TimingAfter,
+		TimingBefore,
+	}
+}
+
+// TolerationOperator - A toleration operator is the set of operators that can be used in a toleration.
+type TolerationOperator string
+
+const (
+	// TolerationOperatorEqual - Toleration Operator Equal
+	TolerationOperatorEqual TolerationOperator = "Equal"
+	// TolerationOperatorExists - Toleration Operator Exists
+	TolerationOperatorExists TolerationOperator = "Exists"
+)
+
+// PossibleTolerationOperatorValues returns the possible values for the TolerationOperator const type.
+func PossibleTolerationOperatorValues() []TolerationOperator {
+	return []TolerationOperator{
+		TolerationOperatorEqual,
+		TolerationOperatorExists,
 	}
 }
 
@@ -349,6 +767,8 @@ const (
 	UpdateStateFailed UpdateState = "Failed"
 	// UpdateStateNotStarted - The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has not been started.
 	UpdateStateNotStarted UpdateState = "NotStarted"
+	// UpdateStatePending - The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that is pending.
+	UpdateStatePending UpdateState = "Pending"
 	// UpdateStateRunning - The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that is running.
 	UpdateStateRunning UpdateState = "Running"
 	// UpdateStateSkipped - The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has been skipped.
@@ -365,6 +785,7 @@ func PossibleUpdateStateValues() []UpdateState {
 		UpdateStateCompleted,
 		UpdateStateFailed,
 		UpdateStateNotStarted,
+		UpdateStatePending,
 		UpdateStateRunning,
 		UpdateStateSkipped,
 		UpdateStateStopped,
@@ -381,11 +802,20 @@ const (
 	// UpgradeChannelRapid - Upgrades the clusters kubernetes version to the latest supported patch release on the latest supported
 	// minor version.
 	UpgradeChannelRapid UpgradeChannel = "Rapid"
+	// UpgradeChannelSecurityPatch - Applies security patches to the nodes of the target clusters.
+	// For information on the behavior of update run for security patch upgrade,
+	// see https://learn.microsoft.com/en-us/azure/kubernetes-fleet/update-orchestration?tabs=azure-portal
+	UpgradeChannelSecurityPatch UpgradeChannel = "SecurityPatch"
 	// UpgradeChannelStable - Upgrades the clusters kubernetes version to the latest supported patch release on minor version
 	// N-1, where N is the latest supported minor version.
 	// For example, if a cluster runs version 1.17.7 and versions 1.17.9, 1.18.4, 1.18.6, and 1.19.1 are available, the cluster
 	// upgrades to 1.18.6.
 	UpgradeChannelStable UpgradeChannel = "Stable"
+	// UpgradeChannelTargetKubernetesVersion - Upgrades the clusters Kubernetes version to the latest supported patch version
+	// of the specified target Kubernetes version.
+	// For information on the behavior of update run for Kubernetes version upgrade,
+	// see https://learn.microsoft.com/en-us/azure/kubernetes-fleet/update-orchestration?tabs=azure-portal
+	UpgradeChannelTargetKubernetesVersion UpgradeChannel = "TargetKubernetesVersion"
 )
 
 // PossibleUpgradeChannelValues returns the possible values for the UpgradeChannel const type.
@@ -393,6 +823,8 @@ func PossibleUpgradeChannelValues() []UpgradeChannel {
 	return []UpgradeChannel{
 		UpgradeChannelNodeImage,
 		UpgradeChannelRapid,
+		UpgradeChannelSecurityPatch,
 		UpgradeChannelStable,
+		UpgradeChannelTargetKubernetesVersion,
 	}
 }

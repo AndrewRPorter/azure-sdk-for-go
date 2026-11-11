@@ -12,10 +12,11 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake/server"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
-	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/deviceregistry/armdeviceregistry"
+	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/deviceregistry/armdeviceregistry/v2"
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // AssetEndpointProfilesServer is a fake server for instances of the armdeviceregistry.AssetEndpointProfilesClient type.
@@ -28,6 +29,10 @@ type AssetEndpointProfilesServer struct {
 	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
 	BeginDelete func(ctx context.Context, resourceGroupName string, assetEndpointProfileName string, options *armdeviceregistry.AssetEndpointProfilesClientBeginDeleteOptions) (resp azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientDeleteResponse], errResp azfake.ErrorResponder)
 
+	// BeginUpdate is the fake for method AssetEndpointProfilesClient.BeginUpdate
+	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
+	BeginUpdate func(ctx context.Context, resourceGroupName string, assetEndpointProfileName string, properties armdeviceregistry.AssetEndpointProfileUpdate, options *armdeviceregistry.AssetEndpointProfilesClientBeginUpdateOptions) (resp azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse], errResp azfake.ErrorResponder)
+
 	// Get is the fake for method AssetEndpointProfilesClient.Get
 	// HTTP status codes to indicate success: http.StatusOK
 	Get func(ctx context.Context, resourceGroupName string, assetEndpointProfileName string, options *armdeviceregistry.AssetEndpointProfilesClientGetOptions) (resp azfake.Responder[armdeviceregistry.AssetEndpointProfilesClientGetResponse], errResp azfake.ErrorResponder)
@@ -39,10 +44,6 @@ type AssetEndpointProfilesServer struct {
 	// NewListBySubscriptionPager is the fake for method AssetEndpointProfilesClient.NewListBySubscriptionPager
 	// HTTP status codes to indicate success: http.StatusOK
 	NewListBySubscriptionPager func(options *armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionOptions) (resp azfake.PagerResponder[armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionResponse])
-
-	// BeginUpdate is the fake for method AssetEndpointProfilesClient.BeginUpdate
-	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
-	BeginUpdate func(ctx context.Context, resourceGroupName string, assetEndpointProfileName string, properties armdeviceregistry.AssetEndpointProfileUpdate, options *armdeviceregistry.AssetEndpointProfilesClientBeginUpdateOptions) (resp azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse], errResp azfake.ErrorResponder)
 }
 
 // NewAssetEndpointProfilesServerTransport creates a new instance of AssetEndpointProfilesServerTransport with the provided implementation.
@@ -53,9 +54,9 @@ func NewAssetEndpointProfilesServerTransport(srv *AssetEndpointProfilesServer) *
 		srv:                         srv,
 		beginCreateOrReplace:        newTracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientCreateOrReplaceResponse]](),
 		beginDelete:                 newTracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientDeleteResponse]](),
+		beginUpdate:                 newTracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse]](),
 		newListByResourceGroupPager: newTracker[azfake.PagerResponder[armdeviceregistry.AssetEndpointProfilesClientListByResourceGroupResponse]](),
 		newListBySubscriptionPager:  newTracker[azfake.PagerResponder[armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionResponse]](),
-		beginUpdate:                 newTracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse]](),
 	}
 }
 
@@ -65,9 +66,9 @@ type AssetEndpointProfilesServerTransport struct {
 	srv                         *AssetEndpointProfilesServer
 	beginCreateOrReplace        *tracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientCreateOrReplaceResponse]]
 	beginDelete                 *tracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientDeleteResponse]]
+	beginUpdate                 *tracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse]]
 	newListByResourceGroupPager *tracker[azfake.PagerResponder[armdeviceregistry.AssetEndpointProfilesClientListByResourceGroupResponse]]
 	newListBySubscriptionPager  *tracker[azfake.PagerResponder[armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionResponse]]
-	beginUpdate                 *tracker[azfake.PollerResponder[armdeviceregistry.AssetEndpointProfilesClientUpdateResponse]]
 }
 
 // Do implements the policy.Transporter interface for AssetEndpointProfilesServerTransport.
@@ -75,16 +76,14 @@ func (a *AssetEndpointProfilesServerTransport) Do(req *http.Request) (*http.Resp
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return a.dispatchToMethodFake(req, method)
 }
 
 func (a *AssetEndpointProfilesServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -97,23 +96,20 @@ func (a *AssetEndpointProfilesServerTransport) dispatchToMethodFake(req *http.Re
 				res.resp, res.err = a.dispatchBeginCreateOrReplace(req)
 			case "AssetEndpointProfilesClient.BeginDelete":
 				res.resp, res.err = a.dispatchBeginDelete(req)
+			case "AssetEndpointProfilesClient.BeginUpdate":
+				res.resp, res.err = a.dispatchBeginUpdate(req)
 			case "AssetEndpointProfilesClient.Get":
 				res.resp, res.err = a.dispatchGet(req)
 			case "AssetEndpointProfilesClient.NewListByResourceGroupPager":
 				res.resp, res.err = a.dispatchNewListByResourceGroupPager(req)
 			case "AssetEndpointProfilesClient.NewListBySubscriptionPager":
 				res.resp, res.err = a.dispatchNewListBySubscriptionPager(req)
-			case "AssetEndpointProfilesClient.BeginUpdate":
-				res.resp, res.err = a.dispatchBeginUpdate(req)
 			default:
 				res.err = fmt.Errorf("unhandled API %s", method)
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -130,10 +126,10 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginCreateOrReplace(req 
 	}
 	beginCreateOrReplace := a.beginCreateOrReplace.get(req)
 	if beginCreateOrReplace == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdeviceregistry.AssetEndpointProfile](req)
@@ -161,7 +157,7 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginCreateOrReplace(req 
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
 		a.beginCreateOrReplace.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusCreated", resp.StatusCode)}
 	}
@@ -178,10 +174,10 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginDelete(req *http.Req
 	}
 	beginDelete := a.beginDelete.get(req)
 	if beginDelete == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
@@ -205,7 +201,7 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginDelete(req *http.Req
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		a.beginDelete.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -216,119 +212,16 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginDelete(req *http.Req
 	return resp, nil
 }
 
-func (a *AssetEndpointProfilesServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
-	if a.srv.Get == nil {
-		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
-	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
-	regex := regexp.MustCompile(regexStr)
-	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
-		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-	}
-	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-	if err != nil {
-		return nil, err
-	}
-	assetEndpointProfileNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("assetEndpointProfileName")])
-	if err != nil {
-		return nil, err
-	}
-	respr, errRespr := a.srv.Get(req.Context(), resourceGroupNameParam, assetEndpointProfileNameParam, nil)
-	if respErr := server.GetError(errRespr, req); respErr != nil {
-		return nil, respErr
-	}
-	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
-	}
-	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).AssetEndpointProfile, req)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (a *AssetEndpointProfilesServerTransport) dispatchNewListByResourceGroupPager(req *http.Request) (*http.Response, error) {
-	if a.srv.NewListByResourceGroupPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListByResourceGroupPager not implemented")}
-	}
-	newListByResourceGroupPager := a.newListByResourceGroupPager.get(req)
-	if newListByResourceGroupPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-		if err != nil {
-			return nil, err
-		}
-		resp := a.srv.NewListByResourceGroupPager(resourceGroupNameParam, nil)
-		newListByResourceGroupPager = &resp
-		a.newListByResourceGroupPager.add(req, newListByResourceGroupPager)
-		server.PagerResponderInjectNextLinks(newListByResourceGroupPager, req, func(page *armdeviceregistry.AssetEndpointProfilesClientListByResourceGroupResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListByResourceGroupPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		a.newListByResourceGroupPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListByResourceGroupPager) {
-		a.newListByResourceGroupPager.remove(req)
-	}
-	return resp, nil
-}
-
-func (a *AssetEndpointProfilesServerTransport) dispatchNewListBySubscriptionPager(req *http.Request) (*http.Response, error) {
-	if a.srv.NewListBySubscriptionPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListBySubscriptionPager not implemented")}
-	}
-	newListBySubscriptionPager := a.newListBySubscriptionPager.get(req)
-	if newListBySubscriptionPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 1 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resp := a.srv.NewListBySubscriptionPager(nil)
-		newListBySubscriptionPager = &resp
-		a.newListBySubscriptionPager.add(req, newListBySubscriptionPager)
-		server.PagerResponderInjectNextLinks(newListBySubscriptionPager, req, func(page *armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListBySubscriptionPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		a.newListBySubscriptionPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListBySubscriptionPager) {
-		a.newListBySubscriptionPager.remove(req)
-	}
-	return resp, nil
-}
-
 func (a *AssetEndpointProfilesServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Response, error) {
 	if a.srv.BeginUpdate == nil {
 		return nil, &nonRetriableError{errors.New("fake for method BeginUpdate not implemented")}
 	}
 	beginUpdate := a.beginUpdate.get(req)
 	if beginUpdate == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdeviceregistry.AssetEndpointProfileUpdate](req)
@@ -356,7 +249,7 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginUpdate(req *http.Req
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
 		a.beginUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted", resp.StatusCode)}
 	}
@@ -364,6 +257,109 @@ func (a *AssetEndpointProfilesServerTransport) dispatchBeginUpdate(req *http.Req
 		a.beginUpdate.remove(req)
 	}
 
+	return resp, nil
+}
+
+func (a *AssetEndpointProfilesServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
+	if a.srv.Get == nil {
+		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
+	}
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles/(?P<assetEndpointProfileName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
+	regex := regexp.MustCompile(regexStr)
+	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+	if len(matches) < 4 {
+		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+	}
+	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+	if err != nil {
+		return nil, err
+	}
+	assetEndpointProfileNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("assetEndpointProfileName")])
+	if err != nil {
+		return nil, err
+	}
+	respr, errRespr := a.srv.Get(req.Context(), resourceGroupNameParam, assetEndpointProfileNameParam, nil)
+	if respErr := server.GetError(errRespr, req); respErr != nil {
+		return nil, respErr
+	}
+	respContent := server.GetResponseContent(respr)
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
+	}
+	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).AssetEndpointProfile, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *AssetEndpointProfilesServerTransport) dispatchNewListByResourceGroupPager(req *http.Request) (*http.Response, error) {
+	if a.srv.NewListByResourceGroupPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListByResourceGroupPager not implemented")}
+	}
+	newListByResourceGroupPager := a.newListByResourceGroupPager.get(req)
+	if newListByResourceGroupPager == nil {
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 3 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+		if err != nil {
+			return nil, err
+		}
+		resp := a.srv.NewListByResourceGroupPager(resourceGroupNameParam, nil)
+		newListByResourceGroupPager = &resp
+		a.newListByResourceGroupPager.add(req, newListByResourceGroupPager)
+		server.PagerResponderInjectNextLinks(newListByResourceGroupPager, req, func(page *armdeviceregistry.AssetEndpointProfilesClientListByResourceGroupResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListByResourceGroupPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		a.newListByResourceGroupPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListByResourceGroupPager) {
+		a.newListByResourceGroupPager.remove(req)
+	}
+	return resp, nil
+}
+
+func (a *AssetEndpointProfilesServerTransport) dispatchNewListBySubscriptionPager(req *http.Request) (*http.Response, error) {
+	if a.srv.NewListBySubscriptionPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListBySubscriptionPager not implemented")}
+	}
+	newListBySubscriptionPager := a.newListBySubscriptionPager.get(req)
+	if newListBySubscriptionPager == nil {
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DeviceRegistry/assetEndpointProfiles`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 2 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resp := a.srv.NewListBySubscriptionPager(nil)
+		newListBySubscriptionPager = &resp
+		a.newListBySubscriptionPager.add(req, newListBySubscriptionPager)
+		server.PagerResponderInjectNextLinks(newListBySubscriptionPager, req, func(page *armdeviceregistry.AssetEndpointProfilesClientListBySubscriptionResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListBySubscriptionPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		a.newListBySubscriptionPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListBySubscriptionPager) {
+		a.newListBySubscriptionPager.remove(req)
+	}
 	return resp, nil
 }
 

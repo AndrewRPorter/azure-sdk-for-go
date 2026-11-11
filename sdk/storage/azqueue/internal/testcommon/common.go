@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -18,7 +15,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
-	"github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/queueerror"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/v2/queueerror"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -102,6 +99,7 @@ func BeforeTest(t *testing.T, suite string, test string) {
 	require.NoError(t, recording.AddHeaderRegexSanitizer("x-ms-request-id", "00000000-0000-0000-0000-000000000000", "", nil))
 	// TODO: more freezing
 	require.NoError(t, recording.Start(t, RecordingDirectory, nil))
+	require.NoError(t, recording.SetDefaultMatcher(t, &recording.SetDefaultMatcherOptions{ExcludedHeaders: []string{"Accept"}}))
 }
 
 func AfterTest(t *testing.T, suite string, test string) {

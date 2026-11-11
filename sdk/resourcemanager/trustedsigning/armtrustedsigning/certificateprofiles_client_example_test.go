@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Generated from example definition: 2024-02-05-preview/CertificateProfiles_Create.json
+// Generated from example definition: 2025-10-13/CertificateProfiles_Create.json
 func ExampleCertificateProfilesClient_BeginCreate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -37,13 +37,13 @@ func ExampleCertificateProfilesClient_BeginCreate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armtrustedsigning.CertificateProfilesClientCreateResponse{
-	// 	CertificateProfile: &armtrustedsigning.CertificateProfile{
+	// 	CertificateProfile: armtrustedsigning.CertificateProfile{
 	// 		Name: to.Ptr("profileA"),
 	// 		Type: to.Ptr("Microsoft.CodeSigning/codeSigningAccounts/certificateProfiles"),
 	// 		ID: to.Ptr("/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/MyResourceGroup/providers/Microsoft.CodeSigning/codeSigningAccounts/MyAccount/certificateProfiles/profileA"),
@@ -52,35 +52,28 @@ func ExampleCertificateProfilesClient_BeginCreate() {
 	// 				{
 	// 					CreatedDate: to.Ptr("3/14/2023 5:27:49 PM"),
 	// 					ExpiryDate: to.Ptr("3/17/2023 5:27:49 PM"),
+	// 					EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 	// 					SerialNumber: to.Ptr("xxxxxxxxxxxxxxxxxx"),
 	// 					Status: to.Ptr(armtrustedsigning.CertificateStatusActive),
 	// 					SubjectName: to.Ptr("CN=Contoso Inc, O=Contoso Inc, L=New York, S=New York, C=US"),
 	// 					Thumbprint: to.Ptr("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
 	// 				},
 	// 			},
-	// 			City: to.Ptr("Dallas"),
-	// 			CommonName: to.Ptr("Contoso Inc"),
-	// 			Country: to.Ptr("US"),
-	// 			EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 	// 			IdentityValidationID: to.Ptr("00000000-1234-5678-3333-444444444444"),
 	// 			IncludeCity: to.Ptr(false),
 	// 			IncludeCountry: to.Ptr(false),
 	// 			IncludePostalCode: to.Ptr(true),
 	// 			IncludeState: to.Ptr(false),
 	// 			IncludeStreetAddress: to.Ptr(false),
-	// 			Organization: to.Ptr("Contoso Inc"),
-	// 			PostalCode: to.Ptr("560090"),
 	// 			ProfileType: to.Ptr(armtrustedsigning.ProfileTypePublicTrust),
 	// 			ProvisioningState: to.Ptr(armtrustedsigning.ProvisioningStateSucceeded),
-	// 			State: to.Ptr("Texas"),
 	// 			Status: to.Ptr(armtrustedsigning.CertificateProfileStatusActive),
-	// 			StreetAddress: to.Ptr("123 Bluebonnet"),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-02-05-preview/CertificateProfiles_Delete.json
+// Generated from example definition: 2025-10-13/CertificateProfiles_Delete.json
 func ExampleCertificateProfilesClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -97,11 +90,11 @@ func ExampleCertificateProfilesClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2024-02-05-preview/CertificateProfiles_Get.json
+// Generated from example definition: 2025-10-13/CertificateProfiles_Get.json
 func ExampleCertificateProfilesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -120,7 +113,7 @@ func ExampleCertificateProfilesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armtrustedsigning.CertificateProfilesClientGetResponse{
-	// 	CertificateProfile: &armtrustedsigning.CertificateProfile{
+	// 	CertificateProfile: armtrustedsigning.CertificateProfile{
 	// 		Name: to.Ptr("profileA"),
 	// 		Type: to.Ptr("Microsoft.CodeSigning/codeSigningAccounts/certificateProfiles"),
 	// 		ID: to.Ptr("/subscriptions/00000000-1111-2222-3333-444444444444/resourceGroups/MyResourceGroup/providers/Microsoft.CodeSigning/codeSigningAccounts/MyAccount/certificateProfiles/profileA"),
@@ -129,35 +122,28 @@ func ExampleCertificateProfilesClient_Get() {
 	// 				{
 	// 					CreatedDate: to.Ptr("3/14/2023 5:27:49 PM"),
 	// 					ExpiryDate: to.Ptr("3/17/2023 5:27:49 PM"),
+	// 					EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 	// 					SerialNumber: to.Ptr("xxxxxxxxxxxxxxxxxx"),
 	// 					Status: to.Ptr(armtrustedsigning.CertificateStatusActive),
 	// 					SubjectName: to.Ptr("CN=Contoso Inc, O=Contoso Inc, L=New York, S=New York, C=US"),
 	// 					Thumbprint: to.Ptr("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
 	// 				},
 	// 			},
-	// 			City: to.Ptr("Dallas"),
-	// 			CommonName: to.Ptr("Contoso Inc"),
-	// 			Country: to.Ptr("US"),
-	// 			EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 	// 			IdentityValidationID: to.Ptr("123456"),
 	// 			IncludeCity: to.Ptr(false),
 	// 			IncludeCountry: to.Ptr(false),
 	// 			IncludePostalCode: to.Ptr(true),
 	// 			IncludeState: to.Ptr(false),
 	// 			IncludeStreetAddress: to.Ptr(false),
-	// 			Organization: to.Ptr("Contoso Inc"),
-	// 			PostalCode: to.Ptr("560090"),
 	// 			ProfileType: to.Ptr(armtrustedsigning.ProfileTypePublicTrust),
 	// 			ProvisioningState: to.Ptr(armtrustedsigning.ProvisioningStateSucceeded),
-	// 			State: to.Ptr("Texas"),
 	// 			Status: to.Ptr(armtrustedsigning.CertificateProfileStatusActive),
-	// 			StreetAddress: to.Ptr("123 Bluebonnet"),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-02-05-preview/CertificateProfiles_ListByCodeSigningAccount.json
+// Generated from example definition: 2025-10-13/CertificateProfiles_ListByCodeSigningAccount.json
 func ExampleCertificateProfilesClient_NewListByCodeSigningAccountPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -191,29 +177,22 @@ func ExampleCertificateProfilesClient_NewListByCodeSigningAccountPager() {
 		// 						{
 		// 							CreatedDate: to.Ptr("3/14/2023 5:27:49 PM"),
 		// 							ExpiryDate: to.Ptr("3/17/2023 5:27:49 PM"),
+		// 							EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 		// 							SerialNumber: to.Ptr("xxxxxxxxxxxxxxxxxx"),
 		// 							Status: to.Ptr(armtrustedsigning.CertificateStatusActive),
 		// 							SubjectName: to.Ptr("CN=Contoso Inc, O=Contoso Inc, L=New York, S=New York, C=US"),
 		// 							Thumbprint: to.Ptr("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
 		// 						},
 		// 					},
-		// 					City: to.Ptr("Dallas"),
-		// 					CommonName: to.Ptr("Microsoft Corporation"),
-		// 					Country: to.Ptr("US"),
-		// 					EnhancedKeyUsage: to.Ptr("1.3.6.1.4.1.311.yy.xxxxxxxx.xxxxxxxx.xxxxxxxxx.xxxxxxxx"),
 		// 					IdentityValidationID: to.Ptr("123456"),
 		// 					IncludeCity: to.Ptr(false),
 		// 					IncludeCountry: to.Ptr(false),
 		// 					IncludePostalCode: to.Ptr(true),
 		// 					IncludeState: to.Ptr(false),
 		// 					IncludeStreetAddress: to.Ptr(false),
-		// 					Organization: to.Ptr("Microsoft Corporation"),
-		// 					PostalCode: to.Ptr("560090"),
 		// 					ProfileType: to.Ptr(armtrustedsigning.ProfileTypePublicTrust),
 		// 					ProvisioningState: to.Ptr(armtrustedsigning.ProvisioningStateSucceeded),
-		// 					State: to.Ptr("Texas"),
 		// 					Status: to.Ptr(armtrustedsigning.CertificateProfileStatusActive),
-		// 					StreetAddress: to.Ptr("123 Bluebonnet"),
 		// 				},
 		// 			},
 		// 		},
@@ -222,7 +201,7 @@ func ExampleCertificateProfilesClient_NewListByCodeSigningAccountPager() {
 	}
 }
 
-// Generated from example definition: 2024-02-05-preview/CertificateProfiles_RevokeCertificate.json
+// Generated from example definition: 2025-10-13/CertificateProfiles_RevokeCertificate.json
 func ExampleCertificateProfilesClient_RevokeCertificate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -234,7 +213,7 @@ func ExampleCertificateProfilesClient_RevokeCertificate() {
 		log.Fatalf("failed to create client: %v", err)
 	}
 	_, err = clientFactory.NewCertificateProfilesClient().RevokeCertificate(ctx, "MyResourceGroup", "MyAccount", "profileA", armtrustedsigning.RevokeCertificate{
-		EffectiveAt:  to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2023-11-12T23:40:25+00:00"); return t }()),
+		EffectiveAt:  to.Ptr(time.Date(2023, time.November, 12, 23, 40, 25, 0, time.UTC)),
 		Reason:       to.Ptr("KeyCompromised"),
 		Remarks:      to.Ptr("test"),
 		SerialNumber: to.Ptr("xxxxxxxxxxxxxxxxxx"),

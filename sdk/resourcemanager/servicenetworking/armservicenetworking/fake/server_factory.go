@@ -24,6 +24,12 @@ type ServerFactory struct {
 	// OperationsServer contains the fakes for client OperationsClient
 	OperationsServer OperationsServer
 
+	// PrivateEndpointConnectionsInterfaceServer contains the fakes for client PrivateEndpointConnectionsInterfaceClient
+	PrivateEndpointConnectionsInterfaceServer PrivateEndpointConnectionsInterfaceServer
+
+	// PrivateLinkResourcesInterfaceServer contains the fakes for client PrivateLinkResourcesInterfaceClient
+	PrivateLinkResourcesInterfaceServer PrivateLinkResourcesInterfaceServer
+
 	// SecurityPoliciesInterfaceServer contains the fakes for client SecurityPoliciesInterfaceClient
 	SecurityPoliciesInterfaceServer SecurityPoliciesInterfaceServer
 
@@ -43,13 +49,15 @@ func NewServerFactoryTransport(srv *ServerFactory) *ServerFactoryTransport {
 // ServerFactoryTransport connects instances of armservicenetworking.ClientFactory to instances of ServerFactory.
 // Don't use this type directly, use NewServerFactoryTransport instead.
 type ServerFactoryTransport struct {
-	srv                                *ServerFactory
-	trMu                               sync.Mutex
-	trAssociationsInterfaceServer      *AssociationsInterfaceServerTransport
-	trFrontendsInterfaceServer         *FrontendsInterfaceServerTransport
-	trOperationsServer                 *OperationsServerTransport
-	trSecurityPoliciesInterfaceServer  *SecurityPoliciesInterfaceServerTransport
-	trTrafficControllerInterfaceServer *TrafficControllerInterfaceServerTransport
+	srv                                         *ServerFactory
+	trMu                                        sync.Mutex
+	trAssociationsInterfaceServer               *AssociationsInterfaceServerTransport
+	trFrontendsInterfaceServer                  *FrontendsInterfaceServerTransport
+	trOperationsServer                          *OperationsServerTransport
+	trPrivateEndpointConnectionsInterfaceServer *PrivateEndpointConnectionsInterfaceServerTransport
+	trPrivateLinkResourcesInterfaceServer       *PrivateLinkResourcesInterfaceServerTransport
+	trSecurityPoliciesInterfaceServer           *SecurityPoliciesInterfaceServerTransport
+	trTrafficControllerInterfaceServer          *TrafficControllerInterfaceServerTransport
 }
 
 // Do implements the policy.Transporter interface for ServerFactoryTransport.
@@ -57,7 +65,7 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	client := method[:strings.Index(method, ".")]
@@ -66,25 +74,35 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 
 	switch client {
 	case "AssociationsInterfaceClient":
-		initServer(s, &s.trAssociationsInterfaceServer, func() *AssociationsInterfaceServerTransport {
+		initServer(&s.trMu, &s.trAssociationsInterfaceServer, func() *AssociationsInterfaceServerTransport {
 			return NewAssociationsInterfaceServerTransport(&s.srv.AssociationsInterfaceServer)
 		})
 		resp, err = s.trAssociationsInterfaceServer.Do(req)
 	case "FrontendsInterfaceClient":
-		initServer(s, &s.trFrontendsInterfaceServer, func() *FrontendsInterfaceServerTransport {
+		initServer(&s.trMu, &s.trFrontendsInterfaceServer, func() *FrontendsInterfaceServerTransport {
 			return NewFrontendsInterfaceServerTransport(&s.srv.FrontendsInterfaceServer)
 		})
 		resp, err = s.trFrontendsInterfaceServer.Do(req)
 	case "OperationsClient":
-		initServer(s, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
+		initServer(&s.trMu, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
 		resp, err = s.trOperationsServer.Do(req)
+	case "PrivateEndpointConnectionsInterfaceClient":
+		initServer(&s.trMu, &s.trPrivateEndpointConnectionsInterfaceServer, func() *PrivateEndpointConnectionsInterfaceServerTransport {
+			return NewPrivateEndpointConnectionsInterfaceServerTransport(&s.srv.PrivateEndpointConnectionsInterfaceServer)
+		})
+		resp, err = s.trPrivateEndpointConnectionsInterfaceServer.Do(req)
+	case "PrivateLinkResourcesInterfaceClient":
+		initServer(&s.trMu, &s.trPrivateLinkResourcesInterfaceServer, func() *PrivateLinkResourcesInterfaceServerTransport {
+			return NewPrivateLinkResourcesInterfaceServerTransport(&s.srv.PrivateLinkResourcesInterfaceServer)
+		})
+		resp, err = s.trPrivateLinkResourcesInterfaceServer.Do(req)
 	case "SecurityPoliciesInterfaceClient":
-		initServer(s, &s.trSecurityPoliciesInterfaceServer, func() *SecurityPoliciesInterfaceServerTransport {
+		initServer(&s.trMu, &s.trSecurityPoliciesInterfaceServer, func() *SecurityPoliciesInterfaceServerTransport {
 			return NewSecurityPoliciesInterfaceServerTransport(&s.srv.SecurityPoliciesInterfaceServer)
 		})
 		resp, err = s.trSecurityPoliciesInterfaceServer.Do(req)
 	case "TrafficControllerInterfaceClient":
-		initServer(s, &s.trTrafficControllerInterfaceServer, func() *TrafficControllerInterfaceServerTransport {
+		initServer(&s.trMu, &s.trTrafficControllerInterfaceServer, func() *TrafficControllerInterfaceServerTransport {
 			return NewTrafficControllerInterfaceServerTransport(&s.srv.TrafficControllerInterfaceServer)
 		})
 		resp, err = s.trTrafficControllerInterfaceServer.Do(req)
@@ -97,12 +115,4 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
-}
-
-func initServer[T any](s *ServerFactoryTransport, dst **T, src func() *T) {
-	s.trMu.Lock()
-	if *dst == nil {
-		*dst = src()
-	}
-	s.trMu.Unlock()
 }

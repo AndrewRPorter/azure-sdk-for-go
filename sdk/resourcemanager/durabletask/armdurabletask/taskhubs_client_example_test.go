@@ -6,12 +6,13 @@ package armdurabletask_test
 
 import (
 	"context"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/durabletask/armdurabletask"
 	"log"
 )
 
-// Generated from example definition: 2025-04-01-preview/TaskHubs_CreateOrUpdate.json
+// Generated from example definition: 2026-07-01-preview/TaskHubs_CreateOrUpdate.json
 func ExampleTaskHubsClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -23,23 +24,30 @@ func ExampleTaskHubsClient_BeginCreateOrUpdate() {
 		log.Fatalf("failed to create client: %v", err)
 	}
 	poller, err := clientFactory.NewTaskHubsClient().BeginCreateOrUpdate(ctx, "rgopenapi", "testscheduler", "testtaskhub", armdurabletask.TaskHub{
-		Properties: &armdurabletask.TaskHubProperties{},
+		Properties: &armdurabletask.TaskHubProperties{
+			Capabilities: []*string{
+				to.Ptr("ExampleFutureCapability"),
+			},
+		},
 	}, nil)
 	if err != nil {
 		log.Fatalf("failed to finish the request: %v", err)
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdurabletask.TaskHubsClientCreateOrUpdateResponse{
-	// 	TaskHub: &armdurabletask.TaskHub{
+	// 	TaskHub: armdurabletask.TaskHub{
 	// 		Properties: &armdurabletask.TaskHubProperties{
 	// 			ProvisioningState: to.Ptr(armdurabletask.ProvisioningStateSucceeded),
 	// 			DashboardURL: to.Ptr("https://test-db.northcentralus.1.durabletask.io/taskhubs/testtaskhub"),
+	// 			Capabilities: []*string{
+	// 				to.Ptr("ExampleFutureCapability"),
+	// 			},
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/EE9BD735-67CE-4A90-89C4-439D3F6A4C93/resourceGroups/rgopenapi/providers/Microsoft.DurableTask/schedulers/testscheduler/taskHubs/testtaskhub"),
 	// 		Name: to.Ptr("testtaskhub"),
@@ -47,16 +55,16 @@ func ExampleTaskHubsClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armdurabletask.SystemData{
 	// 			CreatedBy: to.Ptr("tenmbevaunjzikxowqexrsx"),
 	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.365Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 365000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("xfvdcegtj"),
 	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.366Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 366000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/TaskHubs_Delete.json
+// Generated from example definition: 2026-07-01-preview/TaskHubs_Delete.json
 func ExampleTaskHubsClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -73,11 +81,11 @@ func ExampleTaskHubsClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-04-01-preview/TaskHubs_Get.json
+// Generated from example definition: 2026-07-01-preview/TaskHubs_Get.json
 func ExampleTaskHubsClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -96,7 +104,7 @@ func ExampleTaskHubsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdurabletask.TaskHubsClientGetResponse{
-	// 	TaskHub: &armdurabletask.TaskHub{
+	// 	TaskHub: armdurabletask.TaskHub{
 	// 		Properties: &armdurabletask.TaskHubProperties{
 	// 			ProvisioningState: to.Ptr(armdurabletask.ProvisioningStateSucceeded),
 	// 			DashboardURL: to.Ptr("https://test-db.northcentralus.1.durabletask.io/taskhubs/testtaskhub"),
@@ -107,16 +115,16 @@ func ExampleTaskHubsClient_Get() {
 	// 		SystemData: &armdurabletask.SystemData{
 	// 			CreatedBy: to.Ptr("tenmbevaunjzikxowqexrsx"),
 	// 			CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.365Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 365000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("xfvdcegtj"),
 	// 			LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.366Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 366000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/TaskHubs_ListByScheduler.json
+// Generated from example definition: 2026-07-01-preview/TaskHubs_ListByScheduler.json
 func ExampleTaskHubsClient_NewListBySchedulerPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -152,10 +160,10 @@ func ExampleTaskHubsClient_NewListBySchedulerPager() {
 		// 				SystemData: &armdurabletask.SystemData{
 		// 					CreatedBy: to.Ptr("tenmbevaunjzikxowqexrsx"),
 		// 					CreatedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.365Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 365000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("xfvdcegtj"),
 		// 					LastModifiedByType: to.Ptr(armdurabletask.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-17T15:34:17.366Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.April, 17, 15, 34, 17, 366000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

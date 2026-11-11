@@ -35,14 +35,14 @@ type Certificate struct {
 	// CER contents of x509 certificate.
 	CER []byte
 
-	// The content type of the secret. eg. 'application/x-pem-file' or 'application/x-pkcs12',
+	// The content type of the secret. eg. 'application/x-pem-file' or 'application/x-pkcs12'.
 	ContentType *string
 
 	// Specifies whether the certificate chain preserves its original order. The default value is false, which sets the leaf certificate
 	// at index 0.
 	PreserveCertOrder *bool
 
-	// Application specific metadata in the form of key-value pairs
+	// Application specific metadata in the form of key-value pairs.
 	Tags map[string]*string
 
 	// READ-ONLY; The certificate id.
@@ -135,6 +135,10 @@ type CertificatePolicy struct {
 	// Actions that will be performed by Key Vault over the lifetime of a certificate.
 	LifetimeActions []*LifetimeAction
 
+	// Configuration that enables the platform to manage the certificate on behalf of the user. This feature is currently intended
+	// for internal use only.
+	PlatformManaged *PlatformManaged
+
 	// Properties of the secret backing a certificate.
 	SecretProperties *SecretProperties
 
@@ -215,7 +219,7 @@ type DeletedCertificate struct {
 	// CER contents of x509 certificate.
 	CER []byte
 
-	// The content type of the secret. eg. 'application/x-pem-file' or 'application/x-pkcs12',
+	// The content type of the secret. eg. 'application/x-pem-file' or 'application/x-pkcs12'.
 	ContentType *string
 
 	// Specifies whether the certificate chain preserves its original order. The default value is false, which sets the leaf certificate
@@ -225,7 +229,7 @@ type DeletedCertificate struct {
 	// The url of the recovery object, used to identify and recover the deleted certificate.
 	RecoveryID *string
 
-	// Application specific metadata in the form of key-value pairs
+	// Application specific metadata in the form of key-value pairs.
 	Tags map[string]*string
 
 	// READ-ONLY; The time when the certificate was deleted, in UTC
@@ -442,6 +446,16 @@ type OrganizationDetails struct {
 	ID *string
 }
 
+// PlatformManaged - Properties of the platform managed certificate. This feature is currently intended for internal use only.
+type PlatformManaged struct {
+	// REQUIRED; The intended usage of the certificate.
+	CertificateUsage *string
+
+	// JSON-formatted platform managed metadata. The schema is intentionally undefined as this feature is currently intended for
+	// internal use only.
+	Metadata map[string]any
+}
+
 // RestoreCertificateParameters - The certificate restore parameters.
 type RestoreCertificateParameters struct {
 	// REQUIRED; The backup blob associated with a certificate bundle.
@@ -469,15 +483,21 @@ type SetIssuerParameters struct {
 	OrganizationDetails *OrganizationDetails
 }
 
-// SubjectAlternativeNames - The subject alternate names of a X509 object.
+// SubjectAlternativeNames - The Subject Alternative Names of a X509 object.
 type SubjectAlternativeNames struct {
-	// Domain names.
+	// Domain Names.
 	DNSNames []*string
 
 	// Email addresses.
 	Emails []*string
 
-	// User principal names.
+	// IP addresses; supports IPv4 and IPv6.
+	IPAddresses []*string
+
+	// Uniform Resource Identifiers.
+	URIs []*string
+
+	// User Principal Names.
 	UserPrincipalNames []*string
 }
 

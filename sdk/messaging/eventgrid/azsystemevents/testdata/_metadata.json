@@ -1,0 +1,6 @@
+{
+  "apiVersions": {
+    "Microsoft.EventGrid.SystemEvents": "2024-01-01"
+  },
+  "emitterVersion": "0.16.0"
+}

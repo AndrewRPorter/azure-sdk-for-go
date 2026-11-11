@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,13 +5,14 @@ package file
 
 import (
 	"errors"
+	"io"
+	"time"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/exported"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/generated"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/sas"
-	"io"
-	"time"
 )
 
 // SharedKeyCredential contains an account's name and its primary or secondary key.
@@ -90,48 +88,83 @@ type CreateOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 	// A name-value pair to associate with a file storage object.
 	Metadata map[string]*string
+	// SMB only. How attributes and permissions should be set on the file.
+	// New: automatically adds the ARCHIVE file attribute flag and uses Windows create file permissions semantics (ex: inherit from parent).
+	// Restore: does not modify file attribute flag and uses Windows update file permissions semantics.
+	// If Restore is specified, the file permission must also be provided, otherwise PropertySemantics will default to New.
+	FilePropertySemantics *PropertySemantics
+	OptionalBody          io.ReadSeekCloser
+	ContentLength         *int64
+	ContentMD5            []byte
+	// TransactionalValidation specifies the transfer validation type to use.
+	// The default is nil (no transfer validation).
+	TransactionalValidation TransferValidationType
 }
 
-func (o *CreateOptions) format() (*generated.FileClientCreateOptions, *generated.ShareFileHTTPHeaders, *LeaseAccessConditions) {
+func (o *CreateOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientCreateOptions {
+	opts := &generated.FileClientCreateOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil, nil, nil
+		return opts
 	}
 
-	var createOptions *generated.FileClientCreateOptions
+	opts.Metadata = o.Metadata
+	opts.Optionalbody = o.OptionalBody
+
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
+	if o.HTTPHeaders != nil {
+		opts.FileCacheControl = o.HTTPHeaders.CacheControl
+		opts.FileContentDisposition = o.HTTPHeaders.ContentDisposition
+		opts.FileContentEncoding = o.HTTPHeaders.ContentEncoding
+		opts.FileContentLanguage = o.HTTPHeaders.ContentLanguage
+		opts.FileContentMD5 = o.HTTPHeaders.ContentMD5
+		opts.FileContentType = o.HTTPHeaders.ContentType
+	}
 
 	if o.NFSProperties != nil {
 		fileCreationTime, fileLastWriteTime := exported.FormatNFSProperties(o.NFSProperties, false)
 
-		createOptions = &generated.FileClientCreateOptions{
-			FileCreationTime:  fileCreationTime,
-			FileLastWriteTime: fileLastWriteTime,
-			FileMode:          o.NFSProperties.FileMode,
-			Group:             o.NFSProperties.Group,
-			Owner:             o.NFSProperties.Owner,
-			Metadata:          o.Metadata,
-		}
-
+		opts.FileCreationTime = fileCreationTime
+		opts.FileLastWriteTime = fileLastWriteTime
+		opts.FileMode = o.NFSProperties.FileMode
+		opts.Group = o.NFSProperties.Group
+		opts.Owner = o.NFSProperties.Owner
 	} else {
 		fileAttributes, fileCreationTime, fileLastWriteTime, fileChangeTime := exported.FormatSMBProperties(o.SMBProperties, false)
 		permission, permissionKey := exported.FormatPermissions(o.Permissions)
 
-		createOptions = &generated.FileClientCreateOptions{
-			FileAttributes:    fileAttributes,
-			FileChangeTime:    fileChangeTime,
-			FileCreationTime:  fileCreationTime,
-			FileLastWriteTime: fileLastWriteTime,
-			FilePermission:    permission,
-			FilePermissionKey: permissionKey,
-			Metadata:          o.Metadata,
-		}
+		opts.FileAttributes = fileAttributes
+		opts.FileChangeTime = fileChangeTime
+		opts.FileCreationTime = fileCreationTime
+		opts.FileLastWriteTime = fileLastWriteTime
+		opts.FilePermission = permission
+		opts.FilePermissionKey = permissionKey
+		opts.Optionalbody = o.OptionalBody
 
-		if permissionKey != nil && *permissionKey != shared.DefaultFilePermissionString {
-			createOptions.FilePermissionFormat = to.Ptr(PermissionFormat(shared.DefaultFilePermissionFormat))
-		} else if o.FilePermissionFormat != nil {
-			createOptions.FilePermissionFormat = to.Ptr(PermissionFormat(*o.FilePermissionFormat))
+		// Refer the documentation for details - https://learn.microsoft.com/en-us/rest/api/storageservices/create-file#smb-only-request-headers
+		if permissionKey != nil {
+			opts.FilePermissionKey = permissionKey
+		} else if permission != nil {
+			opts.FilePermission = permission
+			if o.FilePermissionFormat != nil {
+				opts.FilePermissionFormat = to.Ptr(*o.FilePermissionFormat)
+			} else {
+				opts.FilePermissionFormat = to.Ptr(FilePermissionFormatSddl) // optional, default
+			}
+		}
+		if o.FilePropertySemantics != nil {
+			opts.FilePropertySemantics = o.FilePropertySemantics
 		}
 	}
-	return createOptions, o.HTTPHeaders, o.LeaseAccessConditions
+	if len(o.ContentMD5) > 0 {
+		opts.ContentMD5 = o.ContentMD5
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -142,11 +175,18 @@ type DeleteOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *DeleteOptions) format() (*generated.FileClientDeleteOptions, *generated.LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *DeleteOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientDeleteOptions {
+	opts := &generated.FileClientDeleteOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
 	}
-	return nil, o.LeaseAccessConditions
+	if o == nil {
+		return opts
+	}
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -181,40 +221,45 @@ type RenameOptions struct {
 	DestinationLeaseAccessConditions *DestinationLeaseAccessConditions
 }
 
-func (o *RenameOptions) format() (*generated.FileClientRenameOptions, *generated.SourceLeaseAccessConditions, *generated.DestinationLeaseAccessConditions, *generated.CopyFileSMBInfo, *generated.ShareFileHTTPHeaders) {
+func (o *RenameOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool, allowSourceTrailingDot *bool) *generated.FileClientRenameOptions {
+	opts := &generated.FileClientRenameOptions{
+		FileRequestIntent:      fileRequestIntent,
+		AllowTrailingDot:       allowTrailingDot,
+		AllowSourceTrailingDot: allowSourceTrailingDot,
+	}
 	if o == nil {
-		return nil, nil, nil, nil, nil
+		return opts
 	}
 
 	fileAttributes, fileCreationTime, fileLastWriteTime, fileChangeTime := exported.FormatSMBProperties(o.SMBProperties, false)
 	permission, permissionKey := exported.FormatPermissions(o.Permissions)
 
-	renameOpts := &generated.FileClientRenameOptions{
-		FilePermission:    permission,
-		FilePermissionKey: permissionKey,
-		IgnoreReadOnly:    o.IgnoreReadOnly,
-		Metadata:          o.Metadata,
-		ReplaceIfExists:   o.ReplaceIfExists,
-	}
+	opts.FilePermission = permission
+	opts.FilePermissionKey = permissionKey
+	opts.IgnoreReadOnly = o.IgnoreReadOnly
+	opts.Metadata = o.Metadata
+	opts.ReplaceIfExists = o.ReplaceIfExists
+	opts.FileContentType = o.ContentType
 
 	if permissionKey != nil && *permissionKey != shared.DefaultPreserveString {
-		renameOpts.FilePermissionFormat = to.Ptr(PermissionFormat(shared.DefaultFilePermissionFormat))
+		opts.FilePermissionFormat = to.Ptr(PermissionFormat(shared.DefaultFilePermissionFormat))
 	} else if o.FilePermissionFormat != nil {
-		renameOpts.FilePermissionFormat = to.Ptr(PermissionFormat(*o.FilePermissionFormat))
+		opts.FilePermissionFormat = to.Ptr(PermissionFormat(*o.FilePermissionFormat))
 	}
 
-	smbInfo := &generated.CopyFileSMBInfo{
-		FileAttributes:    fileAttributes,
-		FileChangeTime:    fileChangeTime,
-		FileCreationTime:  fileCreationTime,
-		FileLastWriteTime: fileLastWriteTime,
+	opts.FileAttributes = fileAttributes
+	opts.FileChangeTime = fileChangeTime
+	opts.FileCreationTime = fileCreationTime
+	opts.FileLastWriteTime = fileLastWriteTime
+
+	if o.SourceLeaseAccessConditions != nil {
+		opts.SourceLeaseID = o.SourceLeaseAccessConditions.SourceLeaseID
+	}
+	if o.DestinationLeaseAccessConditions != nil {
+		opts.DestinationLeaseID = o.DestinationLeaseAccessConditions.DestinationLeaseID
 	}
 
-	fileHTTPHeaders := &generated.ShareFileHTTPHeaders{
-		ContentType: o.ContentType,
-	}
-
-	return renameOpts, o.SourceLeaseAccessConditions, o.DestinationLeaseAccessConditions, smbInfo, fileHTTPHeaders
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -227,14 +272,21 @@ type GetPropertiesOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *GetPropertiesOptions) format() (*generated.FileClientGetPropertiesOptions, *generated.LeaseAccessConditions) {
+func (o *GetPropertiesOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientGetPropertiesOptions {
+	opts := &generated.FileClientGetPropertiesOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil, nil
+		return opts
 	}
 
-	return &generated.FileClientGetPropertiesOptions{
-		Sharesnapshot: o.ShareSnapshot,
-	}, o.LeaseAccessConditions
+	opts.Sharesnapshot = o.ShareSnapshot
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -262,38 +314,48 @@ type SetHTTPHeadersOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *SetHTTPHeadersOptions) format() (*generated.FileClientSetHTTPHeadersOptions, *generated.ShareFileHTTPHeaders, *LeaseAccessConditions) {
+func (o *SetHTTPHeadersOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientSetHTTPHeadersOptions {
+	opts := &generated.FileClientSetHTTPHeadersOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil, nil, nil
+		return opts
 	}
 
-	var opts *generated.FileClientSetHTTPHeadersOptions
+	opts.FileContentLength = o.FileContentLength
+
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
+	if o.HTTPHeaders != nil {
+		opts.FileCacheControl = o.HTTPHeaders.CacheControl
+		opts.FileContentDisposition = o.HTTPHeaders.ContentDisposition
+		opts.FileContentEncoding = o.HTTPHeaders.ContentEncoding
+		opts.FileContentLanguage = o.HTTPHeaders.ContentLanguage
+		opts.FileContentMD5 = o.HTTPHeaders.ContentMD5
+		opts.FileContentType = o.HTTPHeaders.ContentType
+	}
 
 	if o.NFSProperties != nil {
 		fileCreationTime, fileLastWriteTime := exported.FormatNFSProperties(o.NFSProperties, false)
 
-		opts = &generated.FileClientSetHTTPHeadersOptions{
-			FileCreationTime:  fileCreationTime,
-			FileLastWriteTime: fileLastWriteTime,
-			FileMode:          o.NFSProperties.FileMode,
-			Group:             o.NFSProperties.Group,
-			Owner:             o.NFSProperties.Owner,
-			FileContentLength: o.FileContentLength,
-		}
-
+		opts.FileCreationTime = fileCreationTime
+		opts.FileLastWriteTime = fileLastWriteTime
+		opts.FileMode = o.NFSProperties.FileMode
+		opts.Group = o.NFSProperties.Group
+		opts.Owner = o.NFSProperties.Owner
 	} else {
 		fileAttributes, fileCreationTime, fileLastWriteTime, fileChangeTime := exported.FormatSMBProperties(o.SMBProperties, false)
 		permission, permissionKey := exported.FormatPermissions(o.Permissions)
 
-		opts = &generated.FileClientSetHTTPHeadersOptions{
-			FileAttributes:    fileAttributes,
-			FileChangeTime:    fileChangeTime,
-			FileCreationTime:  fileCreationTime,
-			FileLastWriteTime: fileLastWriteTime,
-			FileContentLength: o.FileContentLength,
-			FilePermission:    permission,
-			FilePermissionKey: permissionKey,
-		}
+		opts.FileAttributes = fileAttributes
+		opts.FileChangeTime = fileChangeTime
+		opts.FileCreationTime = fileCreationTime
+		opts.FileLastWriteTime = fileLastWriteTime
+		opts.FilePermission = permission
+		opts.FilePermissionKey = permissionKey
 
 		if permissionKey != nil && *permissionKey != shared.DefaultPreserveString {
 			opts.FilePermissionFormat = to.Ptr(PermissionFormat(shared.DefaultFilePermissionFormat))
@@ -302,7 +364,7 @@ func (o *SetHTTPHeadersOptions) format() (*generated.FileClientSetHTTPHeadersOpt
 		}
 	}
 
-	return opts, o.HTTPHeaders, o.LeaseAccessConditions
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -315,13 +377,19 @@ type SetMetadataOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *SetMetadataOptions) format() (*generated.FileClientSetMetadataOptions, *generated.LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *SetMetadataOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientSetMetadataOptions {
+	opts := &generated.FileClientSetMetadataOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
 	}
-	return &generated.FileClientSetMetadataOptions{
-		Metadata: o.Metadata,
-	}, o.LeaseAccessConditions
+	if o == nil {
+		return opts
+	}
+	opts.Metadata = o.Metadata
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	return opts
 }
 
 // CopyFileNFSProperties contains the optional parameters regarding the NFS properties for a file.
@@ -343,40 +411,56 @@ type StartCopyFromURLOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *StartCopyFromURLOptions) format() (*generated.FileClientStartCopyOptions, *generated.CopyFileSMBInfo, *generated.LeaseAccessConditions) {
+func (o *StartCopyFromURLOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool, allowSourceTrailingDot *bool) *generated.FileClientStartCopyOptions {
+	opts := &generated.FileClientStartCopyOptions{
+		FileRequestIntent:      fileRequestIntent,
+		AllowTrailingDot:       allowTrailingDot,
+		AllowSourceTrailingDot: allowSourceTrailingDot,
+	}
 	if o == nil {
-		return nil, nil, nil
+		return opts
 	}
-	var opts *generated.FileClientStartCopyOptions
+	opts.Metadata = o.Metadata
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
 	if o.CopyFileNFSProperties != nil {
-		// CreationTime and LastWriteTime are sent through CopyfileNFSProperties
-		// The format function will format them and return them as CopyFileSMBInfo parameters which will be retuned
-		optsCopyFileSMBInfo := exported.FormatCopyFileNFSProperties(o.CopyFileNFSProperties)
-
-		opts = &generated.FileClientStartCopyOptions{
-			Metadata:          o.Metadata,
-			FileMode:          o.CopyFileNFSProperties.FileMode,
-			Owner:             o.CopyFileNFSProperties.Owner,
-			Group:             o.CopyFileNFSProperties.Group,
-			FileModeCopyMode:  o.CopyFileNFSProperties.FileModeCopyMode,
-			FileOwnerCopyMode: o.CopyFileNFSProperties.FileOwnerCopyMode,
+		opts.FileMode = o.CopyFileNFSProperties.FileMode
+		opts.Owner = o.CopyFileNFSProperties.Owner
+		opts.Group = o.CopyFileNFSProperties.Group
+		opts.FileModeCopyMode = o.CopyFileNFSProperties.FileModeCopyMode
+		opts.FileOwnerCopyMode = o.CopyFileNFSProperties.FileOwnerCopyMode
+		if o.CopyFileNFSProperties.CreationTime != nil {
+			opts.FileCreationTime = o.CopyFileNFSProperties.CreationTime.FormatCreationTime()
 		}
-		return opts, optsCopyFileSMBInfo, o.LeaseAccessConditions
-
+		if o.CopyFileNFSProperties.LastWriteTime != nil {
+			opts.FileLastWriteTime = o.CopyFileNFSProperties.LastWriteTime.FormatLastWriteTime()
+		}
 	} else {
-		var permission, permissionKey *string
 		if o.Permissions != nil {
-			permission = o.Permissions.Permission
-			permissionKey = o.Permissions.PermissionKey
+			opts.FilePermission = o.Permissions.Permission
+			opts.FilePermissionKey = o.Permissions.PermissionKey
 		}
-
-		opts = &generated.FileClientStartCopyOptions{
-			FilePermission:    permission,
-			FilePermissionKey: permissionKey,
-			Metadata:          o.Metadata,
+		if o.CopyFileSMBInfo != nil {
+			opts.FilePermissionCopyMode = o.CopyFileSMBInfo.PermissionCopyMode
+			opts.IgnoreReadOnly = o.CopyFileSMBInfo.IgnoreReadOnly
+			opts.SetArchiveAttribute = o.CopyFileSMBInfo.SetArchiveAttribute
+			if o.CopyFileSMBInfo.Attributes != nil {
+				opts.FileAttributes = o.CopyFileSMBInfo.Attributes.FormatAttributes()
+			}
+			if o.CopyFileSMBInfo.CreationTime != nil {
+				opts.FileCreationTime = o.CopyFileSMBInfo.CreationTime.FormatCreationTime()
+			}
+			if o.CopyFileSMBInfo.LastWriteTime != nil {
+				opts.FileLastWriteTime = o.CopyFileSMBInfo.LastWriteTime.FormatLastWriteTime()
+			}
+			if o.CopyFileSMBInfo.ChangeTime != nil {
+				opts.FileChangeTime = o.CopyFileSMBInfo.ChangeTime.FormatChangeTime()
+			}
 		}
-		return opts, o.CopyFileSMBInfo.format(), o.LeaseAccessConditions
 	}
+	return opts
 }
 
 // CopyFileSMBInfo contains a group of parameters for the FileClient.StartCopy method.
@@ -412,33 +496,6 @@ type CopyFileSMBInfo struct {
 	// Specifies the option to set archive attribute on a target file. True means archive attribute will be set on a target file
 	// despite attribute overrides or a source file state.
 	SetArchiveAttribute *bool
-}
-
-func (c *CopyFileSMBInfo) format() *generated.CopyFileSMBInfo {
-	if c == nil {
-		return nil
-	}
-
-	opts := &generated.CopyFileSMBInfo{
-		FilePermissionCopyMode: c.PermissionCopyMode,
-		IgnoreReadOnly:         c.IgnoreReadOnly,
-		SetArchiveAttribute:    c.SetArchiveAttribute,
-	}
-
-	if c.Attributes != nil {
-		opts.FileAttributes = c.Attributes.FormatAttributes()
-	}
-	if c.CreationTime != nil {
-		opts.FileCreationTime = c.CreationTime.FormatCreationTime()
-	}
-	if c.LastWriteTime != nil {
-		opts.FileLastWriteTime = c.LastWriteTime.FormatLastWriteTime()
-	}
-	if c.ChangeTime != nil {
-		opts.FileChangeTime = c.ChangeTime.FormatChangeTime()
-	}
-
-	return opts
 }
 
 // CopyFileAttributes specifies either the option to copy file attributes from a source file(source) to a target file or
@@ -490,12 +547,18 @@ type AbortCopyOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *AbortCopyOptions) format() (*generated.FileClientAbortCopyOptions, *generated.LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *AbortCopyOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientAbortCopyOptions {
+	opts := &generated.FileClientAbortCopyOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
 	}
-
-	return nil, o.LeaseAccessConditions
+	if o == nil {
+		return opts
+	}
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -512,16 +575,33 @@ type DownloadStreamOptions struct {
 	// the lease ID that's specified in the request matches the lease ID of the file.
 	// Otherwise, the operation fails with status code 412 (Precondition Failed).
 	LeaseAccessConditions *LeaseAccessConditions
+
+	// TransactionalValidation specifies the transfer validation type to use on download.
+	// When set to TransferValidationTypeComputeStructuredMessageCRC64, the service returns the
+	// file data wrapped in a structured message with per-segment CRC64 checksums. The SDK
+	// automatically decodes the structured message and validates checksums before returning data.
+	TransactionalValidation TransferValidationType
 }
 
-func (o *DownloadStreamOptions) format() (*generated.FileClientDownloadOptions, *LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *DownloadStreamOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientDownloadOptions {
+	opts := &generated.FileClientDownloadOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
 	}
-	return &generated.FileClientDownloadOptions{
-		Range:              exported.FormatHTTPRange(o.Range),
-		RangeGetContentMD5: o.RangeGetContentMD5,
-	}, o.LeaseAccessConditions
+	if o == nil {
+		return opts
+	}
+	opts.Range = exported.FormatHTTPRange(o.Range)
+	opts.RangeGetContentMD5 = o.RangeGetContentMD5
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	if o.TransactionalValidation != nil {
+		if h := exported.GetStructuredBodyType(o.TransactionalValidation); h != "" {
+			opts.StructuredBodyType = &h
+		}
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -540,11 +620,15 @@ type downloadOptions struct {
 	// LeaseAccessConditions contains optional parameters to access leased entity.
 	LeaseAccessConditions *LeaseAccessConditions
 
-	// Concurrency indicates the maximum number of chunks to download in parallel (0=default).
+	// Concurrency indicates the maximum number of chunks to download in parallel.
+	// The default is based on CPU core count (min 8, max 96). Set AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true to revert to the previous default.
 	Concurrency uint16
 
 	// RetryReaderOptionsPerChunk is used when downloading each chunk.
 	RetryReaderOptionsPerChunk RetryReaderOptions
+
+	// TransactionalValidation specifies the transfer validation type to use on download.
+	TransactionalValidation TransferValidationType
 }
 
 func (o *downloadOptions) getFilePropertiesOptions() *GetPropertiesOptions {
@@ -562,6 +646,7 @@ func (o *downloadOptions) getDownloadFileOptions(rng HTTPRange) *DownloadStreamO
 	}
 	if o != nil {
 		downloadFileOptions.LeaseAccessConditions = o.LeaseAccessConditions
+		downloadFileOptions.TransactionalValidation = o.TransactionalValidation
 	}
 	return downloadFileOptions
 }
@@ -580,11 +665,15 @@ type DownloadBufferOptions struct {
 	// LeaseAccessConditions contains optional parameters to access leased entity.
 	LeaseAccessConditions *LeaseAccessConditions
 
-	// Concurrency indicates the maximum number of chunks to download in parallel (0=default).
+	// Concurrency indicates the maximum number of chunks to download in parallel.
+	// The default is based on CPU core count (min 8, max 96). Set AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true to revert to the previous default.
 	Concurrency uint16
 
 	// RetryReaderOptionsPerChunk is used when downloading each chunk.
 	RetryReaderOptionsPerChunk RetryReaderOptions
+
+	// TransactionalValidation specifies the transfer validation type to use on download.
+	TransactionalValidation TransferValidationType
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -603,11 +692,15 @@ type DownloadFileOptions struct {
 	// LeaseAccessConditions contains optional parameters to access leased entity.
 	LeaseAccessConditions *LeaseAccessConditions
 
-	// Concurrency indicates the maximum number of chunks to download in parallel (0=default).
+	// Concurrency indicates the maximum number of chunks to download in parallel.
+	// The default is based on CPU core count (min 8, max 96). Set AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true to revert to the previous default.
 	Concurrency uint16
 
 	// RetryReaderOptionsPerChunk is used when downloading each chunk.
 	RetryReaderOptionsPerChunk RetryReaderOptions
+
+	// TransactionalValidation specifies the transfer validation type to use on download.
+	TransactionalValidation TransferValidationType
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -618,17 +711,16 @@ type ResizeOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *ResizeOptions) format(contentLength int64) (*generated.FileClientSetHTTPHeadersOptions, *LeaseAccessConditions) {
+func (o *ResizeOptions) format(contentLength int64, fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientSetHTTPHeadersOptions {
 	opts := &generated.FileClientSetHTTPHeadersOptions{
 		FileContentLength: &contentLength,
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
 	}
-
-	var leaseAccessConditions *LeaseAccessConditions = nil
-	if o != nil {
-		leaseAccessConditions = o.LeaseAccessConditions
+	if o != nil && o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
 	}
-
-	return opts, leaseAccessConditions
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -644,18 +736,18 @@ type UploadRangeOptions struct {
 	LastWrittenMode *LastWrittenMode
 }
 
-func (o *UploadRangeOptions) format(offset int64, body io.ReadSeekCloser) (string, int64, *generated.FileClientUploadRangeOptions, *generated.LeaseAccessConditions, error) {
+func (o *UploadRangeOptions) format(offset int64, body io.ReadSeekCloser, fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) (string, int64, *generated.FileClientUploadRangeOptions, error) {
 	if offset < 0 || body == nil {
-		return "", 0, nil, nil, errors.New("invalid argument: offset must be >= 0 and body must not be nil")
+		return "", 0, nil, errors.New("invalid argument: offset must be >= 0 and body must not be nil")
 	}
 
 	count, err := shared.ValidateSeekableStreamAt0AndGetCount(body)
 	if err != nil {
-		return "", 0, nil, nil, err
+		return "", 0, nil, err
 	}
 
 	if count == 0 {
-		return "", 0, nil, nil, errors.New("invalid argument: body must contain readable data whose size is > 0")
+		return "", 0, nil, errors.New("invalid argument: body must contain readable data whose size is > 0")
 	}
 
 	httpRange := exported.FormatHTTPRange(HTTPRange{
@@ -667,21 +759,28 @@ func (o *UploadRangeOptions) format(offset int64, body io.ReadSeekCloser) (strin
 		rangeParam = *httpRange
 	}
 
-	var leaseAccessConditions *LeaseAccessConditions
-	uploadRangeOptions := &generated.FileClientUploadRangeOptions{}
+	uploadRangeOptions := &generated.FileClientUploadRangeOptions{
+		Optionalbody:      body,
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 
 	if o != nil {
-		leaseAccessConditions = o.LeaseAccessConditions
+		if o.LeaseAccessConditions != nil {
+			uploadRangeOptions.LeaseID = o.LeaseAccessConditions.LeaseID
+		}
 		uploadRangeOptions.FileLastWrittenMode = o.LastWrittenMode
 	}
 	if o != nil && o.TransactionalValidation != nil {
-		_, err = o.TransactionalValidation.Apply(body, uploadRangeOptions)
-		if err != nil {
-			return "", 0, nil, nil, err
+		if _, ok := o.TransactionalValidation.(TransferValidationTypeMD5); ok {
+			_, err = o.TransactionalValidation.Apply(body, uploadRangeOptions)
+			if err != nil {
+				return "", 0, nil, err
+			}
 		}
 	}
 
-	return rangeParam, count, uploadRangeOptions, leaseAccessConditions, nil
+	return rangeParam, count, uploadRangeOptions, nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -692,17 +791,21 @@ type ClearRangeOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *ClearRangeOptions) format(contentRange HTTPRange) (string, *generated.LeaseAccessConditions, error) {
+func (o *ClearRangeOptions) format(contentRange HTTPRange, fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) (string, *generated.FileClientUploadRangeOptions, error) {
 	httpRange := exported.FormatHTTPRange(contentRange)
 	if httpRange == nil || contentRange.Offset < 0 || contentRange.Count <= 0 {
 		return "", nil, errors.New("invalid argument: either offset is < 0 or count <= 0")
 	}
 
-	if o == nil {
-		return *httpRange, nil, nil
+	opts := &generated.FileClientUploadRangeOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
+	if o != nil && o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
 	}
 
-	return *httpRange, o.LeaseAccessConditions, nil
+	return *httpRange, opts, nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -722,9 +825,9 @@ type UploadRangeFromURLOptions struct {
 	SourceContentCRC64 uint64
 }
 
-func (o *UploadRangeFromURLOptions) format(sourceOffset int64, destinationOffset int64, count int64) (string, *generated.FileClientUploadRangeFromURLOptions, *generated.SourceModifiedAccessConditions, *generated.LeaseAccessConditions, error) {
+func (o *UploadRangeFromURLOptions) format(sourceOffset int64, destinationOffset int64, count int64, fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool, allowSourceTrailingDot *bool) (string, *generated.FileClientUploadRangeFromURLOptions, error) {
 	if sourceOffset < 0 || destinationOffset < 0 {
-		return "", nil, nil, nil, errors.New("invalid argument: source and destination offsets must be >= 0")
+		return "", nil, errors.New("invalid argument: source and destination offsets must be >= 0")
 	}
 
 	httpRangeSrc := exported.FormatHTTPRange(HTTPRange{Offset: sourceOffset, Count: count})
@@ -735,27 +838,32 @@ func (o *UploadRangeFromURLOptions) format(sourceOffset int64, destinationOffset
 	}
 
 	opts := &generated.FileClientUploadRangeFromURLOptions{
-		SourceRange: httpRangeSrc,
+		SourceRange:            httpRangeSrc,
+		FileRequestIntent:      fileRequestIntent,
+		AllowTrailingDot:       allowTrailingDot,
+		AllowSourceTrailingDot: allowSourceTrailingDot,
 	}
-
-	var sourceModifiedAccessConditions *SourceModifiedAccessConditions
-	var leaseAccessConditions *LeaseAccessConditions
 
 	if o != nil {
 		opts.CopySourceAuthorization = o.CopySourceAuthorization
 		opts.FileLastWrittenMode = o.LastWrittenMode
-		sourceModifiedAccessConditions = o.SourceModifiedAccessConditions
-		leaseAccessConditions = o.LeaseAccessConditions
+		if o.SourceModifiedAccessConditions != nil {
+			opts.SourceIfMatchCRC64 = o.SourceModifiedAccessConditions.SourceIfMatchCRC64
+			opts.SourceIfNoneMatchCRC64 = o.SourceModifiedAccessConditions.SourceIfNoneMatchCRC64
+		}
+		if o.LeaseAccessConditions != nil {
+			opts.LeaseID = o.LeaseAccessConditions.LeaseID
+		}
 
 		if o.SourceContentValidation != nil {
 			err := o.SourceContentValidation.apply(opts)
 			if err != nil {
-				return "", nil, nil, nil, err
+				return "", nil, err
 			}
 		}
 	}
 
-	return destRange, opts, sourceModifiedAccessConditions, leaseAccessConditions, nil
+	return destRange, opts, nil
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -775,17 +883,65 @@ type GetRangeListOptions struct {
 	SupportRename *bool
 }
 
-func (o *GetRangeListOptions) format() (*generated.FileClientGetRangeListOptions, *generated.LeaseAccessConditions) {
+func (o *GetRangeListOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientGetRangeListOptions {
+	opts := &generated.FileClientGetRangeListOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil, nil
+		return opts
 	}
 
-	return &generated.FileClientGetRangeListOptions{
-		Prevsharesnapshot: o.PrevShareSnapshot,
-		Range:             exported.FormatHTTPRange(o.Range),
-		Sharesnapshot:     o.ShareSnapshot,
-		SupportRename:     o.SupportRename,
-	}, o.LeaseAccessConditions
+	opts.Prevsharesnapshot = o.PrevShareSnapshot
+	opts.Range = exported.FormatHTTPRange(o.Range)
+	opts.Sharesnapshot = o.ShareSnapshot
+	opts.SupportRename = o.SupportRename
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
+	return opts
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+// ListRangesOptions contains the optional parameters for the Client.NewListRangesPager method.
+type ListRangesOptions struct {
+	// The previous snapshot parameter is an opaque DateTime value that, when present, specifies the previous snapshot.
+	// When set, the pager returns ranges that have changed between the previous snapshot and the target (diff mode).
+	PrevShareSnapshot *string
+	// Specifies the range of bytes over which to list ranges, inclusively.
+	Range HTTPRange
+	// The snapshot parameter is an opaque DateTime value that, when present, specifies the share snapshot to query.
+	ShareSnapshot *string
+	// LeaseAccessConditions contains optional parameters to access leased entity.
+	LeaseAccessConditions *LeaseAccessConditions
+	// SupportRename determines whether the changed ranges for a file should be listed when the file's location in the
+	// previous snapshot is different from the location in the Request URI, as a result of rename or move operations.
+	SupportRename *bool
+	// MaxResults specifies the maximum number of ranges to return per page. If not set, the service returns all ranges.
+	MaxResults *int32
+}
+
+func (o *ListRangesOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) generated.FileClientListAllRangesOptions {
+	opts := generated.FileClientListAllRangesOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
+	if o == nil {
+		return opts
+	}
+
+	opts.Prevsharesnapshot = o.PrevShareSnapshot
+	opts.Range = exported.FormatHTTPRange(o.Range)
+	opts.Sharesnapshot = o.ShareSnapshot
+	opts.SupportRename = o.SupportRename
+	opts.Maxresults = o.MaxResults
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -822,15 +978,19 @@ type ForceCloseHandlesOptions struct {
 	ShareSnapshot *string
 }
 
-func (o *ForceCloseHandlesOptions) format() *generated.FileClientForceCloseHandlesOptions {
+func (o *ForceCloseHandlesOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientForceCloseHandlesOptions {
+	opts := &generated.FileClientForceCloseHandlesOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil
+		return opts
 	}
 
-	return &generated.FileClientForceCloseHandlesOptions{
-		Marker:        o.Marker,
-		Sharesnapshot: o.ShareSnapshot,
-	}
+	opts.Marker = o.Marker
+	opts.Sharesnapshot = o.ShareSnapshot
+
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -841,11 +1001,17 @@ type CreateHardLinkOptions struct {
 	LeaseAccessConditions *LeaseAccessConditions
 }
 
-func (o *CreateHardLinkOptions) format() (*generated.FileClientCreateHardLinkOptions, *generated.LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *CreateHardLinkOptions) format(fileRequestIntent *generated.ShareTokenIntent) *generated.FileClientCreateHardLinkOptions {
+	opts := &generated.FileClientCreateHardLinkOptions{
+		FileRequestIntent: fileRequestIntent,
 	}
-	return &generated.FileClientCreateHardLinkOptions{}, o.LeaseAccessConditions
+	if o == nil {
+		return opts
+	}
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -864,23 +1030,25 @@ type CreateSymbolicLinkOptions struct {
 	ClientRequestID *string
 }
 
-func (o *CreateSymbolicLinkOptions) format() (*generated.FileClientCreateSymbolicLinkOptions, *generated.LeaseAccessConditions) {
-	if o == nil {
-		return nil, nil
+func (o *CreateSymbolicLinkOptions) format(fileRequestIntent *generated.ShareTokenIntent) *generated.FileClientCreateSymbolicLinkOptions {
+	opts := &generated.FileClientCreateSymbolicLinkOptions{
+		FileRequestIntent: fileRequestIntent,
 	}
-	var options *generated.FileClientCreateSymbolicLinkOptions
+	if o == nil {
+		return opts
+	}
+	opts.Metadata = o.Metadata
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
 	if o.FileNFSProperties != nil {
 		fileCreationTime, fileLastWriteTime := exported.FormatNFSProperties(o.FileNFSProperties, false)
-
-		options = &generated.FileClientCreateSymbolicLinkOptions{
-			FileCreationTime:  fileCreationTime,
-			FileLastWriteTime: fileLastWriteTime,
-			Group:             o.FileNFSProperties.Group,
-			Owner:             o.FileNFSProperties.Owner,
-			Metadata:          o.Metadata,
-		}
+		opts.FileCreationTime = fileCreationTime
+		opts.FileLastWriteTime = fileLastWriteTime
+		opts.Group = o.FileNFSProperties.Group
+		opts.Owner = o.FileNFSProperties.Owner
 	}
-	return options, o.LeaseAccessConditions
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -895,14 +1063,37 @@ type GetSymbolicLinkOptions struct {
 	ClientRequestID *string
 }
 
-func (o *GetSymbolicLinkOptions) format() *generated.FileClientGetSymbolicLinkOptions {
+func (o *GetSymbolicLinkOptions) format(fileRequestIntent *generated.ShareTokenIntent) *generated.FileClientGetSymbolicLinkOptions {
+	opts := &generated.FileClientGetSymbolicLinkOptions{
+		FileRequestIntent: fileRequestIntent,
+	}
 	if o == nil {
-		return nil
+		return opts
 	}
-	return &generated.FileClientGetSymbolicLinkOptions{
-		Sharesnapshot: o.ShareSnapshot,
-	}
+	opts.Sharesnapshot = o.ShareSnapshot
+	return opts
+}
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+// GetFileLinksOptions contains the optional parameters for the Client.GetFileLinks method.
+type GetFileLinksOptions struct {
+	LeaseAccessConditions *LeaseAccessConditions
+	ShareSnapshot         *string
+}
+
+func (o *GetFileLinksOptions) format(fileRequestIntent *generated.ShareTokenIntent) *generated.FileClientGetHardLinksOptions {
+	opts := &generated.FileClientGetHardLinksOptions{
+		FileRequestIntent: fileRequestIntent,
+	}
+	if o == nil {
+		return opts
+	}
+	opts.Sharesnapshot = o.ShareSnapshot
+	if o.LeaseAccessConditions != nil {
+		opts.LeaseID = o.LeaseAccessConditions.LeaseID
+	}
+	return opts
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -921,16 +1112,20 @@ type ListHandlesOptions struct {
 	ShareSnapshot *string
 }
 
-func (o *ListHandlesOptions) format() *generated.FileClientListHandlesOptions {
+func (o *ListHandlesOptions) format(fileRequestIntent *generated.ShareTokenIntent, allowTrailingDot *bool) *generated.FileClientListHandlesOptions {
+	opts := &generated.FileClientListHandlesOptions{
+		FileRequestIntent: fileRequestIntent,
+		AllowTrailingDot:  allowTrailingDot,
+	}
 	if o == nil {
-		return nil
+		return opts
 	}
 
-	return &generated.FileClientListHandlesOptions{
-		Marker:        o.Marker,
-		Maxresults:    o.MaxResults,
-		Sharesnapshot: o.ShareSnapshot,
-	}
+	opts.Marker = o.Marker
+	opts.Maxresults = o.MaxResults
+	opts.Sharesnapshot = o.ShareSnapshot
+
+	return opts
 }
 
 // Handle - A listed Azure Storage handle item.
@@ -947,11 +1142,16 @@ type uploadFromReaderOptions struct {
 	// Note that the progress reporting is not always increasing; it can go down when retrying a request.
 	Progress func(bytesTransferred int64)
 
-	// Concurrency indicates the maximum number of chunks to upload in parallel (default is 5)
+	// Concurrency indicates the maximum number of chunks to upload in parallel.
+	// The default is based on CPU core count (min 8, max 96). Set AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true to revert to the previous default.
 	Concurrency uint16
 
 	// LeaseAccessConditions contains optional parameters to access leased entity.
 	LeaseAccessConditions *LeaseAccessConditions
+
+	// TransactionalValidation specifies the transfer validation type to use.
+	// Only TransferValidationTypeComputeStructuredMessageCRC64 is supported for multi-chunk uploads.
+	TransactionalValidation TransferValidationType
 }
 
 // UploadBufferOptions provides set of configurations for Client.UploadBuffer operation.
@@ -962,7 +1162,8 @@ type UploadFileOptions = uploadFromReaderOptions
 
 func (o *uploadFromReaderOptions) getUploadRangeOptions() *UploadRangeOptions {
 	return &UploadRangeOptions{
-		LeaseAccessConditions: o.LeaseAccessConditions,
+		LeaseAccessConditions:   o.LeaseAccessConditions,
+		TransactionalValidation: o.TransactionalValidation,
 	}
 }
 
@@ -975,16 +1176,21 @@ type UploadStreamOptions struct {
 	ChunkSize int64
 
 	// Concurrency defines the max number of concurrent uploads to be performed to upload the file.
-	// Each concurrent upload will create a buffer of size ChunkSize.  The default value is one.
+	// Each concurrent upload will create a buffer of size ChunkSize.  The default is based on
+	// CPU core count (min 8, max 96). Set AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY=true to revert to the previous default.
 	Concurrency int
 
 	// LeaseAccessConditions contains optional parameters to access leased entity.
 	LeaseAccessConditions *LeaseAccessConditions
+
+	// TransactionalValidation specifies the transfer validation type to use.
+	// Only TransferValidationTypeComputeStructuredMessageCRC64 is supported for streaming uploads.
+	TransactionalValidation TransferValidationType
 }
 
 func (u *UploadStreamOptions) setDefaults() {
 	if u.Concurrency == 0 {
-		u.Concurrency = 1
+		u.Concurrency = int(shared.DefaultStreamConcurrencyValue())
 	}
 
 	if u.ChunkSize < _1MiB {
@@ -994,7 +1200,8 @@ func (u *UploadStreamOptions) setDefaults() {
 
 func (u *UploadStreamOptions) getUploadRangeOptions() *UploadRangeOptions {
 	return &UploadRangeOptions{
-		LeaseAccessConditions: u.LeaseAccessConditions,
+		LeaseAccessConditions:   u.LeaseAccessConditions,
+		TransactionalValidation: u.TransactionalValidation,
 	}
 }
 

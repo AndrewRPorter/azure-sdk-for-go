@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -47,7 +44,7 @@ func TestPagerSinglePage(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [1, 2, 3, 4, 5]}`)))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pager := NewPager(PagingHandler[PageResponse]{
 		More: func(current PageResponse) bool {
@@ -79,7 +76,7 @@ func TestPagerMultiplePages(t *testing.T) {
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [1, 2, 3, 4, 5], "next": true}`)))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [6, 7, 8], "next": true}`)))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [9, 0, 1, 2]}`)))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pageCount := 0
 	pager := NewPager(PagingHandler[PageResponse]{
@@ -123,7 +120,7 @@ func TestPagerLROMultiplePages(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [6, 7, 8]}`)))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pager := NewPager(PagingHandler[PageResponse]{
 		More: func(current PageResponse) bool {
@@ -167,17 +164,19 @@ func TestPagerFetcherError(t *testing.T) {
 		},
 	})
 	require.True(t, pager.firstPage)
+	require.True(t, pager.More())
 
 	page, err := pager.NextPage(context.Background())
 	require.Error(t, err)
 	require.Empty(t, page)
+	require.False(t, pager.More())
 }
 
 func TestPagerPipelineError(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetError(errors.New("pipeline failed"))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pager := NewPager(PagingHandler[PageResponse]{
 		More: func(current PageResponse) bool {
@@ -188,10 +187,42 @@ func TestPagerPipelineError(t *testing.T) {
 		},
 	})
 	require.True(t, pager.firstPage)
+	require.True(t, pager.More())
 
 	page, err := pager.NextPage(context.Background())
 	require.Error(t, err)
 	require.Empty(t, page)
+	require.False(t, pager.More())
+}
+
+func TestPagerTerminalAfterError(t *testing.T) {
+	attempts := 0
+	sentinel := errors.New("transient failure")
+	pager := NewPager(PagingHandler[PageResponse]{
+		More: func(current PageResponse) bool {
+			return current.NextPage
+		},
+		Fetcher: func(ctx context.Context, current *PageResponse) (PageResponse, error) {
+			attempts++
+			return PageResponse{}, sentinel
+		},
+	})
+	require.True(t, pager.More())
+
+	// the first fetch fails, placing the pager in a terminal state
+	page, err := pager.NextPage(context.Background())
+	require.ErrorIs(t, err, sentinel)
+	require.Empty(t, page)
+	require.False(t, pager.More())
+	require.Equal(t, 1, attempts)
+
+	// the pager is terminal: NextPage returns the stored error without
+	// re-invoking the fetcher, so stateful handlers can't be corrupted.
+	page, err = pager.NextPage(context.Background())
+	require.ErrorIs(t, err, sentinel)
+	require.Empty(t, page)
+	require.False(t, pager.More())
+	require.Equal(t, 1, attempts)
 }
 
 func TestPagerSecondPageError(t *testing.T) {
@@ -199,7 +230,7 @@ func TestPagerSecondPageError(t *testing.T) {
 	defer close()
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`{"values": [1, 2, 3, 4, 5], "next": true}`)))
 	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest), mock.WithBody([]byte(`{"message": "didn't work", "code": "PageError"}`)))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pageCount := 0
 	pager := NewPager(PagingHandler[PageResponse]{
@@ -230,10 +261,11 @@ func TestPagerSecondPageError(t *testing.T) {
 			var respErr *exported.ResponseError
 			require.True(t, errors.As(err, &respErr))
 			require.Equal(t, "PageError", respErr.ErrorCode)
-			goto ExitLoop
+			// a subsequent-page error puts the pager in a terminal state, so
+			// More returns false and the loop terminates on its own.
+			require.False(t, pager.More())
 		}
 	}
-ExitLoop:
 	require.Equal(t, 2, pageCount)
 }
 
@@ -241,7 +273,7 @@ func TestPagerResponderError(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`incorrect JSON response`)))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	pager := NewPager(PagingHandler[PageResponse]{
 		More: func(current PageResponse) bool {
@@ -261,7 +293,7 @@ func TestPagerResponderError(t *testing.T) {
 func TestFetcherForNextLink(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	srv.AppendResponse()
 	firstReqCalled := false
@@ -334,7 +366,7 @@ func TestFetcherForNextLink(t *testing.T) {
 func TestFetcherForNextLinkWithStatusCodes(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 
 	srv.AppendResponse(mock.WithStatusCode(http.StatusNotModified))
 	resp, err := FetcherForNextLink(context.Background(), pl, "", func(ctx context.Context) (*policy.Request, error) {
@@ -363,4 +395,79 @@ func TestFetcherForNextLinkWithStatusCodes(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 	require.EqualValues(t, http.StatusNotModified, resp.StatusCode)
+}
+
+func TestFetcherForNextLinkWithHTTPMethod(t *testing.T) {
+	srv, close := mock.NewServer()
+	defer close()
+	pl := exported.NewPipeline(nil, srv)
+
+	// Test default GET method (when HTTPVerb is not specified)
+	srv.AppendResponse(mock.WithPredicate(func(req *http.Request) bool {
+		// Validate that the request uses GET method
+		require.Equal(t, http.MethodGet, req.Method)
+		return true
+	}), mock.WithStatusCode(http.StatusOK))
+	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest)) // Predicate failure response
+	resp, err := FetcherForNextLink(context.Background(), pl, srv.URL(), func(ctx context.Context) (*policy.Request, error) {
+		return NewRequest(ctx, http.MethodGet, srv.URL())
+	}, nil)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.EqualValues(t, http.StatusOK, resp.StatusCode)
+
+	// Test explicit GET method
+	srv.AppendResponse(mock.WithPredicate(func(req *http.Request) bool {
+		// Validate that the request uses GET method
+		require.Equal(t, http.MethodGet, req.Method)
+		return true
+	}), mock.WithStatusCode(http.StatusOK))
+	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest)) // Predicate failure response
+	resp, err = FetcherForNextLink(context.Background(), pl, srv.URL(), func(ctx context.Context) (*policy.Request, error) {
+		return NewRequest(ctx, http.MethodGet, srv.URL())
+	}, &FetcherForNextLinkOptions{
+		HTTPVerb: http.MethodGet,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.EqualValues(t, http.StatusOK, resp.StatusCode)
+
+	// Test POST method
+	srv.AppendResponse(mock.WithPredicate(func(req *http.Request) bool {
+		// Validate that the request uses POST method
+		require.Equal(t, http.MethodPost, req.Method)
+		return true
+	}), mock.WithStatusCode(http.StatusOK))
+	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest)) // Predicate failure response
+	resp, err = FetcherForNextLink(context.Background(), pl, srv.URL(), func(ctx context.Context) (*policy.Request, error) {
+		return NewRequest(ctx, http.MethodPost, srv.URL())
+	}, &FetcherForNextLinkOptions{
+		HTTPVerb: http.MethodPost,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.EqualValues(t, http.StatusOK, resp.StatusCode)
+
+	// Test that HTTPVerb is not used when NextReq is specified
+	srv.AppendResponse(mock.WithPredicate(func(req *http.Request) bool {
+		// Validate that the request uses GET method (from NextReq, not HTTPVerb)
+		require.Equal(t, http.MethodGet, req.Method)
+		return true
+	}), mock.WithStatusCode(http.StatusOK))
+	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest)) // Predicate failure response
+	nextReqCalled := false
+	resp, err = FetcherForNextLink(context.Background(), pl, srv.URL(), func(ctx context.Context) (*policy.Request, error) {
+		return NewRequest(ctx, http.MethodGet, srv.URL())
+	}, &FetcherForNextLinkOptions{
+		HTTPVerb: http.MethodPost,
+		NextReq: func(ctx context.Context, s string) (*policy.Request, error) {
+			nextReqCalled = true
+			// This should use GET even though HTTPVerb is POST
+			return NewRequest(ctx, http.MethodGet, srv.URL())
+		},
+	})
+	require.NoError(t, err)
+	require.True(t, nextReqCalled)
+	require.NotNil(t, resp)
+	require.EqualValues(t, http.StatusOK, resp.StatusCode)
 }

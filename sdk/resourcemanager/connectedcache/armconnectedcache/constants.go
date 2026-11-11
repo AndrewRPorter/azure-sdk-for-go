@@ -5,8 +5,7 @@
 package armconnectedcache
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/connectedcache/armconnectedcache"
-	moduleVersion = "v0.1.0"
+	version20260601 string = "2026-06-01"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -28,20 +27,26 @@ func PossibleActionTypeValues() []ActionType {
 type AutoUpdateRingType string
 
 const (
+	// AutoUpdateRingTypeBeta - customer selection of beta update to install mcc on their physical vm
+	AutoUpdateRingTypeBeta AutoUpdateRingType = "Beta"
 	// AutoUpdateRingTypeFast - customer selection of fast / auto update to install mcc on their physical vm
 	AutoUpdateRingTypeFast AutoUpdateRingType = "Fast"
 	// AutoUpdateRingTypePreview - customer selection of preview update install mcc on their physical vm
 	AutoUpdateRingTypePreview AutoUpdateRingType = "Preview"
 	// AutoUpdateRingTypeSlow - customer selection of slow update to install mcc on their physical vm
 	AutoUpdateRingTypeSlow AutoUpdateRingType = "Slow"
+	// AutoUpdateRingTypeStable - customer selection of stable update to install mcc on their physical vm
+	AutoUpdateRingTypeStable AutoUpdateRingType = "Stable"
 )
 
 // PossibleAutoUpdateRingTypeValues returns the possible values for the AutoUpdateRingType const type.
 func PossibleAutoUpdateRingTypeValues() []AutoUpdateRingType {
 	return []AutoUpdateRingType{
+		AutoUpdateRingTypeBeta,
 		AutoUpdateRingTypeFast,
 		AutoUpdateRingTypePreview,
 		AutoUpdateRingTypeSlow,
+		AutoUpdateRingTypeStable,
 	}
 }
 
@@ -129,27 +134,6 @@ func PossibleCustomerTransitStateValues() []CustomerTransitState {
 		CustomerTransitStateCombinedTransit,
 		CustomerTransitStateNoTransit,
 		CustomerTransitStateTransitOnly,
-	}
-}
-
-// CycleType - Update Cycle type
-type CycleType string
-
-const (
-	// CycleTypeFast - customer selection of fast / auto update to install mcc on their physical vm
-	CycleTypeFast CycleType = "Fast"
-	// CycleTypePreview - customer selection of preview update install mcc on their physical vm
-	CycleTypePreview CycleType = "Preview"
-	// CycleTypeSlow - customer selection of slow update to install mcc on their physical vm
-	CycleTypeSlow CycleType = "Slow"
-)
-
-// PossibleCycleTypeValues returns the possible values for the CycleType const type.
-func PossibleCycleTypeValues() []CycleType {
-	return []CycleType{
-		CycleTypeFast,
-		CycleTypePreview,
-		CycleTypeSlow,
 	}
 }
 

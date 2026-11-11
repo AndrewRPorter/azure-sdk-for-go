@@ -20,17 +20,8 @@ type nonRetriableError struct {
 	error
 }
 
-func (nonRetriableError) NonRetriable() {
+func (*nonRetriableError) NonRetriable() {
 	// marker method
-}
-
-func contains[T comparable](s []T, v T) bool {
-	for _, vv := range s {
-		if vv == v {
-			return true
-		}
-	}
-	return false
 }
 
 func getHeaderValue(h http.Header, k string) string {
@@ -46,6 +37,25 @@ func getOptional[T any](v T) *T {
 		return nil
 	}
 	return &v
+}
+
+func initServer[T any](mu *sync.Mutex, dst **T, src func() *T) {
+	mu.Lock()
+	if *dst == nil {
+		*dst = src()
+	}
+	mu.Unlock()
+}
+
+func parseOptional[T any](v string, parse func(v string) (T, error)) (*T, error) {
+	if v == "" {
+		return nil, nil
+	}
+	t, err := parse(v)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
 }
 
 func newTracker[T any]() *tracker[T] {

@@ -18,6 +18,8 @@ import (
 
 // StandbyContainerGroupPoolsClient contains the methods for the StandbyContainerGroupPools group.
 // Don't use this type directly, use NewStandbyContainerGroupPoolsClient() instead.
+//
+// Generated from API version 2025-10-01
 type StandbyContainerGroupPoolsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type StandbyContainerGroupPoolsClient struct {
 // NewStandbyContainerGroupPoolsClient creates a new instance of StandbyContainerGroupPoolsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewStandbyContainerGroupPoolsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*StandbyContainerGroupPoolsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewStandbyContainerGroupPoolsClient(subscriptionID string, credential azcor
 
 // BeginCreateOrUpdate - Create a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyContainerGroupPoolName - Name of the standby container group pool
 //   - resource - Resource create parameters.
@@ -66,10 +69,8 @@ func (client *StandbyContainerGroupPoolsClient) BeginCreateOrUpdate(ctx context.
 	}
 }
 
-// CreateOrUpdate - Create a StandbyContainerGroupPoolResource
+// createOrUpdate - Create a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 func (client *StandbyContainerGroupPoolsClient) createOrUpdate(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, resource StandbyContainerGroupPoolResource, options *StandbyContainerGroupPoolsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "StandbyContainerGroupPoolsClient.BeginCreateOrUpdate"
@@ -91,11 +92,11 @@ func (client *StandbyContainerGroupPoolsClient) createOrUpdate(ctx context.Conte
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *StandbyContainerGroupPoolsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, resource StandbyContainerGroupPoolResource, _ *StandbyContainerGroupPoolsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools/{standbyContainerGroupPoolName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -111,8 +112,8 @@ func (client *StandbyContainerGroupPoolsClient) createOrUpdateCreateRequest(ctx 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20251001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -123,8 +124,6 @@ func (client *StandbyContainerGroupPoolsClient) createOrUpdateCreateRequest(ctx 
 
 // BeginDelete - Delete a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyContainerGroupPoolName - Name of the standby container group pool
 //   - options - StandbyContainerGroupPoolsClientBeginDeleteOptions contains the optional parameters for the StandbyContainerGroupPoolsClient.BeginDelete
@@ -146,10 +145,8 @@ func (client *StandbyContainerGroupPoolsClient) BeginDelete(ctx context.Context,
 	}
 }
 
-// Delete - Delete a StandbyContainerGroupPoolResource
+// deleteOperation - Delete a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 func (client *StandbyContainerGroupPoolsClient) deleteOperation(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, options *StandbyContainerGroupPoolsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "StandbyContainerGroupPoolsClient.BeginDelete"
@@ -171,11 +168,11 @@ func (client *StandbyContainerGroupPoolsClient) deleteOperation(ctx context.Cont
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *StandbyContainerGroupPoolsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, _ *StandbyContainerGroupPoolsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools/{standbyContainerGroupPoolName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -191,16 +188,13 @@ func (client *StandbyContainerGroupPoolsClient) deleteCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20251001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyContainerGroupPoolName - Name of the standby container group pool
 //   - options - StandbyContainerGroupPoolsClientGetOptions contains the optional parameters for the StandbyContainerGroupPoolsClient.Get
@@ -219,11 +213,7 @@ func (client *StandbyContainerGroupPoolsClient) Get(ctx context.Context, resourc
 	if err != nil {
 		return StandbyContainerGroupPoolsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return StandbyContainerGroupPoolsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -231,7 +221,7 @@ func (client *StandbyContainerGroupPoolsClient) Get(ctx context.Context, resourc
 func (client *StandbyContainerGroupPoolsClient) getCreateRequest(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, _ *StandbyContainerGroupPoolsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools/{standbyContainerGroupPoolName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -247,15 +237,18 @@ func (client *StandbyContainerGroupPoolsClient) getCreateRequest(ctx context.Con
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20251001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *StandbyContainerGroupPoolsClient) getHandleResponse(resp *http.Response) (StandbyContainerGroupPoolsClientGetResponse, error) {
+func (client *StandbyContainerGroupPoolsClient) getHandleResponse(resp *http.Response, successCodes ...int) (StandbyContainerGroupPoolsClientGetResponse, error) {
 	result := StandbyContainerGroupPoolsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyContainerGroupPoolResource); err != nil {
 		return StandbyContainerGroupPoolsClientGetResponse{}, err
 	}
@@ -263,8 +256,6 @@ func (client *StandbyContainerGroupPoolsClient) getHandleResponse(resp *http.Res
 }
 
 // NewListByResourceGroupPager - List StandbyContainerGroupPoolResource resources by resource group
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - options - StandbyContainerGroupPoolsClientListByResourceGroupOptions contains the optional parameters for the StandbyContainerGroupPoolsClient.NewListByResourceGroupPager
 //     method.
@@ -279,43 +270,57 @@ func (client *StandbyContainerGroupPoolsClient) NewListByResourceGroupPager(reso
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
 			if err != nil {
 				return StandbyContainerGroupPoolsClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return StandbyContainerGroupPoolsClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *StandbyContainerGroupPoolsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *StandbyContainerGroupPoolsClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *StandbyContainerGroupPoolsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *StandbyContainerGroupPoolsClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20251001)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *StandbyContainerGroupPoolsClient) listByResourceGroupHandleResponse(resp *http.Response) (StandbyContainerGroupPoolsClientListByResourceGroupResponse, error) {
+func (client *StandbyContainerGroupPoolsClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (StandbyContainerGroupPoolsClientListByResourceGroupResponse, error) {
 	result := StandbyContainerGroupPoolsClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyContainerGroupPoolResourceListResult); err != nil {
 		return StandbyContainerGroupPoolsClientListByResourceGroupResponse{}, err
 	}
@@ -323,8 +328,6 @@ func (client *StandbyContainerGroupPoolsClient) listByResourceGroupHandleRespons
 }
 
 // NewListBySubscriptionPager - List StandbyContainerGroupPoolResource resources by subscription ID
-//
-// Generated from API version 2025-03-01
 //   - options - StandbyContainerGroupPoolsClientListBySubscriptionOptions contains the optional parameters for the StandbyContainerGroupPoolsClient.NewListBySubscriptionPager
 //     method.
 func (client *StandbyContainerGroupPoolsClient) NewListBySubscriptionPager(options *StandbyContainerGroupPoolsClientListBySubscriptionOptions) *runtime.Pager[StandbyContainerGroupPoolsClientListBySubscriptionResponse] {
@@ -338,39 +341,53 @@ func (client *StandbyContainerGroupPoolsClient) NewListBySubscriptionPager(optio
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return StandbyContainerGroupPoolsClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return StandbyContainerGroupPoolsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *StandbyContainerGroupPoolsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *StandbyContainerGroupPoolsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.StandbyPool/standbyContainerGroupPools"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *StandbyContainerGroupPoolsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *StandbyContainerGroupPoolsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.StandbyPool/standbyContainerGroupPools"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20251001)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *StandbyContainerGroupPoolsClient) listBySubscriptionHandleResponse(resp *http.Response) (StandbyContainerGroupPoolsClientListBySubscriptionResponse, error) {
+func (client *StandbyContainerGroupPoolsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (StandbyContainerGroupPoolsClientListBySubscriptionResponse, error) {
 	result := StandbyContainerGroupPoolsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyContainerGroupPoolResourceListResult); err != nil {
 		return StandbyContainerGroupPoolsClientListBySubscriptionResponse{}, err
 	}
@@ -379,8 +396,6 @@ func (client *StandbyContainerGroupPoolsClient) listBySubscriptionHandleResponse
 
 // Update - Update a StandbyContainerGroupPoolResource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - standbyContainerGroupPoolName - Name of the standby container group pool
 //   - properties - The resource properties to be updated.
@@ -400,11 +415,7 @@ func (client *StandbyContainerGroupPoolsClient) Update(ctx context.Context, reso
 	if err != nil {
 		return StandbyContainerGroupPoolsClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return StandbyContainerGroupPoolsClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -412,7 +423,7 @@ func (client *StandbyContainerGroupPoolsClient) Update(ctx context.Context, reso
 func (client *StandbyContainerGroupPoolsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, standbyContainerGroupPoolName string, properties StandbyContainerGroupPoolResourceUpdate, _ *StandbyContainerGroupPoolsClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StandbyPool/standbyContainerGroupPools/{standbyContainerGroupPoolName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -428,8 +439,8 @@ func (client *StandbyContainerGroupPoolsClient) updateCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20251001)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -439,8 +450,11 @@ func (client *StandbyContainerGroupPoolsClient) updateCreateRequest(ctx context.
 }
 
 // updateHandleResponse handles the Update response.
-func (client *StandbyContainerGroupPoolsClient) updateHandleResponse(resp *http.Response) (StandbyContainerGroupPoolsClientUpdateResponse, error) {
+func (client *StandbyContainerGroupPoolsClient) updateHandleResponse(resp *http.Response, successCodes ...int) (StandbyContainerGroupPoolsClientUpdateResponse, error) {
 	result := StandbyContainerGroupPoolsClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.StandbyContainerGroupPoolResource); err != nil {
 		return StandbyContainerGroupPoolsClientUpdateResponse{}, err
 	}

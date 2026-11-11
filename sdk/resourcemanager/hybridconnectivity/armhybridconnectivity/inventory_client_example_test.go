@@ -11,7 +11,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2024-12-01/Inventory_Get.json
+// Generated from example definition: 2027-01-01/Inventory_Get_MaximumSet_Gen.json
 func ExampleInventoryClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -22,7 +22,7 @@ func ExampleInventoryClient_Get() {
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
 	}
-	res, err := clientFactory.NewInventoryClient().Get(ctx, "ymuj", "zarfsraogroxlaqjjnwixtn", "xofprmcboosrbd", nil)
+	res, err := clientFactory.NewInventoryClient().Get(ctx, "subscriptions/f5bcc1d9-23af-4ae9-aca1-041d0f593a63/resourceGroups/hybridRG/providers/Microsoft.HybridCompute/machines/testMachine", "abc", "pr", nil)
 	if err != nil {
 		log.Fatalf("failed to finish the request: %v", err)
 	}
@@ -30,7 +30,7 @@ func ExampleInventoryClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armhybridconnectivity.InventoryClientGetResponse{
-	// 	InventoryResource: &armhybridconnectivity.InventoryResource{
+	// 	InventoryResource: armhybridconnectivity.InventoryResource{
 	// 		Properties: &armhybridconnectivity.InventoryProperties{
 	// 			CloudNativeType: to.Ptr(armhybridconnectivity.CloudNativeTypeEc2),
 	// 			CloudNativeResourceID: to.Ptr("ljnxclzxficxhdkr"),
@@ -45,16 +45,16 @@ func ExampleInventoryClient_Get() {
 	// 		SystemData: &armhybridconnectivity.SystemData{
 	// 			CreatedBy: to.Ptr("rpxzkcrobprrdvuoqxz"),
 	// 			CreatedByType: to.Ptr(armhybridconnectivity.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-18T22:52:07.890Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 18, 22, 52, 7, 890000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("jidegyskxi"),
 	// 			LastModifiedByType: to.Ptr(armhybridconnectivity.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-18T22:52:07.890Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 18, 22, 52, 7, 890000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-12-01/Inventory_ListBySolutionConfiguration.json
+// Generated from example definition: 2027-01-01/Inventory_ListBySolutionConfiguration_MaximumSet_Gen.json
 func ExampleInventoryClient_NewListBySolutionConfigurationPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -65,7 +65,7 @@ func ExampleInventoryClient_NewListBySolutionConfigurationPager() {
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
 	}
-	pager := clientFactory.NewInventoryClient().NewListBySolutionConfigurationPager("ymuj", "wsxt", nil)
+	pager := clientFactory.NewInventoryClient().NewListBySolutionConfigurationPager("subscriptions/f5bcc1d9-23af-4ae9-aca1-041d0f593a63/resourceGroups/hybridRG/providers/Microsoft.HybridCompute/machines/testMachine", "abc", nil)
 	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
@@ -94,10 +94,10 @@ func ExampleInventoryClient_NewListBySolutionConfigurationPager() {
 		// 				SystemData: &armhybridconnectivity.SystemData{
 		// 					CreatedBy: to.Ptr("rpxzkcrobprrdvuoqxz"),
 		// 					CreatedByType: to.Ptr(armhybridconnectivity.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-18T22:52:07.890Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 18, 22, 52, 7, 890000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("jidegyskxi"),
 		// 					LastModifiedByType: to.Ptr(armhybridconnectivity.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-18T22:52:07.890Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 18, 22, 52, 7, 890000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

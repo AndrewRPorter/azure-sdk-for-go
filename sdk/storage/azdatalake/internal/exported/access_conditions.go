@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -29,6 +26,9 @@ type LeaseAccessConditions = generated.LeaseAccessConditions
 
 // ModifiedAccessConditions contains a group of parameters for specifying access conditions.
 type ModifiedAccessConditions = generated.ModifiedAccessConditions
+
+// BlobModifiedAccessConditions contains a group of parameters for specifying blob access conditions.
+type BlobModifiedAccessConditions = blob.BlobModifiedAccessConditions
 
 // SourceModifiedAccessConditions contains a group of parameters for specifying access conditions of a source.
 type SourceModifiedAccessConditions = generated.SourceModifiedAccessConditions
@@ -72,13 +72,13 @@ func FormatPathAccessConditions(p *AccessConditions) (*generated.LeaseAccessCond
 		p.ModifiedAccessConditions = &ModifiedAccessConditions{}
 	}
 	return &generated.LeaseAccessConditions{
-			LeaseID: p.LeaseAccessConditions.LeaseID,
-		}, &generated.ModifiedAccessConditions{
-			IfMatch:           p.ModifiedAccessConditions.IfMatch,
-			IfNoneMatch:       p.ModifiedAccessConditions.IfNoneMatch,
-			IfModifiedSince:   p.ModifiedAccessConditions.IfModifiedSince,
-			IfUnmodifiedSince: p.ModifiedAccessConditions.IfUnmodifiedSince,
-		}
+		LeaseID: p.LeaseAccessConditions.LeaseID,
+	}, &generated.ModifiedAccessConditions{
+		IfMatch:           p.ModifiedAccessConditions.IfMatch,
+		IfNoneMatch:       p.ModifiedAccessConditions.IfNoneMatch,
+		IfModifiedSince:   p.ModifiedAccessConditions.IfModifiedSince,
+		IfUnmodifiedSince: p.ModifiedAccessConditions.IfUnmodifiedSince,
+	}
 }
 
 // FormatBlobAccessConditions formats PathAccessConditions into blob's LeaseAccessConditions and ModifiedAccessConditions.

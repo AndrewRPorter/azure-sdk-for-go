@@ -18,6 +18,8 @@ import (
 
 // FirewallRulesClient contains the methods for the FirewallRules group.
 // Don't use this type directly, use NewFirewallRulesClient() instead.
+//
+// Generated from API version 2026-06-15-preview
 type FirewallRulesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type FirewallRulesClient struct {
 // NewFirewallRulesClient creates a new instance of FirewallRulesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewFirewallRulesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*FirewallRulesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewFirewallRulesClient(subscriptionID string, credential azcore.TokenCreden
 
 // BeginCreateOrUpdate - Creates a new firewall rule or updates an existing firewall rule on a mongo cluster.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mongoClusterName - The name of the mongo cluster.
 //   - firewallRuleName - The name of the mongo cluster firewall rule.
@@ -67,10 +70,8 @@ func (client *FirewallRulesClient) BeginCreateOrUpdate(ctx context.Context, reso
 	}
 }
 
-// CreateOrUpdate - Creates a new firewall rule or updates an existing firewall rule on a mongo cluster.
+// createOrUpdate - Creates a new firewall rule or updates an existing firewall rule on a mongo cluster.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *FirewallRulesClient) createOrUpdate(ctx context.Context, resourceGroupName string, mongoClusterName string, firewallRuleName string, resource FirewallRule, options *FirewallRulesClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "FirewallRulesClient.BeginCreateOrUpdate"
@@ -92,11 +93,11 @@ func (client *FirewallRulesClient) createOrUpdate(ctx context.Context, resourceG
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *FirewallRulesClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, mongoClusterName string, firewallRuleName string, resource FirewallRule, _ *FirewallRulesClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -116,8 +117,8 @@ func (client *FirewallRulesClient) createOrUpdateCreateRequest(ctx context.Conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260615Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -128,8 +129,6 @@ func (client *FirewallRulesClient) createOrUpdateCreateRequest(ctx context.Conte
 
 // BeginDelete - Deletes a mongo cluster firewall rule.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mongoClusterName - The name of the mongo cluster.
 //   - firewallRuleName - The name of the mongo cluster firewall rule.
@@ -152,10 +151,8 @@ func (client *FirewallRulesClient) BeginDelete(ctx context.Context, resourceGrou
 	}
 }
 
-// Delete - Deletes a mongo cluster firewall rule.
+// deleteOperation - Deletes a mongo cluster firewall rule.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *FirewallRulesClient) deleteOperation(ctx context.Context, resourceGroupName string, mongoClusterName string, firewallRuleName string, options *FirewallRulesClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "FirewallRulesClient.BeginDelete"
@@ -177,11 +174,11 @@ func (client *FirewallRulesClient) deleteOperation(ctx context.Context, resource
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *FirewallRulesClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, mongoClusterName string, firewallRuleName string, _ *FirewallRulesClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -201,16 +198,13 @@ func (client *FirewallRulesClient) deleteCreateRequest(ctx context.Context, reso
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260615Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Gets information about a mongo cluster firewall rule.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mongoClusterName - The name of the mongo cluster.
 //   - firewallRuleName - The name of the mongo cluster firewall rule.
@@ -229,11 +223,7 @@ func (client *FirewallRulesClient) Get(ctx context.Context, resourceGroupName st
 	if err != nil {
 		return FirewallRulesClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return FirewallRulesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -241,7 +231,7 @@ func (client *FirewallRulesClient) Get(ctx context.Context, resourceGroupName st
 func (client *FirewallRulesClient) getCreateRequest(ctx context.Context, resourceGroupName string, mongoClusterName string, firewallRuleName string, _ *FirewallRulesClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -261,15 +251,18 @@ func (client *FirewallRulesClient) getCreateRequest(ctx context.Context, resourc
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260615Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *FirewallRulesClient) getHandleResponse(resp *http.Response) (FirewallRulesClientGetResponse, error) {
+func (client *FirewallRulesClient) getHandleResponse(resp *http.Response, successCodes ...int) (FirewallRulesClientGetResponse, error) {
 	result := FirewallRulesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.FirewallRule); err != nil {
 		return FirewallRulesClientGetResponse{}, err
 	}
@@ -277,8 +270,6 @@ func (client *FirewallRulesClient) getHandleResponse(resp *http.Response) (Firew
 }
 
 // NewListByMongoClusterPager - List all the firewall rules in a given mongo cluster.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - mongoClusterName - The name of the mongo cluster.
 //   - options - FirewallRulesClientListByMongoClusterOptions contains the optional parameters for the FirewallRulesClient.NewListByMongoClusterPager
@@ -294,47 +285,61 @@ func (client *FirewallRulesClient) NewListByMongoClusterPager(resourceGroupName 
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByMongoClusterCreateRequest(ctx, resourceGroupName, mongoClusterName, options)
-			}, nil)
+			req, err := client.listByMongoClusterCreateRequest(ctx, resourceGroupName, mongoClusterName, nextLink, options)
 			if err != nil {
 				return FirewallRulesClientListByMongoClusterResponse{}, err
 			}
-			return client.listByMongoClusterHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return FirewallRulesClientListByMongoClusterResponse{}, err
+			}
+			return client.listByMongoClusterHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByMongoClusterCreateRequest creates the ListByMongoCluster request.
-func (client *FirewallRulesClient) listByMongoClusterCreateRequest(ctx context.Context, resourceGroupName string, mongoClusterName string, _ *FirewallRulesClientListByMongoClusterOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *FirewallRulesClient) listByMongoClusterCreateRequest(ctx context.Context, resourceGroupName string, mongoClusterName string, nextLink string, _ *FirewallRulesClientListByMongoClusterOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if mongoClusterName == "" {
+			return nil, errors.New("parameter mongoClusterName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{mongoClusterName}", url.PathEscape(mongoClusterName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if mongoClusterName == "" {
-		return nil, errors.New("parameter mongoClusterName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{mongoClusterName}", url.PathEscape(mongoClusterName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260615Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByMongoClusterHandleResponse handles the ListByMongoCluster response.
-func (client *FirewallRulesClient) listByMongoClusterHandleResponse(resp *http.Response) (FirewallRulesClientListByMongoClusterResponse, error) {
+func (client *FirewallRulesClient) listByMongoClusterHandleResponse(resp *http.Response, successCodes ...int) (FirewallRulesClientListByMongoClusterResponse, error) {
 	result := FirewallRulesClientListByMongoClusterResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.FirewallRuleListResult); err != nil {
 		return FirewallRulesClientListByMongoClusterResponse{}, err
 	}

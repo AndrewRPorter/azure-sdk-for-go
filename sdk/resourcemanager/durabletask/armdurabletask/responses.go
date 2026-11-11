@@ -4,6 +4,53 @@
 
 package armdurabletask
 
+// DetectorsClientGetResponse contains the response from method DetectorsClient.Get.
+type DetectorsClientGetResponse struct {
+	// A diagnostic detector resource belonging to the scheduler.
+	Detector
+}
+
+// DetectorsClientListBySchedulerResponse contains the response from method DetectorsClient.NewListBySchedulerPager.
+type DetectorsClientListBySchedulerResponse struct {
+	// The response of a Detector list operation.
+	DetectorListResult
+}
+
+// FailoverInstancesClientCreateOrReplaceResponse contains the response from method FailoverInstancesClient.BeginCreateOrReplace.
+type FailoverInstancesClientCreateOrReplaceResponse struct {
+	// A failover instance belonging to the scheduler
+	FailoverInstance
+}
+
+// FailoverInstancesClientDeleteResponse contains the response from method FailoverInstancesClient.BeginDelete.
+type FailoverInstancesClientDeleteResponse struct {
+	// placeholder for future response values
+}
+
+// FailoverInstancesClientFailoverResponse contains the response from method FailoverInstancesClient.BeginFailover.
+type FailoverInstancesClientFailoverResponse struct {
+	// A failover instance belonging to the scheduler
+	FailoverInstance
+}
+
+// FailoverInstancesClientForceFailoverAllowDataLossResponse contains the response from method FailoverInstancesClient.BeginForceFailoverAllowDataLoss.
+type FailoverInstancesClientForceFailoverAllowDataLossResponse struct {
+	// A failover instance belonging to the scheduler
+	FailoverInstance
+}
+
+// FailoverInstancesClientGetResponse contains the response from method FailoverInstancesClient.Get.
+type FailoverInstancesClientGetResponse struct {
+	// A failover instance belonging to the scheduler
+	FailoverInstance
+}
+
+// FailoverInstancesClientListBySchedulerResponse contains the response from method FailoverInstancesClient.NewListBySchedulerPager.
+type FailoverInstancesClientListBySchedulerResponse struct {
+	// The response of a FailoverInstance list operation.
+	FailoverInstanceListResult
+}
+
 // OperationsClientListResponse contains the response from method OperationsClient.NewListPager.
 type OperationsClientListResponse struct {
 	// A list of REST API operations supported by an Azure Resource Provider. It contains an URL link to get the next set of results.
@@ -39,15 +86,38 @@ type RetentionPoliciesClientUpdateResponse struct {
 	RetentionPolicy
 }
 
+// SchedulersClientCreateOrUpdatePrivateEndpointConnectionResponse contains the response from method SchedulersClient.BeginCreateOrUpdatePrivateEndpointConnection.
+type SchedulersClientCreateOrUpdatePrivateEndpointConnectionResponse struct {
+	// A private endpoint connection resource
+	PrivateEndpointConnection
+}
+
 // SchedulersClientCreateOrUpdateResponse contains the response from method SchedulersClient.BeginCreateOrUpdate.
 type SchedulersClientCreateOrUpdateResponse struct {
 	// A Durable Task Scheduler resource
 	Scheduler
 }
 
+// SchedulersClientDeletePrivateEndpointConnectionResponse contains the response from method SchedulersClient.BeginDeletePrivateEndpointConnection.
+type SchedulersClientDeletePrivateEndpointConnectionResponse struct {
+	// placeholder for future response values
+}
+
 // SchedulersClientDeleteResponse contains the response from method SchedulersClient.BeginDelete.
 type SchedulersClientDeleteResponse struct {
 	// placeholder for future response values
+}
+
+// SchedulersClientGetPrivateEndpointConnectionResponse contains the response from method SchedulersClient.GetPrivateEndpointConnection.
+type SchedulersClientGetPrivateEndpointConnectionResponse struct {
+	// A private endpoint connection resource
+	PrivateEndpointConnection
+}
+
+// SchedulersClientGetPrivateLinkResponse contains the response from method SchedulersClient.GetPrivateLink.
+type SchedulersClientGetPrivateLinkResponse struct {
+	// A private link resource.
+	SchedulerPrivateLinkResource
 }
 
 // SchedulersClientGetResponse contains the response from method SchedulersClient.Get.
@@ -66,6 +136,29 @@ type SchedulersClientListByResourceGroupResponse struct {
 type SchedulersClientListBySubscriptionResponse struct {
 	// The response of a Scheduler list operation.
 	SchedulerListResult
+}
+
+// SchedulersClientListPrivateEndpointConnectionsResponse contains the response from method SchedulersClient.NewListPrivateEndpointConnectionsPager.
+type SchedulersClientListPrivateEndpointConnectionsResponse struct {
+	// The response of a PrivateEndpointConnection list operation.
+	PrivateEndpointConnectionListResult
+}
+
+// SchedulersClientListPrivateLinksResponse contains the response from method SchedulersClient.NewListPrivateLinksPager.
+type SchedulersClientListPrivateLinksResponse struct {
+	// The response of a SchedulerPrivateLinkResource list operation.
+	SchedulerPrivateLinkResourceListResult
+}
+
+// SchedulersClientRestartResponse contains the response from method SchedulersClient.Restart.
+type SchedulersClientRestartResponse struct {
+	// placeholder for future response values
+}
+
+// SchedulersClientUpdatePrivateEndpointConnectionResponse contains the response from method SchedulersClient.BeginUpdatePrivateEndpointConnection.
+type SchedulersClientUpdatePrivateEndpointConnectionResponse struct {
+	// A private endpoint connection resource
+	PrivateEndpointConnection
 }
 
 // SchedulersClientUpdateResponse contains the response from method SchedulersClient.BeginUpdate.
@@ -95,4 +188,56 @@ type TaskHubsClientGetResponse struct {
 type TaskHubsClientListBySchedulerResponse struct {
 	// The response of a TaskHub list operation.
 	TaskHubListResult
+}
+
+// TaskQueuesClientCreateOrUpdateResponse contains the response from method TaskQueuesClient.BeginCreateOrUpdate.
+type TaskQueuesClientCreateOrUpdateResponse struct {
+	// A Task Queue resource belonging to a Task Hub
+	TaskQueue
+}
+
+// TaskQueuesClientDeleteResponse contains the response from method TaskQueuesClient.BeginDelete.
+type TaskQueuesClientDeleteResponse struct {
+	// placeholder for future response values
+}
+
+// TaskQueuesClientGetResponse contains the response from method TaskQueuesClient.Get.
+type TaskQueuesClientGetResponse struct {
+	// A Task Queue resource belonging to a Task Hub
+	TaskQueue
+}
+
+// TaskQueuesClientListByTaskHubResponse contains the response from method TaskQueuesClient.NewListByTaskHubPager.
+type TaskQueuesClientListByTaskHubResponse struct {
+	// The response of a TaskQueue list operation.
+	TaskQueueListResult
+}
+
+// TaskQueuesClientUpdateResponse contains the response from method TaskQueuesClient.BeginUpdate.
+type TaskQueuesClientUpdateResponse struct {
+	// A Task Queue resource belonging to a Task Hub
+	TaskQueue
+}
+
+// TransparentDataEncryptionsClientCreateOrReplaceResponse contains the response from method TransparentDataEncryptionsClient.BeginCreateOrReplace.
+type TransparentDataEncryptionsClientCreateOrReplaceResponse struct {
+	// A transparent data encryption resource belonging to the scheduler
+	TransparentDataEncryption
+}
+
+// TransparentDataEncryptionsClientDeleteResponse contains the response from method TransparentDataEncryptionsClient.BeginDelete.
+type TransparentDataEncryptionsClientDeleteResponse struct {
+	// placeholder for future response values
+}
+
+// TransparentDataEncryptionsClientGetResponse contains the response from method TransparentDataEncryptionsClient.Get.
+type TransparentDataEncryptionsClientGetResponse struct {
+	// A transparent data encryption resource belonging to the scheduler
+	TransparentDataEncryption
+}
+
+// TransparentDataEncryptionsClientListBySchedulerResponse contains the response from method TransparentDataEncryptionsClient.NewListBySchedulerPager.
+type TransparentDataEncryptionsClientListBySchedulerResponse struct {
+	// The response of a TransparentDataEncryption list operation.
+	TransparentDataEncryptionListResult
 }

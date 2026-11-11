@@ -6,6 +6,7 @@ package azcosmos
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
@@ -21,6 +22,21 @@ type ContainerClient struct {
 	database *DatabaseClient
 	// The resource link
 	link string
+}
+
+// ItemIdentity represents the identity of an item (its id plus its partition key value).
+// This is useful for bulk/read-many style operations that need to address multiple
+// items under (potentially) different partition key values.
+//
+// ID must match the 'id' property of the stored item. PartitionKey is the value (or
+// composite/hierarchical set of values) the item was written with. For hierarchical
+// partition keys create the PartitionKey with NewPartitionKey* helpers (e.g.
+// NewPartitionKeyString, NewPartitionKeyInt, or NewPartitionKeyArray) following the
+// order defined in the container. For hierarchical partition keys, all of the
+// levels must be provided.
+type ItemIdentity struct {
+	ID           string       // Item id
+	PartitionKey PartitionKey // Partition key value for the item
 }
 
 func newContainer(id string, database *DatabaseClient) (*ContainerClient, error) {
@@ -46,8 +62,24 @@ func (c *ContainerClient) Read(
 	if err != nil {
 		return ContainerResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
+
+	response, err := c.readContainerRaw(ctx, o)
+	if err == nil && c.database.client.getContainerCache() != nil && response.ContainerProperties != nil {
+		// Populate the container properties cache on successful Read
+		c.database.client.getContainerCache().set(c.link, response.ContainerProperties)
+	}
+	return response, err
+}
+
+// readContainerRaw performs the HTTP call to read container properties.
+// It is the shared implementation used by both Read() and the container
+// properties cache refresh, ensuring consistent request construction.
+func (c *ContainerClient) readContainerRaw(
+	ctx context.Context,
+	o *ReadContainerOptions,
+) (ContainerResponse, error) {
 	if o == nil {
 		o = &ReadContainerOptions{}
 	}
@@ -72,8 +104,7 @@ func (c *ContainerClient) Read(
 		return ContainerResponse{}, err
 	}
 
-	response, err := newContainerResponse(azResponse)
-	return response, err
+	return newContainerResponse(azResponse)
 }
 
 // Replace a Cosmos container.
@@ -88,7 +119,7 @@ func (c *ContainerClient) Replace(
 	if err != nil {
 		return ContainerResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ReplaceContainerOptions{}
@@ -117,6 +148,9 @@ func (c *ContainerClient) Replace(
 	}
 
 	response, err := newContainerResponse(azResponse)
+	if err == nil && c.database.client.getContainerCache() != nil && response.ContainerProperties != nil {
+		c.database.client.getContainerCache().set(c.link, response.ContainerProperties)
+	}
 	return response, err
 }
 
@@ -131,7 +165,7 @@ func (c *ContainerClient) Delete(
 	if err != nil {
 		return ContainerResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &DeleteContainerOptions{}
@@ -173,7 +207,7 @@ func (c *ContainerClient) ReadThroughput(
 	if err != nil {
 		return ThroughputResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ThroughputOptions{}
@@ -202,7 +236,7 @@ func (c *ContainerClient) ReplaceThroughput(
 	if err != nil {
 		return ThroughputResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	if o == nil {
 		o = &ThroughputOptions{}
@@ -233,7 +267,7 @@ func (c *ContainerClient) CreateItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -243,6 +277,8 @@ func (c *ContainerClient) CreateItem(
 		o = &ItemOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
@@ -286,7 +322,7 @@ func (c *ContainerClient) UpsertItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -300,6 +336,8 @@ func (c *ContainerClient) UpsertItem(
 		o = &ItemOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
@@ -345,7 +383,7 @@ func (c *ContainerClient) ReplaceItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -355,6 +393,8 @@ func (c *ContainerClient) ReplaceItem(
 		o = &ItemOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
@@ -398,7 +438,7 @@ func (c *ContainerClient) ReadItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -407,6 +447,8 @@ func (c *ContainerClient) ReadItem(
 	if o == nil {
 		o = &ItemOptions{}
 	}
+	h.priorityLevel = o.PriorityLevel
+	h.throughputBucket = o.ThroughputBucket
 
 	operationContext := pipelineRequestOptions{
 		resourceType:          resourceTypeDocument,
@@ -432,6 +474,78 @@ func (c *ContainerClient) ReadItem(
 	return response, err
 }
 
+// ReadManyItems reads multiple items in a Cosmos container. Note that the items returned in the response are unordered.
+// ctx - The context for the request.
+// itemIdentities - The identities of the items to read.
+// o - Options for the operation.
+func (c *ContainerClient) ReadManyItems(
+	ctx context.Context,
+	itemIdentities []ItemIdentity,
+	o *ReadManyItemsOptions) (ReadManyItemsResponse, error) {
+	// if empty list of items, return empty list
+	if len(itemIdentities) == 0 {
+		return ReadManyItemsResponse{}, nil
+	}
+
+	// Validate all item IDs are non-empty
+	for i := range itemIdentities {
+		if itemIdentities[i].ID == "" {
+			return ReadManyItemsResponse{}, errors.New("item identity at index " + fmt.Sprint(i) + " has an empty ID")
+		}
+	}
+
+	readManyOptions := &ReadManyItemsOptions{}
+	if o != nil {
+		originalOptions := *o
+		readManyOptions = &originalOptions
+	}
+
+	h := headerOptionsOverride{
+		priorityLevel:    readManyOptions.PriorityLevel,
+		throughputBucket: readManyOptions.ThroughputBucket,
+	}
+
+	operationContext := pipelineRequestOptions{
+		resourceType:          resourceTypeDocument,
+		resourceAddress:       c.link,
+		headerOptionsOverride: &h,
+	}
+
+	ctx, endTrace := ensureOperationTrace(ctx, fmt.Sprintf("read_many_items %s", c.id))
+	response, err := c.executeReadManyWithQueries(ctx, itemIdentities, readManyOptions, operationContext)
+	endTrace()
+	if err != nil {
+		return ReadManyItemsResponse{}, err
+	}
+
+	response.Diagnostics = diagnosticsFromContext(ctx)
+	return response, nil
+}
+
+// ReadFeedRanges retrieves all the feed ranges for which changefeed could be fetched.
+// ctx - The context for the request.
+// o - Options for the operation. nil to use default options. Currently no options are
+// defined and the parameter is ignored; it exists for future use.
+func (c *ContainerClient) ReadFeedRanges(ctx context.Context, o *FeedRangesOptions) ([]FeedRange, error) {
+	// Get the partition key ranges from the container
+	response, err := c.getPartitionKeyRanges(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert partition key ranges to feed ranges
+	feedRanges := make([]FeedRange, 0, len(response.PartitionKeyRanges))
+	for _, pkr := range response.PartitionKeyRanges {
+		feedRange := FeedRange{
+			MinInclusive: pkr.MinInclusive,
+			MaxExclusive: pkr.MaxExclusive,
+		}
+		feedRanges = append(feedRanges, feedRange)
+	}
+
+	return feedRanges, nil
+}
+
 // DeleteItem deletes an item in a Cosmos container.
 // ctx - The context for the request.
 // partitionKey - The partition key for the item.
@@ -447,7 +561,7 @@ func (c *ContainerClient) DeleteItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -457,6 +571,8 @@ func (c *ContainerClient) DeleteItem(
 		o = &ItemOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
@@ -515,12 +631,21 @@ func (c *ContainerClient) NewQueryItemsPager(query string, partitionKey Partitio
 	if o != nil {
 		originalOptions := *o
 		queryOptions = &originalOptions
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
 		resourceType:          resourceTypeDocument,
 		resourceAddress:       c.link,
 		headerOptionsOverride: &h,
+	}
+
+	// For now, we short-cut straight to the preview query engine if provided.
+	// In the future, we could consider running the normal pipeline until the Gateway fails due to an unsupported query and then switch over.
+	// However, this logic could also just be handled in the query engine itself.
+	if queryOptions.QueryEngine != nil {
+		return c.executeQueryWithEngine(queryOptions.QueryEngine, query, queryOptions, operationContext)
 	}
 
 	path, _ := generatePathForNameBased(resourceTypeDocument, operationContext.resourceAddress, true)
@@ -535,7 +660,7 @@ func (c *ContainerClient) NewQueryItemsPager(query string, partitionKey Partitio
 			if err != nil {
 				return QueryItemsResponse{}, err
 			}
-			ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+			ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 			defer func() { endSpan(err) }()
 			if page != nil {
 				if page.ContinuationToken != nil {
@@ -579,7 +704,7 @@ func (c *ContainerClient) PatchItem(
 	if err != nil {
 		return ItemResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	h := headerOptionsOverride{
 		partitionKey: &partitionKey,
@@ -589,6 +714,8 @@ func (c *ContainerClient) PatchItem(
 		o = &ItemOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	operationContext := pipelineRequestOptions{
@@ -631,7 +758,7 @@ func (c *ContainerClient) ExecuteTransactionalBatch(ctx context.Context, b Trans
 	if err != nil {
 		return TransactionalBatchResponse{}, err
 	}
-	ctx, endSpan := runtime.StartSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
 	defer func() { endSpan(err) }()
 	if len(b.operations) == 0 {
 		return TransactionalBatchResponse{}, errors.New("no operations in batch")
@@ -645,6 +772,8 @@ func (c *ContainerClient) ExecuteTransactionalBatch(ctx context.Context, b Trans
 		o = &TransactionalBatchOptions{}
 	} else {
 		h.enableContentResponseOnWrite = &o.EnableContentResponseOnWrite
+		h.priorityLevel = o.PriorityLevel
+		h.throughputBucket = o.ThroughputBucket
 	}
 
 	// If contentResponseOnWrite is not enabled at the client level the
@@ -685,6 +814,56 @@ func (c *ContainerClient) ExecuteTransactionalBatch(ctx context.Context, b Trans
 	return response, err
 }
 
+// ReadChangeFeed retrieves a single page of the change feed using the provided options.
+// ctx - The context for the request.
+// options - Options for the operation
+//
+// Routes via overlap-match against the current PK-range cache (split-aware). When
+// the customer's FeedRange straddles a split, it's expanded into one queue entry
+// per child so no events are missed at the boundary. 410/Gone responses with a
+// PK-range substatus trigger a cache refresh and bounded retry. The continuation
+// token is a multi-range composite; subsequent calls drain remaining ranges.
+//
+// Returns ErrFeedRangeUnresolved (wrapped) when the customer's FeedRange/token
+// doesn't overlap any current physical range even after a forced refresh — a
+// signal to re-derive FeedRanges from ReadFeedRanges.
+//
+// Returns an error wrapping *azcore.ResponseError on persistent 410/Gone or any
+// non-retryable HTTP error.
+func (c *ContainerClient) ReadChangeFeed(
+	ctx context.Context,
+	options *ChangeFeedOptions,
+) (ChangeFeedResponse, error) {
+	if options == nil {
+		options = &ChangeFeedOptions{}
+	}
+
+	var err error
+	spanName, err := c.getSpanForItems(operationTypeRead)
+	if err != nil {
+		return ChangeFeedResponse{}, err
+	}
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
+
+	// Cross-container token guard. We only need the container's current
+	// ResourceID when a continuation token carries one to validate. Building
+	// the initial queue takes care of that lazily so the no-token path stays
+	// at one extra request (pk-ranges fetch).
+	token, partitionKeyRanges, err := c.buildChangeFeedInitialQueue(ctx, options)
+	if err != nil {
+		return ChangeFeedResponse{}, err
+	}
+
+	// Capture into err so the deferred endSpan closure observes drain
+	// failures (410 budget exhaustion, send errors, refresh failures,
+	// serialization errors, ErrFeedRangeUnresolved) instead of recording
+	// success on every drain that actually failed.
+	var resp ChangeFeedResponse
+	resp, err = c.getChangeFeedForQueue(ctx, options, token, partitionKeyRanges)
+	return resp, err
+}
+
 func (c *ContainerClient) getRID(ctx context.Context) (string, error) {
 	containerResponse, err := c.Read(ctx, nil)
 	if err != nil {
@@ -694,10 +873,90 @@ func (c *ContainerClient) getRID(ctx context.Context) (string, error) {
 	return containerResponse.ContainerProperties.ResourceID, nil
 }
 
+// getContainerRID resolves the container's ResourceID, using the container
+// properties cache if available, otherwise falling back to a direct Read.
+func (c *ContainerClient) getContainerRID(ctx context.Context) (string, error) {
+	if c.database.client.getContainerCache() != nil {
+		props, err := c.database.client.getContainerCache().getProperties(ctx, c)
+		if err != nil {
+			return "", err
+		}
+		return props.ResourceID, nil
+	}
+	return c.getRID(ctx)
+}
+
 func (c *ContainerClient) getSpanForContainer(operationType operationType, resourceType resourceType, id string) (span, error) {
 	return getSpanNameForContainers(c.database.client.accountEndpointUrl(), operationType, resourceType, c.database.id, id)
 }
 
 func (c *ContainerClient) getSpanForItems(operationType operationType) (span, error) {
 	return getSpanNameForItems(c.database.client.accountEndpointUrl(), operationType, c.database.id, c.id)
+}
+
+func (c *ContainerClient) getPartitionKeyRanges(ctx context.Context, o *partitionKeyRangeOptions) (partitionKeyRangeResponse, error) {
+	var err error
+	spanName, err := c.getSpanForContainer(operationTypeRead, resourceTypePartitionKeyRange, c.id)
+	if err != nil {
+		return partitionKeyRangeResponse{}, err
+	}
+	ctx, endSpan := startSpan(ctx, spanName.name, c.database.client.internal.Tracer(), &spanName.options)
+	defer func() { endSpan(err) }()
+
+	// Use the cache if available, otherwise fall back to direct fetch
+	if c.database.client.getPKRangeCache() != nil {
+		var containerRID string
+		containerRID, err = c.getContainerRID(ctx)
+		if err != nil {
+			return partitionKeyRangeResponse{}, err
+		}
+
+		var routingMap *collectionRoutingMap
+		routingMap, err = c.database.client.getPKRangeCache().getRoutingMap(ctx, containerRID, c.link, c.database.client)
+		if err != nil {
+			return partitionKeyRangeResponse{}, err
+		}
+
+		return partitionKeyRangeResponse{
+			PartitionKeyRanges: routingMap.orderedRanges,
+			Count:              len(routingMap.orderedRanges),
+		}, nil
+	}
+
+	// Fallback: direct fetch without caching
+	return c.fetchPartitionKeyRangesDirect(ctx, o)
+}
+
+// fetchPartitionKeyRangesDirect fetches partition key ranges directly from the service
+// without using the cache.
+func (c *ContainerClient) fetchPartitionKeyRangesDirect(ctx context.Context, o *partitionKeyRangeOptions) (partitionKeyRangeResponse, error) {
+	operationContext := pipelineRequestOptions{
+		resourceType:    resourceTypePartitionKeyRange,
+		resourceAddress: c.link,
+	}
+
+	if o == nil {
+		o = &partitionKeyRangeOptions{}
+	}
+
+	path, err := generatePathForNameBased(resourceTypePartitionKeyRange, operationContext.resourceAddress, true)
+	if err != nil {
+		return partitionKeyRangeResponse{}, err
+	}
+
+	azResponse, err := c.database.client.sendGetRequest(
+		path,
+		ctx,
+		operationContext,
+		o,
+		nil)
+	if err != nil {
+		return partitionKeyRangeResponse{}, err
+	}
+
+	response, err := newPartitionKeyRangeResponse(azResponse)
+	if err != nil {
+		return partitionKeyRangeResponse{}, err
+	}
+	return response, nil
 }

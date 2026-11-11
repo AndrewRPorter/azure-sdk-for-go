@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_UserCreateOrUpdate.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_UserCreateOrUpdate.json
 func ExampleUsersClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -27,7 +27,7 @@ func ExampleUsersClient_BeginCreateOrUpdate() {
 		Properties: &armmongocluster.UserProperties{
 			Roles: []*armmongocluster.DatabaseRole{
 				{
-					Role: to.Ptr(armmongocluster.UserRoleDatabaseOwner),
+					Role: to.Ptr(armmongocluster.UserRoleRoot),
 					Db:   to.Ptr("admin"),
 				},
 			},
@@ -44,29 +44,29 @@ func ExampleUsersClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armmongocluster.UsersClientCreateOrUpdateResponse{
-	// 	User: &armmongocluster.User{
-	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestResourceGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
+	// 	User: armmongocluster.User{
+	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
 	// 		Name: to.Ptr("uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
-	// 		Type: to.Ptr("/Microsoft.DocumentDB/mongoClusters/users"),
+	// 		Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/users"),
 	// 		SystemData: &armmongocluster.SystemData{
 	// 			CreatedBy: to.Ptr("user1"),
 	// 			CreatedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-01T17:18:19.1234567Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2020, time.January, 1, 17, 18, 19, 123456700, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user2"),
 	// 			LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-02T17:18:19.1234567Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2020, time.January, 2, 17, 18, 19, 123456700, time.UTC)),
 	// 		},
 	// 		Properties: &armmongocluster.UserProperties{
 	// 			ProvisioningState: to.Ptr(armmongocluster.ProvisioningStateInProgress),
 	// 			Roles: []*armmongocluster.DatabaseRole{
 	// 				{
-	// 					Role: to.Ptr(armmongocluster.UserRoleDatabaseOwner),
+	// 					Role: to.Ptr(armmongocluster.UserRoleRoot),
 	// 					Db: to.Ptr("admin"),
 	// 				},
 	// 			},
@@ -81,7 +81,7 @@ func ExampleUsersClient_BeginCreateOrUpdate() {
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_UserDelete.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_UserDelete.json
 func ExampleUsersClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -98,11 +98,11 @@ func ExampleUsersClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_UserGet.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_UserGet.json
 func ExampleUsersClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -121,23 +121,23 @@ func ExampleUsersClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armmongocluster.UsersClientGetResponse{
-	// 	User: &armmongocluster.User{
-	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestResourceGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
+	// 	User: armmongocluster.User{
+	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
 	// 		Name: to.Ptr("uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
-	// 		Type: to.Ptr("/Microsoft.DocumentDB/mongoClusters/users"),
+	// 		Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/users"),
 	// 		SystemData: &armmongocluster.SystemData{
 	// 			CreatedBy: to.Ptr("user1"),
 	// 			CreatedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-01T17:18:19.1234567Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2020, time.January, 1, 17, 18, 19, 123456700, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("user2"),
 	// 			LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-02T17:18:19.1234567Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2020, time.January, 2, 17, 18, 19, 123456700, time.UTC)),
 	// 		},
 	// 		Properties: &armmongocluster.UserProperties{
 	// 			ProvisioningState: to.Ptr(armmongocluster.ProvisioningStateSucceeded),
 	// 			Roles: []*armmongocluster.DatabaseRole{
 	// 				{
-	// 					Role: to.Ptr(armmongocluster.UserRoleDatabaseOwner),
+	// 					Role: to.Ptr(armmongocluster.UserRoleRoot),
 	// 					Db: to.Ptr("admin"),
 	// 				},
 	// 			},
@@ -152,7 +152,7 @@ func ExampleUsersClient_Get() {
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_UserList.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_UserList.json
 func ExampleUsersClient_NewListByMongoClusterPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -178,22 +178,22 @@ func ExampleUsersClient_NewListByMongoClusterPager() {
 		// 	UserListResult: armmongocluster.UserListResult{
 		// 		Value: []*armmongocluster.User{
 		// 			{
-		// 				ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestResourceGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/ssssssss-ssss-ssss-ssss-ssssssssssss"),
+		// 				ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/ssssssss-ssss-ssss-ssss-ssssssssssss"),
 		// 				Name: to.Ptr("ssssssss-ssss-ssss-ssss-ssssssssssss"),
-		// 				Type: to.Ptr("/Microsoft.DocumentDB/mongoClusters/users"),
+		// 				Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/users"),
 		// 				SystemData: &armmongocluster.SystemData{
 		// 					CreatedBy: to.Ptr("user1"),
 		// 					CreatedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-01T17:18:19.1234567Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2020, time.January, 1, 17, 18, 19, 123456700, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user2"),
 		// 					LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-02T17:18:19.1234567Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2020, time.January, 2, 17, 18, 19, 123456700, time.UTC)),
 		// 				},
 		// 				Properties: &armmongocluster.UserProperties{
 		// 					ProvisioningState: to.Ptr(armmongocluster.ProvisioningStateSucceeded),
 		// 					Roles: []*armmongocluster.DatabaseRole{
 		// 						{
-		// 							Role: to.Ptr(armmongocluster.UserRoleDatabaseOwner),
+		// 							Role: to.Ptr(armmongocluster.UserRoleRoot),
 		// 							Db: to.Ptr("admin"),
 		// 						},
 		// 					},
@@ -206,22 +206,22 @@ func ExampleUsersClient_NewListByMongoClusterPager() {
 		// 				},
 		// 			},
 		// 			{
-		// 				ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestResourceGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
+		// 				ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/users/uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
 		// 				Name: to.Ptr("uuuuuuuu-uuuu-uuuu-uuuu-uuuuuuuuuuuu"),
-		// 				Type: to.Ptr("/Microsoft.DocumentDB/mongoClusters/users"),
+		// 				Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/users"),
 		// 				SystemData: &armmongocluster.SystemData{
 		// 					CreatedBy: to.Ptr("user1"),
 		// 					CreatedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-01T17:18:19.1234567Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2020, time.January, 1, 17, 18, 19, 123456700, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("user2"),
 		// 					LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2020-01-02T17:18:19.1234567Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2020, time.January, 2, 17, 18, 19, 123456700, time.UTC)),
 		// 				},
 		// 				Properties: &armmongocluster.UserProperties{
 		// 					ProvisioningState: to.Ptr(armmongocluster.ProvisioningStateSucceeded),
 		// 					Roles: []*armmongocluster.DatabaseRole{
 		// 						{
-		// 							Role: to.Ptr(armmongocluster.UserRoleDatabaseOwner),
+		// 							Role: to.Ptr(armmongocluster.UserRoleRoot),
 		// 							Db: to.Ptr("admin"),
 		// 						},
 		// 					},

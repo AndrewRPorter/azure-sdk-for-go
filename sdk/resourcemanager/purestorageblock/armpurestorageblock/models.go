@@ -6,6 +6,15 @@ package armpurestorageblock
 
 import "time"
 
+// ActivateSaaSRequest - SaaS guid for Activate SaaS Resource
+type ActivateSaaSRequest struct {
+	// REQUIRED; SaaS guid for Activate SaaS Resource
+	SaasGUID *string
+
+	// Publisher Id for PureStorage resource
+	PublisherID *string
+}
+
 // Address details
 type Address struct {
 	// REQUIRED; Address line 1
@@ -90,11 +99,11 @@ type AvsStorageContainer struct {
 	// The resource-specific properties for this resource.
 	Properties *AvsStorageContainerProperties
 
-	// READ-ONLY; Name of the storage container
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -137,11 +146,11 @@ type AvsStorageContainerVolume struct {
 	// The resource-specific properties for this resource.
 	Properties *VolumeProperties
 
-	// READ-ONLY; ID of the volume in the storage container
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -176,11 +185,11 @@ type AvsVM struct {
 	// The resource-specific properties for this resource.
 	Properties *AvsVMProperties
 
-	// READ-ONLY; ID of the AVS VM
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -260,11 +269,11 @@ type AvsVMVolume struct {
 	// The resource-specific properties for this resource.
 	Properties *VolumeProperties
 
-	// READ-ONLY; ID of the volume in the AVS VM
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -301,6 +310,45 @@ type AzureVmwareService struct {
 
 	// Azure resource ID of the AVS SDDC the storage pool is connected to
 	ClusterResourceID *string
+}
+
+// AzureVolumeProperties - Properties of an Azure volume
+type AzureVolumeProperties struct {
+	// Currently provisioned size of the volume, in bytes
+	ProvisionedSize *int64
+
+	// Azure resource ID of the soft-deleted volume to recover within the same volume group
+	SourceRecoverableVolumeResourceID *string
+
+	// Serial number of the source volume to import
+	SourceSerialNumber *string
+
+	// Indicates the source type for volume creation
+	SourceType *VolumeSourceType
+
+	// Azure Resource ID of the source volume group to clone from.
+	SourceVolumeGroupResourceID *string
+
+	// Azure resource ID of the source volume for cloning
+	SourceVolumeResourceID *string
+
+	// Source volume group snapshot and volume snapshot name to restore from
+	SourceVolumeSnapshot *VolumeSnapshotSource
+
+	// READ-ONLY; Volume creation date, as an RFC 3339 timestamp
+	CreatedAt *time.Time
+
+	// READ-ONLY; Provisioning state of the resource
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; Serial number of the volume
+	SerialNumber *string
+
+	// READ-ONLY; Soft-deletion state of the volume
+	SoftDeletion *DestroyedStateProperties
+
+	// READ-ONLY; Storage space usage for the volume
+	Space *Space
 }
 
 // BandwidthUsage - Bandwidth usage metrics
@@ -348,6 +396,27 @@ type CompanyDetails struct {
 	Address *Address
 }
 
+// ConnectionParametersResponse - Connection parameters response
+type ConnectionParametersResponse struct {
+	// REQUIRED; ISCSI connection parameters
+	Iscsi *IscsiConnectionParameters
+}
+
+// DestroyedStateProperties - Soft-deletion (destroyed) state of a resource
+type DestroyedStateProperties struct {
+	// READ-ONLY; If false, the resource is active; if true, the resource has been destroyed
+	Destroyed *bool
+
+	// READ-ONLY; Date and time at which the resource was destroyed, as an RFC 3339 timestamp
+	DestroyedAt *time.Time
+
+	// READ-ONLY; Date at which the resource will be eradicated and impossible to recover, as an RFC 3339 timestamp
+	EradicationTimestamp *time.Time
+
+	// READ-ONLY; Name of the resource before it was destroyed
+	PreviousName *string
+}
+
 // HealthDetails - Health metrics for a storage pool
 type HealthDetails struct {
 	// REQUIRED; Bandwidth usage metrics
@@ -382,6 +451,33 @@ type IopsUsage struct {
 	Provisioned *int64
 }
 
+// IscsiConnectionParameters - ISCSI connection parameters
+type IscsiConnectionParameters struct {
+	// REQUIRED; List of ISCSI endpoints for connection
+	Endpoints []*IscsiEndpoint
+}
+
+// IscsiEndpoint - ISCSI connection endpoint details
+type IscsiEndpoint struct {
+	// REQUIRED; IP address of the endpoint
+	IP *string
+
+	// REQUIRED; IQN (iSCSI Qualified Name) of the endpoint
+	Iqn *string
+
+	// REQUIRED; Port number of the endpoint
+	Port *int32
+}
+
+// LatestLinkedSaaSResponse - Response of get latest linked SaaS resource operation.
+type LatestLinkedSaaSResponse struct {
+	// Flag indicating if the SaaS resource is hidden
+	IsHiddenSaaS *bool
+
+	// SaaS resource id
+	SaaSResourceID *string
+}
+
 // LimitDetails - Limits constraining certain resource properties
 type LimitDetails struct {
 	// REQUIRED; internal
@@ -395,6 +491,12 @@ type LimitDetails struct {
 
 	// REQUIRED; Limits used for volume resources
 	Volume *VolumeLimits
+}
+
+// LinkSaaSRequest - SaaS details for linking to a reservation.
+type LinkSaaSRequest struct {
+	// REQUIRED; SaaS resource id
+	SaaSResourceID *string
 }
 
 // ManagedServiceIdentity - Managed service identity (system assigned and/or user assigned identities)
@@ -415,8 +517,11 @@ type ManagedServiceIdentity struct {
 
 // MarketplaceDetails - Marketplace details
 type MarketplaceDetails struct {
-	// REQUIRED; Offer details of the marketplace subscription
+	// Offer details of the marketplace subscription
 	OfferDetails *OfferDetails
+
+	// ARM ID of the Marketplace SaaS resource. Only used in Create operations.
+	SaaSResourceID *string
 
 	// Marketplace subscription status
 	SubscriptionStatus *MarketplaceSubscriptionStatus
@@ -469,7 +574,7 @@ type Operation struct {
 	Origin *Origin
 }
 
-// OperationDisplay - Localized display information for and operation.
+// OperationDisplay - Localized display information for an operation.
 type OperationDisplay struct {
 	// READ-ONLY; The short, localized friendly description of the operation; suitable for tool tips and detailed views.
 	Description *string
@@ -497,6 +602,15 @@ type OperationListResult struct {
 	NextLink *string
 }
 
+// PerformanceParameters - Performance parameters for volume group
+type PerformanceParameters struct {
+	// Bandwidth limit in MB per second
+	BandwidthLimitMbPerSec *int64
+
+	// IOPS limit
+	IopsLimit *int64
+}
+
 // PerformancePolicyLimits - internal
 type PerformancePolicyLimits struct {
 	// REQUIRED; internal
@@ -504,6 +618,91 @@ type PerformancePolicyLimits struct {
 
 	// REQUIRED; internal
 	IopsLimit *RangeLimits
+}
+
+// PlatformConsoleAccessSettings - Access settings for a platform console interface
+type PlatformConsoleAccessSettings struct {
+	// REQUIRED; Whether this console interface access is enabled
+	Enabled *bool
+}
+
+// PlatformConsoleActivationCode - One-time activation code for platform console access
+type PlatformConsoleActivationCode struct {
+	// REQUIRED; One-time activation code for platform console access
+	ActivationCode *string
+
+	// REQUIRED; Expiry time of the activation code in RFC3339 format
+	ExpiresAt *time.Time
+
+	// REQUIRED; Username to use when activating the console session
+	Username *string
+}
+
+// PlatformConsoleAuthConfig - Base model for platform console authentication configuration. Extend with a type-specific subtype
+// for each auth mechanism.
+type PlatformConsoleAuthConfig struct {
+	// REQUIRED; Authentication type discriminator
+	AuthType *PlatformConsoleAuthType
+}
+
+// GetPlatformConsoleAuthConfig implements the PlatformConsoleAuthConfigClassification interface for type PlatformConsoleAuthConfig.
+func (p *PlatformConsoleAuthConfig) GetPlatformConsoleAuthConfig() *PlatformConsoleAuthConfig {
+	return p
+}
+
+// PlatformConsoleAuthResult - Base model for platform console authentication result. Actual type depends on the authType
+// used in the request.
+type PlatformConsoleAuthResult struct {
+	// REQUIRED; Authentication type discriminator
+	AuthType *PlatformConsoleAuthType
+}
+
+// GetPlatformConsoleAuthResult implements the PlatformConsoleAuthResultClassification interface for type PlatformConsoleAuthResult.
+func (p *PlatformConsoleAuthResult) GetPlatformConsoleAuthResult() *PlatformConsoleAuthResult {
+	return p
+}
+
+// PlatformConsoleSettings - Settings for platform console access to the storage pool
+type PlatformConsoleSettings struct {
+	// API access settings
+	API *PlatformConsoleAccessSettings
+
+	// CLI access settings
+	Cli *PlatformConsoleAccessSettings
+
+	// Whether platform console access is enabled for the storage pool or not.When enabled is false, all console access is disabled
+	// regardless of individual interface settings.
+	Enabled *bool
+
+	// GUI access settings
+	Gui *PlatformConsoleAccessSettings
+
+	// Subnets configured for platform console access
+	Subnets []*PlatformConsoleSubnet
+
+	// READ-ONLY; Default username for console access (system-populated)
+	DefaultUsername *string
+}
+
+// PlatformConsoleSubnet - Subnet configuration for platform console access
+type PlatformConsoleSubnet struct {
+	// REQUIRED; Azure resource ID of the subnet
+	ID *string
+
+	// READ-ONLY; Management IP address assigned to the subnet (system-populated)
+	ManagementIPAddress *string
+
+	// READ-ONLY; Service backend IP addresses assigned to the subnet (system-populated)
+	ServiceBackendIPs []*string
+}
+
+// ProtectionParameters - Protection parameters for volume group
+type ProtectionParameters struct {
+	// Snapshot frequency in ISO 8601 duration format
+	Frequency *string
+
+	// Retention period for snapshots in ISO 8601 duration format
+	Retention *string
 }
 
 // ProtectionPolicyLimits - internal
@@ -524,6 +723,54 @@ type RangeLimits struct {
 	Min *int64
 }
 
+// RecoverableVolumeGroup - A destroyed volume group that is pending eradication
+type RecoverableVolumeGroup struct {
+	// The resource-specific properties for this resource.
+	Properties *RecoverableVolumeGroupProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// RecoverableVolumeGroupListResult - The response of a RecoverableVolumeGroup list operation.
+type RecoverableVolumeGroupListResult struct {
+	// REQUIRED; The RecoverableVolumeGroup items on this page
+	Value []*RecoverableVolumeGroup
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// RecoverableVolumeGroupProperties - Properties of a recoverable volume group
+type RecoverableVolumeGroupProperties struct {
+	// READ-ONLY; Date and time at which the volume group was created, as an RFC 3339 timestamp
+	CreatedAt *time.Time
+
+	// READ-ONLY; Performance parameters of the volume group
+	PerformanceParameters *PerformanceParameters
+
+	// READ-ONLY; Protection parameters of the volume group
+	ProtectionParameters *ProtectionParameters
+
+	// READ-ONLY; Provisioning state of the resource
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; Soft-deletion state of the recoverable volume group
+	SoftDeletion *DestroyedStateProperties
+
+	// READ-ONLY; Storage space usage of the volume group
+	Space *Space
+}
+
 // Reservation - Pure Storage cloud service resource type, also called reservation
 type Reservation struct {
 	// REQUIRED; The geo-location where the resource lives
@@ -535,11 +782,11 @@ type Reservation struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of the reservation.
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -619,7 +866,7 @@ type ReservationPropertiesBaseResourceProperties struct {
 	// REQUIRED; Marketplace details
 	Marketplace *MarketplaceDetails
 
-	// REQUIRED; User details
+	// User details
 	User *UserDetails
 
 	// READ-ONLY; Provisioning state of the resource
@@ -642,6 +889,65 @@ type ReservationUpdate struct {
 type ReservationUpdateProperties struct {
 	// User details
 	User *UserDetails
+}
+
+// SSHPlatformConsoleAuthConfig - SSH-based platform console authentication configuration
+type SSHPlatformConsoleAuthConfig struct {
+	// CONSTANT; Field has constant value PlatformConsoleAuthTypeSSH, any specified value is ignored.
+	AuthType *PlatformConsoleAuthType
+
+	// REQUIRED; SSH public key in OpenSSH authorized_keys format
+	PublicKey *string
+
+	// REQUIRED; Role to assign to the user on the platform console
+	Role *PlatformConsoleRole
+
+	// REQUIRED; Username to associate with the SSH public key
+	Username *string
+}
+
+// GetPlatformConsoleAuthConfig implements the PlatformConsoleAuthConfigClassification interface for type SSHPlatformConsoleAuthConfig.
+func (s *SSHPlatformConsoleAuthConfig) GetPlatformConsoleAuthConfig() *PlatformConsoleAuthConfig {
+	return &PlatformConsoleAuthConfig{
+		AuthType: s.AuthType,
+	}
+}
+
+// SSHPlatformConsoleAuthResult - SSH-based platform console authentication result
+type SSHPlatformConsoleAuthResult struct {
+	// REQUIRED
+	AuthType *PlatformConsoleAuthType
+
+	// REQUIRED; Role assigned to the user on the platform console
+	Role *PlatformConsoleRole
+
+	// REQUIRED; Username that was configured for the console session
+	Username *string
+}
+
+// GetPlatformConsoleAuthResult implements the PlatformConsoleAuthResultClassification interface for type SSHPlatformConsoleAuthResult.
+func (s *SSHPlatformConsoleAuthResult) GetPlatformConsoleAuthResult() *PlatformConsoleAuthResult {
+	return &PlatformConsoleAuthResult{
+		AuthType: s.AuthType,
+	}
+}
+
+// SaaSResourceDetailsResponse - Marketplace SaaS resource details.
+type SaaSResourceDetailsResponse struct {
+	// Id of the Marketplace SaaS Resource
+	SaasID *string
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
 }
 
 // ServiceInitializationHandle - Initialization handle used to configure the AVS SDDC to communicate with the storage pool
@@ -701,9 +1007,6 @@ type StoragePool struct {
 	// REQUIRED; The geo-location where the resource lives
 	Location *string
 
-	// READ-ONLY; Name of the storage pool
-	Name *string
-
 	// The managed service identities assigned to this resource.
 	Identity *ManagedServiceIdentity
 
@@ -715,6 +1018,9 @@ type StoragePool struct {
 
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -783,6 +1089,9 @@ type StoragePoolProperties struct {
 	// REQUIRED; Network properties of the storage pool
 	VnetInjection *VnetInjection
 
+	// Platform console access settings for the storage pool
+	PlatformConsoleSettings *PlatformConsoleSettings
+
 	// READ-ONLY; AVS connection state summary
 	Avs *AzureVmwareService
 
@@ -813,6 +1122,9 @@ type StoragePoolUpdate struct {
 
 // StoragePoolUpdateProperties - The updatable properties of the StoragePool.
 type StoragePoolUpdateProperties struct {
+	// Platform console access settings for the storage pool
+	PlatformConsoleSettings *PlatformConsoleSettings
+
 	// Total bandwidth provisioned for the pool, in MB/s
 	ProvisionedBandwidthMbPerSec *int64
 }
@@ -877,10 +1189,234 @@ type VnetInjection struct {
 	VnetID *string
 }
 
+// Volume - Azure Volume resource
+type Volume struct {
+	// The resource-specific properties for this resource.
+	Properties *AzureVolumeProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// VolumeGroup - Volume Group resource
+type VolumeGroup struct {
+	// REQUIRED; The geo-location where the resource lives
+	Location *string
+
+	// The resource-specific properties for this resource.
+	Properties *VolumeGroupProperties
+
+	// Resource tags.
+	Tags map[string]*string
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// VolumeGroupListResult - The response of a VolumeGroup list operation.
+type VolumeGroupListResult struct {
+	// REQUIRED; The VolumeGroup items on this page
+	Value []*VolumeGroup
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// VolumeGroupOverwriteRequest - Request to overwrite all volumes in a volume group from a snapshot
+type VolumeGroupOverwriteRequest struct {
+	// REQUIRED; Azure resource ID of the volume group snapshot to restore from
+	SourceSnapshotResourceID *string
+
+	// REQUIRED; Azure resource ID of the source volume group
+	SourceVolumeGroupResourceID *string
+}
+
+// VolumeGroupProperties - Properties of a volume group
+type VolumeGroupProperties struct {
+	// Performance parameters for the volume group
+	PerformanceParameters *PerformanceParameters
+
+	// Protection parameters for the volume group
+	ProtectionParameters *ProtectionParameters
+
+	// Azure resource ID of the soft-deleted volume group to recover
+	SourceRecoverableVolumeGroupResourceID *string
+
+	// Azure resource ID of the volume group snapshot to restore from
+	SourceSnapshotResourceID *string
+
+	// Indicates the source type for volume group creation
+	SourceType *VolumeGroupSourceType
+
+	// Azure resource ID of the source volume group for cloning
+	SourceVolumeGroupResourceID *string
+
+	// READ-ONLY; Provisioning state of the resource
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; Pure Storage's internal ID of the storage pool
+	StoragePoolInternalID *string
+
+	// READ-ONLY; Pure Storage's internal ID of the volume group
+	VolumeGroupInternalID *string
+}
+
+// VolumeGroupSnapshot - A snapshot of a volume group
+type VolumeGroupSnapshot struct {
+	// The resource-specific properties for this resource.
+	Properties *VolumeGroupSnapshotProperties
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// VolumeGroupSnapshotListRequest - Request payload for listing volume group snapshots
+type VolumeGroupSnapshotListRequest struct {
+	// OData filter expression (e.g. filter=substringof('sna', name) and space/unique gt 1000)
+	Filter *string
+
+	// OData order-by expression (e.g. orderby=name asc)
+	Orderby *string
+
+	// Number of results to skip (page offset)
+	Skip *int32
+
+	// Maximum number of results to return per page
+	Top *int32
+}
+
+// VolumeGroupSnapshotListResult - Paged list result for volume group snapshots
+type VolumeGroupSnapshotListResult struct {
+	// REQUIRED; Array of volume group snapshots
+	Value []*VolumeGroupSnapshot
+
+	// URL to fetch the next page of results
+	NextLink *string
+}
+
+// VolumeGroupSnapshotPostListResult - List result for volume group snapshots returned by the listSnapshots POST action
+type VolumeGroupSnapshotPostListResult struct {
+	// REQUIRED; Array of volume group snapshots
+	Value []*VolumeGroupSnapshot
+
+	// Number of snapshots in this response page
+	Count *int32
+
+	// Total number of snapshots
+	TotalCount *int32
+}
+
+// VolumeGroupSnapshotProperties - Properties of a volume group snapshot
+type VolumeGroupSnapshotProperties struct {
+	// Azure resource ID of the source snapshot to recover from; omit for a new manual snapshot
+	SourceSnapshotResourceID *string
+
+	// READ-ONLY; Date and time at which the snapshot was created, as an RFC 3339 timestamp
+	CreatedAt *time.Time
+
+	// READ-ONLY; Whether the snapshot was created by a protection policy
+	CreatedByPolicy *bool
+
+	// READ-ONLY; Provisioning state of the resource
+	ProvisioningState *ProvisioningState
+
+	// READ-ONLY; Soft-deletion state of the snapshot
+	SoftDeletion *DestroyedStateProperties
+
+	// READ-ONLY; Storage space usage of the snapshot
+	Space *Space
+
+	// READ-ONLY; List of individual volume snapshots included in this volume group snapshot; populated on single-get, empty or
+	// omitted on list for performance
+	VolumeSnapshots []*VolumeSnapshotInfo
+}
+
+// VolumeGroupStatus - Volume group status information
+type VolumeGroupStatus struct {
+	// REQUIRED; Number of hosts currently connected to the volume group
+	ConnectedHostCount *int32
+
+	// REQUIRED; Storage space usage for the volume group
+	Space *Space
+}
+
+// VolumeGroupUpdate - The type used for update operations of the VolumeGroup.
+type VolumeGroupUpdate struct {
+	// The resource-specific properties for this resource.
+	Properties *VolumeGroupUpdateProperties
+
+	// Resource tags.
+	Tags map[string]*string
+}
+
+// VolumeGroupUpdateProperties - The updatable properties of the VolumeGroup.
+type VolumeGroupUpdateProperties struct {
+	// Performance parameters for the volume group
+	PerformanceParameters *PerformanceParameters
+
+	// Protection parameters for the volume group
+	ProtectionParameters *ProtectionParameters
+}
+
 // VolumeLimits - Limits used for volumes
 type VolumeLimits struct {
 	// REQUIRED; Provisioned size limits for a volume, in bytes
 	ProvisionedSize *RangeLimits
+}
+
+// VolumeListResult - The response of a Volume list operation.
+type VolumeListResult struct {
+	// REQUIRED; The Volume items on this page
+	Value []*Volume
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// VolumeOverwriteRequest - Request to overwrite a volume's content from another volume or a snapshot
+type VolumeOverwriteRequest struct {
+	// REQUIRED; Source type for the overwrite operation
+	SourceType *VolumeSourceType
+
+	// Serial number of the source volume to overwrite from. Used when sourceType is 'serialNumber'.
+	SourceSerialNumber *string
+
+	// Azure resource ID of the source volume group. Required when sourceType is 'snapshot' or when the source volume belongs
+	// to a different volume group than the target.
+	SourceVolumeGroupResourceID *string
+
+	// Azure resource ID of the source volume to clone from. Used when sourceType is 'volume'.
+	SourceVolumeResourceID *string
+
+	// Source volume group snapshot and volume snapshot name to restore from. Used when sourceType is 'snapshot'.
+	SourceVolumeSnapshot *VolumeSnapshotSource
 }
 
 // VolumeProperties - Volume properties
@@ -917,4 +1453,40 @@ type VolumeProperties struct {
 
 	// READ-ONLY; Specify which control plane handles the lifecycle of the volume
 	VolumeType *VolumeType
+}
+
+// VolumeSnapshotInfo - Information about an individual volume snapshot within a volume group snapshot
+type VolumeSnapshotInfo struct {
+	// READ-ONLY; Name of the volume snapshot
+	Name *string
+
+	// READ-ONLY; Provisioned size of the volume, in bytes
+	ProvisionedSize *int64
+
+	// READ-ONLY; Serial number of the volume
+	SerialNumber *string
+
+	// READ-ONLY; Storage space usage of the volume snapshot
+	Space *Space
+}
+
+// VolumeSnapshotSource - Identifies the specific volume snapshot within a volume group snapshot to restore from
+type VolumeSnapshotSource struct {
+	// REQUIRED; Azure resource ID of the volume group snapshot containing the desired volume snapshot
+	VolumeGroupSnapshotResourceID *string
+
+	// REQUIRED; Name of the volume snapshot within the volume group snapshot
+	VolumeSnapshotName *string
+}
+
+// VolumeUpdate - The type used for update operations of the Volume.
+type VolumeUpdate struct {
+	// The resource-specific properties for this resource.
+	Properties *VolumeUpdateProperties
+}
+
+// VolumeUpdateProperties - The updatable properties of the Volume.
+type VolumeUpdateProperties struct {
+	// Currently provisioned size of the volume, in bytes
+	ProvisionedSize *int64
 }

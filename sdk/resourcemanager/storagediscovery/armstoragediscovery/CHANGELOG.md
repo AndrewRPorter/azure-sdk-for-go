@@ -1,0 +1,30 @@
+# Release History
+
+## 1.1.0-beta.1 (2026-10-02)
+### Features Added
+
+- New enum type `CapabilityStatus` with values `CapabilityStatusDisabled`, `CapabilityStatusEnabled`
+- New struct `AzureBlobStorageCapability`
+- New struct `AzureBlobStorageCapabilityUpdate`
+- New struct `Capabilities`
+- New struct `CapabilitiesUpdate`
+- New struct `CapacityDetails`
+- New struct `CapacityDetailsUpdate`
+- New struct `PrefixConfiguration`
+- New struct `PrefixConfigurationUpdate`
+- New field `Capabilities` in struct `WorkspaceProperties`
+- New field `Capabilities` in struct `WorkspacePropertiesUpdate`
+
+
+## 1.0.0 (2025-09-29)
+
+### Features Added
+
+- Updated versioning for general availability.
+
+## 0.1.0 (2025-07-17)
+### Other Changes
+
+The package of `github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/storagediscovery/armstoragediscovery` is using our [next generation design principles](https://azure.github.io/azure-sdk/general_introduction.html).
+
+To learn more, please refer to our documentation [Quick Start](https://aka.ms/azsdk/go/mgmt).

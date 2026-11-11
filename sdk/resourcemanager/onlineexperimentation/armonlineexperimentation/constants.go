@@ -5,8 +5,7 @@
 package armonlineexperimentation
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/onlineexperimentation/armonlineexperimentation"
-	moduleVersion = "v0.1.0"
+	version20250531Preview string = "2025-05-31-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.

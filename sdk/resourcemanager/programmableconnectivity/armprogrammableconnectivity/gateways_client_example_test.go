@@ -35,13 +35,13 @@ func ExampleGatewaysClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armprogrammableconnectivity.GatewaysClientCreateOrUpdateResponse{
-	// 	Gateway: &armprogrammableconnectivity.Gateway{
+	// 	Gateway: armprogrammableconnectivity.Gateway{
 	// 		Properties: &armprogrammableconnectivity.GatewayProperties{
 	// 			OperatorAPIConnections: []*string{
 	// 				to.Ptr("/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/example-rg/providers/Microsoft.ProgrammableConnectivity/operatorApiConnections/uecwablqeufseigocrwf"),
@@ -59,10 +59,10 @@ func ExampleGatewaysClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armprogrammableconnectivity.SystemData{
 	// 			CreatedBy: to.Ptr("kuprrapuolhnvju"),
 	// 			CreatedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("lsmrhxnvkpmrxncylgqpkr"),
 	// 			LastModifiedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -85,7 +85,7 @@ func ExampleGatewaysClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
@@ -108,7 +108,7 @@ func ExampleGatewaysClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armprogrammableconnectivity.GatewaysClientGetResponse{
-	// 	Gateway: &armprogrammableconnectivity.Gateway{
+	// 	Gateway: armprogrammableconnectivity.Gateway{
 	// 		Properties: &armprogrammableconnectivity.GatewayProperties{
 	// 			OperatorAPIConnections: []*string{
 	// 				to.Ptr("/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/example-rg/providers/Microsoft.ProgrammableConnectivity/operatorApiConnections/uecwablqeufseigocrwf"),
@@ -126,10 +126,10 @@ func ExampleGatewaysClient_Get() {
 	// 		SystemData: &armprogrammableconnectivity.SystemData{
 	// 			CreatedBy: to.Ptr("kuprrapuolhnvju"),
 	// 			CreatedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("lsmrhxnvkpmrxncylgqpkr"),
 	// 			LastModifiedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -178,10 +178,10 @@ func ExampleGatewaysClient_NewListByResourceGroupPager() {
 		// 				SystemData: &armprogrammableconnectivity.SystemData{
 		// 					CreatedBy: to.Ptr("kuprrapuolhnvju"),
 		// 					CreatedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("lsmrhxnvkpmrxncylgqpkr"),
 		// 					LastModifiedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -234,10 +234,10 @@ func ExampleGatewaysClient_NewListBySubscriptionPager() {
 		// 				SystemData: &armprogrammableconnectivity.SystemData{
 		// 					CreatedBy: to.Ptr("kuprrapuolhnvju"),
 		// 					CreatedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("lsmrhxnvkpmrxncylgqpkr"),
 		// 					LastModifiedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -270,7 +270,7 @@ func ExampleGatewaysClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armprogrammableconnectivity.GatewaysClientUpdateResponse{
-	// 	Gateway: &armprogrammableconnectivity.Gateway{
+	// 	Gateway: armprogrammableconnectivity.Gateway{
 	// 		Properties: &armprogrammableconnectivity.GatewayProperties{
 	// 			OperatorAPIConnections: []*string{
 	// 				to.Ptr("/subscriptions/00000000-0000-0000-0000-00000000000/resourceGroups/example-rg/providers/Microsoft.ProgrammableConnectivity/operatorApiConnections/uecwablqeufseigocrwf"),
@@ -288,10 +288,10 @@ func ExampleGatewaysClient_Update() {
 	// 		SystemData: &armprogrammableconnectivity.SystemData{
 	// 			CreatedBy: to.Ptr("kuprrapuolhnvju"),
 	// 			CreatedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("lsmrhxnvkpmrxncylgqpkr"),
 	// 			LastModifiedByType: to.Ptr(armprogrammableconnectivity.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-01-30T16:41:38.838Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.January, 30, 16, 41, 38, 838000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

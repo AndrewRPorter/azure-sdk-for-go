@@ -18,6 +18,8 @@ import (
 
 // EnterpriseMccCustomersClient contains the methods for the EnterpriseMccCustomers group.
 // Don't use this type directly, use NewEnterpriseMccCustomersClient() instead.
+//
+// Generated from API version 2026-06-01
 type EnterpriseMccCustomersClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type EnterpriseMccCustomersClient struct {
 // NewEnterpriseMccCustomersClient creates a new instance of EnterpriseMccCustomersClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewEnterpriseMccCustomersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*EnterpriseMccCustomersClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewEnterpriseMccCustomersClient(subscriptionID string, credential azcore.To
 
 // BeginCreateOrUpdate - This api creates an enterprise mcc customer with the specified create parameters
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *EnterpriseMccCustomersClient) BeginCreateOrUpdate(ctx context.Cont
 	}
 }
 
-// CreateOrUpdate - This api creates an enterprise mcc customer with the specified create parameters
+// createOrUpdate - This api creates an enterprise mcc customer with the specified create parameters
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 func (client *EnterpriseMccCustomersClient) createOrUpdate(ctx context.Context, resourceGroupName string, customerResourceName string, resource EnterpriseMccCustomerResource, options *EnterpriseMccCustomersClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "EnterpriseMccCustomersClient.BeginCreateOrUpdate"
@@ -90,11 +91,11 @@ func (client *EnterpriseMccCustomersClient) createOrUpdate(ctx context.Context, 
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *EnterpriseMccCustomersClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, resource EnterpriseMccCustomerResource, _ *EnterpriseMccCustomersClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,8 @@ func (client *EnterpriseMccCustomersClient) createOrUpdateCreateRequest(ctx cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -122,8 +123,6 @@ func (client *EnterpriseMccCustomersClient) createOrUpdateCreateRequest(ctx cont
 
 // BeginDelete - This api deletes an existing enterprise mcc customer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - options - EnterpriseMccCustomersClientBeginDeleteOptions contains the optional parameters for the EnterpriseMccCustomersClient.BeginDelete
@@ -145,10 +144,8 @@ func (client *EnterpriseMccCustomersClient) BeginDelete(ctx context.Context, res
 	}
 }
 
-// Delete - This api deletes an existing enterprise mcc customer resource
+// deleteOperation - This api deletes an existing enterprise mcc customer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 func (client *EnterpriseMccCustomersClient) deleteOperation(ctx context.Context, resourceGroupName string, customerResourceName string, options *EnterpriseMccCustomersClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "EnterpriseMccCustomersClient.BeginDelete"
@@ -170,11 +167,11 @@ func (client *EnterpriseMccCustomersClient) deleteOperation(ctx context.Context,
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *EnterpriseMccCustomersClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, _ *EnterpriseMccCustomersClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -190,16 +187,13 @@ func (client *EnterpriseMccCustomersClient) deleteCreateRequest(ctx context.Cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Gets the enterprise mcc customer resource information using this get call
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - options - EnterpriseMccCustomersClientGetOptions contains the optional parameters for the EnterpriseMccCustomersClient.Get
@@ -218,11 +212,7 @@ func (client *EnterpriseMccCustomersClient) Get(ctx context.Context, resourceGro
 	if err != nil {
 		return EnterpriseMccCustomersClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return EnterpriseMccCustomersClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -230,7 +220,7 @@ func (client *EnterpriseMccCustomersClient) Get(ctx context.Context, resourceGro
 func (client *EnterpriseMccCustomersClient) getCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, _ *EnterpriseMccCustomersClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -246,15 +236,18 @@ func (client *EnterpriseMccCustomersClient) getCreateRequest(ctx context.Context
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *EnterpriseMccCustomersClient) getHandleResponse(resp *http.Response) (EnterpriseMccCustomersClientGetResponse, error) {
+func (client *EnterpriseMccCustomersClient) getHandleResponse(resp *http.Response, successCodes ...int) (EnterpriseMccCustomersClientGetResponse, error) {
 	result := EnterpriseMccCustomersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.EnterpriseMccCustomerResource); err != nil {
 		return EnterpriseMccCustomersClientGetResponse{}, err
 	}
@@ -263,8 +256,6 @@ func (client *EnterpriseMccCustomersClient) getHandleResponse(resp *http.Respons
 
 // NewListByResourceGroupPager - This api gets the information about all enterprise mcc customer resources under the given
 // subscription and resource group
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - options - EnterpriseMccCustomersClientListByResourceGroupOptions contains the optional parameters for the EnterpriseMccCustomersClient.NewListByResourceGroupPager
 //     method.
@@ -279,43 +270,57 @@ func (client *EnterpriseMccCustomersClient) NewListByResourceGroupPager(resource
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
 			if err != nil {
 				return EnterpriseMccCustomersClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return EnterpriseMccCustomersClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *EnterpriseMccCustomersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *EnterpriseMccCustomersClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *EnterpriseMccCustomersClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *EnterpriseMccCustomersClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260601)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *EnterpriseMccCustomersClient) listByResourceGroupHandleResponse(resp *http.Response) (EnterpriseMccCustomersClientListByResourceGroupResponse, error) {
+func (client *EnterpriseMccCustomersClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (EnterpriseMccCustomersClientListByResourceGroupResponse, error) {
 	result := EnterpriseMccCustomersClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.EnterpriseMccCustomerResourceListResult); err != nil {
 		return EnterpriseMccCustomersClientListByResourceGroupResponse{}, err
 	}
@@ -323,8 +328,6 @@ func (client *EnterpriseMccCustomersClient) listByResourceGroupHandleResponse(re
 }
 
 // NewListBySubscriptionPager - This api gets information about all enterpriseMccCustomer resources under the given subscription
-//
-// Generated from API version 2023-05-01-preview
 //   - options - EnterpriseMccCustomersClientListBySubscriptionOptions contains the optional parameters for the EnterpriseMccCustomersClient.NewListBySubscriptionPager
 //     method.
 func (client *EnterpriseMccCustomersClient) NewListBySubscriptionPager(options *EnterpriseMccCustomersClientListBySubscriptionOptions) *runtime.Pager[EnterpriseMccCustomersClientListBySubscriptionResponse] {
@@ -338,39 +341,53 @@ func (client *EnterpriseMccCustomersClient) NewListBySubscriptionPager(options *
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return EnterpriseMccCustomersClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return EnterpriseMccCustomersClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *EnterpriseMccCustomersClient) listBySubscriptionCreateRequest(ctx context.Context, _ *EnterpriseMccCustomersClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *EnterpriseMccCustomersClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *EnterpriseMccCustomersClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260601)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *EnterpriseMccCustomersClient) listBySubscriptionHandleResponse(resp *http.Response) (EnterpriseMccCustomersClientListBySubscriptionResponse, error) {
+func (client *EnterpriseMccCustomersClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (EnterpriseMccCustomersClientListBySubscriptionResponse, error) {
 	result := EnterpriseMccCustomersClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.EnterpriseMccCustomerResourceListResult); err != nil {
 		return EnterpriseMccCustomersClientListBySubscriptionResponse{}, err
 	}
@@ -379,8 +396,6 @@ func (client *EnterpriseMccCustomersClient) listBySubscriptionHandleResponse(res
 
 // Update - This api updates an existing enterprise mcc customer resource
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2023-05-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - customerResourceName - Name of the Customer resource
 //   - properties - The resource properties to be updated.
@@ -400,11 +415,7 @@ func (client *EnterpriseMccCustomersClient) Update(ctx context.Context, resource
 	if err != nil {
 		return EnterpriseMccCustomersClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return EnterpriseMccCustomersClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -412,7 +423,7 @@ func (client *EnterpriseMccCustomersClient) Update(ctx context.Context, resource
 func (client *EnterpriseMccCustomersClient) updateCreateRequest(ctx context.Context, resourceGroupName string, customerResourceName string, properties PatchResource, _ *EnterpriseMccCustomersClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ConnectedCache/enterpriseMccCustomers/{customerResourceName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -428,8 +439,8 @@ func (client *EnterpriseMccCustomersClient) updateCreateRequest(ctx context.Cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2023-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260601)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -439,8 +450,11 @@ func (client *EnterpriseMccCustomersClient) updateCreateRequest(ctx context.Cont
 }
 
 // updateHandleResponse handles the Update response.
-func (client *EnterpriseMccCustomersClient) updateHandleResponse(resp *http.Response) (EnterpriseMccCustomersClientUpdateResponse, error) {
+func (client *EnterpriseMccCustomersClient) updateHandleResponse(resp *http.Response, successCodes ...int) (EnterpriseMccCustomersClientUpdateResponse, error) {
 	result := EnterpriseMccCustomersClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.EnterpriseMccCustomerResource); err != nil {
 		return EnterpriseMccCustomersClientUpdateResponse{}, err
 	}

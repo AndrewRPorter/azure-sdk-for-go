@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -12,6 +9,14 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"fmt"
+	"hash/crc64"
+	"io"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/lease"
@@ -20,13 +25,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/file"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/path"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/shared"
-	"hash/crc64"
-	"io"
-	"log"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func handleError(err error) {
@@ -314,7 +312,7 @@ func Example_file_UploadFileAndDownloadStream() {
 	downloadedContentMD5 := downloadedMD5Value[:]
 
 	// compare the hashes
-	fmt.Println(downloadedContentMD5, contentMD5)
+	fmt.Println(string(downloadedContentMD5), string(contentMD5))
 }
 
 // make sure you create the filesystem before running this example
@@ -351,7 +349,7 @@ func Example_file_UploadBufferAndDownloadStream() {
 	downloadedMD5Value := md5.Sum(data)
 	downloadedContentMD5 := downloadedMD5Value[:]
 
-	fmt.Println(downloadedContentMD5, contentMD5)
+	fmt.Println(string(downloadedContentMD5), string(contentMD5))
 }
 
 // make sure you create the filesystem before running this example
@@ -377,7 +375,7 @@ func Example_file_AppendAndFlushDataWithValidation() {
 	}
 	putResp, err := fClient.AppendData(context.Background(), 0, rsc, opts)
 	handleError(err)
-	fmt.Println(putResp.ContentCRC64)
+	fmt.Println(string(putResp.ContentCRC64))
 	fmt.Println(binary.LittleEndian.Uint64(putResp.ContentCRC64), contentCRC64)
 
 	// after appending data, flush it

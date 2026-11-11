@@ -1,5 +1,543 @@
 # Release History
 
+## 4.1.0-beta.1 (2026-08-20)
+### Features Added
+
+- New value `ContinuousTierContinuous35Days` added to enum type `ContinuousTier`
+- New enum type `AccessRuleDirection` with values `AccessRuleDirectionInbound`, `AccessRuleDirectionOutbound`
+- New enum type `AllocationState` with values `AllocationStateActive`, `AllocationStateDeallocated`
+- New enum type `BackupState` with values `BackupStateFailed`, `BackupStateInProgress`, `BackupStateInitiated`, `BackupStateSucceeded`
+- New enum type `CapacityMode` with values `CapacityModeNone`, `CapacityModeProvisioned`, `CapacityModeServerless`
+- New enum type `CapacityModeTransitionStatus` with values `CapacityModeTransitionStatusCompleted`, `CapacityModeTransitionStatusFailed`, `CapacityModeTransitionStatusInProgress`, `CapacityModeTransitionStatusInitialized`, `CapacityModeTransitionStatusInvalid`
+- New enum type `ClusterType` with values `ClusterTypeNonProduction`, `ClusterTypeProduction`
+- New enum type `CommandStatus` with values `CommandStatusDone`, `CommandStatusEnqueue`, `CommandStatusFailed`, `CommandStatusFinished`, `CommandStatusProcessing`, `CommandStatusRunning`
+- New enum type `CopyJobMode` with values `CopyJobModeOffline`, `CopyJobModeOnline`
+- New enum type `CopyJobStatus` with values `CopyJobStatusCancelled`, `CopyJobStatusCompleted`, `CopyJobStatusFaulted`, `CopyJobStatusPartitioning`, `CopyJobStatusPaused`, `CopyJobStatusPending`, `CopyJobStatusRunning`
+- New enum type `CopyJobType` with values `CopyJobTypeAzureBlobStorageToCassandraRU`, `CopyJobTypeCassandraRUToAzureBlobStorage`, `CopyJobTypeCassandraRUToCassandraRU`, `CopyJobTypeMongoRUToMongoRU`, `CopyJobTypeMongoRUToMongoVCore`, `CopyJobTypeNoSQLRUToNoSQLRU`
+- New enum type `DataTransferComponent` with values `DataTransferComponentAzureBlobStorage`, `DataTransferComponentBaseCosmosDataTransferDataSourceSink`, `DataTransferComponentCosmosDBCassandra`, `DataTransferComponentCosmosDBMongo`, `DataTransferComponentCosmosDBMongoVCore`, `DataTransferComponentCosmosDBSQL`
+- New enum type `DataTransferJobMode` with values `DataTransferJobModeOffline`, `DataTransferJobModeOnline`
+- New enum type `EnableFullTextQuery` with values `EnableFullTextQueryFalse`, `EnableFullTextQueryNone`, `EnableFullTextQueryTrue`
+- New enum type `FleetAnalyticsPropertiesStorageLocationType` with values `FleetAnalyticsPropertiesStorageLocationTypeFabricLakehouse`, `FleetAnalyticsPropertiesStorageLocationTypeStorageAccount`
+- New enum type `GarnetAuthenticationType` with values `GarnetAuthenticationTypeEntra`
+- New enum type `GarnetCacheProvisioningState` with values `GarnetCacheProvisioningStateCanceled`, `GarnetCacheProvisioningStateCreating`, `GarnetCacheProvisioningStateDeleting`, `GarnetCacheProvisioningStateFailed`, `GarnetCacheProvisioningStateSucceeded`, `GarnetCacheProvisioningStateUpdating`
+- New enum type `IssueType` with values `IssueTypeConfigurationPropagationFailure`, `IssueTypeMissingIdentityConfiguration`, `IssueTypeMissingPerimeterConfiguration`, `IssueTypeUnknown`
+- New enum type `NetworkSecurityPerimeterConfigurationProvisioningState` with values `NetworkSecurityPerimeterConfigurationProvisioningStateAccepted`, `NetworkSecurityPerimeterConfigurationProvisioningStateCanceled`, `NetworkSecurityPerimeterConfigurationProvisioningStateCreating`, `NetworkSecurityPerimeterConfigurationProvisioningStateDeleting`, `NetworkSecurityPerimeterConfigurationProvisioningStateFailed`, `NetworkSecurityPerimeterConfigurationProvisioningStateSucceeded`, `NetworkSecurityPerimeterConfigurationProvisioningStateUpdating`
+- New enum type `ResourceAssociationAccessMode` with values `ResourceAssociationAccessModeAudit`, `ResourceAssociationAccessModeEnforced`, `ResourceAssociationAccessModeLearning`
+- New enum type `Severity` with values `SeverityError`, `SeverityWarning`
+- New enum type `SoftDeleteActionKind` with values `SoftDeleteActionKindPermanentDeleteResource`, `SoftDeleteActionKindRestoreSoftDeletedResource`
+- New enum type `SupportedActions` with values `SupportedActionsDisable`, `SupportedActionsEnable`
+- New enum type `ThroughputPolicyType` with values `ThroughputPolicyTypeCustom`, `ThroughputPolicyTypeEqual`, `ThroughputPolicyTypeNone`
+- New function `*AzureBlobDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*BaseCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*BaseCosmosDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
+- New function `*BaseCosmosDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*BlobToCassandraRUCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*CassandraClustersClient.GetBackup(ctx context.Context, resourceGroupName string, clusterName string, backupID string, options *CassandraClustersClientGetBackupOptions) (CassandraClustersClientGetBackupResponse, error)`
+- New function `*CassandraClustersClient.GetCommandAsync(ctx context.Context, resourceGroupName string, clusterName string, commandID string, options *CassandraClustersClientGetCommandAsyncOptions) (CassandraClustersClientGetCommandAsyncResponse, error)`
+- New function `*CassandraClustersClient.BeginInvokeCommandAsync(ctx context.Context, resourceGroupName string, clusterName string, body CommandAsyncPostBody, options *CassandraClustersClientBeginInvokeCommandAsyncOptions) (*runtime.Poller[CassandraClustersClientInvokeCommandAsyncResponse], error)`
+- New function `*CassandraClustersClient.NewListBackupsPager(resourceGroupName string, clusterName string, options *CassandraClustersClientListBackupsOptions) *runtime.Pager[CassandraClustersClientListBackupsResponse]`
+- New function `*CassandraClustersClient.NewListCommandPager(resourceGroupName string, clusterName string, options *CassandraClustersClientListCommandOptions) *runtime.Pager[CassandraClustersClientListCommandResponse]`
+- New function `*CassandraDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
+- New function `*CassandraDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*CassandraRUToBlobCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*CassandraRUToCassandraRUCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*CassandraResourcesClient.BeginCreateUpdateCassandraView(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, createUpdateCassandraViewParameters CassandraViewCreateUpdateParameters, options *CassandraResourcesClientBeginCreateUpdateCassandraViewOptions) (*runtime.Poller[CassandraResourcesClientCreateUpdateCassandraViewResponse], error)`
+- New function `*CassandraResourcesClient.BeginDeleteCassandraView(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, options *CassandraResourcesClientBeginDeleteCassandraViewOptions) (*runtime.Poller[CassandraResourcesClientDeleteCassandraViewResponse], error)`
+- New function `*CassandraResourcesClient.GetCassandraView(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, options *CassandraResourcesClientGetCassandraViewOptions) (CassandraResourcesClientGetCassandraViewResponse, error)`
+- New function `*CassandraResourcesClient.GetCassandraViewThroughput(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, options *CassandraResourcesClientGetCassandraViewThroughputOptions) (CassandraResourcesClientGetCassandraViewThroughputResponse, error)`
+- New function `*CassandraResourcesClient.NewListCassandraViewsPager(resourceGroupName string, accountName string, keyspaceName string, options *CassandraResourcesClientListCassandraViewsOptions) *runtime.Pager[CassandraResourcesClientListCassandraViewsResponse]`
+- New function `*CassandraResourcesClient.BeginMigrateCassandraViewToAutoscale(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, options *CassandraResourcesClientBeginMigrateCassandraViewToAutoscaleOptions) (*runtime.Poller[CassandraResourcesClientMigrateCassandraViewToAutoscaleResponse], error)`
+- New function `*CassandraResourcesClient.BeginMigrateCassandraViewToManualThroughput(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, options *CassandraResourcesClientBeginMigrateCassandraViewToManualThroughputOptions) (*runtime.Poller[CassandraResourcesClientMigrateCassandraViewToManualThroughputResponse], error)`
+- New function `*CassandraResourcesClient.BeginUpdateCassandraViewThroughput(ctx context.Context, resourceGroupName string, accountName string, keyspaceName string, viewName string, updateThroughputParameters ThroughputSettingsUpdateParameters, options *CassandraResourcesClientBeginUpdateCassandraViewThroughputOptions) (*runtime.Poller[CassandraResourcesClientUpdateCassandraViewThroughputResponse], error)`
+- New function `NewChaosFaultClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ChaosFaultClient, error)`
+- New function `*ChaosFaultClient.BeginEnableDisable(ctx context.Context, resourceGroupName string, accountName string, chaosFault string, chaosFaultRequest ChaosFaultResource, options *ChaosFaultClientBeginEnableDisableOptions) (*runtime.Poller[ChaosFaultClientEnableDisableResponse], error)`
+- New function `*ChaosFaultClient.Get(ctx context.Context, resourceGroupName string, accountName string, chaosFault string, options *ChaosFaultClientGetOptions) (ChaosFaultClientGetResponse, error)`
+- New function `*ChaosFaultClient.NewListPager(resourceGroupName string, accountName string, options *ChaosFaultClientListOptions) *runtime.Pager[ChaosFaultClientListResponse]`
+- New function `*ClientFactory.NewChaosFaultClient() *ChaosFaultClient`
+- New function `*ClientFactory.NewCopyJobsClient() *CopyJobsClient`
+- New function `*ClientFactory.NewDataTransferJobsClient() *DataTransferJobsClient`
+- New function `*ClientFactory.NewFleetAnalyticsClient() *FleetAnalyticsClient`
+- New function `*ClientFactory.NewGarnetClustersClient() *GarnetClustersClient`
+- New function `*ClientFactory.NewGraphResourcesClient() *GraphResourcesClient`
+- New function `*ClientFactory.NewNetworkSecurityPerimeterConfigurationsClient() *NetworkSecurityPerimeterConfigurationsClient`
+- New function `*ClientFactory.NewSoftDeletedDatabaseAccountsClient() *SoftDeletedDatabaseAccountsClient`
+- New function `*ClientFactory.NewSoftDeletedSQLContainersClient() *SoftDeletedSQLContainersClient`
+- New function `*ClientFactory.NewSoftDeletedSQLDatabasesClient() *SoftDeletedSQLDatabasesClient`
+- New function `*ClientFactory.NewThroughputPoolAccountClient() *ThroughputPoolAccountClient`
+- New function `*ClientFactory.NewThroughputPoolAccountsClient() *ThroughputPoolAccountsClient`
+- New function `*ClientFactory.NewThroughputPoolClient() *ThroughputPoolClient`
+- New function `*ClientFactory.NewThroughputPoolsClient() *ThroughputPoolsClient`
+- New function `NewCopyJobsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*CopyJobsClient, error)`
+- New function `*CopyJobsClient.Cancel(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *CopyJobsClientCancelOptions) (CopyJobsClientCancelResponse, error)`
+- New function `*CopyJobsClient.Complete(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *CopyJobsClientCompleteOptions) (CopyJobsClientCompleteResponse, error)`
+- New function `*CopyJobsClient.Create(ctx context.Context, resourceGroupName string, accountName string, jobName string, jobCreateParameters CopyJobGetResults, options *CopyJobsClientCreateOptions) (CopyJobsClientCreateResponse, error)`
+- New function `*CopyJobsClient.Get(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *CopyJobsClientGetOptions) (CopyJobsClientGetResponse, error)`
+- New function `*CopyJobsClient.NewListByDatabaseAccountPager(resourceGroupName string, accountName string, options *CopyJobsClientListByDatabaseAccountOptions) *runtime.Pager[CopyJobsClientListByDatabaseAccountResponse]`
+- New function `*CopyJobsClient.Pause(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *CopyJobsClientPauseOptions) (CopyJobsClientPauseResponse, error)`
+- New function `*CopyJobsClient.Resume(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *CopyJobsClientResumeOptions) (CopyJobsClientResumeResponse, error)`
+- New function `*DataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `NewDataTransferJobsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*DataTransferJobsClient, error)`
+- New function `*DataTransferJobsClient.Cancel(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *DataTransferJobsClientCancelOptions) (DataTransferJobsClientCancelResponse, error)`
+- New function `*DataTransferJobsClient.Complete(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *DataTransferJobsClientCompleteOptions) (DataTransferJobsClientCompleteResponse, error)`
+- New function `*DataTransferJobsClient.Create(ctx context.Context, resourceGroupName string, accountName string, jobName string, jobCreateParameters CreateJobRequest, options *DataTransferJobsClientCreateOptions) (DataTransferJobsClientCreateResponse, error)`
+- New function `*DataTransferJobsClient.Get(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *DataTransferJobsClientGetOptions) (DataTransferJobsClientGetResponse, error)`
+- New function `*DataTransferJobsClient.NewListByDatabaseAccountPager(resourceGroupName string, accountName string, options *DataTransferJobsClientListByDatabaseAccountOptions) *runtime.Pager[DataTransferJobsClientListByDatabaseAccountResponse]`
+- New function `*DataTransferJobsClient.Pause(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *DataTransferJobsClientPauseOptions) (DataTransferJobsClientPauseResponse, error)`
+- New function `*DataTransferJobsClient.Resume(ctx context.Context, resourceGroupName string, accountName string, jobName string, options *DataTransferJobsClientResumeOptions) (DataTransferJobsClientResumeResponse, error)`
+- New function `NewFleetAnalyticsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*FleetAnalyticsClient, error)`
+- New function `*FleetAnalyticsClient.Create(ctx context.Context, resourceGroupName string, fleetName string, fleetAnalyticsName string, body FleetAnalyticsResource, options *FleetAnalyticsClientCreateOptions) (FleetAnalyticsClientCreateResponse, error)`
+- New function `*FleetAnalyticsClient.BeginDelete(ctx context.Context, resourceGroupName string, fleetName string, fleetAnalyticsName string, options *FleetAnalyticsClientBeginDeleteOptions) (*runtime.Poller[FleetAnalyticsClientDeleteResponse], error)`
+- New function `*FleetAnalyticsClient.Get(ctx context.Context, resourceGroupName string, fleetName string, fleetAnalyticsName string, options *FleetAnalyticsClientGetOptions) (FleetAnalyticsClientGetResponse, error)`
+- New function `*FleetAnalyticsClient.NewListPager(resourceGroupName string, fleetName string, options *FleetAnalyticsClientListOptions) *runtime.Pager[FleetAnalyticsClientListResponse]`
+- New function `NewGarnetClustersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*GarnetClustersClient, error)`
+- New function `*GarnetClustersClient.BeginCreateUpdate(ctx context.Context, resourceGroupName string, clusterName string, body GarnetClusterResource, options *GarnetClustersClientBeginCreateUpdateOptions) (*runtime.Poller[GarnetClustersClientCreateUpdateResponse], error)`
+- New function `*GarnetClustersClient.BeginDelete(ctx context.Context, resourceGroupName string, clusterName string, options *GarnetClustersClientBeginDeleteOptions) (*runtime.Poller[GarnetClustersClientDeleteResponse], error)`
+- New function `*GarnetClustersClient.Get(ctx context.Context, resourceGroupName string, clusterName string, options *GarnetClustersClientGetOptions) (GarnetClustersClientGetResponse, error)`
+- New function `*GarnetClustersClient.NewListByResourceGroupPager(resourceGroupName string, options *GarnetClustersClientListByResourceGroupOptions) *runtime.Pager[GarnetClustersClientListByResourceGroupResponse]`
+- New function `*GarnetClustersClient.NewListBySubscriptionPager(options *GarnetClustersClientListBySubscriptionOptions) *runtime.Pager[GarnetClustersClientListBySubscriptionResponse]`
+- New function `*GarnetClustersClient.BeginUpdate(ctx context.Context, resourceGroupName string, clusterName string, body GarnetClusterResourcePatch, options *GarnetClustersClientBeginUpdateOptions) (*runtime.Poller[GarnetClustersClientUpdateResponse], error)`
+- New function `NewGraphResourcesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*GraphResourcesClient, error)`
+- New function `*GraphResourcesClient.BeginCreateUpdateGraph(ctx context.Context, resourceGroupName string, accountName string, graphName string, createUpdateGraphParameters GraphResourceCreateUpdateParameters, options *GraphResourcesClientBeginCreateUpdateGraphOptions) (*runtime.Poller[GraphResourcesClientCreateUpdateGraphResponse], error)`
+- New function `*GraphResourcesClient.BeginDeleteGraphResource(ctx context.Context, resourceGroupName string, accountName string, graphName string, options *GraphResourcesClientBeginDeleteGraphResourceOptions) (*runtime.Poller[GraphResourcesClientDeleteGraphResourceResponse], error)`
+- New function `*GraphResourcesClient.GetGraph(ctx context.Context, resourceGroupName string, accountName string, graphName string, options *GraphResourcesClientGetGraphOptions) (GraphResourcesClientGetGraphResponse, error)`
+- New function `*GraphResourcesClient.NewListGraphsPager(resourceGroupName string, accountName string, options *GraphResourcesClientListGraphsOptions) *runtime.Pager[GraphResourcesClientListGraphsResponse]`
+- New function `*MongoDBResourcesClient.BeginListMongoDBCollectionPartitionMerge(ctx context.Context, resourceGroupName string, accountName string, databaseName string, collectionName string, mergeParameters MergeParameters, options *MongoDBResourcesClientBeginListMongoDBCollectionPartitionMergeOptions) (*runtime.Poller[MongoDBResourcesClientListMongoDBCollectionPartitionMergeResponse], error)`
+- New function `*MongoDBResourcesClient.BeginMongoDBContainerRedistributeThroughput(ctx context.Context, resourceGroupName string, accountName string, databaseName string, collectionName string, redistributeThroughputParameters RedistributeThroughputParameters, options *MongoDBResourcesClientBeginMongoDBContainerRedistributeThroughputOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBContainerRedistributeThroughputResponse], error)`
+- New function `*MongoDBResourcesClient.BeginMongoDBContainerRetrieveThroughputDistribution(ctx context.Context, resourceGroupName string, accountName string, databaseName string, collectionName string, retrieveThroughputParameters RetrieveThroughputParameters, options *MongoDBResourcesClientBeginMongoDBContainerRetrieveThroughputDistributionOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBContainerRetrieveThroughputDistributionResponse], error)`
+- New function `*MongoDBResourcesClient.BeginMongoDBDatabasePartitionMerge(ctx context.Context, resourceGroupName string, accountName string, databaseName string, mergeParameters MergeParameters, options *MongoDBResourcesClientBeginMongoDBDatabasePartitionMergeOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabasePartitionMergeResponse], error)`
+- New function `*MongoDBResourcesClient.BeginMongoDBDatabaseRedistributeThroughput(ctx context.Context, resourceGroupName string, accountName string, databaseName string, redistributeThroughputParameters RedistributeThroughputParameters, options *MongoDBResourcesClientBeginMongoDBDatabaseRedistributeThroughputOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabaseRedistributeThroughputResponse], error)`
+- New function `*MongoDBResourcesClient.BeginMongoDBDatabaseRetrieveThroughputDistribution(ctx context.Context, resourceGroupName string, accountName string, databaseName string, retrieveThroughputParameters RetrieveThroughputParameters, options *MongoDBResourcesClientBeginMongoDBDatabaseRetrieveThroughputDistributionOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabaseRetrieveThroughputDistributionResponse], error)`
+- New function `*MongoDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
+- New function `*MongoDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*MongoRUToMongoRUCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*MongoRUToMongoVCoreCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `*MongoVCoreDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*SQLDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
+- New function `*SQLDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
+- New function `*SQLResourcesClient.BeginListSQLContainerPartitionMerge(ctx context.Context, resourceGroupName string, accountName string, databaseName string, containerName string, mergeParameters MergeParameters, options *SQLResourcesClientBeginListSQLContainerPartitionMergeOptions) (*runtime.Poller[SQLResourcesClientListSQLContainerPartitionMergeResponse], error)`
+- New function `*SQLResourcesClient.BeginSQLContainerRedistributeThroughput(ctx context.Context, resourceGroupName string, accountName string, databaseName string, containerName string, redistributeThroughputParameters RedistributeThroughputParameters, options *SQLResourcesClientBeginSQLContainerRedistributeThroughputOptions) (*runtime.Poller[SQLResourcesClientSQLContainerRedistributeThroughputResponse], error)`
+- New function `*SQLResourcesClient.BeginSQLContainerRetrieveThroughputDistribution(ctx context.Context, resourceGroupName string, accountName string, databaseName string, containerName string, retrieveThroughputParameters RetrieveThroughputParameters, options *SQLResourcesClientBeginSQLContainerRetrieveThroughputDistributionOptions) (*runtime.Poller[SQLResourcesClientSQLContainerRetrieveThroughputDistributionResponse], error)`
+- New function `*SQLResourcesClient.BeginSQLDatabasePartitionMerge(ctx context.Context, resourceGroupName string, accountName string, databaseName string, mergeParameters MergeParameters, options *SQLResourcesClientBeginSQLDatabasePartitionMergeOptions) (*runtime.Poller[SQLResourcesClientSQLDatabasePartitionMergeResponse], error)`
+- New function `*SQLResourcesClient.BeginSQLDatabaseRedistributeThroughput(ctx context.Context, resourceGroupName string, accountName string, databaseName string, redistributeThroughputParameters RedistributeThroughputParameters, options *SQLResourcesClientBeginSQLDatabaseRedistributeThroughputOptions) (*runtime.Poller[SQLResourcesClientSQLDatabaseRedistributeThroughputResponse], error)`
+- New function `*SQLResourcesClient.BeginSQLDatabaseRetrieveThroughputDistribution(ctx context.Context, resourceGroupName string, accountName string, databaseName string, retrieveThroughputParameters RetrieveThroughputParameters, options *SQLResourcesClientBeginSQLDatabaseRetrieveThroughputDistributionOptions) (*runtime.Poller[SQLResourcesClientSQLDatabaseRetrieveThroughputDistributionResponse], error)`
+- New function `NewSoftDeletedDatabaseAccountsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SoftDeletedDatabaseAccountsClient, error)`
+- New function `*SoftDeletedDatabaseAccountsClient.Get(ctx context.Context, resourceGroupName string, location string, accountName string, options *SoftDeletedDatabaseAccountsClientGetOptions) (SoftDeletedDatabaseAccountsClientGetResponse, error)`
+- New function `*SoftDeletedDatabaseAccountsClient.ListByLocation(ctx context.Context, location string, options *SoftDeletedDatabaseAccountsClientListByLocationOptions) (SoftDeletedDatabaseAccountsClientListByLocationResponse, error)`
+- New function `*SoftDeletedDatabaseAccountsClient.ListByResourceGroupAndLocation(ctx context.Context, resourceGroupName string, location string, options *SoftDeletedDatabaseAccountsClientListByResourceGroupAndLocationOptions) (SoftDeletedDatabaseAccountsClientListByResourceGroupAndLocationResponse, error)`
+- New function `*SoftDeletedDatabaseAccountsClient.BeginPurge(ctx context.Context, resourceGroupName string, location string, accountName string, options *SoftDeletedDatabaseAccountsClientBeginPurgeOptions) (*runtime.Poller[SoftDeletedDatabaseAccountsClientPurgeResponse], error)`
+- New function `*SoftDeletedDatabaseAccountsClient.BeginRestore(ctx context.Context, resourceGroupName string, location string, accountName string, options *SoftDeletedDatabaseAccountsClientBeginRestoreOptions) (*runtime.Poller[SoftDeletedDatabaseAccountsClientRestoreResponse], error)`
+- New function `NewSoftDeletedSQLContainersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SoftDeletedSQLContainersClient, error)`
+- New function `*SoftDeletedSQLContainersClient.Get(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, containerName string, options *SoftDeletedSQLContainersClientGetOptions) (SoftDeletedSQLContainersClientGetResponse, error)`
+- New function `*SoftDeletedSQLContainersClient.List(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, options *SoftDeletedSQLContainersClientListOptions) (SoftDeletedSQLContainersClientListResponse, error)`
+- New function `*SoftDeletedSQLContainersClient.BeginPurge(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, containerName string, options *SoftDeletedSQLContainersClientBeginPurgeOptions) (*runtime.Poller[SoftDeletedSQLContainersClientPurgeResponse], error)`
+- New function `*SoftDeletedSQLContainersClient.BeginRestore(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, containerName string, options *SoftDeletedSQLContainersClientBeginRestoreOptions) (*runtime.Poller[SoftDeletedSQLContainersClientRestoreResponse], error)`
+- New function `NewSoftDeletedSQLDatabasesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SoftDeletedSQLDatabasesClient, error)`
+- New function `*SoftDeletedSQLDatabasesClient.Get(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, options *SoftDeletedSQLDatabasesClientGetOptions) (SoftDeletedSQLDatabasesClientGetResponse, error)`
+- New function `*SoftDeletedSQLDatabasesClient.List(ctx context.Context, resourceGroupName string, location string, accountName string, options *SoftDeletedSQLDatabasesClientListOptions) (SoftDeletedSQLDatabasesClientListResponse, error)`
+- New function `*SoftDeletedSQLDatabasesClient.BeginPurge(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, options *SoftDeletedSQLDatabasesClientBeginPurgeOptions) (*runtime.Poller[SoftDeletedSQLDatabasesClientPurgeResponse], error)`
+- New function `*SoftDeletedSQLDatabasesClient.BeginRestore(ctx context.Context, resourceGroupName string, location string, accountName string, databaseName string, options *SoftDeletedSQLDatabasesClientBeginRestoreOptions) (*runtime.Poller[SoftDeletedSQLDatabasesClientRestoreResponse], error)`
+- New function `NewThroughputPoolAccountClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ThroughputPoolAccountClient, error)`
+- New function `*ThroughputPoolAccountClient.BeginCreate(ctx context.Context, resourceGroupName string, throughputPoolName string, throughputPoolAccountName string, body ThroughputPoolAccountResource, options *ThroughputPoolAccountClientBeginCreateOptions) (*runtime.Poller[ThroughputPoolAccountClientCreateResponse], error)`
+- New function `*ThroughputPoolAccountClient.BeginDelete(ctx context.Context, resourceGroupName string, throughputPoolName string, throughputPoolAccountName string, options *ThroughputPoolAccountClientBeginDeleteOptions) (*runtime.Poller[ThroughputPoolAccountClientDeleteResponse], error)`
+- New function `*ThroughputPoolAccountClient.Get(ctx context.Context, resourceGroupName string, throughputPoolName string, throughputPoolAccountName string, options *ThroughputPoolAccountClientGetOptions) (ThroughputPoolAccountClientGetResponse, error)`
+- New function `NewThroughputPoolAccountsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ThroughputPoolAccountsClient, error)`
+- New function `*ThroughputPoolAccountsClient.NewListPager(resourceGroupName string, throughputPoolName string, options *ThroughputPoolAccountsClientListOptions) *runtime.Pager[ThroughputPoolAccountsClientListResponse]`
+- New function `NewThroughputPoolClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ThroughputPoolClient, error)`
+- New function `*ThroughputPoolClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, throughputPoolName string, body ThroughputPoolResource, options *ThroughputPoolClientBeginCreateOrUpdateOptions) (*runtime.Poller[ThroughputPoolClientCreateOrUpdateResponse], error)`
+- New function `*ThroughputPoolClient.BeginDelete(ctx context.Context, resourceGroupName string, throughputPoolName string, options *ThroughputPoolClientBeginDeleteOptions) (*runtime.Poller[ThroughputPoolClientDeleteResponse], error)`
+- New function `*ThroughputPoolClient.Get(ctx context.Context, resourceGroupName string, throughputPoolName string, options *ThroughputPoolClientGetOptions) (ThroughputPoolClientGetResponse, error)`
+- New function `*ThroughputPoolClient.BeginUpdate(ctx context.Context, resourceGroupName string, throughputPoolName string, body ThroughputPoolUpdate, options *ThroughputPoolClientBeginUpdateOptions) (*runtime.Poller[ThroughputPoolClientUpdateResponse], error)`
+- New function `NewThroughputPoolsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ThroughputPoolsClient, error)`
+- New function `*ThroughputPoolsClient.NewListByResourceGroupPager(resourceGroupName string, options *ThroughputPoolsClientListByResourceGroupOptions) *runtime.Pager[ThroughputPoolsClientListByResourceGroupResponse]`
+- New function `*ThroughputPoolsClient.NewListPager(options *ThroughputPoolsClientListOptions) *runtime.Pager[ThroughputPoolsClientListResponse]`
+- New function `*NoSQLRUToNoSQLRUCopyJobProperties.GetBaseCopyJobProperties() *BaseCopyJobProperties`
+- New function `NewNetworkSecurityPerimeterConfigurationsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*NetworkSecurityPerimeterConfigurationsClient, error)`
+- New function `*NetworkSecurityPerimeterConfigurationsClient.Get(ctx context.Context, resourceGroupName string, accountName string, networkSecurityPerimeterConfigurationName string, options *NetworkSecurityPerimeterConfigurationsClientGetOptions) (NetworkSecurityPerimeterConfigurationsClientGetResponse, error)`
+- New function `*NetworkSecurityPerimeterConfigurationsClient.NewListPager(resourceGroupName string, accountName string, options *NetworkSecurityPerimeterConfigurationsClientListOptions) *runtime.Pager[NetworkSecurityPerimeterConfigurationsClientListResponse]`
+- New function `*NetworkSecurityPerimeterConfigurationsClient.BeginReconcile(ctx context.Context, resourceGroupName string, accountName string, networkSecurityPerimeterConfigurationName string, options *NetworkSecurityPerimeterConfigurationsClientBeginReconcileOptions) (*runtime.Poller[NetworkSecurityPerimeterConfigurationsClientReconcileResponse], error)`
+- New struct `AccessRule`
+- New struct `AccessRuleProperties`
+- New struct `AccessRulePropertiesSubscriptionsItem`
+- New struct `AzureBlobContainer`
+- New struct `AzureBlobDataTransferDataSourceSink`
+- New struct `AzureBlobSourceSinkDetails`
+- New struct `BackupResource`
+- New struct `BlobToCassandraRUCopyJobProperties`
+- New struct `BlobToCassandraRUCopyJobTask`
+- New struct `CapacityModeChangeTransitionState`
+- New struct `CassandraDataTransferDataSourceSink`
+- New struct `CassandraRUToBlobCopyJobProperties`
+- New struct `CassandraRUToBlobCopyJobTask`
+- New struct `CassandraRUToCassandraRUCopyJobProperties`
+- New struct `CassandraRUToCassandraRUCopyJobTask`
+- New struct `CassandraViewCreateUpdateParameters`
+- New struct `CassandraViewCreateUpdateProperties`
+- New struct `CassandraViewGetProperties`
+- New struct `CassandraViewGetPropertiesOptions`
+- New struct `CassandraViewGetPropertiesResource`
+- New struct `CassandraViewGetResults`
+- New struct `CassandraViewListResult`
+- New struct `CassandraViewResource`
+- New struct `ChaosFaultListResponse`
+- New struct `ChaosFaultProperties`
+- New struct `ChaosFaultResource`
+- New struct `CommandAsyncPostBody`
+- New struct `CommandPublicResource`
+- New struct `CopyJobFeedResults`
+- New struct `CopyJobGetResults`
+- New struct `CopyJobProperties`
+- New struct `CreateJobRequest`
+- New struct `DBCassandraTable`
+- New struct `DBErrorResult`
+- New struct `DBMongoCollection`
+- New struct `DBMongoVCoreCollection`
+- New struct `DBNoSQLContainer`
+- New struct `DBSourceSinkDetails`
+- New struct `DataMaskingPolicy`
+- New struct `DataMaskingPolicyExcludedPathsItem`
+- New struct `DataMaskingPolicyIncludedPathsItem`
+- New struct `DataTransferJobFeedResults`
+- New struct `DataTransferJobGetResults`
+- New struct `DataTransferJobProperties`
+- New struct `DiagnosticLogSettings`
+- New struct `ErrorAdditionalInfo`
+- New struct `ErrorDetail`
+- New struct `ErrorResponse`
+- New struct `FleetAnalyticsListResult`
+- New struct `FleetAnalyticsProperties`
+- New struct `FleetAnalyticsResource`
+- New struct `GarnetClusterResource`
+- New struct `GarnetClusterResourcePatch`
+- New struct `GarnetClusterResourcePatchProperties`
+- New struct `GarnetClusterResourceProperties`
+- New struct `GarnetClusterResourcePropertiesEndPointsItem`
+- New struct `GraphResource`
+- New struct `GraphResourceCreateUpdateParameters`
+- New struct `GraphResourceCreateUpdateProperties`
+- New struct `GraphResourceGetProperties`
+- New struct `GraphResourceGetPropertiesOptions`
+- New struct `GraphResourceGetPropertiesResource`
+- New struct `GraphResourceGetResults`
+- New struct `GraphResourcesListResult`
+- New struct `ListBackups`
+- New struct `ListCommands`
+- New struct `ListGarnetClusters`
+- New struct `MaterializedViewDefinition`
+- New struct `MaterializedViewDetails`
+- New struct `MaterializedViewsProperties`
+- New struct `MergeParameters`
+- New struct `MongoDataTransferDataSourceSink`
+- New struct `MongoRUToMongoRUCopyJobProperties`
+- New struct `MongoRUToMongoRUCopyJobTask`
+- New struct `MongoRUToMongoVCoreCopyJobProperties`
+- New struct `MongoRUToMongoVCoreCopyJobTask`
+- New struct `MongoVCoreDataTransferDataSourceSink`
+- New struct `MongoVCoreSourceSinkDetails`
+- New struct `NetworkSecurityPerimeter`
+- New struct `NetworkSecurityPerimeterConfiguration`
+- New struct `NetworkSecurityPerimeterConfigurationListResult`
+- New struct `NetworkSecurityPerimeterConfigurationProperties`
+- New struct `NetworkSecurityProfile`
+- New struct `NoSQLRUToNoSQLRUCopyJobProperties`
+- New struct `NoSQLRUToNoSQLRUCopyJobTask`
+- New struct `PhysicalPartitionID`
+- New struct `PhysicalPartitionStorageInfo`
+- New struct `PhysicalPartitionStorageInfoCollection`
+- New struct `PhysicalPartitionThroughputInfoResource`
+- New struct `PhysicalPartitionThroughputInfoResult`
+- New struct `PhysicalPartitionThroughputInfoResultProperties`
+- New struct `PhysicalPartitionThroughputInfoResultPropertiesResource`
+- New struct `ProvisioningIssue`
+- New struct `ProvisioningIssueProperties`
+- New struct `RedistributeThroughputParameters`
+- New struct `RedistributeThroughputProperties`
+- New struct `RedistributeThroughputPropertiesResource`
+- New struct `ResourceAssociation`
+- New struct `RetrieveThroughputParameters`
+- New struct `RetrieveThroughputProperties`
+- New struct `RetrieveThroughputPropertiesResource`
+- New struct `SQLDataTransferDataSourceSink`
+- New struct `SoftDeleteConfiguration`
+- New struct `SoftDeletedDatabaseAccountGetResult`
+- New struct `SoftDeletedDatabaseAccountProperties`
+- New struct `SoftDeletedDatabaseAccountResource`
+- New struct `SoftDeletedDatabaseAccountsListResult`
+- New struct `SoftDeletedSQLContainerGetResult`
+- New struct `SoftDeletedSQLContainerProperties`
+- New struct `SoftDeletedSQLContainerResource`
+- New struct `SoftDeletedSQLContainersListResult`
+- New struct `SoftDeletedSQLDatabaseGetResult`
+- New struct `SoftDeletedSQLDatabaseProperties`
+- New struct `SoftDeletedSQLDatabaseResource`
+- New struct `SoftDeletedSQLDatabasesListResult`
+- New struct `SoftDeletionMetadata`
+- New struct `ThroughputBucketResource`
+- New struct `ThroughputPoolAccountProperties`
+- New struct `ThroughputPoolAccountResource`
+- New struct `ThroughputPoolAccountsListResult`
+- New struct `ThroughputPoolProperties`
+- New struct `ThroughputPoolResource`
+- New struct `ThroughputPoolUpdate`
+- New struct `ThroughputPoolsListResult`
+- New field `ApproximateLastUsageTime` in struct `AccountKeyMetadata`
+- New field `ClusterType` in struct `ClusterResourceProperties`
+- New field `CapacityMode`, `DiagnosticLogSettings`, `EnableAllVersionsAndDeletesChangeFeed`, `EnableMaterializedViews`, `SoftDeleteConfiguration` in struct `DatabaseAccountCreateUpdateProperties`
+- New field `CapacityMode`, `CapacityModeChangeTransitionState`, `DiagnosticLogSettings`, `EnableAllVersionsAndDeletesChangeFeed`, `EnableMaterializedViews`, `SoftDeleteConfiguration`, `ThroughputPoolDedicatedRUs`, `ThroughputPoolMaxConsumableRUs` in struct `DatabaseAccountGetProperties`
+- New field `SkipAccountKeysLastUsageCheck` in struct `DatabaseAccountRegenerateKeyParameters`
+- New field `CapacityMode`, `DiagnosticLogSettings`, `EnableAllVersionsAndDeletesChangeFeed`, `EnableMaterializedViews`, `SoftDeleteConfiguration` in struct `DatabaseAccountUpdateProperties`
+- New field `DataMaskingPolicy`, `MaterializedViewDefinition`, `MaterializedViews`, `MaterializedViewsProperties` in struct `RestorableSQLContainerPropertiesResourceContainer`
+- New field `DataMaskingPolicy`, `MaterializedViewDefinition`, `MaterializedViews`, `MaterializedViewsProperties` in struct `SQLContainerGetPropertiesResource`
+- New field `DataMaskingPolicy`, `MaterializedViewDefinition`, `MaterializedViews`, `MaterializedViewsProperties` in struct `SQLContainerResource`
+- New field `ThroughputBuckets` in struct `ThroughputSettingsGetPropertiesResource`
+- New field `ThroughputBuckets` in struct `ThroughputSettingsResource`
+
+
+## 4.0.0 (2026-07-01)
+### Breaking Changes
+
+- Function `*FleetClient.Update` parameter(s) have been changed from `(ctx context.Context, resourceGroupName string, fleetName string, options *FleetClientUpdateOptions)` to `(ctx context.Context, resourceGroupName string, fleetName string, body FleetResourceUpdate, options *FleetClientUpdateOptions)`
+- Function `*FleetspaceClient.BeginUpdate` parameter(s) have been changed from `(ctx context.Context, resourceGroupName string, fleetName string, fleetspaceName string, options *FleetspaceClientBeginUpdateOptions)` to `(ctx context.Context, resourceGroupName string, fleetName string, fleetspaceName string, body FleetspaceUpdate, options *FleetspaceClientBeginUpdateOptions)`
+- Type of `ManagedServiceIdentity.UserAssignedIdentities` has been changed from `map[string]*Components1Jq1T4ISchemasManagedserviceidentityPropertiesUserassignedidentitiesAdditionalproperties` to `map[string]*ManagedServiceIdentityUserAssignedIdentities`
+- Enum `NodeStatus` has been removed
+- Struct `ARMProxyResource` has been removed
+- Struct `ARMResourceProperties` has been removed
+- Struct `Components1Jq1T4ISchemasManagedserviceidentityPropertiesUserassignedidentitiesAdditionalproperties` has been removed
+- Struct `DataTransferServiceResource` has been removed
+- Struct `ErrorAdditionalInfo` has been removed
+- Struct `ErrorDetail` has been removed
+- Struct `ErrorDetailAutoGenerated` has been removed
+- Struct `ErrorResponse` has been removed
+- Struct `ErrorResponseAutoGenerated` has been removed
+- Struct `ErrorResponseAutoGenerated2` has been removed
+- Struct `ExtendedResourceProperties` has been removed
+- Struct `GraphAPIComputeServiceResource` has been removed
+- Struct `ManagedCassandraARMResourceProperties` has been removed
+- Struct `MaterializedViewsBuilderServiceResource` has been removed
+- Struct `OptionsResource` has been removed
+- Struct `ProxyResource` has been removed
+- Struct `ProxyResourceAutoGenerated` has been removed
+- Struct `RegionalServiceResource` has been removed
+- Struct `Resource` has been removed
+- Struct `ResourceAutoGenerated` has been removed
+- Struct `RestoreParametersBase` has been removed
+- Struct `SQLDedicatedGatewayServiceResource` has been removed
+- Struct `TrackedResource` has been removed
+- Field `Body` of struct `FleetClientUpdateOptions` has been removed
+- Field `Body` of struct `FleetspaceClientBeginUpdateOptions` has been removed
+
+### Features Added
+
+- New enum type `AutoReplicate` with values `AutoReplicateAllKeyspaces`, `AutoReplicateNone`, `AutoReplicateSystemKeyspaces`
+- New enum type `ScheduledEventStrategy` with values `ScheduledEventStrategyIgnore`, `ScheduledEventStrategyStopAny`, `ScheduledEventStrategyStopByRack`
+- New function `*CassandraResourcesClient.BeginCreateUpdateCassandraRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, createUpdateCassandraRoleAssignmentParameters CassandraRoleAssignmentResource, options *CassandraResourcesClientBeginCreateUpdateCassandraRoleAssignmentOptions) (*runtime.Poller[CassandraResourcesClientCreateUpdateCassandraRoleAssignmentResponse], error)`
+- New function `*CassandraResourcesClient.BeginCreateUpdateCassandraRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, createUpdateCassandraRoleDefinitionParameters CassandraRoleDefinitionResource, options *CassandraResourcesClientBeginCreateUpdateCassandraRoleDefinitionOptions) (*runtime.Poller[CassandraResourcesClientCreateUpdateCassandraRoleDefinitionResponse], error)`
+- New function `*CassandraResourcesClient.BeginDeleteCassandraRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *CassandraResourcesClientBeginDeleteCassandraRoleAssignmentOptions) (*runtime.Poller[CassandraResourcesClientDeleteCassandraRoleAssignmentResponse], error)`
+- New function `*CassandraResourcesClient.BeginDeleteCassandraRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *CassandraResourcesClientBeginDeleteCassandraRoleDefinitionOptions) (*runtime.Poller[CassandraResourcesClientDeleteCassandraRoleDefinitionResponse], error)`
+- New function `*CassandraResourcesClient.GetCassandraRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *CassandraResourcesClientGetCassandraRoleAssignmentOptions) (CassandraResourcesClientGetCassandraRoleAssignmentResponse, error)`
+- New function `*CassandraResourcesClient.GetCassandraRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *CassandraResourcesClientGetCassandraRoleDefinitionOptions) (CassandraResourcesClientGetCassandraRoleDefinitionResponse, error)`
+- New function `*CassandraResourcesClient.NewListCassandraRoleAssignmentsPager(resourceGroupName string, accountName string, options *CassandraResourcesClientListCassandraRoleAssignmentsOptions) *runtime.Pager[CassandraResourcesClientListCassandraRoleAssignmentsResponse]`
+- New function `*CassandraResourcesClient.NewListCassandraRoleDefinitionsPager(resourceGroupName string, accountName string, options *CassandraResourcesClientListCassandraRoleDefinitionsOptions) *runtime.Pager[CassandraResourcesClientListCassandraRoleDefinitionsResponse]`
+- New function `*ClientFactory.NewMongoMIResourcesClient() *MongoMIResourcesClient`
+- New function `*GremlinResourcesClient.BeginCreateUpdateGremlinRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, createUpdateGremlinRoleAssignmentParameters GremlinRoleAssignmentResource, options *GremlinResourcesClientBeginCreateUpdateGremlinRoleAssignmentOptions) (*runtime.Poller[GremlinResourcesClientCreateUpdateGremlinRoleAssignmentResponse], error)`
+- New function `*GremlinResourcesClient.BeginCreateUpdateGremlinRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, createUpdateGremlinRoleDefinitionParameters GremlinRoleDefinitionResource, options *GremlinResourcesClientBeginCreateUpdateGremlinRoleDefinitionOptions) (*runtime.Poller[GremlinResourcesClientCreateUpdateGremlinRoleDefinitionResponse], error)`
+- New function `*GremlinResourcesClient.BeginDeleteGremlinRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *GremlinResourcesClientBeginDeleteGremlinRoleAssignmentOptions) (*runtime.Poller[GremlinResourcesClientDeleteGremlinRoleAssignmentResponse], error)`
+- New function `*GremlinResourcesClient.BeginDeleteGremlinRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *GremlinResourcesClientBeginDeleteGremlinRoleDefinitionOptions) (*runtime.Poller[GremlinResourcesClientDeleteGremlinRoleDefinitionResponse], error)`
+- New function `*GremlinResourcesClient.GetGremlinRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *GremlinResourcesClientGetGremlinRoleAssignmentOptions) (GremlinResourcesClientGetGremlinRoleAssignmentResponse, error)`
+- New function `*GremlinResourcesClient.GetGremlinRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *GremlinResourcesClientGetGremlinRoleDefinitionOptions) (GremlinResourcesClientGetGremlinRoleDefinitionResponse, error)`
+- New function `*GremlinResourcesClient.NewListGremlinRoleAssignmentsPager(resourceGroupName string, accountName string, options *GremlinResourcesClientListGremlinRoleAssignmentsOptions) *runtime.Pager[GremlinResourcesClientListGremlinRoleAssignmentsResponse]`
+- New function `*GremlinResourcesClient.NewListGremlinRoleDefinitionsPager(resourceGroupName string, accountName string, options *GremlinResourcesClientListGremlinRoleDefinitionsOptions) *runtime.Pager[GremlinResourcesClientListGremlinRoleDefinitionsResponse]`
+- New function `NewMongoMIResourcesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*MongoMIResourcesClient, error)`
+- New function `*MongoMIResourcesClient.BeginCreateUpdateMongoMIRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, createUpdateMongoMIRoleAssignmentParameters MongoMIRoleAssignmentResource, options *MongoMIResourcesClientBeginCreateUpdateMongoMIRoleAssignmentOptions) (*runtime.Poller[MongoMIResourcesClientCreateUpdateMongoMIRoleAssignmentResponse], error)`
+- New function `*MongoMIResourcesClient.BeginCreateUpdateMongoMIRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, createUpdateMongoMIRoleDefinitionParameters MongoMIRoleDefinitionResource, options *MongoMIResourcesClientBeginCreateUpdateMongoMIRoleDefinitionOptions) (*runtime.Poller[MongoMIResourcesClientCreateUpdateMongoMIRoleDefinitionResponse], error)`
+- New function `*MongoMIResourcesClient.BeginDeleteMongoMIRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *MongoMIResourcesClientBeginDeleteMongoMIRoleAssignmentOptions) (*runtime.Poller[MongoMIResourcesClientDeleteMongoMIRoleAssignmentResponse], error)`
+- New function `*MongoMIResourcesClient.BeginDeleteMongoMIRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *MongoMIResourcesClientBeginDeleteMongoMIRoleDefinitionOptions) (*runtime.Poller[MongoMIResourcesClientDeleteMongoMIRoleDefinitionResponse], error)`
+- New function `*MongoMIResourcesClient.GetMongoMIRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *MongoMIResourcesClientGetMongoMIRoleAssignmentOptions) (MongoMIResourcesClientGetMongoMIRoleAssignmentResponse, error)`
+- New function `*MongoMIResourcesClient.GetMongoMIRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *MongoMIResourcesClientGetMongoMIRoleDefinitionOptions) (MongoMIResourcesClientGetMongoMIRoleDefinitionResponse, error)`
+- New function `*MongoMIResourcesClient.NewListMongoMIRoleAssignmentsPager(resourceGroupName string, accountName string, options *MongoMIResourcesClientListMongoMIRoleAssignmentsOptions) *runtime.Pager[MongoMIResourcesClientListMongoMIRoleAssignmentsResponse]`
+- New function `*MongoMIResourcesClient.NewListMongoMIRoleDefinitionsPager(resourceGroupName string, accountName string, options *MongoMIResourcesClientListMongoMIRoleDefinitionsOptions) *runtime.Pager[MongoMIResourcesClientListMongoMIRoleDefinitionsResponse]`
+- New function `*TableResourcesClient.BeginCreateUpdateTableRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, createUpdateTableRoleAssignmentParameters TableRoleAssignmentResource, options *TableResourcesClientBeginCreateUpdateTableRoleAssignmentOptions) (*runtime.Poller[TableResourcesClientCreateUpdateTableRoleAssignmentResponse], error)`
+- New function `*TableResourcesClient.BeginCreateUpdateTableRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, createUpdateTableRoleDefinitionParameters TableRoleDefinitionResource, options *TableResourcesClientBeginCreateUpdateTableRoleDefinitionOptions) (*runtime.Poller[TableResourcesClientCreateUpdateTableRoleDefinitionResponse], error)`
+- New function `*TableResourcesClient.BeginDeleteTableRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *TableResourcesClientBeginDeleteTableRoleAssignmentOptions) (*runtime.Poller[TableResourcesClientDeleteTableRoleAssignmentResponse], error)`
+- New function `*TableResourcesClient.BeginDeleteTableRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *TableResourcesClientBeginDeleteTableRoleDefinitionOptions) (*runtime.Poller[TableResourcesClientDeleteTableRoleDefinitionResponse], error)`
+- New function `*TableResourcesClient.GetTableRoleAssignment(ctx context.Context, resourceGroupName string, accountName string, roleAssignmentID string, options *TableResourcesClientGetTableRoleAssignmentOptions) (TableResourcesClientGetTableRoleAssignmentResponse, error)`
+- New function `*TableResourcesClient.GetTableRoleDefinition(ctx context.Context, resourceGroupName string, accountName string, roleDefinitionID string, options *TableResourcesClientGetTableRoleDefinitionOptions) (TableResourcesClientGetTableRoleDefinitionResponse, error)`
+- New function `*TableResourcesClient.NewListTableRoleAssignmentsPager(resourceGroupName string, accountName string, options *TableResourcesClientListTableRoleAssignmentsOptions) *runtime.Pager[TableResourcesClientListTableRoleAssignmentsResponse]`
+- New function `*TableResourcesClient.NewListTableRoleDefinitionsPager(resourceGroupName string, accountName string, options *TableResourcesClientListTableRoleDefinitionsOptions) *runtime.Pager[TableResourcesClientListTableRoleDefinitionsResponse]`
+- New struct `BackupSchedule`
+- New struct `CassandraRoleAssignmentListResult`
+- New struct `CassandraRoleAssignmentResource`
+- New struct `CassandraRoleAssignmentResourceProperties`
+- New struct `CassandraRoleDefinitionListResult`
+- New struct `CassandraRoleDefinitionResource`
+- New struct `CassandraRoleDefinitionResourceProperties`
+- New struct `GremlinRoleAssignmentListResult`
+- New struct `GremlinRoleAssignmentResource`
+- New struct `GremlinRoleAssignmentResourceProperties`
+- New struct `GremlinRoleDefinitionListResult`
+- New struct `GremlinRoleDefinitionResource`
+- New struct `GremlinRoleDefinitionResourceProperties`
+- New struct `ManagedServiceIdentityUserAssignedIdentities`
+- New struct `MongoMIRoleAssignmentListResult`
+- New struct `MongoMIRoleAssignmentResource`
+- New struct `MongoMIRoleAssignmentResourceProperties`
+- New struct `MongoMIRoleDefinitionListResult`
+- New struct `MongoMIRoleDefinitionResource`
+- New struct `MongoMIRoleDefinitionResourceProperties`
+- New struct `TableRoleAssignmentListResult`
+- New struct `TableRoleAssignmentResource`
+- New struct `TableRoleAssignmentResourceProperties`
+- New struct `TableRoleDefinitionListResult`
+- New struct `TableRoleDefinitionResource`
+- New struct `TableRoleDefinitionResourceProperties`
+- New field `XMSForceDeallocate` in struct `CassandraClustersClientBeginDeallocateOptions`
+- New field `Identity` in struct `CassandraKeyspaceCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `CassandraKeyspaceGetResults`
+- New field `NextLink` in struct `CassandraKeyspaceListResult`
+- New field `Identity` in struct `CassandraTableCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `CassandraTableGetResults`
+- New field `NextLink` in struct `CassandraTableListResult`
+- New field `SystemData` in struct `ClientEncryptionKeyGetResults`
+- New field `NextLink` in struct `ClientEncryptionKeysListResult`
+- New field `SystemData` in struct `ClusterResource`
+- New field `AutoReplicate`, `BackupSchedules`, `Extensions`, `ExternalDataCenters`, `ScheduledEventStrategy` in struct `ClusterResourceProperties`
+- New field `IsLatestModel` in struct `ComponentsM9L909SchemasCassandraclusterpublicstatusPropertiesDatacentersItemsPropertiesNodesItems`
+- New field `SystemData` in struct `DataCenterResource`
+- New field `EnforceHierarchicalPartitionKeyIDLastLevel` in struct `DatabaseAccountCreateUpdateProperties`
+- New field `EnforceHierarchicalPartitionKeyIDLastLevel` in struct `DatabaseAccountGetProperties`
+- New field `EnforceHierarchicalPartitionKeyIDLastLevel` in struct `DatabaseAccountUpdateProperties`
+- New field `NextLink` in struct `DatabaseAccountsListResult`
+- New field `Tags` in struct `FleetResourceUpdate`
+- New field `DedicatedRUs`, `MaxConsumableRUs` in struct `FleetspacePropertiesThroughputPoolConfiguration`
+- New field `Identity` in struct `GremlinDatabaseCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `GremlinDatabaseGetResults`
+- New field `NextLink` in struct `GremlinDatabaseListResult`
+- New field `Identity` in struct `GremlinGraphCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `GremlinGraphGetResults`
+- New field `NextLink` in struct `GremlinGraphListResult`
+- New field `NextLink` in struct `ListClusters`
+- New field `NextLink` in struct `ListDataCenters`
+- New field `SystemData` in struct `LocationGetResult`
+- New field `NextLink` in struct `LocationListResult`
+- New field `NextLink` in struct `MetricDefinitionsListResult`
+- New field `NextLink` in struct `MetricListResult`
+- New field `Identity` in struct `MongoDBCollectionCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `MongoDBCollectionGetResults`
+- New field `NextLink` in struct `MongoDBCollectionListResult`
+- New field `Identity` in struct `MongoDBDatabaseCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `MongoDBDatabaseGetResults`
+- New field `NextLink` in struct `MongoDBDatabaseListResult`
+- New field `SystemData` in struct `MongoRoleDefinitionGetResults`
+- New field `NextLink` in struct `MongoRoleDefinitionListResult`
+- New field `SystemData` in struct `MongoUserDefinitionGetResults`
+- New field `NextLink` in struct `MongoUserDefinitionListResult`
+- New field `SystemData` in struct `NotebookWorkspace`
+- New field `NextLink` in struct `NotebookWorkspaceListResult`
+- New field `NextLink` in struct `PartitionMetricListResult`
+- New field `NextLink` in struct `PartitionUsagesResult`
+- New field `NextLink` in struct `PercentileMetricListResult`
+- New field `ID` in struct `Permission`
+- New field `SystemData` in struct `PrivateEndpointConnection`
+- New field `NextLink` in struct `PrivateEndpointConnectionListResult`
+- New field `SystemData` in struct `PrivateLinkResource`
+- New field `NextLink` in struct `PrivateLinkResourceListResult`
+- New field `SystemData` in struct `RestorableDatabaseAccountGetResult`
+- New field `NextLink` in struct `RestorableDatabaseAccountsListResult`
+- New field `NextLink` in struct `RestorableGremlinDatabasesListResult`
+- New field `NextLink` in struct `RestorableGremlinGraphsListResult`
+- New field `NextLink` in struct `RestorableGremlinResourcesListResult`
+- New field `NextLink` in struct `RestorableMongodbCollectionsListResult`
+- New field `NextLink` in struct `RestorableMongodbDatabasesListResult`
+- New field `NextLink` in struct `RestorableMongodbResourcesListResult`
+- New field `NextLink` in struct `RestorableSQLContainersListResult`
+- New field `NextLink` in struct `RestorableSQLDatabasesListResult`
+- New field `NextLink` in struct `RestorableSQLResourcesListResult`
+- New field `NextLink` in struct `RestorableTableResourcesListResult`
+- New field `NextLink` in struct `RestorableTablesListResult`
+- New field `Identity` in struct `SQLContainerCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `SQLContainerGetResults`
+- New field `NextLink` in struct `SQLContainerListResult`
+- New field `Identity` in struct `SQLDatabaseCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `SQLDatabaseGetResults`
+- New field `NextLink` in struct `SQLDatabaseListResult`
+- New field `SystemData` in struct `SQLRoleAssignmentGetResults`
+- New field `NextLink` in struct `SQLRoleAssignmentListResult`
+- New field `SystemData` in struct `SQLRoleDefinitionGetResults`
+- New field `NextLink` in struct `SQLRoleDefinitionListResult`
+- New field `Identity` in struct `SQLStoredProcedureCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `SQLStoredProcedureGetResults`
+- New field `NextLink` in struct `SQLStoredProcedureListResult`
+- New field `Identity` in struct `SQLTriggerCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `SQLTriggerGetResults`
+- New field `NextLink` in struct `SQLTriggerListResult`
+- New field `Identity` in struct `SQLUserDefinedFunctionCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `SQLUserDefinedFunctionGetResults`
+- New field `NextLink` in struct `SQLUserDefinedFunctionListResult`
+- New field `SystemData` in struct `ServiceResource`
+- New field `NextLink` in struct `ServiceResourceListResult`
+- New field `Identity` in struct `TableCreateUpdateParameters`
+- New field `Identity`, `SystemData` in struct `TableGetResults`
+- New field `NextLink` in struct `TableListResult`
+- New field `Identity`, `SystemData` in struct `ThroughputSettingsGetResults`
+- New field `Identity` in struct `ThroughputSettingsUpdateParameters`
+- New field `NextLink` in struct `UsagesResult`
+
+
+## 3.4.0 (2025-11-12)
+### Features Added
+
+- New value `StatusCanceled`, `StatusCreating`, `StatusFailed`, `StatusSucceeded`, `StatusUpdating` added to enum type `Status`
+- New value `VectorDataTypeFloat16` added to enum type `VectorDataType`
+- New enum type `DefaultPriorityLevel` with values `DefaultPriorityLevelHigh`, `DefaultPriorityLevelLow`
+- New enum type `FleetspacePropertiesFleetspaceAPIKind` with values `FleetspacePropertiesFleetspaceAPIKindNoSQL`
+- New enum type `FleetspacePropertiesServiceTier` with values `FleetspacePropertiesServiceTierBusinessCritical`, `FleetspacePropertiesServiceTierGeneralPurpose`
+- New function `*ClientFactory.NewFleetClient() *FleetClient`
+- New function `*ClientFactory.NewFleetspaceAccountClient() *FleetspaceAccountClient`
+- New function `*ClientFactory.NewFleetspaceClient() *FleetspaceClient`
+- New function `NewFleetClient(string, azcore.TokenCredential, *arm.ClientOptions) (*FleetClient, error)`
+- New function `*FleetClient.Create(context.Context, string, string, FleetResource, *FleetClientCreateOptions) (FleetClientCreateResponse, error)`
+- New function `*FleetClient.BeginDelete(context.Context, string, string, *FleetClientBeginDeleteOptions) (*runtime.Poller[FleetClientDeleteResponse], error)`
+- New function `*FleetClient.Get(context.Context, string, string, *FleetClientGetOptions) (FleetClientGetResponse, error)`
+- New function `*FleetClient.NewListByResourceGroupPager(string, *FleetClientListByResourceGroupOptions) *runtime.Pager[FleetClientListByResourceGroupResponse]`
+- New function `*FleetClient.NewListPager(*FleetClientListOptions) *runtime.Pager[FleetClientListResponse]`
+- New function `*FleetClient.Update(context.Context, string, string, *FleetClientUpdateOptions) (FleetClientUpdateResponse, error)`
+- New function `NewFleetspaceAccountClient(string, azcore.TokenCredential, *arm.ClientOptions) (*FleetspaceAccountClient, error)`
+- New function `*FleetspaceAccountClient.BeginCreate(context.Context, string, string, string, string, FleetspaceAccountResource, *FleetspaceAccountClientBeginCreateOptions) (*runtime.Poller[FleetspaceAccountClientCreateResponse], error)`
+- New function `*FleetspaceAccountClient.BeginDelete(context.Context, string, string, string, string, *FleetspaceAccountClientBeginDeleteOptions) (*runtime.Poller[FleetspaceAccountClientDeleteResponse], error)`
+- New function `*FleetspaceAccountClient.Get(context.Context, string, string, string, string, *FleetspaceAccountClientGetOptions) (FleetspaceAccountClientGetResponse, error)`
+- New function `*FleetspaceAccountClient.NewListPager(string, string, string, *FleetspaceAccountClientListOptions) *runtime.Pager[FleetspaceAccountClientListResponse]`
+- New function `NewFleetspaceClient(string, azcore.TokenCredential, *arm.ClientOptions) (*FleetspaceClient, error)`
+- New function `*FleetspaceClient.BeginCreate(context.Context, string, string, string, FleetspaceResource, *FleetspaceClientBeginCreateOptions) (*runtime.Poller[FleetspaceClientCreateResponse], error)`
+- New function `*FleetspaceClient.BeginDelete(context.Context, string, string, string, *FleetspaceClientBeginDeleteOptions) (*runtime.Poller[FleetspaceClientDeleteResponse], error)`
+- New function `*FleetspaceClient.Get(context.Context, string, string, string, *FleetspaceClientGetOptions) (FleetspaceClientGetResponse, error)`
+- New function `*FleetspaceClient.NewListPager(string, string, *FleetspaceClientListOptions) *runtime.Pager[FleetspaceClientListResponse]`
+- New function `*FleetspaceClient.BeginUpdate(context.Context, string, string, string, *FleetspaceClientBeginUpdateOptions) (*runtime.Poller[FleetspaceClientUpdateResponse], error)`
+- New struct `ErrorDetailAutoGenerated`
+- New struct `ErrorResponseAutoGenerated2`
+- New struct `FleetListResult`
+- New struct `FleetResource`
+- New struct `FleetResourceProperties`
+- New struct `FleetResourceUpdate`
+- New struct `FleetspaceAccountListResult`
+- New struct `FleetspaceAccountProperties`
+- New struct `FleetspaceAccountPropertiesGlobalDatabaseAccountProperties`
+- New struct `FleetspaceAccountResource`
+- New struct `FleetspaceListResult`
+- New struct `FleetspaceProperties`
+- New struct `FleetspacePropertiesThroughputPoolConfiguration`
+- New struct `FleetspaceResource`
+- New struct `FleetspaceUpdate`
+- New struct `FullTextIndexPath`
+- New struct `ProxyResourceAutoGenerated`
+- New struct `ResourceAutoGenerated`
+- New struct `TrackedResource`
+- New field `DefaultPriorityLevel`, `EnablePriorityBasedExecution` in struct `DatabaseAccountCreateUpdateProperties`
+- New field `DefaultPriorityLevel`, `EnablePriorityBasedExecution`, `KeyVaultKeyURIVersion` in struct `DatabaseAccountGetProperties`
+- New field `DefaultPriorityLevel`, `EnablePriorityBasedExecution` in struct `DatabaseAccountUpdateProperties`
+- New field `FullTextIndexes` in struct `IndexingPolicy`
+- New field `SourceBackupLocation` in struct `RestoreParameters`
+- New field `IndexingSearchListSize`, `QuantizationByteSize`, `VectorIndexShardKey` in struct `VectorIndex`
+
+
 ## 3.3.0 (2025-05-08)
 ### Features Added
 
@@ -8,54 +546,6 @@
 - New field `FullTextPolicy` in struct `RestorableSQLContainerPropertiesResourceContainer`
 - New field `FullTextPolicy` in struct `SQLContainerGetPropertiesResource`
 - New field `FullTextPolicy` in struct `SQLContainerResource`
-
-
-## 4.0.0-beta.2 (2024-12-12)
-### Breaking Changes
-
-- Function `*CassandraClustersClient.BeginInvokeCommandAsync` parameter(s) have been changed from `(context.Context, string, string, CommandPostBody, *CassandraClustersClientBeginInvokeCommandAsyncOptions)` to `(context.Context, string, string, CommandAsyncPostBody, *CassandraClustersClientBeginInvokeCommandAsyncOptions)`
-- Type of `CommandPostBody.Arguments` has been changed from `any` to `map[string]*string`
-- Type of `DataTransferJobProperties.Error` has been changed from `*ErrorResponse` to `*ErrorResponseAutoGenerated`
-- Field `ListCommands` of struct `CassandraClustersClientGetCommandAsyncResponse` has been removed
-- Field `ReadWrite` of struct `CommandPostBody` has been removed
-- Field `Code`, `Message` of struct `ErrorResponse` has been removed
-- Field `Error` of struct `ErrorResponseAutoGenerated` has been removed
-
-### Features Added
-
-- New enum type `DistanceFunction` with values `DistanceFunctionCosine`, `DistanceFunctionDotproduct`, `DistanceFunctionEuclidean`
-- New enum type `VectorDataType` with values `VectorDataTypeFloat32`, `VectorDataTypeInt8`, `VectorDataTypeUint8`
-- New enum type `VectorIndexType` with values `VectorIndexTypeDiskANN`, `VectorIndexTypeFlat`, `VectorIndexTypeQuantizedFlat`
-- New function `*TableResourcesClient.BeginCreateUpdateTableRoleAssignment(context.Context, string, string, string, TableRoleAssignmentResource, *TableResourcesClientBeginCreateUpdateTableRoleAssignmentOptions) (*runtime.Poller[TableResourcesClientCreateUpdateTableRoleAssignmentResponse], error)`
-- New function `*TableResourcesClient.BeginCreateUpdateTableRoleDefinition(context.Context, string, string, string, TableRoleDefinitionResource, *TableResourcesClientBeginCreateUpdateTableRoleDefinitionOptions) (*runtime.Poller[TableResourcesClientCreateUpdateTableRoleDefinitionResponse], error)`
-- New function `*TableResourcesClient.BeginDeleteTableRoleAssignment(context.Context, string, string, string, *TableResourcesClientBeginDeleteTableRoleAssignmentOptions) (*runtime.Poller[TableResourcesClientDeleteTableRoleAssignmentResponse], error)`
-- New function `*TableResourcesClient.BeginDeleteTableRoleDefinition(context.Context, string, string, string, *TableResourcesClientBeginDeleteTableRoleDefinitionOptions) (*runtime.Poller[TableResourcesClientDeleteTableRoleDefinitionResponse], error)`
-- New function `*TableResourcesClient.GetTableRoleAssignment(context.Context, string, string, string, *TableResourcesClientGetTableRoleAssignmentOptions) (TableResourcesClientGetTableRoleAssignmentResponse, error)`
-- New function `*TableResourcesClient.GetTableRoleDefinition(context.Context, string, string, string, *TableResourcesClientGetTableRoleDefinitionOptions) (TableResourcesClientGetTableRoleDefinitionResponse, error)`
-- New function `*TableResourcesClient.NewListTableRoleAssignmentsPager(string, string, *TableResourcesClientListTableRoleAssignmentsOptions) *runtime.Pager[TableResourcesClientListTableRoleAssignmentsResponse]`
-- New function `*TableResourcesClient.NewListTableRoleDefinitionsPager(string, string, *TableResourcesClientListTableRoleDefinitionsOptions) *runtime.Pager[TableResourcesClientListTableRoleDefinitionsResponse]`
-- New struct `CommandAsyncPostBody`
-- New struct `PermissionAutoGenerated`
-- New struct `TableRoleAssignmentListResult`
-- New struct `TableRoleAssignmentResource`
-- New struct `TableRoleAssignmentResourceProperties`
-- New struct `TableRoleDefinitionListResult`
-- New struct `TableRoleDefinitionResource`
-- New struct `TableRoleDefinitionResourceProperties`
-- New struct `ThroughputBucketResource`
-- New struct `VectorEmbedding`
-- New struct `VectorEmbeddingPolicy`
-- New struct `VectorIndex`
-- New anonymous field `CommandPublicResource` in struct `CassandraClustersClientGetCommandAsyncResponse`
-- New field `Readwrite` in struct `CommandPostBody`
-- New field `Error` in struct `ErrorResponse`
-- New field `Code`, `Message` in struct `ErrorResponseAutoGenerated`
-- New field `VectorIndexes` in struct `IndexingPolicy`
-- New field `VectorEmbeddingPolicy` in struct `RestorableSQLContainerPropertiesResourceContainer`
-- New field `VectorEmbeddingPolicy` in struct `SQLContainerGetPropertiesResource`
-- New field `VectorEmbeddingPolicy` in struct `SQLContainerResource`
-- New field `ThroughputBuckets` in struct `ThroughputSettingsGetPropertiesResource`
-- New field `ThroughputBuckets` in struct `ThroughputSettingsResource`
 
 
 ## 3.2.0 (2024-12-10)
@@ -74,228 +564,6 @@
 - New field `VectorEmbeddingPolicy` in struct `RestorableSQLContainerPropertiesResourceContainer`
 - New field `VectorEmbeddingPolicy` in struct `SQLContainerGetPropertiesResource`
 - New field `VectorEmbeddingPolicy` in struct `SQLContainerResource`
-
-
-## 4.0.0-beta.1 (2024-09-27)
-### Breaking Changes
-
-- Field `Readwrite` of struct `CommandPostBody` has been removed
-
-### Features Added
-
-- Type of `CommandPostBody.Arguments` has been changed from `map[string]*string` to `any`
-- New value `StatusCanceled`, `StatusFailed`, `StatusSucceeded`, `StatusUpdating` added to enum type `Status`
-- New enum type `AccessRuleDirection` with values `AccessRuleDirectionInbound`, `AccessRuleDirectionOutbound`
-- New enum type `AutoReplicate` with values `AutoReplicateAllKeyspaces`, `AutoReplicateNone`, `AutoReplicateSystemKeyspaces`
-- New enum type `BackupState` with values `BackupStateFailed`, `BackupStateInProgress`, `BackupStateInitiated`, `BackupStateSucceeded`
-- New enum type `CapacityMode` with values `CapacityModeNone`, `CapacityModeProvisioned`, `CapacityModeServerless`
-- New enum type `CapacityModeTransitionStatus` with values `CapacityModeTransitionStatusCompleted`, `CapacityModeTransitionStatusFailed`, `CapacityModeTransitionStatusInProgress`, `CapacityModeTransitionStatusInitialized`, `CapacityModeTransitionStatusInvalid`
-- New enum type `ClusterType` with values `ClusterTypeNonProduction`, `ClusterTypeProduction`
-- New enum type `CommandStatus` with values `CommandStatusDone`, `CommandStatusEnqueue`, `CommandStatusFailed`, `CommandStatusFinished`, `CommandStatusProcessing`, `CommandStatusRunning`
-- New enum type `DataTransferComponent` with values `DataTransferComponentAzureBlobStorage`, `DataTransferComponentCosmosDBCassandra`, `DataTransferComponentCosmosDBMongo`, `DataTransferComponentCosmosDBMongoVCore`, `DataTransferComponentCosmosDBSQL`
-- New enum type `DataTransferJobMode` with values `DataTransferJobModeOffline`, `DataTransferJobModeOnline`
-- New enum type `DefaultPriorityLevel` with values `DefaultPriorityLevelHigh`, `DefaultPriorityLevelLow`
-- New enum type `EnableFullTextQuery` with values `EnableFullTextQueryFalse`, `EnableFullTextQueryNone`, `EnableFullTextQueryTrue`
-- New enum type `IssueType` with values `IssueTypeConfigurationPropagationFailure`, `IssueTypeMissingIdentityConfiguration`, `IssueTypeMissingPerimeterConfiguration`, `IssueTypeUnknown`
-- New enum type `NetworkSecurityPerimeterConfigurationProvisioningState` with values `NetworkSecurityPerimeterConfigurationProvisioningStateAccepted`, `NetworkSecurityPerimeterConfigurationProvisioningStateCanceled`, `NetworkSecurityPerimeterConfigurationProvisioningStateCreating`, `NetworkSecurityPerimeterConfigurationProvisioningStateDeleting`, `NetworkSecurityPerimeterConfigurationProvisioningStateFailed`, `NetworkSecurityPerimeterConfigurationProvisioningStateSucceeded`, `NetworkSecurityPerimeterConfigurationProvisioningStateUpdating`
-- New enum type `ResourceAssociationAccessMode` with values `ResourceAssociationAccessModeAudit`, `ResourceAssociationAccessModeEnforced`, `ResourceAssociationAccessModeLearning`
-- New enum type `ScheduledEventStrategy` with values `ScheduledEventStrategyIgnore`, `ScheduledEventStrategyStopAny`, `ScheduledEventStrategyStopByRack`
-- New enum type `Severity` with values `SeverityError`, `SeverityWarning`
-- New enum type `SupportedActions` with values `SupportedActionsDisable`, `SupportedActionsEnable`
-- New enum type `ThroughputPolicyType` with values `ThroughputPolicyTypeCustom`, `ThroughputPolicyTypeEqual`, `ThroughputPolicyTypeNone`
-- New function `*AzureBlobDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `*BaseCosmosDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
-- New function `*BaseCosmosDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `*CassandraClustersClient.GetBackup(context.Context, string, string, string, *CassandraClustersClientGetBackupOptions) (CassandraClustersClientGetBackupResponse, error)`
-- New function `*CassandraClustersClient.GetCommandAsync(context.Context, string, string, string, *CassandraClustersClientGetCommandAsyncOptions) (CassandraClustersClientGetCommandAsyncResponse, error)`
-- New function `*CassandraClustersClient.BeginInvokeCommandAsync(context.Context, string, string, CommandPostBody, *CassandraClustersClientBeginInvokeCommandAsyncOptions) (*runtime.Poller[CassandraClustersClientInvokeCommandAsyncResponse], error)`
-- New function `*CassandraClustersClient.NewListBackupsPager(string, string, *CassandraClustersClientListBackupsOptions) *runtime.Pager[CassandraClustersClientListBackupsResponse]`
-- New function `*CassandraClustersClient.NewListCommandPager(string, string, *CassandraClustersClientListCommandOptions) *runtime.Pager[CassandraClustersClientListCommandResponse]`
-- New function `*CassandraDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
-- New function `*CassandraDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `*CassandraResourcesClient.BeginCreateUpdateCassandraView(context.Context, string, string, string, string, CassandraViewCreateUpdateParameters, *CassandraResourcesClientBeginCreateUpdateCassandraViewOptions) (*runtime.Poller[CassandraResourcesClientCreateUpdateCassandraViewResponse], error)`
-- New function `*CassandraResourcesClient.BeginDeleteCassandraView(context.Context, string, string, string, string, *CassandraResourcesClientBeginDeleteCassandraViewOptions) (*runtime.Poller[CassandraResourcesClientDeleteCassandraViewResponse], error)`
-- New function `*CassandraResourcesClient.GetCassandraView(context.Context, string, string, string, string, *CassandraResourcesClientGetCassandraViewOptions) (CassandraResourcesClientGetCassandraViewResponse, error)`
-- New function `*CassandraResourcesClient.GetCassandraViewThroughput(context.Context, string, string, string, string, *CassandraResourcesClientGetCassandraViewThroughputOptions) (CassandraResourcesClientGetCassandraViewThroughputResponse, error)`
-- New function `*CassandraResourcesClient.NewListCassandraViewsPager(string, string, string, *CassandraResourcesClientListCassandraViewsOptions) *runtime.Pager[CassandraResourcesClientListCassandraViewsResponse]`
-- New function `*CassandraResourcesClient.BeginMigrateCassandraViewToAutoscale(context.Context, string, string, string, string, *CassandraResourcesClientBeginMigrateCassandraViewToAutoscaleOptions) (*runtime.Poller[CassandraResourcesClientMigrateCassandraViewToAutoscaleResponse], error)`
-- New function `*CassandraResourcesClient.BeginMigrateCassandraViewToManualThroughput(context.Context, string, string, string, string, *CassandraResourcesClientBeginMigrateCassandraViewToManualThroughputOptions) (*runtime.Poller[CassandraResourcesClientMigrateCassandraViewToManualThroughputResponse], error)`
-- New function `*CassandraResourcesClient.BeginUpdateCassandraViewThroughput(context.Context, string, string, string, string, ThroughputSettingsUpdateParameters, *CassandraResourcesClientBeginUpdateCassandraViewThroughputOptions) (*runtime.Poller[CassandraResourcesClientUpdateCassandraViewThroughputResponse], error)`
-- New function `NewChaosFaultClient(string, azcore.TokenCredential, *arm.ClientOptions) (*ChaosFaultClient, error)`
-- New function `*ChaosFaultClient.BeginEnableDisable(context.Context, string, string, string, ChaosFaultResource, *ChaosFaultClientBeginEnableDisableOptions) (*runtime.Poller[ChaosFaultClientEnableDisableResponse], error)`
-- New function `*ChaosFaultClient.Get(context.Context, string, string, string, *ChaosFaultClientGetOptions) (ChaosFaultClientGetResponse, error)`
-- New function `*ChaosFaultClient.NewListPager(string, string, *ChaosFaultClientListOptions) *runtime.Pager[ChaosFaultClientListResponse]`
-- New function `*ClientFactory.NewChaosFaultClient() *ChaosFaultClient`
-- New function `*ClientFactory.NewDataTransferJobsClient() *DataTransferJobsClient`
-- New function `*ClientFactory.NewGraphResourcesClient() *GraphResourcesClient`
-- New function `*ClientFactory.NewNetworkSecurityPerimeterConfigurationsClient() *NetworkSecurityPerimeterConfigurationsClient`
-- New function `*ClientFactory.NewThroughputPoolAccountClient() *ThroughputPoolAccountClient`
-- New function `*ClientFactory.NewThroughputPoolAccountsClient() *ThroughputPoolAccountsClient`
-- New function `*ClientFactory.NewThroughputPoolClient() *ThroughputPoolClient`
-- New function `*ClientFactory.NewThroughputPoolsClient() *ThroughputPoolsClient`
-- New function `*DataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `NewDataTransferJobsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*DataTransferJobsClient, error)`
-- New function `*DataTransferJobsClient.Cancel(context.Context, string, string, string, *DataTransferJobsClientCancelOptions) (DataTransferJobsClientCancelResponse, error)`
-- New function `*DataTransferJobsClient.Complete(context.Context, string, string, string, *DataTransferJobsClientCompleteOptions) (DataTransferJobsClientCompleteResponse, error)`
-- New function `*DataTransferJobsClient.Create(context.Context, string, string, string, CreateJobRequest, *DataTransferJobsClientCreateOptions) (DataTransferJobsClientCreateResponse, error)`
-- New function `*DataTransferJobsClient.Get(context.Context, string, string, string, *DataTransferJobsClientGetOptions) (DataTransferJobsClientGetResponse, error)`
-- New function `*DataTransferJobsClient.NewListByDatabaseAccountPager(string, string, *DataTransferJobsClientListByDatabaseAccountOptions) *runtime.Pager[DataTransferJobsClientListByDatabaseAccountResponse]`
-- New function `*DataTransferJobsClient.Pause(context.Context, string, string, string, *DataTransferJobsClientPauseOptions) (DataTransferJobsClientPauseResponse, error)`
-- New function `*DataTransferJobsClient.Resume(context.Context, string, string, string, *DataTransferJobsClientResumeOptions) (DataTransferJobsClientResumeResponse, error)`
-- New function `NewGraphResourcesClient(string, azcore.TokenCredential, *arm.ClientOptions) (*GraphResourcesClient, error)`
-- New function `*GraphResourcesClient.BeginCreateUpdateGraph(context.Context, string, string, string, GraphResourceCreateUpdateParameters, *GraphResourcesClientBeginCreateUpdateGraphOptions) (*runtime.Poller[GraphResourcesClientCreateUpdateGraphResponse], error)`
-- New function `*GraphResourcesClient.BeginDeleteGraphResource(context.Context, string, string, string, *GraphResourcesClientBeginDeleteGraphResourceOptions) (*runtime.Poller[GraphResourcesClientDeleteGraphResourceResponse], error)`
-- New function `*GraphResourcesClient.GetGraph(context.Context, string, string, string, *GraphResourcesClientGetGraphOptions) (GraphResourcesClientGetGraphResponse, error)`
-- New function `*GraphResourcesClient.NewListGraphsPager(string, string, *GraphResourcesClientListGraphsOptions) *runtime.Pager[GraphResourcesClientListGraphsResponse]`
-- New function `*MongoDBResourcesClient.BeginListMongoDBCollectionPartitionMerge(context.Context, string, string, string, string, MergeParameters, *MongoDBResourcesClientBeginListMongoDBCollectionPartitionMergeOptions) (*runtime.Poller[MongoDBResourcesClientListMongoDBCollectionPartitionMergeResponse], error)`
-- New function `*MongoDBResourcesClient.BeginMongoDBContainerRedistributeThroughput(context.Context, string, string, string, string, RedistributeThroughputParameters, *MongoDBResourcesClientBeginMongoDBContainerRedistributeThroughputOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBContainerRedistributeThroughputResponse], error)`
-- New function `*MongoDBResourcesClient.BeginMongoDBContainerRetrieveThroughputDistribution(context.Context, string, string, string, string, RetrieveThroughputParameters, *MongoDBResourcesClientBeginMongoDBContainerRetrieveThroughputDistributionOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBContainerRetrieveThroughputDistributionResponse], error)`
-- New function `*MongoDBResourcesClient.BeginMongoDBDatabasePartitionMerge(context.Context, string, string, string, MergeParameters, *MongoDBResourcesClientBeginMongoDBDatabasePartitionMergeOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabasePartitionMergeResponse], error)`
-- New function `*MongoDBResourcesClient.BeginMongoDBDatabaseRedistributeThroughput(context.Context, string, string, string, RedistributeThroughputParameters, *MongoDBResourcesClientBeginMongoDBDatabaseRedistributeThroughputOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabaseRedistributeThroughputResponse], error)`
-- New function `*MongoDBResourcesClient.BeginMongoDBDatabaseRetrieveThroughputDistribution(context.Context, string, string, string, RetrieveThroughputParameters, *MongoDBResourcesClientBeginMongoDBDatabaseRetrieveThroughputDistributionOptions) (*runtime.Poller[MongoDBResourcesClientMongoDBDatabaseRetrieveThroughputDistributionResponse], error)`
-- New function `*MongoDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
-- New function `*MongoDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `*MongoVCoreDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `PossibleCapacityModeValues() []CapacityMode`
-- New function `*SQLDataTransferDataSourceSink.GetBaseCosmosDataTransferDataSourceSink() *BaseCosmosDataTransferDataSourceSink`
-- New function `*SQLDataTransferDataSourceSink.GetDataTransferDataSourceSink() *DataTransferDataSourceSink`
-- New function `*SQLResourcesClient.BeginListSQLContainerPartitionMerge(context.Context, string, string, string, string, MergeParameters, *SQLResourcesClientBeginListSQLContainerPartitionMergeOptions) (*runtime.Poller[SQLResourcesClientListSQLContainerPartitionMergeResponse], error)`
-- New function `*SQLResourcesClient.BeginSQLContainerRedistributeThroughput(context.Context, string, string, string, string, RedistributeThroughputParameters, *SQLResourcesClientBeginSQLContainerRedistributeThroughputOptions) (*runtime.Poller[SQLResourcesClientSQLContainerRedistributeThroughputResponse], error)`
-- New function `*SQLResourcesClient.BeginSQLContainerRetrieveThroughputDistribution(context.Context, string, string, string, string, RetrieveThroughputParameters, *SQLResourcesClientBeginSQLContainerRetrieveThroughputDistributionOptions) (*runtime.Poller[SQLResourcesClientSQLContainerRetrieveThroughputDistributionResponse], error)`
-- New function `*SQLResourcesClient.BeginSQLDatabasePartitionMerge(context.Context, string, string, string, MergeParameters, *SQLResourcesClientBeginSQLDatabasePartitionMergeOptions) (*runtime.Poller[SQLResourcesClientSQLDatabasePartitionMergeResponse], error)`
-- New function `*SQLResourcesClient.BeginSQLDatabaseRedistributeThroughput(context.Context, string, string, string, RedistributeThroughputParameters, *SQLResourcesClientBeginSQLDatabaseRedistributeThroughputOptions) (*runtime.Poller[SQLResourcesClientSQLDatabaseRedistributeThroughputResponse], error)`
-- New function `*SQLResourcesClient.BeginSQLDatabaseRetrieveThroughputDistribution(context.Context, string, string, string, RetrieveThroughputParameters, *SQLResourcesClientBeginSQLDatabaseRetrieveThroughputDistributionOptions) (*runtime.Poller[SQLResourcesClientSQLDatabaseRetrieveThroughputDistributionResponse], error)`
-- New function `NewThroughputPoolAccountClient(string, azcore.TokenCredential, *arm.ClientOptions) (*ThroughputPoolAccountClient, error)`
-- New function `*ThroughputPoolAccountClient.BeginCreate(context.Context, string, string, string, ThroughputPoolAccountResource, *ThroughputPoolAccountClientBeginCreateOptions) (*runtime.Poller[ThroughputPoolAccountClientCreateResponse], error)`
-- New function `*ThroughputPoolAccountClient.BeginDelete(context.Context, string, string, string, *ThroughputPoolAccountClientBeginDeleteOptions) (*runtime.Poller[ThroughputPoolAccountClientDeleteResponse], error)`
-- New function `*ThroughputPoolAccountClient.Get(context.Context, string, string, string, *ThroughputPoolAccountClientGetOptions) (ThroughputPoolAccountClientGetResponse, error)`
-- New function `NewThroughputPoolAccountsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*ThroughputPoolAccountsClient, error)`
-- New function `*ThroughputPoolAccountsClient.NewListPager(string, string, *ThroughputPoolAccountsClientListOptions) *runtime.Pager[ThroughputPoolAccountsClientListResponse]`
-- New function `NewThroughputPoolClient(string, azcore.TokenCredential, *arm.ClientOptions) (*ThroughputPoolClient, error)`
-- New function `*ThroughputPoolClient.BeginCreateOrUpdate(context.Context, string, string, ThroughputPoolResource, *ThroughputPoolClientBeginCreateOrUpdateOptions) (*runtime.Poller[ThroughputPoolClientCreateOrUpdateResponse], error)`
-- New function `*ThroughputPoolClient.BeginDelete(context.Context, string, string, *ThroughputPoolClientBeginDeleteOptions) (*runtime.Poller[ThroughputPoolClientDeleteResponse], error)`
-- New function `*ThroughputPoolClient.Get(context.Context, string, string, *ThroughputPoolClientGetOptions) (ThroughputPoolClientGetResponse, error)`
-- New function `*ThroughputPoolClient.BeginUpdate(context.Context, string, string, *ThroughputPoolClientBeginUpdateOptions) (*runtime.Poller[ThroughputPoolClientUpdateResponse], error)`
-- New function `NewThroughputPoolsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*ThroughputPoolsClient, error)`
-- New function `*ThroughputPoolsClient.NewListByResourceGroupPager(string, *ThroughputPoolsClientListByResourceGroupOptions) *runtime.Pager[ThroughputPoolsClientListByResourceGroupResponse]`
-- New function `*ThroughputPoolsClient.NewListPager(*ThroughputPoolsClientListOptions) *runtime.Pager[ThroughputPoolsClientListResponse]`
-- New function `NewNetworkSecurityPerimeterConfigurationsClient(string, azcore.TokenCredential, *arm.ClientOptions) (*NetworkSecurityPerimeterConfigurationsClient, error)`
-- New function `*NetworkSecurityPerimeterConfigurationsClient.Get(context.Context, string, string, string, *NetworkSecurityPerimeterConfigurationsClientGetOptions) (NetworkSecurityPerimeterConfigurationsClientGetResponse, error)`
-- New function `*NetworkSecurityPerimeterConfigurationsClient.NewListPager(string, string, *NetworkSecurityPerimeterConfigurationsClientListOptions) *runtime.Pager[NetworkSecurityPerimeterConfigurationsClientListResponse]`
-- New function `*NetworkSecurityPerimeterConfigurationsClient.BeginReconcile(context.Context, string, string, string, *NetworkSecurityPerimeterConfigurationsClientBeginReconcileOptions) (*runtime.Poller[NetworkSecurityPerimeterConfigurationsClientReconcileResponse], error)`
-- New struct `AccessRule`
-- New struct `AccessRuleProperties`
-- New struct `AccessRulePropertiesSubscriptionsItem`
-- New struct `AzureBlobDataTransferDataSourceSink`
-- New struct `BackupResource`
-- New struct `BackupSchedule`
-- New struct `CapacityModeChangeTransitionState`
-- New struct `CassandraDataTransferDataSourceSink`
-- New struct `CassandraViewCreateUpdateParameters`
-- New struct `CassandraViewCreateUpdateProperties`
-- New struct `CassandraViewGetProperties`
-- New struct `CassandraViewGetPropertiesOptions`
-- New struct `CassandraViewGetPropertiesResource`
-- New struct `CassandraViewGetResults`
-- New struct `CassandraViewListResult`
-- New struct `CassandraViewResource`
-- New struct `ChaosFaultListResponse`
-- New struct `ChaosFaultProperties`
-- New struct `ChaosFaultResource`
-- New struct `CommandPublicResource`
-- New struct `CreateJobRequest`
-- New struct `DataTransferJobFeedResults`
-- New struct `DataTransferJobGetResults`
-- New struct `DataTransferJobProperties`
-- New struct `DiagnosticLogSettings`
-- New struct `GraphResource`
-- New struct `GraphResourceCreateUpdateParameters`
-- New struct `GraphResourceCreateUpdateProperties`
-- New struct `GraphResourceGetProperties`
-- New struct `GraphResourceGetPropertiesOptions`
-- New struct `GraphResourceGetPropertiesResource`
-- New struct `GraphResourceGetResults`
-- New struct `GraphResourcesListResult`
-- New struct `ListBackups`
-- New struct `ListCommands`
-- New struct `MaterializedViewDefinition`
-- New struct `MergeParameters`
-- New struct `MongoDataTransferDataSourceSink`
-- New struct `MongoVCoreDataTransferDataSourceSink`
-- New struct `NetworkSecurityPerimeter`
-- New struct `NetworkSecurityPerimeterConfiguration`
-- New struct `NetworkSecurityPerimeterConfigurationListResult`
-- New struct `NetworkSecurityPerimeterConfigurationProperties`
-- New struct `NetworkSecurityProfile`
-- New struct `PhysicalPartitionID`
-- New struct `PhysicalPartitionStorageInfo`
-- New struct `PhysicalPartitionStorageInfoCollection`
-- New struct `PhysicalPartitionThroughputInfoProperties`
-- New struct `PhysicalPartitionThroughputInfoResource`
-- New struct `PhysicalPartitionThroughputInfoResult`
-- New struct `PhysicalPartitionThroughputInfoResultProperties`
-- New struct `PhysicalPartitionThroughputInfoResultPropertiesResource`
-- New struct `ProvisioningIssue`
-- New struct `ProvisioningIssueProperties`
-- New struct `RedistributeThroughputParameters`
-- New struct `RedistributeThroughputProperties`
-- New struct `RedistributeThroughputPropertiesResource`
-- New struct `ResourceAssociation`
-- New struct `RetrieveThroughputParameters`
-- New struct `RetrieveThroughputProperties`
-- New struct `RetrieveThroughputPropertiesResource`
-- New struct `SQLDataTransferDataSourceSink`
-- New struct `ThroughputPoolAccountCreateParameters`
-- New struct `ThroughputPoolAccountCreateProperties`
-- New struct `ThroughputPoolAccountProperties`
-- New struct `ThroughputPoolAccountResource`
-- New struct `ThroughputPoolAccountsListResult`
-- New struct `ThroughputPoolProperties`
-- New struct `ThroughputPoolResource`
-- New struct `ThroughputPoolUpdate`
-- New struct `ThroughputPoolsListResult`
-- New struct `TrackedResource`
-- New field `Identity` in struct `ARMResourceProperties`
-- New field `XMSForceDeallocate` in struct `CassandraClustersClientBeginDeallocateOptions`
-- New field `Identity` in struct `CassandraKeyspaceCreateUpdateParameters`
-- New field `Identity` in struct `CassandraKeyspaceGetResults`
-- New field `Identity` in struct `CassandraTableCreateUpdateParameters`
-- New field `Identity` in struct `CassandraTableGetResults`
-- New field `AutoReplicate`, `BackupSchedules`, `ClusterType`, `Extensions`, `ExternalDataCenters`, `ScheduledEventStrategy` in struct `ClusterResourceProperties`
-- New field `ReadWrite` in struct `CommandPostBody`
-- New field `IsLatestModel` in struct `ComponentsM9L909SchemasCassandraclusterpublicstatusPropertiesDatacentersItemsPropertiesNodesItems`
-- New field `CapacityMode`, `DefaultPriorityLevel`, `DiagnosticLogSettings`, `EnableMaterializedViews`, `EnablePerRegionPerPartitionAutoscale`, `EnablePriorityBasedExecution` in struct `DatabaseAccountCreateUpdateProperties`
-- New field `CapacityMode`, `CapacityModeChangeTransitionState`, `DefaultPriorityLevel`, `DiagnosticLogSettings`, `EnableMaterializedViews`, `EnablePerRegionPerPartitionAutoscale`, `EnablePriorityBasedExecution` in struct `DatabaseAccountGetProperties`
-- New field `CapacityMode`, `DefaultPriorityLevel`, `DiagnosticLogSettings`, `EnableMaterializedViews`, `EnablePerRegionPerPartitionAutoscale`, `EnablePriorityBasedExecution` in struct `DatabaseAccountUpdateProperties`
-- New field `Identity` in struct `GremlinDatabaseCreateUpdateParameters`
-- New field `Identity` in struct `GremlinDatabaseGetResults`
-- New field `Identity` in struct `GremlinGraphCreateUpdateParameters`
-- New field `Identity` in struct `GremlinGraphGetResults`
-- New field `Identity` in struct `MongoDBCollectionCreateUpdateParameters`
-- New field `Identity` in struct `MongoDBCollectionGetResults`
-- New field `Identity` in struct `MongoDBDatabaseCreateUpdateParameters`
-- New field `Identity` in struct `MongoDBDatabaseGetResults`
-- New field `SystemData` in struct `PrivateEndpointConnection`
-- New field `SystemData` in struct `ProxyResource`
-- New field `SystemData` in struct `Resource`
-- New field `MaterializedViewDefinition` in struct `RestorableSQLContainerPropertiesResourceContainer`
-- New field `SourceBackupLocation` in struct `RestoreParameters`
-- New field `Identity` in struct `SQLContainerCreateUpdateParameters`
-- New field `MaterializedViewDefinition` in struct `SQLContainerGetPropertiesResource`
-- New field `Identity` in struct `SQLContainerGetResults`
-- New field `MaterializedViewDefinition` in struct `SQLContainerResource`
-- New field `Identity` in struct `SQLDatabaseCreateUpdateParameters`
-- New field `Identity` in struct `SQLDatabaseGetResults`
-- New field `Identity` in struct `SQLStoredProcedureCreateUpdateParameters`
-- New field `Identity` in struct `SQLStoredProcedureGetResults`
-- New field `Identity` in struct `SQLTriggerCreateUpdateParameters`
-- New field `Identity` in struct `SQLTriggerGetResults`
-- New field `Identity` in struct `SQLUserDefinedFunctionCreateUpdateParameters`
-- New field `Identity` in struct `SQLUserDefinedFunctionGetResults`
-- New field `Identity` in struct `TableCreateUpdateParameters`
-- New field `Identity` in struct `TableGetResults`
-- New field `Identity` in struct `ThroughputSettingsGetResults`
-- New field `Identity` in struct `ThroughputSettingsUpdateParameters`
 
 
 ## 3.1.0 (2024-09-26)

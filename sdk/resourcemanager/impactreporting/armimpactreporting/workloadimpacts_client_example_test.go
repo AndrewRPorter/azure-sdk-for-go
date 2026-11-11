@@ -27,7 +27,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingArmOperationFailure() {
 	poller, err := clientFactory.NewWorkloadImpactsClient().BeginCreate(ctx, "impact-002", armimpactreporting.WorkloadImpact{
 		Properties: &armimpactreporting.WorkloadImpactProperties{
 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservercontext"),
-			StartDateTime:      to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t }()),
+			StartDateTime:      to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 			ImpactDescription:  to.Ptr("deletion of resource failed"),
 			ImpactCategory:     to.Ptr("ArmOperation"),
 			ArmCorrelationIDs: []*string{
@@ -48,19 +48,19 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingArmOperationFailure() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.WorkloadImpactsClientCreateResponse{
-	// 	WorkloadImpact: &armimpactreporting.WorkloadImpact{
+	// 	WorkloadImpact: armimpactreporting.WorkloadImpact{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Impact/workloadImpacts/impact-001"),
 	// 		Name: to.Ptr("impact-001"),
 	// 		Type: to.Ptr("Microsoft.Impact/workloadImpacts"),
 	// 		Properties: &armimpactreporting.WorkloadImpactProperties{
 	// 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservername"),
-	// 			StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+	// 			StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 	// 			ImpactDescription: to.Ptr("deletion of resource failed"),
 	// 			ImpactCategory: to.Ptr("ArmOperation"),
 	// 			ArmCorrelationIDs: []*string{
@@ -75,7 +75,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingArmOperationFailure() {
 	// 				ClientIncidentSource: to.Ptr(armimpactreporting.IncidentSourceJira),
 	// 			},
 	// 			ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-	// 			ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
+	// 			ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -95,7 +95,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingAvailabilityRelatedImpact
 	poller, err := clientFactory.NewWorkloadImpactsClient().BeginCreate(ctx, "impact-002", armimpactreporting.WorkloadImpact{
 		Properties: &armimpactreporting.WorkloadImpactProperties{
 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservercontext"),
-			StartDateTime:      to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t }()),
+			StartDateTime:      to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 			ImpactDescription:  to.Ptr("read calls failed"),
 			ImpactCategory:     to.Ptr("Availability"),
 			Workload: &armimpactreporting.Workload{
@@ -113,19 +113,19 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingAvailabilityRelatedImpact
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.WorkloadImpactsClientCreateResponse{
-	// 	WorkloadImpact: &armimpactreporting.WorkloadImpact{
+	// 	WorkloadImpact: armimpactreporting.WorkloadImpact{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Impact/workloadImpacts/impact-001"),
 	// 		Name: to.Ptr("impact-001"),
 	// 		Type: to.Ptr("Microsoft.Impact/workloadImpacts"),
 	// 		Properties: &armimpactreporting.WorkloadImpactProperties{
 	// 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservername"),
-	// 			StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+	// 			StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 	// 			ImpactDescription: to.Ptr("read calls failed"),
 	// 			ImpactCategory: to.Ptr("Availability"),
 	// 			Workload: &armimpactreporting.Workload{
@@ -137,7 +137,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingAvailabilityRelatedImpact
 	// 				ClientIncidentSource: to.Ptr(armimpactreporting.IncidentSourceJira),
 	// 			},
 	// 			ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-	// 			ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
+	// 			ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -157,7 +157,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingAConnectivityImpact() {
 	poller, err := clientFactory.NewWorkloadImpactsClient().BeginCreate(ctx, "impact-001", armimpactreporting.WorkloadImpact{
 		Properties: &armimpactreporting.WorkloadImpactProperties{
 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservercontext"),
-			StartDateTime:      to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t }()),
+			StartDateTime:      to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 			ImpactDescription:  to.Ptr("conection failure"),
 			ImpactCategory:     to.Ptr("Resource.Connectivity"),
 			Connectivity: &armimpactreporting.Connectivity{
@@ -185,21 +185,21 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingAConnectivityImpact() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.WorkloadImpactsClientCreateResponse{
-	// 	WorkloadImpact: &armimpactreporting.WorkloadImpact{
+	// 	WorkloadImpact: armimpactreporting.WorkloadImpact{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Impacts-rg/providers/Microsoft.Impact/workloadImpacts/impact-001"),
 	// 		Name: to.Ptr("impact-001"),
 	// 		Type: to.Ptr("Microsoft.Impact/workloadImpacts"),
 	// 		Properties: &armimpactreporting.WorkloadImpactProperties{
 	// 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservercontext"),
 	// 			ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-	// 			ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
-	// 			StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+	// 			ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
+	// 			StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 	// 			ImpactDescription: to.Ptr("conection failure"),
 	// 			ImpactCategory: to.Ptr("Resource.Connectivity"),
 	// 			Connectivity: &armimpactreporting.Connectivity{
@@ -239,7 +239,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingPerformanceRelatedImpact(
 	poller, err := clientFactory.NewWorkloadImpactsClient().BeginCreate(ctx, "impact-002", armimpactreporting.WorkloadImpact{
 		Properties: &armimpactreporting.WorkloadImpactProperties{
 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservercontext"),
-			StartDateTime:      to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t }()),
+			StartDateTime:      to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 			ImpactDescription:  to.Ptr("high cpu utilization"),
 			ImpactCategory:     to.Ptr("Resource.Performance"),
 			Workload: &armimpactreporting.Workload{
@@ -251,6 +251,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingPerformanceRelatedImpact(
 					MetricName: to.Ptr("CPU"),
 					Actual:     to.Ptr[float64](90),
 					Expected:   to.Ptr[float64](60),
+					Unit:       to.Ptr(armimpactreporting.MetricUnit("garbage")),
 				},
 			},
 			ClientIncidentDetails: &armimpactreporting.ClientIncidentDetails{
@@ -264,19 +265,19 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingPerformanceRelatedImpact(
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.WorkloadImpactsClientCreateResponse{
-	// 	WorkloadImpact: &armimpactreporting.WorkloadImpact{
+	// 	WorkloadImpact: armimpactreporting.WorkloadImpact{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Impact/PerformanceImpacts/impact-001"),
 	// 		Name: to.Ptr("impact-001"),
 	// 		Type: to.Ptr("Microsoft.Impact/PerformanceImpacts"),
 	// 		Properties: &armimpactreporting.WorkloadImpactProperties{
 	// 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservername"),
-	// 			StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+	// 			StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 	// 			ImpactDescription: to.Ptr("high cup utilization"),
 	// 			ImpactCategory: to.Ptr("Resource.Performance"),
 	// 			Workload: &armimpactreporting.Workload{
@@ -288,6 +289,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingPerformanceRelatedImpact(
 	// 					MetricName: to.Ptr("CPU"),
 	// 					Actual: to.Ptr[float64](90),
 	// 					Expected: to.Ptr[float64](60),
+	// 					Unit: to.Ptr(armimpactreporting.MetricUnit("garbage")),
 	// 				},
 	// 			},
 	// 			ClientIncidentDetails: &armimpactreporting.ClientIncidentDetails{
@@ -295,7 +297,7 @@ func ExampleWorkloadImpactsClient_BeginCreate_reportingPerformanceRelatedImpact(
 	// 				ClientIncidentSource: to.Ptr(armimpactreporting.IncidentSourceJira),
 	// 			},
 	// 			ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-	// 			ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
+	// 			ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -342,13 +344,13 @@ func ExampleWorkloadImpactsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armimpactreporting.WorkloadImpactsClientGetResponse{
-	// 	WorkloadImpact: &armimpactreporting.WorkloadImpact{
+	// 	WorkloadImpact: armimpactreporting.WorkloadImpact{
 	// 		ID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Impact/workloadImpacts/impact-001"),
 	// 		Name: to.Ptr("impact-001"),
 	// 		Type: to.Ptr("Microsoft.Impact/workloadImpacts"),
 	// 		Properties: &armimpactreporting.WorkloadImpactProperties{
 	// 			ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.Sql/sqlserver/dbservername"),
-	// 			StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+	// 			StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 	// 			ImpactDescription: to.Ptr("high cup utilization"),
 	// 			ImpactCategory: to.Ptr("Performance"),
 	// 			Workload: &armimpactreporting.Workload{
@@ -360,7 +362,7 @@ func ExampleWorkloadImpactsClient_Get() {
 	// 				ClientIncidentSource: to.Ptr(armimpactreporting.IncidentSourceJira),
 	// 			},
 	// 			ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-	// 			ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
+	// 			ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -398,11 +400,13 @@ func ExampleWorkloadImpactsClient_NewListBySubscriptionPager() {
 		// 				Properties: &armimpactreporting.WorkloadImpactProperties{
 		// 					ImpactedResourceID: to.Ptr("/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/resource-rg/providers/Microsoft.compute/virtualmachines/vm1"),
 		// 					ImpactUniqueID: to.Ptr("d7f24d04-e7f0-48bf-b09c-9d36ca9e1777"),
-		// 					ReportedTimeUTC: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T06:01:46.6517821Z"); return t}()),
-		// 					StartDateTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2022-06-15T05:59:46.6517821Z"); return t}()),
+		// 					ReportedTimeUTC: to.Ptr(time.Date(2022, time.June, 15, 6, 1, 46, 651782100, time.UTC)),
+		// 					StartDateTime: to.Ptr(time.Date(2022, time.June, 15, 5, 59, 46, 651782100, time.UTC)),
 		// 					ImpactDescription: to.Ptr(""),
 		// 					ImpactCategory: to.Ptr("Resource.Other"),
-		// 					AdditionalProperties: &armimpactreporting.WorkloadImpactPropertiesAdditionalProperties{
+		// 					AdditionalProperties: map[string]any{
+		// 						"errorCode": "504",
+		// 						"errorMessage": "Gateway timeout error",
 		// 					},
 		// 					Workload: &armimpactreporting.Workload{
 		// 						Context: to.Ptr("webapp/scenario1"),

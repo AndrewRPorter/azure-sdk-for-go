@@ -7,17 +7,18 @@ package azkeys
 import (
 	"context"
 	"errors"
-	"net/http"
-	"net/url"
-	"strings"
-
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 // Client - The key vault client performs cryptographic key operations and vault operations against the Key Vault service.
 // Don't use this type directly, use a constructor function instead.
+//
+// Generated from API version 2026-01-01-preview
 type Client struct {
 	internal     *azcore.Client
 	vaultBaseUrl string
@@ -34,13 +35,13 @@ type Client struct {
 // area cannot be restored to another geographical area. For example, a backup from the US geographical area cannot be restored
 // in an EU geographical area. This operation requires the key/backup permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - options - BackupKeyOptions contains the optional parameters for the Client.BackupKey method.
 func (client *Client) BackupKey(ctx context.Context, name string, options *BackupKeyOptions) (BackupKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.BackupKey", client.internal.Tracer(), nil)
+	const operationName = "Client.BackupKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.backupKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -60,20 +61,18 @@ func (client *Client) BackupKey(ctx context.Context, name string, options *Backu
 
 // backupKeyCreateRequest creates the BackupKey request.
 func (client *Client) backupKeyCreateRequest(ctx context.Context, name string, _ *BackupKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/backup"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -92,8 +91,6 @@ func (client *Client) backupKeyHandleResponse(resp *http.Response) (BackupKeyRes
 // The create key operation can be used to create any key type in Azure Key Vault. If the named key already exists, Azure
 // Key Vault creates a new version of the key. It requires the keys/create permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name for the new key. The system will generate the version name for the new key. The value you provide may be
 //     copied globally for the purpose of running the service. The value provided should not include personally identifiable or
 //     sensitive information.
@@ -101,7 +98,9 @@ func (client *Client) backupKeyHandleResponse(resp *http.Response) (BackupKeyRes
 //   - options - CreateKeyOptions contains the optional parameters for the Client.CreateKey method.
 func (client *Client) CreateKey(ctx context.Context, name string, parameters CreateKeyParameters, options *CreateKeyOptions) (CreateKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.CreateKey", client.internal.Tracer(), nil)
+	const operationName = "Client.CreateKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.createKeyCreateRequest(ctx, name, parameters, options)
 	if err != nil {
@@ -121,20 +120,18 @@ func (client *Client) CreateKey(ctx context.Context, name string, parameters Cre
 
 // createKeyCreateRequest creates the CreateKey request.
 func (client *Client) createKeyCreateRequest(ctx context.Context, name string, parameters CreateKeyParameters, _ *CreateKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/create"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -161,15 +158,15 @@ func (client *Client) createKeyHandleResponse(resp *http.Response) (CreateKeyRes
 // Microsoft recommends not to use CBC algorithms for decryption without first ensuring the integrity of the ciphertext using
 // an HMAC, for example. See https://learn.microsoft.com/dotnet/standard/security/vulnerabilities-cbc-mode for more information.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for the decryption operation.
 //   - options - DecryptOptions contains the optional parameters for the Client.Decrypt method.
 func (client *Client) Decrypt(ctx context.Context, name string, version string, parameters KeyOperationParameters, options *DecryptOptions) (DecryptResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.Decrypt", client.internal.Tracer(), nil)
+	const operationName = "Client.Decrypt"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.decryptCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -189,21 +186,19 @@ func (client *Client) Decrypt(ctx context.Context, name string, version string, 
 
 // decryptCreateRequest creates the Decrypt request.
 func (client *Client) decryptCreateRequest(ctx context.Context, name string, version string, parameters KeyOperationParameters, _ *DecryptOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/decrypt"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -227,13 +222,13 @@ func (client *Client) decryptHandleResponse(resp *http.Response) (DecryptRespons
 // material associated with the key, which means the key is not usable for Sign/Verify, Wrap/Unwrap or Encrypt/Decrypt operations.
 // This operation requires the keys/delete permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key to delete.
 //   - options - DeleteKeyOptions contains the optional parameters for the Client.DeleteKey method.
 func (client *Client) DeleteKey(ctx context.Context, name string, options *DeleteKeyOptions) (DeleteKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.DeleteKey", client.internal.Tracer(), nil)
+	const operationName = "Client.DeleteKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.deleteKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -253,20 +248,18 @@ func (client *Client) DeleteKey(ctx context.Context, name string, options *Delet
 
 // deleteKeyCreateRequest creates the DeleteKey request.
 func (client *Client) deleteKeyCreateRequest(ctx context.Context, name string, _ *DeleteKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -289,15 +282,15 @@ func (client *Client) deleteKeyHandleResponse(resp *http.Response) (DeleteKeyRes
 // is supported for asymmetric keys as a convenience for callers that have a key-reference but do not have access to the public
 // key material. This operation requires the keys/encrypt permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for the encryption operation.
 //   - options - EncryptOptions contains the optional parameters for the Client.Encrypt method.
 func (client *Client) Encrypt(ctx context.Context, name string, version string, parameters KeyOperationParameters, options *EncryptOptions) (EncryptResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.Encrypt", client.internal.Tracer(), nil)
+	const operationName = "Client.Encrypt"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.encryptCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -317,21 +310,19 @@ func (client *Client) Encrypt(ctx context.Context, name string, version string, 
 
 // encryptCreateRequest creates the Encrypt request.
 func (client *Client) encryptCreateRequest(ctx context.Context, name string, version string, parameters KeyOperationParameters, _ *EncryptOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/encrypt"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -354,13 +345,13 @@ func (client *Client) encryptHandleResponse(resp *http.Response) (EncryptRespons
 // The Get Deleted Key operation is applicable for soft-delete enabled vaults. While the operation can be invoked on any vault,
 // it will return an error if invoked on a non soft-delete enabled vault. This operation requires the keys/get permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - options - GetDeletedKeyOptions contains the optional parameters for the Client.GetDeletedKey method.
 func (client *Client) GetDeletedKey(ctx context.Context, name string, options *GetDeletedKeyOptions) (GetDeletedKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.GetDeletedKey", client.internal.Tracer(), nil)
+	const operationName = "Client.GetDeletedKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.getDeletedKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -380,20 +371,18 @@ func (client *Client) GetDeletedKey(ctx context.Context, name string, options *G
 
 // getDeletedKeyCreateRequest creates the GetDeletedKey request.
 func (client *Client) getDeletedKeyCreateRequest(ctx context.Context, name string, _ *GetDeletedKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/deletedkeys/{key-name}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -412,15 +401,15 @@ func (client *Client) getDeletedKeyHandleResponse(resp *http.Response) (GetDelet
 // The get key operation is applicable to all key types. If the requested key is symmetric, then no key material is released
 // in the response. This operation requires the keys/get permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key to get.
 //   - version - Adding the version parameter retrieves a specific version of a key. This URI fragment is optional. If not specified,
 //     the latest version of the key is returned.
 //   - options - GetKeyOptions contains the optional parameters for the Client.GetKey method.
 func (client *Client) GetKey(ctx context.Context, name string, version string, options *GetKeyOptions) (GetKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.GetKey", client.internal.Tracer(), nil)
+	const operationName = "Client.GetKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.getKeyCreateRequest(ctx, name, version, options)
 	if err != nil {
@@ -440,21 +429,19 @@ func (client *Client) GetKey(ctx context.Context, name string, version string, o
 
 // getKeyCreateRequest creates the GetKey request.
 func (client *Client) getKeyCreateRequest(ctx context.Context, name string, version string, _ *GetKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -473,15 +460,15 @@ func (client *Client) getKeyHandleResponse(resp *http.Response) (GetKeyResponse,
 // The get key attestation operation returns the key along with its attestation blob. This operation requires the keys/get
 // permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key to retrieve attestation for.
 //   - version - Adding the version parameter retrieves attestation blob for specific version of a key. This URI fragment is optional.
 //     If not specified, the latest version of the key attestation blob is returned.
 //   - options - GetKeyAttestationOptions contains the optional parameters for the Client.GetKeyAttestation method.
 func (client *Client) GetKeyAttestation(ctx context.Context, name string, version string, options *GetKeyAttestationOptions) (GetKeyAttestationResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.GetKeyAttestation", client.internal.Tracer(), nil)
+	const operationName = "Client.GetKeyAttestation"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.getKeyAttestationCreateRequest(ctx, name, version, options)
 	if err != nil {
@@ -501,21 +488,19 @@ func (client *Client) GetKeyAttestation(ctx context.Context, name string, versio
 
 // getKeyAttestationCreateRequest creates the GetKeyAttestation request.
 func (client *Client) getKeyAttestationCreateRequest(ctx context.Context, name string, version string, _ *GetKeyAttestationOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/attestation"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -534,13 +519,13 @@ func (client *Client) getKeyAttestationHandleResponse(resp *http.Response) (GetK
 // The GetKeyRotationPolicy operation returns the specified key policy resources in the specified key vault. This operation
 // requires the keys/get permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key in a given key vault.
 //   - options - GetKeyRotationPolicyOptions contains the optional parameters for the Client.GetKeyRotationPolicy method.
 func (client *Client) GetKeyRotationPolicy(ctx context.Context, name string, options *GetKeyRotationPolicyOptions) (GetKeyRotationPolicyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.GetKeyRotationPolicy", client.internal.Tracer(), nil)
+	const operationName = "Client.GetKeyRotationPolicy"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.getKeyRotationPolicyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -560,20 +545,18 @@ func (client *Client) GetKeyRotationPolicy(ctx context.Context, name string, opt
 
 // getKeyRotationPolicyCreateRequest creates the GetKeyRotationPolicy request.
 func (client *Client) getKeyRotationPolicyCreateRequest(ctx context.Context, name string, _ *GetKeyRotationPolicyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/rotationpolicy"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -591,13 +574,13 @@ func (client *Client) getKeyRotationPolicyHandleResponse(resp *http.Response) (G
 //
 // Get the requested number of bytes containing random values from a managed HSM.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - parameters - The request object to get random bytes.
 //   - options - GetRandomBytesOptions contains the optional parameters for the Client.GetRandomBytes method.
 func (client *Client) GetRandomBytes(ctx context.Context, parameters GetRandomBytesParameters, options *GetRandomBytesOptions) (GetRandomBytesResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.GetRandomBytes", client.internal.Tracer(), nil)
+	const operationName = "Client.GetRandomBytes"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.getRandomBytesCreateRequest(ctx, parameters, options)
 	if err != nil {
@@ -617,16 +600,14 @@ func (client *Client) GetRandomBytes(ctx context.Context, parameters GetRandomBy
 
 // getRandomBytesCreateRequest creates the GetRandomBytes request.
 func (client *Client) getRandomBytesCreateRequest(ctx context.Context, parameters GetRandomBytesParameters, _ *GetRandomBytesOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/rng"
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -649,15 +630,15 @@ func (client *Client) getRandomBytesHandleResponse(resp *http.Response) (GetRand
 // The import key operation may be used to import any key type into an Azure Key Vault. If the named key already exists, Azure
 // Key Vault creates a new version of the key. This operation requires the keys/import permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - Name for the imported key. The value you provide may be copied globally for the purpose of running the service.
 //     The value provided should not include personally identifiable or sensitive information.
 //   - parameters - The parameters to import a key.
 //   - options - ImportKeyOptions contains the optional parameters for the Client.ImportKey method.
 func (client *Client) ImportKey(ctx context.Context, name string, parameters ImportKeyParameters, options *ImportKeyOptions) (ImportKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.ImportKey", client.internal.Tracer(), nil)
+	const operationName = "Client.ImportKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.importKeyCreateRequest(ctx, name, parameters, options)
 	if err != nil {
@@ -677,20 +658,18 @@ func (client *Client) ImportKey(ctx context.Context, name string, parameters Imp
 
 // importKeyCreateRequest creates the ImportKey request.
 func (client *Client) importKeyCreateRequest(ctx context.Context, name string, parameters ImportKeyParameters, _ *ImportKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -714,8 +693,6 @@ func (client *Client) importKeyHandleResponse(resp *http.Response) (ImportKeyRes
 // This operation includes deletion-specific information. The Get Deleted Keys operation is applicable for vaults enabled
 // for soft-delete. While the operation can be invoked on any vault, it will return an error if invoked on a non soft-delete
 // enabled vault. This operation requires the keys/list permission.
-//
-// Generated from API version 7.6
 //   - options - ListDeletedKeyPropertiesOptions contains the optional parameters for the Client.NewListDeletedKeyPropertiesPager
 //     method.
 func (client *Client) NewListDeletedKeyPropertiesPager(options *ListDeletedKeyPropertiesOptions) *runtime.Pager[ListDeletedKeyPropertiesResponse] {
@@ -724,6 +701,7 @@ func (client *Client) NewListDeletedKeyPropertiesPager(options *ListDeletedKeyPr
 			return page.NextLink != nil && len(*page.NextLink) > 0
 		},
 		Fetcher: func(ctx context.Context, page *ListDeletedKeyPropertiesResponse) (ListDeletedKeyPropertiesResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "Client.NewListDeletedKeyPropertiesPager")
 			nextLink := ""
 			if page != nil {
 				nextLink = *page.NextLink
@@ -741,17 +719,15 @@ func (client *Client) NewListDeletedKeyPropertiesPager(options *ListDeletedKeyPr
 }
 
 // listDeletedKeyPropertiesCreateRequest creates the ListDeletedKeyProperties request.
-func (client *Client) listDeletedKeyPropertiesCreateRequest(ctx context.Context, options *ListDeletedKeyPropertiesOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
+func (client *Client) listDeletedKeyPropertiesCreateRequest(ctx context.Context, _ *ListDeletedKeyPropertiesOptions) (*policy.Request, error) {
 	urlPath := "/deletedkeys"
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -770,8 +746,6 @@ func (client *Client) listDeletedKeyPropertiesHandleResponse(resp *http.Response
 // Retrieves a list of the keys in the Key Vault as JSON Web Key structures that contain the public part of a stored key.
 // The LIST operation is applicable to all key types, however only the base key identifier, attributes, and tags are provided
 // in the response. Individual versions of a key are not listed in the response. This operation requires the keys/list permission.
-//
-// Generated from API version 7.6
 //   - options - ListKeyPropertiesOptions contains the optional parameters for the Client.NewListKeyPropertiesPager method.
 func (client *Client) NewListKeyPropertiesPager(options *ListKeyPropertiesOptions) *runtime.Pager[ListKeyPropertiesResponse] {
 	return runtime.NewPager(runtime.PagingHandler[ListKeyPropertiesResponse]{
@@ -779,6 +753,7 @@ func (client *Client) NewListKeyPropertiesPager(options *ListKeyPropertiesOption
 			return page.NextLink != nil && len(*page.NextLink) > 0
 		},
 		Fetcher: func(ctx context.Context, page *ListKeyPropertiesResponse) (ListKeyPropertiesResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "Client.NewListKeyPropertiesPager")
 			nextLink := ""
 			if page != nil {
 				nextLink = *page.NextLink
@@ -796,17 +771,15 @@ func (client *Client) NewListKeyPropertiesPager(options *ListKeyPropertiesOption
 }
 
 // listKeyPropertiesCreateRequest creates the ListKeyProperties request.
-func (client *Client) listKeyPropertiesCreateRequest(ctx context.Context, options *ListKeyPropertiesOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
+func (client *Client) listKeyPropertiesCreateRequest(ctx context.Context, _ *ListKeyPropertiesOptions) (*policy.Request, error) {
 	urlPath := "/keys"
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -823,8 +796,6 @@ func (client *Client) listKeyPropertiesHandleResponse(resp *http.Response) (List
 // NewListKeyPropertiesVersionsPager - Retrieves a list of individual key versions with the same key name.
 //
 // The full key identifier, attributes, and tags are provided in the response. This operation requires the keys/list permission.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - options - ListKeyPropertiesVersionsOptions contains the optional parameters for the Client.NewListKeyPropertiesVersionsPager
 //     method.
@@ -834,6 +805,7 @@ func (client *Client) NewListKeyPropertiesVersionsPager(name string, options *Li
 			return page.NextLink != nil && len(*page.NextLink) > 0
 		},
 		Fetcher: func(ctx context.Context, page *ListKeyPropertiesVersionsResponse) (ListKeyPropertiesVersionsResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "Client.NewListKeyPropertiesVersionsPager")
 			nextLink := ""
 			if page != nil {
 				nextLink = *page.NextLink
@@ -851,21 +823,19 @@ func (client *Client) NewListKeyPropertiesVersionsPager(name string, options *Li
 }
 
 // listKeyPropertiesVersionsCreateRequest creates the ListKeyPropertiesVersions request.
-func (client *Client) listKeyPropertiesVersionsCreateRequest(ctx context.Context, name string, options *ListKeyPropertiesVersionsOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
+func (client *Client) listKeyPropertiesVersionsCreateRequest(ctx context.Context, name string, _ *ListKeyPropertiesVersionsOptions) (*policy.Request, error) {
 	urlPath := "/keys/{key-name}/versions"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -884,13 +854,13 @@ func (client *Client) listKeyPropertiesVersionsHandleResponse(resp *http.Respons
 // The Purge Deleted Key operation is applicable for soft-delete enabled vaults. While the operation can be invoked on any
 // vault, it will return an error if invoked on a non soft-delete enabled vault. This operation requires the keys/purge permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key
 //   - options - PurgeDeletedKeyOptions contains the optional parameters for the Client.PurgeDeletedKey method.
 func (client *Client) PurgeDeletedKey(ctx context.Context, name string, options *PurgeDeletedKeyOptions) (PurgeDeletedKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.PurgeDeletedKey", client.internal.Tracer(), nil)
+	const operationName = "Client.PurgeDeletedKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.purgeDeletedKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -909,21 +879,18 @@ func (client *Client) PurgeDeletedKey(ctx context.Context, name string, options 
 
 // purgeDeletedKeyCreateRequest creates the PurgeDeletedKey request.
 func (client *Client) purgeDeletedKeyCreateRequest(ctx context.Context, name string, _ *PurgeDeletedKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/deletedkeys/{key-name}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
@@ -933,13 +900,13 @@ func (client *Client) purgeDeletedKeyCreateRequest(ctx context.Context, name str
 // key back to its latest version under /keys. An attempt to recover an non-deleted key will return an error. Consider this
 // the inverse of the delete operation on soft-delete enabled vaults. This operation requires the keys/recover permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the deleted key.
 //   - options - RecoverDeletedKeyOptions contains the optional parameters for the Client.RecoverDeletedKey method.
 func (client *Client) RecoverDeletedKey(ctx context.Context, name string, options *RecoverDeletedKeyOptions) (RecoverDeletedKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.RecoverDeletedKey", client.internal.Tracer(), nil)
+	const operationName = "Client.RecoverDeletedKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.recoverDeletedKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -959,20 +926,18 @@ func (client *Client) RecoverDeletedKey(ctx context.Context, name string, option
 
 // recoverDeletedKeyCreateRequest creates the RecoverDeletedKey request.
 func (client *Client) recoverDeletedKeyCreateRequest(ctx context.Context, name string, _ *RecoverDeletedKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/deletedkeys/{key-name}/recover"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -991,15 +956,15 @@ func (client *Client) recoverDeletedKeyHandleResponse(resp *http.Response) (Reco
 // The release key operation is applicable to all key types. The target key must be marked exportable. This operation requires
 // the keys/release permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key to get.
 //   - version - Adding the version parameter retrieves a specific version of a key.
 //   - parameters - The parameters for the key release operation.
 //   - options - ReleaseOptions contains the optional parameters for the Client.Release method.
 func (client *Client) Release(ctx context.Context, name string, version string, parameters ReleaseParameters, options *ReleaseOptions) (ReleaseResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.Release", client.internal.Tracer(), nil)
+	const operationName = "Client.Release"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.releaseCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1019,21 +984,19 @@ func (client *Client) Release(ctx context.Context, name string, version string, 
 
 // releaseCreateRequest creates the Release request.
 func (client *Client) releaseCreateRequest(ctx context.Context, name string, version string, parameters ReleaseParameters, _ *ReleaseOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/release"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1062,13 +1025,13 @@ func (client *Client) releaseHandleResponse(resp *http.Response) (ReleaseRespons
 // by the same Microsoft Azure Subscription as the source Key Vault The user must have RESTORE permission in the target Key
 // Vault. This operation requires the keys/restore permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - parameters - The parameters to restore the key.
 //   - options - RestoreKeyOptions contains the optional parameters for the Client.RestoreKey method.
 func (client *Client) RestoreKey(ctx context.Context, parameters RestoreKeyParameters, options *RestoreKeyOptions) (RestoreKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.RestoreKey", client.internal.Tracer(), nil)
+	const operationName = "Client.RestoreKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.restoreKeyCreateRequest(ctx, parameters, options)
 	if err != nil {
@@ -1088,16 +1051,14 @@ func (client *Client) RestoreKey(ctx context.Context, parameters RestoreKeyParam
 
 // restoreKeyCreateRequest creates the RestoreKey request.
 func (client *Client) restoreKeyCreateRequest(ctx context.Context, parameters RestoreKeyParameters, _ *RestoreKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/restore"
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1119,13 +1080,13 @@ func (client *Client) restoreKeyHandleResponse(resp *http.Response) (RestoreKeyR
 //
 // The operation will rotate the key based on the key policy. It requires the keys/rotate permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of key to be rotated. The system will generate a new version in the specified key.
 //   - options - RotateKeyOptions contains the optional parameters for the Client.RotateKey method.
 func (client *Client) RotateKey(ctx context.Context, name string, options *RotateKeyOptions) (RotateKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.RotateKey", client.internal.Tracer(), nil)
+	const operationName = "Client.RotateKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.rotateKeyCreateRequest(ctx, name, options)
 	if err != nil {
@@ -1145,20 +1106,18 @@ func (client *Client) RotateKey(ctx context.Context, name string, options *Rotat
 
 // rotateKeyCreateRequest creates the RotateKey request.
 func (client *Client) rotateKeyCreateRequest(ctx context.Context, name string, _ *RotateKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/rotate"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
@@ -1172,20 +1131,154 @@ func (client *Client) rotateKeyHandleResponse(resp *http.Response) (RotateKeyRes
 	return result, nil
 }
 
+// SecureUnwrapKey - Securely unwraps a previously wrapped symmetric key using a specified key, ensuring TEE attestation via
+// Microsoft Azure Attestation (MAA) before unwrapping.
+//
+// The SECURE UNWRAP operation supports decryption of a symmetric key using the target key encryption key. This operation
+// is the reverse of the SECURE WRAP operation. The SECURE UNWRAP operation applies to asymmetric and symmetric keys stored
+// in Azure Key Vault since it uses the private portion of the key. This operation requires the keys/unwrapKey permission.
+// The SECURE UNWRAP operation ensures that MAA (Microsoft Azure Attestation Service) is used to attest the TEE (Trusted Execution
+// Environment) before the key is unwrapped.
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - name - The name of the key.
+//   - version - The version of the key.
+//   - parameters - The parameters for unwrap operation.
+//   - options - SecureUnwrapKeyOptions contains the optional parameters for the Client.SecureUnwrapKey method.
+func (client *Client) SecureUnwrapKey(ctx context.Context, name string, version string, parameters SecureKeyUnWrapOperationParameters, options *SecureUnwrapKeyOptions) (SecureUnwrapKeyResponse, error) {
+	var err error
+	const operationName = "Client.SecureUnwrapKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.secureUnwrapKeyCreateRequest(ctx, name, version, parameters, options)
+	if err != nil {
+		return SecureUnwrapKeyResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SecureUnwrapKeyResponse{}, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
+		err = runtime.NewResponseError(httpResp)
+		return SecureUnwrapKeyResponse{}, err
+	}
+	resp, err := client.secureUnwrapKeyHandleResponse(httpResp)
+	return resp, err
+}
+
+// secureUnwrapKeyCreateRequest creates the SecureUnwrapKey request.
+func (client *Client) secureUnwrapKeyCreateRequest(ctx context.Context, name string, version string, parameters SecureKeyUnWrapOperationParameters, _ *SecureUnwrapKeyOptions) (*policy.Request, error) {
+	urlPath := "/keys/{key-name}/{key-version}/secureunwrapkey"
+	if name == "" {
+		return nil, errors.New("parameter name cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
+	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	req.Raw().Header["Content-Type"] = []string{"application/json"}
+	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// secureUnwrapKeyHandleResponse handles the SecureUnwrapKey response.
+func (client *Client) secureUnwrapKeyHandleResponse(resp *http.Response) (SecureUnwrapKeyResponse, error) {
+	result := SecureUnwrapKeyResponse{}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SecureKeyOperationResult); err != nil {
+		return SecureUnwrapKeyResponse{}, err
+	}
+	return result, nil
+}
+
+// SecureWrapKey - Creates a new 256 bit AES key within the trusted execution environment and wraps this key using a specified
+// key.
+//
+// The SECURE WRAP operation creates a new 256 bit AES key within the trusted execution environment(TEE) and encrypts the
+// same with a key encryption key that has previously been stored in an Azure Key Vault. The WRAP operation is only strictly
+// necessary for symmetric keys stored in Azure Key Vault since protection with an asymmetric key can be performed using the
+// public portion of the key. This operation is supported for asymmetric keys as a convenience for callers that have a key-reference
+// but do not have access to the public key material. This operation requires the keys/wrapKey permission.
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - name - The name of the key.
+//   - version - The version of the key.
+//   - parameters - The parameters for wrap operation.
+//   - options - SecureWrapKeyOptions contains the optional parameters for the Client.SecureWrapKey method.
+func (client *Client) SecureWrapKey(ctx context.Context, name string, version string, parameters SecureKeyWrapOperationParameters, options *SecureWrapKeyOptions) (SecureWrapKeyResponse, error) {
+	var err error
+	const operationName = "Client.SecureWrapKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.secureWrapKeyCreateRequest(ctx, name, version, parameters, options)
+	if err != nil {
+		return SecureWrapKeyResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return SecureWrapKeyResponse{}, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
+		err = runtime.NewResponseError(httpResp)
+		return SecureWrapKeyResponse{}, err
+	}
+	resp, err := client.secureWrapKeyHandleResponse(httpResp)
+	return resp, err
+}
+
+// secureWrapKeyCreateRequest creates the SecureWrapKey request.
+func (client *Client) secureWrapKeyCreateRequest(ctx context.Context, name string, version string, parameters SecureKeyWrapOperationParameters, _ *SecureWrapKeyOptions) (*policy.Request, error) {
+	urlPath := "/keys/{key-name}/{key-version}/securewrapkey"
+	if name == "" {
+		return nil, errors.New("parameter name cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
+	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	req.Raw().Header["Content-Type"] = []string{"application/json"}
+	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+// secureWrapKeyHandleResponse handles the SecureWrapKey response.
+func (client *Client) secureWrapKeyHandleResponse(resp *http.Response) (SecureWrapKeyResponse, error) {
+	result := SecureWrapKeyResponse{}
+	if err := runtime.UnmarshalAsJSON(resp, &result.SecureKeyOperationResult); err != nil {
+		return SecureWrapKeyResponse{}, err
+	}
+	return result, nil
+}
+
 // Sign - Creates a signature from a digest using the specified key.
 //
 // The SIGN operation is applicable to asymmetric and symmetric keys stored in Azure Key Vault since this operation uses the
 // private portion of the key. This operation requires the keys/sign permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for the signing operation.
 //   - options - SignOptions contains the optional parameters for the Client.Sign method.
 func (client *Client) Sign(ctx context.Context, name string, version string, parameters SignParameters, options *SignOptions) (SignResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.Sign", client.internal.Tracer(), nil)
+	const operationName = "Client.Sign"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.signCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1205,21 +1298,19 @@ func (client *Client) Sign(ctx context.Context, name string, version string, par
 
 // signCreateRequest creates the Sign request.
 func (client *Client) signCreateRequest(ctx context.Context, name string, version string, parameters SignParameters, _ *SignOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/sign"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1243,15 +1334,15 @@ func (client *Client) signHandleResponse(resp *http.Response) (SignResponse, err
 // reverse of the WRAP operation. The UNWRAP operation applies to asymmetric and symmetric keys stored in Azure Key Vault
 // since it uses the private portion of the key. This operation requires the keys/unwrapKey permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for the key operation.
 //   - options - UnwrapKeyOptions contains the optional parameters for the Client.UnwrapKey method.
 func (client *Client) UnwrapKey(ctx context.Context, name string, version string, parameters KeyOperationParameters, options *UnwrapKeyOptions) (UnwrapKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.UnwrapKey", client.internal.Tracer(), nil)
+	const operationName = "Client.UnwrapKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.unwrapKeyCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1271,21 +1362,19 @@ func (client *Client) UnwrapKey(ctx context.Context, name string, version string
 
 // unwrapKeyCreateRequest creates the UnwrapKey request.
 func (client *Client) unwrapKeyCreateRequest(ctx context.Context, name string, version string, parameters KeyOperationParameters, _ *UnwrapKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/unwrapkey"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1309,15 +1398,15 @@ func (client *Client) unwrapKeyHandleResponse(resp *http.Response) (UnwrapKeyRes
 // In order to perform this operation, the key must already exist in the Key Vault. Note: The cryptographic material of a
 // key itself cannot be changed. This operation requires the keys/update permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of key to update.
 //   - version - The version of the key to update.
 //   - parameters - The parameters of the key to update.
 //   - options - UpdateKeyOptions contains the optional parameters for the Client.UpdateKey method.
 func (client *Client) UpdateKey(ctx context.Context, name string, version string, parameters UpdateKeyParameters, options *UpdateKeyOptions) (UpdateKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.UpdateKey", client.internal.Tracer(), nil)
+	const operationName = "Client.UpdateKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.updateKeyCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1337,21 +1426,19 @@ func (client *Client) UpdateKey(ctx context.Context, name string, version string
 
 // updateKeyCreateRequest creates the UpdateKey request.
 func (client *Client) updateKeyCreateRequest(ctx context.Context, name string, version string, parameters UpdateKeyParameters, _ *UpdateKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPatch, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPatch, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1373,14 +1460,14 @@ func (client *Client) updateKeyHandleResponse(resp *http.Response) (UpdateKeyRes
 //
 // Set specified members in the key policy. Leave others as undefined. This operation requires the keys/update permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key in the given vault.
 //   - keyRotationPolicy - The policy for the key.
 //   - options - UpdateKeyRotationPolicyOptions contains the optional parameters for the Client.UpdateKeyRotationPolicy method.
 func (client *Client) UpdateKeyRotationPolicy(ctx context.Context, name string, keyRotationPolicy KeyRotationPolicy, options *UpdateKeyRotationPolicyOptions) (UpdateKeyRotationPolicyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.UpdateKeyRotationPolicy", client.internal.Tracer(), nil)
+	const operationName = "Client.UpdateKeyRotationPolicy"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.updateKeyRotationPolicyCreateRequest(ctx, name, keyRotationPolicy, options)
 	if err != nil {
@@ -1400,20 +1487,18 @@ func (client *Client) UpdateKeyRotationPolicy(ctx context.Context, name string, 
 
 // updateKeyRotationPolicyCreateRequest creates the UpdateKeyRotationPolicy request.
 func (client *Client) updateKeyRotationPolicyCreateRequest(ctx context.Context, name string, keyRotationPolicy KeyRotationPolicy, _ *UpdateKeyRotationPolicyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/rotationpolicy"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
-	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, keyRotationPolicy); err != nil {
@@ -1438,15 +1523,15 @@ func (client *Client) updateKeyRotationPolicyHandleResponse(resp *http.Response)
 // operation is supported as a convenience for callers that only have a key-reference and not the public portion of the key.
 // This operation requires the keys/verify permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for verify operations.
 //   - options - VerifyOptions contains the optional parameters for the Client.Verify method.
 func (client *Client) Verify(ctx context.Context, name string, version string, parameters VerifyParameters, options *VerifyOptions) (VerifyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.Verify", client.internal.Tracer(), nil)
+	const operationName = "Client.Verify"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.verifyCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1466,21 +1551,19 @@ func (client *Client) Verify(ctx context.Context, name string, version string, p
 
 // verifyCreateRequest creates the Verify request.
 func (client *Client) verifyCreateRequest(ctx context.Context, name string, version string, parameters VerifyParameters, _ *VerifyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/verify"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {
@@ -1506,15 +1589,15 @@ func (client *Client) verifyHandleResponse(resp *http.Response) (VerifyResponse,
 // keys as a convenience for callers that have a key-reference but do not have access to the public key material. This operation
 // requires the keys/wrapKey permission.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 7.6
 //   - name - The name of the key.
 //   - version - The version of the key.
 //   - parameters - The parameters for wrap operation.
 //   - options - WrapKeyOptions contains the optional parameters for the Client.WrapKey method.
 func (client *Client) WrapKey(ctx context.Context, name string, version string, parameters KeyOperationParameters, options *WrapKeyOptions) (WrapKeyResponse, error) {
 	var err error
-	ctx, endSpan := runtime.StartSpan(ctx, "Client.WrapKey", client.internal.Tracer(), nil)
+	const operationName = "Client.WrapKey"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
 	defer func() { endSpan(err) }()
 	req, err := client.wrapKeyCreateRequest(ctx, name, version, parameters, options)
 	if err != nil {
@@ -1534,21 +1617,19 @@ func (client *Client) WrapKey(ctx context.Context, name string, version string, 
 
 // wrapKeyCreateRequest creates the WrapKey request.
 func (client *Client) wrapKeyCreateRequest(ctx context.Context, name string, version string, parameters KeyOperationParameters, _ *WrapKeyOptions) (*policy.Request, error) {
-	host := "{vaultBaseUrl}"
-	host = strings.ReplaceAll(host, "{vaultBaseUrl}", client.vaultBaseUrl)
 	urlPath := "/keys/{key-name}/{key-version}/wrapkey"
 	if name == "" {
 		return nil, errors.New("parameter name cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{key-name}", url.PathEscape(name))
 	urlPath = strings.ReplaceAll(urlPath, "{key-version}", url.PathEscape(version))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(host, urlPath))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.vaultBaseUrl, urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "7.6")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260101Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, parameters); err != nil {

@@ -18,6 +18,8 @@ import (
 
 // PublicCloudConnectorsClient contains the methods for the PublicCloudConnectors group.
 // Don't use this type directly, use NewPublicCloudConnectorsClient() instead.
+//
+// Generated from API version 2027-01-01
 type PublicCloudConnectorsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type PublicCloudConnectorsClient struct {
 // NewPublicCloudConnectorsClient creates a new instance of PublicCloudConnectorsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewPublicCloudConnectorsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PublicCloudConnectorsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewPublicCloudConnectorsClient(subscriptionID string, credential azcore.Tok
 
 // BeginCreateOrUpdate - Create a PublicCloudConnector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - publicCloudConnector - Represent public cloud connectors resource.
 //   - resource - Resource create parameters.
@@ -65,10 +68,8 @@ func (client *PublicCloudConnectorsClient) BeginCreateOrUpdate(ctx context.Conte
 	}
 }
 
-// CreateOrUpdate - Create a PublicCloudConnector
+// createOrUpdate - Create a PublicCloudConnector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 func (client *PublicCloudConnectorsClient) createOrUpdate(ctx context.Context, resourceGroupName string, publicCloudConnector string, resource PublicCloudConnector, options *PublicCloudConnectorsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PublicCloudConnectorsClient.BeginCreateOrUpdate"
@@ -90,11 +91,11 @@ func (client *PublicCloudConnectorsClient) createOrUpdate(ctx context.Context, r
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *PublicCloudConnectorsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, resource PublicCloudConnector, _ *PublicCloudConnectorsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -110,8 +111,8 @@ func (client *PublicCloudConnectorsClient) createOrUpdateCreateRequest(ctx conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -120,10 +121,80 @@ func (client *PublicCloudConnectorsClient) createOrUpdateCreateRequest(ctx conte
 	return req, nil
 }
 
+// BeginTestPermissions - A long-running resource action.
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - publicCloudConnector - Represent public cloud connectors resource.
+//   - options - PublicCloudConnectorsClientBeginTestPermissionsOptions contains the optional parameters for the PublicCloudConnectorsClient.BeginTestPermissions
+//     method.
+func (client *PublicCloudConnectorsClient) BeginTestPermissions(ctx context.Context, resourceGroupName string, publicCloudConnector string, options *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*runtime.Poller[PublicCloudConnectorsClientTestPermissionsResponse], error) {
+	if options == nil || options.ResumeToken == "" {
+		resp, err := client.testPermissions(ctx, resourceGroupName, publicCloudConnector, options)
+		if err != nil {
+			return nil, err
+		}
+		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[PublicCloudConnectorsClientTestPermissionsResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+		return poller, err
+	} else {
+		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[PublicCloudConnectorsClientTestPermissionsResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+	}
+}
+
+// testPermissions - A long-running resource action.
+// If the operation fails it returns an *azcore.ResponseError type.
+func (client *PublicCloudConnectorsClient) testPermissions(ctx context.Context, resourceGroupName string, publicCloudConnector string, options *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*http.Response, error) {
+	var err error
+	const operationName = "PublicCloudConnectorsClient.BeginTestPermissions"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.testPermissionsCreateRequest(ctx, resourceGroupName, publicCloudConnector, options)
+	if err != nil {
+		return nil, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
+		err = runtime.NewResponseError(httpResp)
+		return nil, err
+	}
+	return httpResp, nil
+}
+
+// testPermissionsCreateRequest creates the testPermissions request.
+func (client *PublicCloudConnectorsClient) testPermissionsCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, _ *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}/testPermissions"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if publicCloudConnector == "" {
+		return nil, errors.New("parameter publicCloudConnector cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{publicCloudConnector}", url.PathEscape(publicCloudConnector))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
 // Delete - Delete a PublicCloudConnector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - publicCloudConnector - Represent public cloud connectors resource.
 //   - options - PublicCloudConnectorsClientDeleteOptions contains the optional parameters for the PublicCloudConnectorsClient.Delete
@@ -153,7 +224,7 @@ func (client *PublicCloudConnectorsClient) Delete(ctx context.Context, resourceG
 func (client *PublicCloudConnectorsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, _ *PublicCloudConnectorsClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -169,16 +240,13 @@ func (client *PublicCloudConnectorsClient) deleteCreateRequest(ctx context.Conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a PublicCloudConnector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - publicCloudConnector - Represent public cloud connectors resource.
 //   - options - PublicCloudConnectorsClientGetOptions contains the optional parameters for the PublicCloudConnectorsClient.Get
@@ -197,11 +265,7 @@ func (client *PublicCloudConnectorsClient) Get(ctx context.Context, resourceGrou
 	if err != nil {
 		return PublicCloudConnectorsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return PublicCloudConnectorsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -209,7 +273,7 @@ func (client *PublicCloudConnectorsClient) Get(ctx context.Context, resourceGrou
 func (client *PublicCloudConnectorsClient) getCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, _ *PublicCloudConnectorsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -225,15 +289,18 @@ func (client *PublicCloudConnectorsClient) getCreateRequest(ctx context.Context,
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *PublicCloudConnectorsClient) getHandleResponse(resp *http.Response) (PublicCloudConnectorsClientGetResponse, error) {
+func (client *PublicCloudConnectorsClient) getHandleResponse(resp *http.Response, successCodes ...int) (PublicCloudConnectorsClientGetResponse, error) {
 	result := PublicCloudConnectorsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PublicCloudConnector); err != nil {
 		return PublicCloudConnectorsClientGetResponse{}, err
 	}
@@ -241,8 +308,6 @@ func (client *PublicCloudConnectorsClient) getHandleResponse(resp *http.Response
 }
 
 // NewListByResourceGroupPager - List PublicCloudConnector resources by resource group
-//
-// Generated from API version 2024-12-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - options - PublicCloudConnectorsClientListByResourceGroupOptions contains the optional parameters for the PublicCloudConnectorsClient.NewListByResourceGroupPager
 //     method.
@@ -257,43 +322,57 @@ func (client *PublicCloudConnectorsClient) NewListByResourceGroupPager(resourceG
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
 			if err != nil {
 				return PublicCloudConnectorsClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return PublicCloudConnectorsClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *PublicCloudConnectorsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *PublicCloudConnectorsClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *PublicCloudConnectorsClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *PublicCloudConnectorsClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20270101)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *PublicCloudConnectorsClient) listByResourceGroupHandleResponse(resp *http.Response) (PublicCloudConnectorsClientListByResourceGroupResponse, error) {
+func (client *PublicCloudConnectorsClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (PublicCloudConnectorsClientListByResourceGroupResponse, error) {
 	result := PublicCloudConnectorsClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PublicCloudConnectorListResult); err != nil {
 		return PublicCloudConnectorsClientListByResourceGroupResponse{}, err
 	}
@@ -301,8 +380,6 @@ func (client *PublicCloudConnectorsClient) listByResourceGroupHandleResponse(res
 }
 
 // NewListBySubscriptionPager - List PublicCloudConnector resources by subscription ID
-//
-// Generated from API version 2024-12-01
 //   - options - PublicCloudConnectorsClientListBySubscriptionOptions contains the optional parameters for the PublicCloudConnectorsClient.NewListBySubscriptionPager
 //     method.
 func (client *PublicCloudConnectorsClient) NewListBySubscriptionPager(options *PublicCloudConnectorsClientListBySubscriptionOptions) *runtime.Pager[PublicCloudConnectorsClientListBySubscriptionResponse] {
@@ -316,131 +393,67 @@ func (client *PublicCloudConnectorsClient) NewListBySubscriptionPager(options *P
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return PublicCloudConnectorsClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return PublicCloudConnectorsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *PublicCloudConnectorsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *PublicCloudConnectorsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.HybridConnectivity/publicCloudConnectors"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *PublicCloudConnectorsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *PublicCloudConnectorsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.HybridConnectivity/publicCloudConnectors"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20270101)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *PublicCloudConnectorsClient) listBySubscriptionHandleResponse(resp *http.Response) (PublicCloudConnectorsClientListBySubscriptionResponse, error) {
+func (client *PublicCloudConnectorsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (PublicCloudConnectorsClientListBySubscriptionResponse, error) {
 	result := PublicCloudConnectorsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PublicCloudConnectorListResult); err != nil {
 		return PublicCloudConnectorsClientListBySubscriptionResponse{}, err
 	}
 	return result, nil
 }
 
-// BeginTestPermissions - A long-running resource action.
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - publicCloudConnector - Represent public cloud connectors resource.
-//   - options - PublicCloudConnectorsClientBeginTestPermissionsOptions contains the optional parameters for the PublicCloudConnectorsClient.BeginTestPermissions
-//     method.
-func (client *PublicCloudConnectorsClient) BeginTestPermissions(ctx context.Context, resourceGroupName string, publicCloudConnector string, options *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*runtime.Poller[PublicCloudConnectorsClientTestPermissionsResponse], error) {
-	if options == nil || options.ResumeToken == "" {
-		resp, err := client.testPermissions(ctx, resourceGroupName, publicCloudConnector, options)
-		if err != nil {
-			return nil, err
-		}
-		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[PublicCloudConnectorsClientTestPermissionsResponse]{
-			Tracer: client.internal.Tracer(),
-		})
-		return poller, err
-	} else {
-		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[PublicCloudConnectorsClientTestPermissionsResponse]{
-			Tracer: client.internal.Tracer(),
-		})
-	}
-}
-
-// TestPermissions - A long-running resource action.
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
-func (client *PublicCloudConnectorsClient) testPermissions(ctx context.Context, resourceGroupName string, publicCloudConnector string, options *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*http.Response, error) {
-	var err error
-	const operationName = "PublicCloudConnectorsClient.BeginTestPermissions"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.testPermissionsCreateRequest(ctx, resourceGroupName, publicCloudConnector, options)
-	if err != nil {
-		return nil, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return nil, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
-		err = runtime.NewResponseError(httpResp)
-		return nil, err
-	}
-	return httpResp, nil
-}
-
-// testPermissionsCreateRequest creates the TestPermissions request.
-func (client *PublicCloudConnectorsClient) testPermissionsCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, _ *PublicCloudConnectorsClientBeginTestPermissionsOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}/testPermissions"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if publicCloudConnector == "" {
-		return nil, errors.New("parameter publicCloudConnector cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{publicCloudConnector}", url.PathEscape(publicCloudConnector))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
 // Update - Update a PublicCloudConnector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - publicCloudConnector - Represent public cloud connectors resource.
 //   - properties - The resource properties to be updated.
 //   - options - PublicCloudConnectorsClientUpdateOptions contains the optional parameters for the PublicCloudConnectorsClient.Update
 //     method.
-func (client *PublicCloudConnectorsClient) Update(ctx context.Context, resourceGroupName string, publicCloudConnector string, properties PublicCloudConnector, options *PublicCloudConnectorsClientUpdateOptions) (PublicCloudConnectorsClientUpdateResponse, error) {
+func (client *PublicCloudConnectorsClient) Update(ctx context.Context, resourceGroupName string, publicCloudConnector string, properties PublicCloudConnectorUpdate, options *PublicCloudConnectorsClientUpdateOptions) (PublicCloudConnectorsClientUpdateResponse, error) {
 	var err error
 	const operationName = "PublicCloudConnectorsClient.Update"
 	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
@@ -454,19 +467,15 @@ func (client *PublicCloudConnectorsClient) Update(ctx context.Context, resourceG
 	if err != nil {
 		return PublicCloudConnectorsClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return PublicCloudConnectorsClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
 // updateCreateRequest creates the Update request.
-func (client *PublicCloudConnectorsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, properties PublicCloudConnector, _ *PublicCloudConnectorsClientUpdateOptions) (*policy.Request, error) {
+func (client *PublicCloudConnectorsClient) updateCreateRequest(ctx context.Context, resourceGroupName string, publicCloudConnector string, properties PublicCloudConnectorUpdate, _ *PublicCloudConnectorsClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridConnectivity/publicCloudConnectors/{publicCloudConnector}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -482,8 +491,8 @@ func (client *PublicCloudConnectorsClient) updateCreateRequest(ctx context.Conte
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -493,8 +502,11 @@ func (client *PublicCloudConnectorsClient) updateCreateRequest(ctx context.Conte
 }
 
 // updateHandleResponse handles the Update response.
-func (client *PublicCloudConnectorsClient) updateHandleResponse(resp *http.Response) (PublicCloudConnectorsClientUpdateResponse, error) {
+func (client *PublicCloudConnectorsClient) updateHandleResponse(resp *http.Response, successCodes ...int) (PublicCloudConnectorsClientUpdateResponse, error) {
 	result := PublicCloudConnectorsClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PublicCloudConnector); err != nil {
 		return PublicCloudConnectorsClientUpdateResponse{}, err
 	}

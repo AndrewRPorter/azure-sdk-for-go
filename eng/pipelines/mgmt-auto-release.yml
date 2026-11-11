@@ -7,34 +7,45 @@ extends:
     stages:
       - stage:
         variables:
+          - template: /eng/pipelines/templates/variables/globals.yml
           - template: /eng/pipelines/templates/variables/image.yml
         jobs:
           - job:
+            variables:
+              autoReleaseNpmrcPath: $(Agent.TempDirectory)/mgmt-auto-release/.npmrc
 
             pool:
-              image: $(LINUXNEXTVMIMAGE)
-              name: $(LINUXNEXTPOOL)
+              image: $(LINUXVMIMAGE)
+              name: $(LINUXPOOL)
               os: linux
 
 
             displayName: Go Auto Release
             steps:
-              - task: Npm@1
-                inputs:
-                  command: 'custom'
-                  customCommand: 'install -g autorest@latest'
-                  
-              - task: Npm@1
-                inputs:
-                  command: 'custom'
-                  customCommand: 'install -g @azure-tools/typespec-client-generator-cli@v0.10.0'
-                  
+              - template: /eng/common/pipelines/templates/steps/create-authenticated-npmrc.yml
+                parameters:
+                  npmrcPath: $(autoReleaseNpmrcPath)
+
+              - script: npm install -g autorest@latest
+                displayName: Install autorest from configured registry
+                env:
+                  npm_config_userconfig: $(autoReleaseNpmrcPath)
+
+              - script: npm ci
+                displayName: npm ci for tsp-client from configured registry
+                workingDirectory: eng/common/tsp-client
+                env:
+                  npm_config_userconfig: $(autoReleaseNpmrcPath)
+
               - task: GoTool@0
                 inputs:
-                  version: '1.23.2'
+                  version: '$(GO_VERSION_LATEST)'
+
+              - template: /eng/common/pipelines/templates/steps/login-to-github.yml
 
               - task: ShellScript@2
                 inputs:
                   scriptPath: 'eng/scripts/mgmt-auto-release.sh'
                   cwd: '$(System.DefaultWorkingDirectory)'
-                  args: '$(azuresdk-github-pat)'
+                env:
+                  GH_TOKEN: $(GH_TOKEN)

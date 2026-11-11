@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -14,6 +11,7 @@ import (
 
 const (
 	shareSnapshot = "sharesnapshot"
+	fileIDParam   = "fileid"
 )
 
 // IPEndpointStyleInfo is used for IP endpoint style URL when working with Azure storage emulator.
@@ -31,6 +29,7 @@ type URLParts struct {
 	IPEndpointStyleInfo IPEndpointStyleInfo // Useful Parts for IP endpoint style URL.
 	ShareName           string              // Share name, Ex: "myshare"
 	DirectoryOrFilePath string              // Path of directory or file, Ex: "mydirectory/myfile"
+	FileID              string              // File ID of a file or directory addressed by its file ID rather than its path, Ex: "12384898975283830"
 	ShareSnapshot       string              // IsZero is true if not a snapshot
 	SAS                 QueryParameters
 	UnparsedParams      string
@@ -83,6 +82,14 @@ func ParseURL(u string) (URLParts, error) {
 		delete(paramsMap, shareSnapshot)
 	}
 
+	up.FileID = ""
+	if fileIDStr, ok := caseInsensitiveValues(paramsMap).Get(fileIDParam); ok {
+		up.FileID = fileIDStr[0]
+		// If we recognized the query parameter, remove it from the map. The key is matched case-insensitively,
+		// so remove every spelling of it (e.g. "FileId") to avoid emitting it twice from String().
+		caseInsensitiveValues(paramsMap).Delete(fileIDParam)
+	}
+
 	up.SAS = NewQueryParameters(paramsMap, true)
 	up.UnparsedParams = paramsMap.Encode()
 	return up, nil
@@ -109,6 +116,14 @@ func (up URLParts) String() string {
 	// If no snapshot is initially provided, fill it in from the SAS query properties to help the user
 	if up.ShareSnapshot == "" && !up.SAS.ShareSnapshotTime().IsZero() {
 		up.ShareSnapshot = up.SAS.ShareSnapshotTime().Format(SnapshotTimeFormat)
+	}
+
+	// Concatenate file ID query parameter (if it exists)
+	if up.FileID != "" {
+		if len(rawQuery) > 0 {
+			rawQuery += "&"
+		}
+		rawQuery += fileIDParam + "=" + url.QueryEscape(up.FileID)
 	}
 
 	// Concatenate share snapshot query parameter (if it exists)
@@ -144,4 +159,14 @@ func (values caseInsensitiveValues) Get(key string) ([]string, bool) {
 		}
 	}
 	return []string{}, false
+}
+
+// Delete removes every key that matches the given key case-insensitively.
+func (values caseInsensitiveValues) Delete(key string) {
+	key = strings.ToLower(key)
+	for k := range values {
+		if strings.ToLower(k) == key {
+			delete(values, k)
+		}
+	}
 }

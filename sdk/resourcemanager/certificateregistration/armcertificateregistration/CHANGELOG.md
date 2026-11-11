@@ -1,0 +1,13 @@
+# Release History
+
+## 1.0.0 (2026-06-24)
+### Other Changes
+
+- General availability of the `github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/certificateregistration/armcertificateregistration` package.
+
+## 0.1.0 (2026-02-13)
+### Other Changes
+
+The package of `github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/certificateregistration/armcertificateregistration` is using our [next generation design principles](https://azure.github.io/azure-sdk/general_introduction.html).
+
+To learn more, please refer to our documentation [Quick Start](https://aka.ms/azsdk/go/mgmt).

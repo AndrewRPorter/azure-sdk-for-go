@@ -18,6 +18,8 @@ import (
 
 // ConnectorsClient contains the methods for the Connectors group.
 // Don't use this type directly, use NewConnectorsClient() instead.
+//
+// Generated from API version 2024-05-01-preview
 type ConnectorsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type ConnectorsClient struct {
 // NewConnectorsClient creates a new instance of ConnectorsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewConnectorsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*ConnectorsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewConnectorsClient(subscriptionID string, credential azcore.TokenCredentia
 
 // BeginCreateOrUpdate - Create a Connector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - connectorName - The name of the connector
 //   - resource - Resource create parameters.
 //   - options - ConnectorsClientBeginCreateOrUpdateOptions contains the optional parameters for the ConnectorsClient.BeginCreateOrUpdate
@@ -64,10 +67,8 @@ func (client *ConnectorsClient) BeginCreateOrUpdate(ctx context.Context, connect
 	}
 }
 
-// CreateOrUpdate - Create a Connector
+// createOrUpdate - Create a Connector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 func (client *ConnectorsClient) createOrUpdate(ctx context.Context, connectorName string, resource Connector, options *ConnectorsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "ConnectorsClient.BeginCreateOrUpdate"
@@ -89,11 +90,11 @@ func (client *ConnectorsClient) createOrUpdate(ctx context.Context, connectorNam
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *ConnectorsClient) createOrUpdateCreateRequest(ctx context.Context, connectorName string, resource Connector, _ *ConnectorsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors/{connectorName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if connectorName == "" {
@@ -105,8 +106,8 @@ func (client *ConnectorsClient) createOrUpdateCreateRequest(ctx context.Context,
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -117,8 +118,6 @@ func (client *ConnectorsClient) createOrUpdateCreateRequest(ctx context.Context,
 
 // Delete - Delete a Connector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - connectorName - The name of the connector
 //   - options - ConnectorsClientDeleteOptions contains the optional parameters for the ConnectorsClient.Delete method.
 func (client *ConnectorsClient) Delete(ctx context.Context, connectorName string, options *ConnectorsClientDeleteOptions) (ConnectorsClientDeleteResponse, error) {
@@ -146,7 +145,7 @@ func (client *ConnectorsClient) Delete(ctx context.Context, connectorName string
 func (client *ConnectorsClient) deleteCreateRequest(ctx context.Context, connectorName string, _ *ConnectorsClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors/{connectorName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if connectorName == "" {
@@ -158,16 +157,13 @@ func (client *ConnectorsClient) deleteCreateRequest(ctx context.Context, connect
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a Connector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - connectorName - The name of the connector
 //   - options - ConnectorsClientGetOptions contains the optional parameters for the ConnectorsClient.Get method.
 func (client *ConnectorsClient) Get(ctx context.Context, connectorName string, options *ConnectorsClientGetOptions) (ConnectorsClientGetResponse, error) {
@@ -184,11 +180,7 @@ func (client *ConnectorsClient) Get(ctx context.Context, connectorName string, o
 	if err != nil {
 		return ConnectorsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ConnectorsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -196,7 +188,7 @@ func (client *ConnectorsClient) Get(ctx context.Context, connectorName string, o
 func (client *ConnectorsClient) getCreateRequest(ctx context.Context, connectorName string, _ *ConnectorsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors/{connectorName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if connectorName == "" {
@@ -208,15 +200,18 @@ func (client *ConnectorsClient) getCreateRequest(ctx context.Context, connectorN
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *ConnectorsClient) getHandleResponse(resp *http.Response) (ConnectorsClientGetResponse, error) {
+func (client *ConnectorsClient) getHandleResponse(resp *http.Response, successCodes ...int) (ConnectorsClientGetResponse, error) {
 	result := ConnectorsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.Connector); err != nil {
 		return ConnectorsClientGetResponse{}, err
 	}
@@ -224,8 +219,6 @@ func (client *ConnectorsClient) getHandleResponse(resp *http.Response) (Connecto
 }
 
 // NewListBySubscriptionPager - List Connector resources by subscription ID
-//
-// Generated from API version 2024-05-01-preview
 //   - options - ConnectorsClientListBySubscriptionOptions contains the optional parameters for the ConnectorsClient.NewListBySubscriptionPager
 //     method.
 func (client *ConnectorsClient) NewListBySubscriptionPager(options *ConnectorsClientListBySubscriptionOptions) *runtime.Pager[ConnectorsClientListBySubscriptionResponse] {
@@ -239,39 +232,53 @@ func (client *ConnectorsClient) NewListBySubscriptionPager(options *ConnectorsCl
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return ConnectorsClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return ConnectorsClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *ConnectorsClient) listBySubscriptionCreateRequest(ctx context.Context, _ *ConnectorsClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *ConnectorsClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *ConnectorsClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20240501Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *ConnectorsClient) listBySubscriptionHandleResponse(resp *http.Response) (ConnectorsClientListBySubscriptionResponse, error) {
+func (client *ConnectorsClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (ConnectorsClientListBySubscriptionResponse, error) {
 	result := ConnectorsClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ConnectorListResult); err != nil {
 		return ConnectorsClientListBySubscriptionResponse{}, err
 	}
@@ -280,8 +287,6 @@ func (client *ConnectorsClient) listBySubscriptionHandleResponse(resp *http.Resp
 
 // Update - Update a Connector
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-05-01-preview
 //   - connectorName - The name of the connector
 //   - properties - The resource properties to be updated.
 //   - options - ConnectorsClientUpdateOptions contains the optional parameters for the ConnectorsClient.Update method.
@@ -299,11 +304,7 @@ func (client *ConnectorsClient) Update(ctx context.Context, connectorName string
 	if err != nil {
 		return ConnectorsClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ConnectorsClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -311,7 +312,7 @@ func (client *ConnectorsClient) Update(ctx context.Context, connectorName string
 func (client *ConnectorsClient) updateCreateRequest(ctx context.Context, connectorName string, properties ConnectorUpdate, _ *ConnectorsClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.Impact/connectors/{connectorName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if connectorName == "" {
@@ -323,8 +324,8 @@ func (client *ConnectorsClient) updateCreateRequest(ctx context.Context, connect
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-05-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -334,8 +335,11 @@ func (client *ConnectorsClient) updateCreateRequest(ctx context.Context, connect
 }
 
 // updateHandleResponse handles the Update response.
-func (client *ConnectorsClient) updateHandleResponse(resp *http.Response) (ConnectorsClientUpdateResponse, error) {
+func (client *ConnectorsClient) updateHandleResponse(resp *http.Response, successCodes ...int) (ConnectorsClientUpdateResponse, error) {
 	result := ConnectorsClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.Connector); err != nil {
 		return ConnectorsClientUpdateResponse{}, err
 	}

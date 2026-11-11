@@ -27,7 +27,7 @@ func ExampleAlertRuleResourcesClient_CreateOrUpdate() {
 	res, err := clientFactory.NewAlertRuleResourcesClient().CreateOrUpdate(ctx, "rgWatcher", "testWatcher", "testAlert", armdatabasewatcher.AlertRuleResource{
 		Properties: &armdatabasewatcher.AlertRuleResourceProperties{
 			AlertRuleResourceID:      to.Ptr("/subscriptions/469DD77C-C8DB-47B7-B9E1-72D29F8C878Be/resourceGroups/rgWatcher/providers/microsoft.insights/scheduledqueryrules/alerts-demo"),
-			CreationTime:             to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.798Z"); return t }()),
+			CreationTime:             to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 798000000, time.UTC)),
 			AlertRuleTemplateVersion: to.Ptr("1.0"),
 			AlertRuleTemplateID:      to.Ptr("someTemplateId"),
 			CreatedWithProperties:    to.Ptr(armdatabasewatcher.AlertRuleCreationPropertiesCreatedWithActionGroup),
@@ -40,10 +40,10 @@ func ExampleAlertRuleResourcesClient_CreateOrUpdate() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdatabasewatcher.AlertRuleResourcesClientCreateOrUpdateResponse{
-	// 	AlertRuleResource: &armdatabasewatcher.AlertRuleResource{
+	// 	AlertRuleResource: armdatabasewatcher.AlertRuleResource{
 	// 		Properties: &armdatabasewatcher.AlertRuleResourceProperties{
 	// 			AlertRuleResourceID: to.Ptr("/subscriptions/469DD77C-C8DB-47B7-B9E1-72D29F8C878Be/resourceGroups/rgWatcher/providers/microsoft.insights/scheduledqueryrules/alerts-demo"),
-	// 			CreationTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.798Z"); return t}()),
+	// 			CreationTime: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 798000000, time.UTC)),
 	// 			AlertRuleTemplateVersion: to.Ptr("1.0"),
 	// 			AlertRuleTemplateID: to.Ptr("someTemplateId"),
 	// 			CreatedWithProperties: to.Ptr(armdatabasewatcher.AlertRuleCreationPropertiesCreatedWithActionGroup),
@@ -55,10 +55,10 @@ func ExampleAlertRuleResourcesClient_CreateOrUpdate() {
 	// 		SystemData: &armdatabasewatcher.SystemData{
 	// 			CreatedBy: to.Ptr("enbpvlpqbwd"),
 	// 			CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("mxp"),
 	// 			LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -105,10 +105,10 @@ func ExampleAlertRuleResourcesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armdatabasewatcher.AlertRuleResourcesClientGetResponse{
-	// 	AlertRuleResource: &armdatabasewatcher.AlertRuleResource{
+	// 	AlertRuleResource: armdatabasewatcher.AlertRuleResource{
 	// 		Properties: &armdatabasewatcher.AlertRuleResourceProperties{
 	// 			AlertRuleResourceID: to.Ptr("/subscriptions/469DD77C-C8DB-47B7-B9E1-72D29F8C878Be/resourceGroups/rgWatcher/providers/microsoft.insights/scheduledqueryrules/alerts-demo"),
-	// 			CreationTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.798Z"); return t}()),
+	// 			CreationTime: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 798000000, time.UTC)),
 	// 			AlertRuleTemplateVersion: to.Ptr("1.0"),
 	// 			AlertRuleTemplateID: to.Ptr("someTemplateId"),
 	// 			CreatedWithProperties: to.Ptr(armdatabasewatcher.AlertRuleCreationPropertiesCreatedWithActionGroup),
@@ -120,10 +120,10 @@ func ExampleAlertRuleResourcesClient_Get() {
 	// 		SystemData: &armdatabasewatcher.SystemData{
 	// 			CreatedBy: to.Ptr("enbpvlpqbwd"),
 	// 			CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("mxp"),
 	// 			LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -157,7 +157,7 @@ func ExampleAlertRuleResourcesClient_NewListByParentPager() {
 		// 			{
 		// 				Properties: &armdatabasewatcher.AlertRuleResourceProperties{
 		// 					AlertRuleResourceID: to.Ptr("/subscriptions/469DD77C-C8DB-47B7-B9E1-72D29F8C878Be/resourceGroups/rgWatcher/providers/microsoft.insights/scheduledqueryrules/alerts-demo"),
-		// 					CreationTime: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.798Z"); return t}()),
+		// 					CreationTime: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 798000000, time.UTC)),
 		// 					AlertRuleTemplateVersion: to.Ptr("1.0"),
 		// 					ProvisioningState: to.Ptr(armdatabasewatcher.ResourceProvisioningStateSucceeded),
 		// 					AlertRuleTemplateID: to.Ptr("someTemplateId"),
@@ -169,10 +169,10 @@ func ExampleAlertRuleResourcesClient_NewListByParentPager() {
 		// 				SystemData: &armdatabasewatcher.SystemData{
 		// 					CreatedBy: to.Ptr("enbpvlpqbwd"),
 		// 					CreatedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("mxp"),
 		// 					LastModifiedByType: to.Ptr(armdatabasewatcher.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-07-25T15:38:47.092Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.July, 25, 15, 38, 47, 92000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

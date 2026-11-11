@@ -13,11 +13,14 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
 // FleetMembersClient contains the methods for the FleetMembers group.
 // Don't use this type directly, use NewFleetMembersClient() instead.
+//
+// Generated from API version 2026-06-02-preview
 type FleetMembersClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +29,11 @@ type FleetMembersClient struct {
 // NewFleetMembersClient creates a new instance of FleetMembersClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewFleetMembersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*FleetMembersClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +47,6 @@ func NewFleetMembersClient(subscriptionID string, credential azcore.TokenCredent
 
 // BeginCreate - Create a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - fleetName - The name of the Fleet resource.
 //   - fleetMemberName - The name of the Fleet member resource.
@@ -67,10 +71,8 @@ func (client *FleetMembersClient) BeginCreate(ctx context.Context, resourceGroup
 	}
 }
 
-// Create - Create a FleetMember
+// create - Create a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 func (client *FleetMembersClient) create(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, resource FleetMember, options *FleetMembersClientBeginCreateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "FleetMembersClient.BeginCreate"
@@ -92,11 +94,11 @@ func (client *FleetMembersClient) create(ctx context.Context, resourceGroupName 
 	return httpResp, nil
 }
 
-// createCreateRequest creates the Create request.
+// createCreateRequest creates the create request.
 func (client *FleetMembersClient) createCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, resource FleetMember, options *FleetMembersClientBeginCreateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -116,8 +118,8 @@ func (client *FleetMembersClient) createCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260602Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	if options != nil && options.IfMatch != nil {
 		req.Raw().Header["If-Match"] = []string{*options.IfMatch}
@@ -134,8 +136,6 @@ func (client *FleetMembersClient) createCreateRequest(ctx context.Context, resou
 
 // BeginDelete - Delete a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - fleetName - The name of the Fleet resource.
 //   - fleetMemberName - The name of the Fleet member resource.
@@ -158,10 +158,8 @@ func (client *FleetMembersClient) BeginDelete(ctx context.Context, resourceGroup
 	}
 }
 
-// Delete - Delete a FleetMember
+// deleteOperation - Delete a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 func (client *FleetMembersClient) deleteOperation(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, options *FleetMembersClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "FleetMembersClient.BeginDelete"
@@ -183,11 +181,11 @@ func (client *FleetMembersClient) deleteOperation(ctx context.Context, resourceG
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *FleetMembersClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, options *FleetMembersClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -207,153 +205,16 @@ func (client *FleetMembersClient) deleteCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260602Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	if options != nil && options.IfMatch != nil {
 		req.Raw().Header["If-Match"] = []string{*options.IfMatch}
 	}
 	return req, nil
 }
 
-// Get - Get a FleetMember
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - fleetName - The name of the Fleet resource.
-//   - fleetMemberName - The name of the Fleet member resource.
-//   - options - FleetMembersClientGetOptions contains the optional parameters for the FleetMembersClient.Get method.
-func (client *FleetMembersClient) Get(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, options *FleetMembersClientGetOptions) (FleetMembersClientGetResponse, error) {
-	var err error
-	const operationName = "FleetMembersClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, fleetName, fleetMemberName, options)
-	if err != nil {
-		return FleetMembersClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return FleetMembersClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return FleetMembersClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *FleetMembersClient) getCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, _ *FleetMembersClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if fleetName == "" {
-		return nil, errors.New("parameter fleetName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{fleetName}", url.PathEscape(fleetName))
-	if fleetMemberName == "" {
-		return nil, errors.New("parameter fleetMemberName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{fleetMemberName}", url.PathEscape(fleetMemberName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *FleetMembersClient) getHandleResponse(resp *http.Response) (FleetMembersClientGetResponse, error) {
-	result := FleetMembersClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.FleetMember); err != nil {
-		return FleetMembersClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByFleetPager - List FleetMember resources by Fleet
-//
-// Generated from API version 2025-03-01
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - fleetName - The name of the Fleet resource.
-//   - options - FleetMembersClientListByFleetOptions contains the optional parameters for the FleetMembersClient.NewListByFleetPager
-//     method.
-func (client *FleetMembersClient) NewListByFleetPager(resourceGroupName string, fleetName string, options *FleetMembersClientListByFleetOptions) *runtime.Pager[FleetMembersClientListByFleetResponse] {
-	return runtime.NewPager(runtime.PagingHandler[FleetMembersClientListByFleetResponse]{
-		More: func(page FleetMembersClientListByFleetResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *FleetMembersClientListByFleetResponse) (FleetMembersClientListByFleetResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "FleetMembersClient.NewListByFleetPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByFleetCreateRequest(ctx, resourceGroupName, fleetName, options)
-			}, nil)
-			if err != nil {
-				return FleetMembersClientListByFleetResponse{}, err
-			}
-			return client.listByFleetHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByFleetCreateRequest creates the ListByFleet request.
-func (client *FleetMembersClient) listByFleetCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, _ *FleetMembersClientListByFleetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if fleetName == "" {
-		return nil, errors.New("parameter fleetName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{fleetName}", url.PathEscape(fleetName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByFleetHandleResponse handles the ListByFleet response.
-func (client *FleetMembersClient) listByFleetHandleResponse(resp *http.Response) (FleetMembersClientListByFleetResponse, error) {
-	result := FleetMembersClientListByFleetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.FleetMemberListResult); err != nil {
-		return FleetMembersClientListByFleetResponse{}, err
-	}
-	return result, nil
-}
-
 // BeginUpdateAsync - Update a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - fleetName - The name of the Fleet resource.
 //   - fleetMemberName - The name of the Fleet member resource.
@@ -377,10 +238,8 @@ func (client *FleetMembersClient) BeginUpdateAsync(ctx context.Context, resource
 	}
 }
 
-// UpdateAsync - Update a FleetMember
+// updateAsync - Update a FleetMember
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01
 func (client *FleetMembersClient) updateAsync(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, properties FleetMemberUpdate, options *FleetMembersClientBeginUpdateAsyncOptions) (*http.Response, error) {
 	var err error
 	const operationName = "FleetMembersClient.BeginUpdateAsync"
@@ -402,11 +261,11 @@ func (client *FleetMembersClient) updateAsync(ctx context.Context, resourceGroup
 	return httpResp, nil
 }
 
-// updateAsyncCreateRequest creates the UpdateAsync request.
+// updateAsyncCreateRequest creates the updateAsync request.
 func (client *FleetMembersClient) updateAsyncCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, properties FleetMemberUpdate, options *FleetMembersClientBeginUpdateAsyncOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -426,8 +285,8 @@ func (client *FleetMembersClient) updateAsyncCreateRequest(ctx context.Context, 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260602Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	if options != nil && options.IfMatch != nil {
 		req.Raw().Header["If-Match"] = []string{*options.IfMatch}
@@ -437,4 +296,156 @@ func (client *FleetMembersClient) updateAsyncCreateRequest(ctx context.Context, 
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a FleetMember
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - fleetName - The name of the Fleet resource.
+//   - fleetMemberName - The name of the Fleet member resource.
+//   - options - FleetMembersClientGetOptions contains the optional parameters for the FleetMembersClient.Get method.
+func (client *FleetMembersClient) Get(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, options *FleetMembersClientGetOptions) (FleetMembersClientGetResponse, error) {
+	var err error
+	const operationName = "FleetMembersClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, fleetName, fleetMemberName, options)
+	if err != nil {
+		return FleetMembersClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return FleetMembersClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *FleetMembersClient) getCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, fleetMemberName string, _ *FleetMembersClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if fleetName == "" {
+		return nil, errors.New("parameter fleetName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{fleetName}", url.PathEscape(fleetName))
+	if fleetMemberName == "" {
+		return nil, errors.New("parameter fleetMemberName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{fleetMemberName}", url.PathEscape(fleetMemberName))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260602Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *FleetMembersClient) getHandleResponse(resp *http.Response, successCodes ...int) (FleetMembersClientGetResponse, error) {
+	result := FleetMembersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.FleetMember); err != nil {
+		return FleetMembersClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByFleetPager - List FleetMember resources by Fleet
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - fleetName - The name of the Fleet resource.
+//   - options - FleetMembersClientListByFleetOptions contains the optional parameters for the FleetMembersClient.NewListByFleetPager
+//     method.
+func (client *FleetMembersClient) NewListByFleetPager(resourceGroupName string, fleetName string, options *FleetMembersClientListByFleetOptions) *runtime.Pager[FleetMembersClientListByFleetResponse] {
+	return runtime.NewPager(runtime.PagingHandler[FleetMembersClientListByFleetResponse]{
+		More: func(page FleetMembersClientListByFleetResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *FleetMembersClientListByFleetResponse) (FleetMembersClientListByFleetResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "FleetMembersClient.NewListByFleetPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByFleetCreateRequest(ctx, resourceGroupName, fleetName, nextLink, options)
+			if err != nil {
+				return FleetMembersClientListByFleetResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return FleetMembersClientListByFleetResponse{}, err
+			}
+			return client.listByFleetHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByFleetCreateRequest creates the ListByFleet request.
+func (client *FleetMembersClient) listByFleetCreateRequest(ctx context.Context, resourceGroupName string, fleetName string, nextLink string, options *FleetMembersClientListByFleetOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if fleetName == "" {
+			return nil, errors.New("parameter fleetName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{fleetName}", url.PathEscape(fleetName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		if options != nil && options.Filter != nil {
+			reqQP.Set("$filter", *options.Filter)
+		}
+		if options != nil && options.SkipToken != nil {
+			reqQP.Set("$skipToken", *options.SkipToken)
+		}
+		if options != nil && options.Top != nil {
+			reqQP.Set("$top", strconv.FormatInt(int64(*options.Top), 10))
+		}
+		reqQP.Set("api-version", version20260602Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByFleetHandleResponse handles the ListByFleet response.
+func (client *FleetMembersClient) listByFleetHandleResponse(resp *http.Response, successCodes ...int) (FleetMembersClientListByFleetResponse, error) {
+	result := FleetMembersClientListByFleetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.FleetMemberListResult); err != nil {
+		return FleetMembersClientListByFleetResponse{}, err
+	}
+	return result, nil
 }

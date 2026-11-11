@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_PrivateEndpointConnectionPut.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_PrivateEndpointConnectionPut.json
 func ExamplePrivateEndpointConnectionsClient_BeginCreate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -36,21 +36,21 @@ func ExamplePrivateEndpointConnectionsClient_BeginCreate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armmongocluster.PrivateEndpointConnectionsClientCreateResponse{
-	// 	PrivateEndpointConnectionResource: &armmongocluster.PrivateEndpointConnectionResource{
+	// 	PrivateEndpointConnectionResource: armmongocluster.PrivateEndpointConnectionResource{
 	// 		Name: to.Ptr("pecTest.5d393f64-ef64-46d0-9959-308321c44ac0"),
 	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/privateEndpointConnections/pecTest.5d393f64-ef64-46d0-9959-308321c44ac0"),
 	// 		Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/privateEndpointConnections"),
 	// 		SystemData: &armmongocluster.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 	// 			CreatedBy: to.Ptr("2df9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 	// 			CreatedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("2ff9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 	// 			LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
 	// 		},
@@ -72,7 +72,7 @@ func ExamplePrivateEndpointConnectionsClient_BeginCreate() {
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_PrivateEndpointConnectionDelete.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_PrivateEndpointConnectionDelete.json
 func ExamplePrivateEndpointConnectionsClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -89,11 +89,11 @@ func ExamplePrivateEndpointConnectionsClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_PrivateEndpointConnectionGet.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_PrivateEndpointConnectionGet.json
 func ExamplePrivateEndpointConnectionsClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -112,15 +112,15 @@ func ExamplePrivateEndpointConnectionsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armmongocluster.PrivateEndpointConnectionsClientGetResponse{
-	// 	PrivateEndpointConnectionResource: &armmongocluster.PrivateEndpointConnectionResource{
+	// 	PrivateEndpointConnectionResource: armmongocluster.PrivateEndpointConnectionResource{
 	// 		Name: to.Ptr("pecTest.5d393f64-ef64-46d0-9959-308321c44ac0"),
 	// 		ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/privateEndpointConnections/pecTest.5d393f64-ef64-46d0-9959-308321c44ac0"),
 	// 		Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/privateEndpointConnections"),
 	// 		SystemData: &armmongocluster.SystemData{
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 	// 			CreatedBy: to.Ptr("2df9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 	// 			CreatedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("2ff9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 	// 			LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
 	// 		},
@@ -142,7 +142,7 @@ func ExamplePrivateEndpointConnectionsClient_Get() {
 	// }
 }
 
-// Generated from example definition: 2025-04-01-preview/MongoClusters_PrivateEndpointConnectionList.json
+// Generated from example definition: 2026-06-15-preview/MongoClusters_PrivateEndpointConnectionList.json
 func ExamplePrivateEndpointConnectionsClient_NewListByMongoClusterPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -172,10 +172,10 @@ func ExamplePrivateEndpointConnectionsClient_NewListByMongoClusterPager() {
 		// 				ID: to.Ptr("/subscriptions/ffffffff-ffff-ffff-ffff-ffffffffffff/resourceGroups/TestGroup/providers/Microsoft.DocumentDB/mongoClusters/myMongoCluster/privateEndpointConnections/pecTest.5d393f64-ef64-46d0-9959-308321c44ac0"),
 		// 				Type: to.Ptr("Microsoft.DocumentDB/mongoClusters/privateEndpointConnections"),
 		// 				SystemData: &armmongocluster.SystemData{
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 		// 					CreatedBy: to.Ptr("2df9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 		// 					CreatedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-02-09T05:51:31.1386869Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.February, 9, 5, 51, 31, 138686900, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("2ff9eb86-36b5-49dc-86ae-9a63135bfa8c"),
 		// 					LastModifiedByType: to.Ptr(armmongocluster.CreatedByTypeApplication),
 		// 				},

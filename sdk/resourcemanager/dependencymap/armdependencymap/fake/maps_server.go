@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // MapsServer is a fake server for instances of the armdependencymap.MapsClient type.
@@ -29,12 +30,8 @@ type MapsServer struct {
 	BeginDelete func(ctx context.Context, resourceGroupName string, mapName string, options *armdependencymap.MapsClientBeginDeleteOptions) (resp azfake.PollerResponder[armdependencymap.MapsClientDeleteResponse], errResp azfake.ErrorResponder)
 
 	// BeginExportDependencies is the fake for method MapsClient.BeginExportDependencies
-	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
+	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
 	BeginExportDependencies func(ctx context.Context, resourceGroupName string, mapName string, body armdependencymap.ExportDependenciesRequest, options *armdependencymap.MapsClientBeginExportDependenciesOptions) (resp azfake.PollerResponder[armdependencymap.MapsClientExportDependenciesResponse], errResp azfake.ErrorResponder)
-
-	// Get is the fake for method MapsClient.Get
-	// HTTP status codes to indicate success: http.StatusOK
-	Get func(ctx context.Context, resourceGroupName string, mapName string, options *armdependencymap.MapsClientGetOptions) (resp azfake.Responder[armdependencymap.MapsClientGetResponse], errResp azfake.ErrorResponder)
 
 	// BeginGetConnectionsForProcessOnFocusedMachine is the fake for method MapsClient.BeginGetConnectionsForProcessOnFocusedMachine
 	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
@@ -48,6 +45,14 @@ type MapsServer struct {
 	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
 	BeginGetDependencyViewForFocusedMachine func(ctx context.Context, resourceGroupName string, mapName string, body armdependencymap.GetDependencyViewForFocusedMachineRequest, options *armdependencymap.MapsClientBeginGetDependencyViewForFocusedMachineOptions) (resp azfake.PollerResponder[armdependencymap.MapsClientGetDependencyViewForFocusedMachineResponse], errResp azfake.ErrorResponder)
 
+	// BeginUpdate is the fake for method MapsClient.BeginUpdate
+	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
+	BeginUpdate func(ctx context.Context, resourceGroupName string, mapName string, properties armdependencymap.MapsResourceTagsUpdate, options *armdependencymap.MapsClientBeginUpdateOptions) (resp azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse], errResp azfake.ErrorResponder)
+
+	// Get is the fake for method MapsClient.Get
+	// HTTP status codes to indicate success: http.StatusOK
+	Get func(ctx context.Context, resourceGroupName string, mapName string, options *armdependencymap.MapsClientGetOptions) (resp azfake.Responder[armdependencymap.MapsClientGetResponse], errResp azfake.ErrorResponder)
+
 	// NewListByResourceGroupPager is the fake for method MapsClient.NewListByResourceGroupPager
 	// HTTP status codes to indicate success: http.StatusOK
 	NewListByResourceGroupPager func(resourceGroupName string, options *armdependencymap.MapsClientListByResourceGroupOptions) (resp azfake.PagerResponder[armdependencymap.MapsClientListByResourceGroupResponse])
@@ -55,10 +60,6 @@ type MapsServer struct {
 	// NewListBySubscriptionPager is the fake for method MapsClient.NewListBySubscriptionPager
 	// HTTP status codes to indicate success: http.StatusOK
 	NewListBySubscriptionPager func(options *armdependencymap.MapsClientListBySubscriptionOptions) (resp azfake.PagerResponder[armdependencymap.MapsClientListBySubscriptionResponse])
-
-	// BeginUpdate is the fake for method MapsClient.BeginUpdate
-	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
-	BeginUpdate func(ctx context.Context, resourceGroupName string, mapName string, properties armdependencymap.MapsResourceTagsUpdate, options *armdependencymap.MapsClientBeginUpdateOptions) (resp azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse], errResp azfake.ErrorResponder)
 }
 
 // NewMapsServerTransport creates a new instance of MapsServerTransport with the provided implementation.
@@ -73,9 +74,9 @@ func NewMapsServerTransport(srv *MapsServer) *MapsServerTransport {
 		beginGetConnectionsForProcessOnFocusedMachine:            newTracker[azfake.PollerResponder[armdependencymap.MapsClientGetConnectionsForProcessOnFocusedMachineResponse]](),
 		beginGetConnectionsWithConnectedMachineForFocusedMachine: newTracker[azfake.PollerResponder[armdependencymap.MapsClientGetConnectionsWithConnectedMachineForFocusedMachineResponse]](),
 		beginGetDependencyViewForFocusedMachine:                  newTracker[azfake.PollerResponder[armdependencymap.MapsClientGetDependencyViewForFocusedMachineResponse]](),
+		beginUpdate:                                              newTracker[azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse]](),
 		newListByResourceGroupPager:                              newTracker[azfake.PagerResponder[armdependencymap.MapsClientListByResourceGroupResponse]](),
 		newListBySubscriptionPager:                               newTracker[azfake.PagerResponder[armdependencymap.MapsClientListBySubscriptionResponse]](),
-		beginUpdate:                                              newTracker[azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse]](),
 	}
 }
 
@@ -89,9 +90,9 @@ type MapsServerTransport struct {
 	beginGetConnectionsForProcessOnFocusedMachine            *tracker[azfake.PollerResponder[armdependencymap.MapsClientGetConnectionsForProcessOnFocusedMachineResponse]]
 	beginGetConnectionsWithConnectedMachineForFocusedMachine *tracker[azfake.PollerResponder[armdependencymap.MapsClientGetConnectionsWithConnectedMachineForFocusedMachineResponse]]
 	beginGetDependencyViewForFocusedMachine                  *tracker[azfake.PollerResponder[armdependencymap.MapsClientGetDependencyViewForFocusedMachineResponse]]
+	beginUpdate                                              *tracker[azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse]]
 	newListByResourceGroupPager                              *tracker[azfake.PagerResponder[armdependencymap.MapsClientListByResourceGroupResponse]]
 	newListBySubscriptionPager                               *tracker[azfake.PagerResponder[armdependencymap.MapsClientListBySubscriptionResponse]]
-	beginUpdate                                              *tracker[azfake.PollerResponder[armdependencymap.MapsClientUpdateResponse]]
 }
 
 // Do implements the policy.Transporter interface for MapsServerTransport.
@@ -99,16 +100,14 @@ func (m *MapsServerTransport) Do(req *http.Request) (*http.Response, error) {
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return m.dispatchToMethodFake(req, method)
 }
 
 func (m *MapsServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -123,29 +122,26 @@ func (m *MapsServerTransport) dispatchToMethodFake(req *http.Request, method str
 				res.resp, res.err = m.dispatchBeginDelete(req)
 			case "MapsClient.BeginExportDependencies":
 				res.resp, res.err = m.dispatchBeginExportDependencies(req)
-			case "MapsClient.Get":
-				res.resp, res.err = m.dispatchGet(req)
 			case "MapsClient.BeginGetConnectionsForProcessOnFocusedMachine":
 				res.resp, res.err = m.dispatchBeginGetConnectionsForProcessOnFocusedMachine(req)
 			case "MapsClient.BeginGetConnectionsWithConnectedMachineForFocusedMachine":
 				res.resp, res.err = m.dispatchBeginGetConnectionsWithConnectedMachineForFocusedMachine(req)
 			case "MapsClient.BeginGetDependencyViewForFocusedMachine":
 				res.resp, res.err = m.dispatchBeginGetDependencyViewForFocusedMachine(req)
+			case "MapsClient.BeginUpdate":
+				res.resp, res.err = m.dispatchBeginUpdate(req)
+			case "MapsClient.Get":
+				res.resp, res.err = m.dispatchGet(req)
 			case "MapsClient.NewListByResourceGroupPager":
 				res.resp, res.err = m.dispatchNewListByResourceGroupPager(req)
 			case "MapsClient.NewListBySubscriptionPager":
 				res.resp, res.err = m.dispatchNewListBySubscriptionPager(req)
-			case "MapsClient.BeginUpdate":
-				res.resp, res.err = m.dispatchBeginUpdate(req)
 			default:
 				res.err = fmt.Errorf("unhandled API %s", method)
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -162,10 +158,10 @@ func (m *MapsServerTransport) dispatchBeginCreateOrUpdate(req *http.Request) (*h
 	}
 	beginCreateOrUpdate := m.beginCreateOrUpdate.get(req)
 	if beginCreateOrUpdate == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.MapsResource](req)
@@ -193,7 +189,7 @@ func (m *MapsServerTransport) dispatchBeginCreateOrUpdate(req *http.Request) (*h
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
 		m.beginCreateOrUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusCreated", resp.StatusCode)}
 	}
@@ -210,10 +206,10 @@ func (m *MapsServerTransport) dispatchBeginDelete(req *http.Request) (*http.Resp
 	}
 	beginDelete := m.beginDelete.get(req)
 	if beginDelete == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
@@ -237,7 +233,7 @@ func (m *MapsServerTransport) dispatchBeginDelete(req *http.Request) (*http.Resp
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		m.beginDelete.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -254,10 +250,10 @@ func (m *MapsServerTransport) dispatchBeginExportDependencies(req *http.Request)
 	}
 	beginExportDependencies := m.beginExportDependencies.get(req)
 	if beginExportDependencies == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/exportDependencies`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/exportDependencies`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.ExportDependenciesRequest](req)
@@ -285,47 +281,14 @@ func (m *MapsServerTransport) dispatchBeginExportDependencies(req *http.Request)
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
 		m.beginExportDependencies.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted", resp.StatusCode)}
 	}
 	if !server.PollerResponderMore(beginExportDependencies) {
 		m.beginExportDependencies.remove(req)
 	}
 
-	return resp, nil
-}
-
-func (m *MapsServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
-	if m.srv.Get == nil {
-		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
-	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
-	regex := regexp.MustCompile(regexStr)
-	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
-		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-	}
-	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-	if err != nil {
-		return nil, err
-	}
-	mapNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("mapName")])
-	if err != nil {
-		return nil, err
-	}
-	respr, errRespr := m.srv.Get(req.Context(), resourceGroupNameParam, mapNameParam, nil)
-	if respErr := server.GetError(errRespr, req); respErr != nil {
-		return nil, respErr
-	}
-	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
-	}
-	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).MapsResource, req)
-	if err != nil {
-		return nil, err
-	}
 	return resp, nil
 }
 
@@ -335,10 +298,10 @@ func (m *MapsServerTransport) dispatchBeginGetConnectionsForProcessOnFocusedMach
 	}
 	beginGetConnectionsForProcessOnFocusedMachine := m.beginGetConnectionsForProcessOnFocusedMachine.get(req)
 	if beginGetConnectionsForProcessOnFocusedMachine == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/getConnectionsForProcessOnFocusedMachine`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/getConnectionsForProcessOnFocusedMachine`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.GetConnectionsForProcessOnFocusedMachineRequest](req)
@@ -366,7 +329,7 @@ func (m *MapsServerTransport) dispatchBeginGetConnectionsForProcessOnFocusedMach
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		m.beginGetConnectionsForProcessOnFocusedMachine.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -383,10 +346,10 @@ func (m *MapsServerTransport) dispatchBeginGetConnectionsWithConnectedMachineFor
 	}
 	beginGetConnectionsWithConnectedMachineForFocusedMachine := m.beginGetConnectionsWithConnectedMachineForFocusedMachine.get(req)
 	if beginGetConnectionsWithConnectedMachineForFocusedMachine == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/getConnectionsWithConnectedMachineForFocusedMachine`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/getConnectionsWithConnectedMachineForFocusedMachine`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.GetConnectionsWithConnectedMachineForFocusedMachineRequest](req)
@@ -414,7 +377,7 @@ func (m *MapsServerTransport) dispatchBeginGetConnectionsWithConnectedMachineFor
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		m.beginGetConnectionsWithConnectedMachineForFocusedMachine.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -431,10 +394,10 @@ func (m *MapsServerTransport) dispatchBeginGetDependencyViewForFocusedMachine(re
 	}
 	beginGetDependencyViewForFocusedMachine := m.beginGetDependencyViewForFocusedMachine.get(req)
 	if beginGetDependencyViewForFocusedMachine == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/getDependencyViewForFocusedMachine`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/getDependencyViewForFocusedMachine`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.GetDependencyViewForFocusedMachineRequest](req)
@@ -462,7 +425,7 @@ func (m *MapsServerTransport) dispatchBeginGetDependencyViewForFocusedMachine(re
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		m.beginGetDependencyViewForFocusedMachine.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -473,86 +436,16 @@ func (m *MapsServerTransport) dispatchBeginGetDependencyViewForFocusedMachine(re
 	return resp, nil
 }
 
-func (m *MapsServerTransport) dispatchNewListByResourceGroupPager(req *http.Request) (*http.Response, error) {
-	if m.srv.NewListByResourceGroupPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListByResourceGroupPager not implemented")}
-	}
-	newListByResourceGroupPager := m.newListByResourceGroupPager.get(req)
-	if newListByResourceGroupPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-		if err != nil {
-			return nil, err
-		}
-		resp := m.srv.NewListByResourceGroupPager(resourceGroupNameParam, nil)
-		newListByResourceGroupPager = &resp
-		m.newListByResourceGroupPager.add(req, newListByResourceGroupPager)
-		server.PagerResponderInjectNextLinks(newListByResourceGroupPager, req, func(page *armdependencymap.MapsClientListByResourceGroupResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListByResourceGroupPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		m.newListByResourceGroupPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListByResourceGroupPager) {
-		m.newListByResourceGroupPager.remove(req)
-	}
-	return resp, nil
-}
-
-func (m *MapsServerTransport) dispatchNewListBySubscriptionPager(req *http.Request) (*http.Response, error) {
-	if m.srv.NewListBySubscriptionPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListBySubscriptionPager not implemented")}
-	}
-	newListBySubscriptionPager := m.newListBySubscriptionPager.get(req)
-	if newListBySubscriptionPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 1 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resp := m.srv.NewListBySubscriptionPager(nil)
-		newListBySubscriptionPager = &resp
-		m.newListBySubscriptionPager.add(req, newListBySubscriptionPager)
-		server.PagerResponderInjectNextLinks(newListBySubscriptionPager, req, func(page *armdependencymap.MapsClientListBySubscriptionResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListBySubscriptionPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		m.newListBySubscriptionPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListBySubscriptionPager) {
-		m.newListBySubscriptionPager.remove(req)
-	}
-	return resp, nil
-}
-
 func (m *MapsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Response, error) {
 	if m.srv.BeginUpdate == nil {
 		return nil, &nonRetriableError{errors.New("fake for method BeginUpdate not implemented")}
 	}
 	beginUpdate := m.beginUpdate.get(req)
 	if beginUpdate == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 3 {
+		if len(matches) < 4 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armdependencymap.MapsResourceTagsUpdate](req)
@@ -580,7 +473,7 @@ func (m *MapsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Resp
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
 		m.beginUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted", resp.StatusCode)}
 	}
@@ -588,6 +481,109 @@ func (m *MapsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Resp
 		m.beginUpdate.remove(req)
 	}
 
+	return resp, nil
+}
+
+func (m *MapsServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
+	if m.srv.Get == nil {
+		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
+	}
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps/(?P<mapName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
+	regex := regexp.MustCompile(regexStr)
+	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+	if len(matches) < 4 {
+		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+	}
+	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+	if err != nil {
+		return nil, err
+	}
+	mapNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("mapName")])
+	if err != nil {
+		return nil, err
+	}
+	respr, errRespr := m.srv.Get(req.Context(), resourceGroupNameParam, mapNameParam, nil)
+	if respErr := server.GetError(errRespr, req); respErr != nil {
+		return nil, respErr
+	}
+	respContent := server.GetResponseContent(respr)
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
+	}
+	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).MapsResource, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (m *MapsServerTransport) dispatchNewListByResourceGroupPager(req *http.Request) (*http.Response, error) {
+	if m.srv.NewListByResourceGroupPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListByResourceGroupPager not implemented")}
+	}
+	newListByResourceGroupPager := m.newListByResourceGroupPager.get(req)
+	if newListByResourceGroupPager == nil {
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 3 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+		if err != nil {
+			return nil, err
+		}
+		resp := m.srv.NewListByResourceGroupPager(resourceGroupNameParam, nil)
+		newListByResourceGroupPager = &resp
+		m.newListByResourceGroupPager.add(req, newListByResourceGroupPager)
+		server.PagerResponderInjectNextLinks(newListByResourceGroupPager, req, func(page *armdependencymap.MapsClientListByResourceGroupResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListByResourceGroupPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		m.newListByResourceGroupPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListByResourceGroupPager) {
+		m.newListByResourceGroupPager.remove(req)
+	}
+	return resp, nil
+}
+
+func (m *MapsServerTransport) dispatchNewListBySubscriptionPager(req *http.Request) (*http.Response, error) {
+	if m.srv.NewListBySubscriptionPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListBySubscriptionPager not implemented")}
+	}
+	newListBySubscriptionPager := m.newListBySubscriptionPager.get(req)
+	if newListBySubscriptionPager == nil {
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/Microsoft\.DependencyMap/maps`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 2 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resp := m.srv.NewListBySubscriptionPager(nil)
+		newListBySubscriptionPager = &resp
+		m.newListBySubscriptionPager.add(req, newListBySubscriptionPager)
+		server.PagerResponderInjectNextLinks(newListBySubscriptionPager, req, func(page *armdependencymap.MapsClientListBySubscriptionResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListBySubscriptionPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		m.newListBySubscriptionPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListBySubscriptionPager) {
+		m.newListBySubscriptionPager.remove(req)
+	}
 	return resp, nil
 }
 

@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,13 +5,18 @@ package directory_test
 
 import (
 	"context"
-	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
+	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/service"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/datalakeerror"
@@ -30,12 +32,13 @@ var proposedLeaseIDs = []*string{to.Ptr("c820a799-76d7-4ee2-6e15-546f19325c2c"),
 func Test(t *testing.T) {
 	recordMode := recording.GetRecordMode()
 	t.Logf("Running datalake Tests in %s mode\n", recordMode)
-	if recordMode == recording.LiveMode {
+	switch recordMode {
+	case recording.LiveMode:
 		suite.Run(t, &RecordedTestSuite{})
 		suite.Run(t, &UnrecordedTestSuite{})
-	} else if recordMode == recording.PlaybackMode {
+	case recording.PlaybackMode:
 		suite.Run(t, &RecordedTestSuite{})
-	} else if recordMode == recording.RecordingMode {
+	case recording.RecordingMode:
 		suite.Run(t, &RecordedTestSuite{})
 	}
 }
@@ -673,7 +676,7 @@ func (s *RecordedTestSuite) TestCreateDirWithLease() {
 	_, err = dirClient.Create(context.Background(), createFileOpts)
 	_require.Error(err)
 
-	time.Sleep(time.Second * 15)
+	recording.Sleep(time.Second * 15)
 	resp, err = dirClient.Create(context.Background(), createFileOpts)
 	_require.NoError(err)
 	_require.NotNil(resp)
@@ -1259,7 +1262,8 @@ func (s *RecordedTestSuite) TestDirSetAccessControlIfUnmodifiedSinceTrue() {
 			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
 				IfUnmodifiedSince: &currentTime,
 			},
-		}}
+		},
+	}
 
 	_, err = dirClient.SetAccessControl(context.Background(), opts)
 	_require.NoError(err)
@@ -1378,7 +1382,8 @@ func (s *RecordedTestSuite) TestDirSetAccessControlIfETagMatchFalse() {
 			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
 				IfNoneMatch: etag,
 			},
-		}}
+		},
+	}
 
 	_, err = dirClient.SetAccessControl(context.Background(), opts)
 	_require.Error(err)
@@ -1412,6 +1417,135 @@ func (s *RecordedTestSuite) TestDirGetAccessControl() {
 	getACLResp, err := dirClient.GetAccessControl(context.Background(), nil)
 	_require.NoError(err)
 	_require.Equal(acl, *getACLResp.ACL)
+}
+
+func (s *RecordedTestSuite) TestDirGetSystemProperties() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.GetSystemProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+	_require.NotNil(resp.LastModified)
+	_require.NotNil(resp.Permissions)
+	_require.NotNil(resp.ResourceType)
+	_require.NotNil(resp.Owner)
+	_require.NotNil(resp.Group)
+}
+
+func (s *RecordedTestSuite) TestDirGetSystemPropertiesWithAccessConditions() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	createResp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	opts := &directory.GetSystemPropertiesOptions{
+		AccessConditions: &directory.AccessConditions{
+			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
+				IfMatch: createResp.ETag,
+			},
+		},
+	}
+	resp, err := dirClient.GetSystemProperties(context.Background(), opts)
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+	_require.NotNil(resp.LastModified)
+	_require.NotNil(resp.Permissions)
+}
+
+func (s *RecordedTestSuite) TestDirGetSystemPropertiesWithACL() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	acl := "user::rwx,group::r-x,other::rwx"
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	createOpts := &directory.CreateOptions{
+		ACL: &acl,
+	}
+	_, err = dirClient.Create(context.Background(), createOpts)
+	_require.NoError(err)
+
+	// verify GetAccessControl returns the ACL
+	getACLResp, err := dirClient.GetAccessControl(context.Background(), nil)
+	_require.NoError(err)
+	_require.Equal(acl, *getACLResp.ACL)
+
+	// verify GetSystemProperties returns permissions but not ACL
+	getSysResp, err := dirClient.GetSystemProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(getSysResp.Permissions)
+	_require.NotNil(getSysResp.Owner)
+	_require.NotNil(getSysResp.Group)
+}
+
+func (s *RecordedTestSuite) TestDirGetSystemPropertiesWithUPN() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	opts := &directory.GetSystemPropertiesOptions{
+		UPN: to.Ptr(true),
+	}
+	resp, err := dirClient.GetSystemProperties(context.Background(), opts)
+	_require.NoError(err)
+	_require.NotNil(resp.ETag)
+	_require.NotNil(resp.LastModified)
+	_require.NotNil(resp.Permissions)
+	_require.NotNil(resp.Owner)
+	_require.NotNil(resp.Group)
 }
 
 func (s *UnrecordedTestSuite) TestDirGetAccessControlWithSAS() {
@@ -1636,7 +1770,8 @@ func (s *RecordedTestSuite) TestDirGetAccessControlIfUnmodifiedSinceTrue() {
 			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
 				IfUnmodifiedSince: &currentTime,
 			},
-		}}
+		},
+	}
 
 	getACLResp, err := dirClient.GetAccessControl(context.Background(), opts)
 	_require.NoError(err)
@@ -1751,7 +1886,8 @@ func (s *RecordedTestSuite) TestDirGetAccessControlIfETagMatchFalse() {
 			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
 				IfNoneMatch: etag,
 			},
-		}}
+		},
+	}
 
 	_, err = dirClient.GetAccessControl(context.Background(), opts)
 	_require.Error(err)
@@ -2817,7 +2953,7 @@ func (s *RecordedTestSuite) TestDirGetPropertiesResponseCapture() {
 
 	// This tests directory.NewClient
 	var respFromCtxDir *http.Response
-	ctxWithRespDir := runtime.WithCaptureResponse(context.Background(), &respFromCtxDir)
+	ctxWithRespDir := policy.WithCaptureResponse(context.Background(), &respFromCtxDir)
 	resp2, err := dirClient.GetProperties(ctxWithRespDir, nil)
 	_require.NoError(err)
 	_require.NotNil(resp2)
@@ -2827,7 +2963,7 @@ func (s *RecordedTestSuite) TestDirGetPropertiesResponseCapture() {
 	// This tests filesystem.NewClient
 	dirClient = fsClient.NewDirectoryClient(dirName)
 	var respFromCtxFs *http.Response
-	ctxWithRespFs := runtime.WithCaptureResponse(context.Background(), &respFromCtxFs)
+	ctxWithRespFs := policy.WithCaptureResponse(context.Background(), &respFromCtxFs)
 	resp2, err = dirClient.GetProperties(ctxWithRespFs, nil)
 	_require.NoError(err)
 	_require.NotNil(resp2)
@@ -2840,7 +2976,7 @@ func (s *RecordedTestSuite) TestDirGetPropertiesResponseCapture() {
 	fsClient = serviceClient.NewFileSystemClient(filesystemName)
 	dirClient = fsClient.NewDirectoryClient(dirName)
 	var respFromCtxService *http.Response
-	ctxWithRespService := runtime.WithCaptureResponse(context.Background(), &respFromCtxService)
+	ctxWithRespService := policy.WithCaptureResponse(context.Background(), &respFromCtxService)
 	resp2, err = dirClient.GetProperties(ctxWithRespService, nil)
 	_require.NoError(err)
 	_require.NotNil(resp2)
@@ -2978,4 +3114,838 @@ func (s *RecordedTestSuite) TestCreateDirectoryClientCustomAudience() {
 	_, err = dirClient.GetProperties(context.Background(), nil)
 	_require.NoError(err)
 
+}
+
+func (s *UnrecordedTestSuite) TestDirectoryClientOnAuthenticationFailure() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	tenantID := "xxx"
+	clientID := "xxx"
+	clientSecret := "xxx"
+
+	cred, err := azidentity.NewClientSecretCredential(tenantID, clientID, clientSecret, nil)
+	_require.NoError(err)
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDatalake)
+	url := "https://" + accountName + ".dfs.core.windows.net/"
+
+	srvClient, err := service.NewClient(url, cred, nil)
+	_require.NoError(err)
+
+	fsName := testcommon.GenerateFileSystemName(testName)
+	fsClient := srvClient.NewFileSystemClient(fsName)
+	dirClient := fsClient.NewDirectoryClient("testdir")
+
+	// This should return an error, not panic
+	_, err = dirClient.GetProperties(context.Background(), nil)
+	_require.Error(err, "Expected authentication error")
+	_require.Contains(err.Error(), "ClientSecretCredential")
+}
+
+func (s *RecordedTestSuite) TestCreateDirWithPathTooDeep() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	// Create a path with more than 63 path segments (each segment separated by '/')
+	// Azure Storage has a limit of 63 path segments, this includes account, container name
+	// Generate a path with 61 segments to exceed the limit
+	deepPath := ""
+	for i := 1; i <= 61; i++ {
+		if i > 1 {
+			deepPath += "/"
+		}
+		deepPath += "seg" + strconv.Itoa(i)
+		dirClient := fsClient.NewDirectoryClient(deepPath)
+
+		_, err = dirClient.Create(context.Background(), nil)
+		if i == 61 {
+			_require.Error(err)
+			testcommon.ValidateErrorCode(_require, err, datalakeerror.PathIsTooDeep)
+		} else {
+			_require.NoError(err)
+		}
+	}
+}
+
+func (s *RecordedTestSuite) TestDirGetSetTags() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	_, err = dirClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := dirClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+}
+
+func (s *RecordedTestSuite) TestDirGetSetTagsWithAccessConditions() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	currentTime := testcommon.GetRelativeTimeFromAnchor(resp.Date, -10)
+
+	setOpts := &directory.SetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
+				IfModifiedSince: &currentTime,
+			},
+		},
+	}
+	_, err = dirClient.SetTags(context.Background(), tags, setOpts)
+	_require.NoError(err)
+
+	getOpts := &directory.GetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
+				IfModifiedSince: &currentTime,
+			},
+		},
+	}
+	getTagsResp, err := dirClient.GetTags(context.Background(), getOpts)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+}
+
+func (s *RecordedTestSuite) TestDirGetTagsAccessConditionsFail() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	futureTime := testcommon.GetRelativeTimeFromAnchor(resp.Date, 10)
+
+	getOpts := &directory.GetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
+				IfModifiedSince: &futureTime,
+			},
+		},
+	}
+	_, err = dirClient.GetTags(context.Background(), getOpts)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.ConditionNotMet)
+}
+
+func (s *RecordedTestSuite) TestDirSetTagsAccessConditionsFail() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	futureTime := testcommon.GetRelativeTimeFromAnchor(resp.Date, 10)
+
+	setOpts := &directory.SetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			ModifiedAccessConditions: &directory.ModifiedAccessConditions{
+				IfModifiedSince: &futureTime,
+			},
+		},
+	}
+	_, err = dirClient.SetTags(context.Background(), tags, setOpts)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.ConditionNotMet)
+}
+
+func (s *RecordedTestSuite) TestDirGetTagsError() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	// directory not created, should fail
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.GetTags(context.Background(), nil)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.PathNotFound)
+}
+
+func (s *RecordedTestSuite) TestDirSetTagsError() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	// directory not created, should fail
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	_, err = dirClient.SetTags(context.Background(), tags, nil)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.PathNotFound)
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsWithSAS() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	// Generate SAS with Tag permission
+	permissions := sas.DirectoryPermissions{
+		Read:  true,
+		Write: true,
+		Tag:   true,
+	}
+	expiry := time.Now().Add(time.Hour)
+
+	sasURL, err := dirClient.GetSASURL(permissions, expiry, nil)
+	_require.NoError(err)
+
+	sasClient, err := directory.NewClientWithNoCredential(sasURL, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = sasClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := sasClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsOAuth() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	cred, err := testcommon.GetGenericTokenCredential()
+	_require.NoError(err)
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDatalake)
+	_require.Greater(len(accountName), 0)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirURL := "https://" + accountName + ".dfs.core.windows.net/" + filesystemName + "/" + dirName
+
+	dirClient, err := directory.NewClient(dirURL, cred, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = dirClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := dirClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+func (s *RecordedTestSuite) TestDirGetSetTagsWithLease() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	resp, err := dirClient.Create(context.Background(), &directory.CreateOptions{
+		ProposedLeaseID: proposedLeaseIDs[0],
+		LeaseDuration:   to.Ptr(int64(15)),
+	})
+	_require.NoError(err)
+	_require.NotNil(resp)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	setOpts := &directory.SetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			LeaseAccessConditions: &directory.LeaseAccessConditions{
+				LeaseID: proposedLeaseIDs[0],
+			},
+		},
+	}
+	_, err = dirClient.SetTags(context.Background(), tags, setOpts)
+	_require.NoError(err)
+
+	getTagsResp, err := dirClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+}
+
+func (s *RecordedTestSuite) TestDirGetTagsLeaseFailed() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), &directory.CreateOptions{
+		ProposedLeaseID: proposedLeaseIDs[0],
+		LeaseDuration:   to.Ptr(int64(15)),
+	})
+	_require.NoError(err)
+
+	// Use a wrong lease ID
+	getOpts := &directory.GetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			LeaseAccessConditions: &directory.LeaseAccessConditions{
+				LeaseID: proposedLeaseIDs[1],
+			},
+		},
+	}
+	_, err = dirClient.GetTags(context.Background(), getOpts)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.LeaseIDMismatchWithPathOperation)
+}
+
+func (s *RecordedTestSuite) TestDirSetTagsLeaseFailed() {
+	// Datalake tags is currently in public preview and not GA yet. Only run in playback mode.
+	if recording.GetRecordMode() != recording.PlaybackMode {
+		s.T().Skip("Datalake tags is in public preview and not GA yet")
+	}
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), &directory.CreateOptions{
+		ProposedLeaseID: proposedLeaseIDs[0],
+		LeaseDuration:   to.Ptr(int64(15)),
+	})
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+	}
+
+	// Use a wrong lease ID
+	setOpts := &directory.SetTagsOptions{
+		AccessConditions: &directory.AccessConditions{
+			LeaseAccessConditions: &directory.LeaseAccessConditions{
+				LeaseID: proposedLeaseIDs[1],
+			},
+		},
+	}
+	_, err = dirClient.SetTags(context.Background(), tags, setOpts)
+	_require.Error(err)
+	testcommon.ValidateErrorCode(_require, err, datalakeerror.LeaseIDMismatchWithPathOperation)
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsFileSystemSas() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	cred, err := testcommon.GetGenericSharedKeyCredential(testcommon.TestAccountDatalake)
+	_require.NoError(err)
+
+	perms := sas.FileSystemPermissions{Read: true, Write: true, Tag: true}
+	sasQueryParams, err := sas.DatalakeSignatureValues{
+		Protocol:       sas.ProtocolHTTPS,
+		ExpiryTime:     time.Now().UTC().Add(time.Hour),
+		FileSystemName: filesystemName,
+		Permissions:    perms.String(),
+	}.SignWithSharedKey(cred)
+	_require.NoError(err)
+
+	sasToken := sasQueryParams.Encode()
+	sasClient, err := directory.NewClientWithNoCredential(dirClient.DFSURL()+"?"+sasToken, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = sasClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := sasClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsAccountSas() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient, err := testcommon.GetFileSystemClient(filesystemName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	_, err = fsClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient, err := testcommon.GetDirClient(filesystemName, dirName, s.T(), testcommon.TestAccountDatalake, nil)
+	_require.NoError(err)
+
+	_, err = dirClient.Create(context.Background(), nil)
+	_require.NoError(err)
+
+	cred, err := testcommon.GetGenericSharedKeyCredential(testcommon.TestAccountDatalake)
+	_require.NoError(err)
+
+	sasQueryParams, err := sas.AccountSignatureValues{
+		Protocol:      sas.ProtocolHTTPS,
+		ExpiryTime:    time.Now().UTC().Add(time.Hour),
+		Permissions:   to.Ptr(sas.AccountPermissions{Read: true, Write: true, Tag: true}).String(),
+		ResourceTypes: to.Ptr(sas.AccountResourceTypes{Service: true, Container: true, Object: true}).String(),
+	}.SignWithSharedKey(cred)
+	_require.NoError(err)
+
+	sasToken := sasQueryParams.Encode()
+	sasClient, err := directory.NewClientWithNoCredential(dirClient.DFSURL()+"?"+sasToken, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = sasClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := sasClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsDirIdentitySas() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDatalake)
+	_require.Greater(len(accountName), 0)
+
+	cred, err := testcommon.GetGenericTokenCredential()
+	_require.NoError(err)
+
+	svcClient, err := service.NewClient("https://"+accountName+".dfs.core.windows.net/", cred, nil)
+	_require.NoError(err)
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient := testcommon.CreateNewFileSystem(context.Background(), _require, filesystemName, svcClient)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient := testcommon.CreateNewDir(context.Background(), _require, dirName, fsClient)
+
+	// Get user delegation key
+	currentTime := time.Now().UTC().Add(-10 * time.Second)
+	expiryTime := currentTime.Add(2 * time.Hour)
+	info := service.KeyInfo{
+		Start:  to.Ptr(currentTime.UTC().Format(sas.TimeFormat)),
+		Expiry: to.Ptr(expiryTime.UTC().Format(sas.TimeFormat)),
+	}
+
+	udc, err := svcClient.GetUserDelegationCredential(context.Background(), info, nil)
+	_require.NoError(err)
+
+	perms := sas.DirectoryPermissions{Read: true, Write: true, Tag: true}
+	sasQueryParams, err := sas.DatalakeSignatureValues{
+		Protocol:       sas.ProtocolHTTPS,
+		StartTime:      time.Now().UTC().Add(-10 * time.Second),
+		ExpiryTime:     time.Now().UTC().Add(15 * time.Minute),
+		FileSystemName: filesystemName,
+		DirectoryPath:  dirName,
+		Permissions:    perms.String(),
+	}.SignWithUserDelegation(udc)
+	_require.NoError(err)
+
+	sasURL := dirClient.DFSURL() + "?" + sasQueryParams.Encode()
+	sasClient, err := directory.NewClientWithNoCredential(sasURL, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = sasClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := sasClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+type captureTransport struct {
+	req *http.Request
+}
+
+func (c *captureTransport) Do(req *http.Request) (*http.Response, error) {
+	c.req = req
+	return &http.Response{
+		Request:    req,
+		Status:     "Created",
+		StatusCode: http.StatusCreated,
+		Header:     http.Header{},
+		Body:       http.NoBody,
+	}, nil
+}
+
+func TestDirectoryRenameEncodesSourcePath(t *testing.T) {
+	_require := require.New(t)
+	ct := &captureTransport{}
+
+	srcURL := "https://fake.dfs.core.windows.net/myfs/my%20dir"
+	dClient, err := directory.NewClientWithNoCredential(srcURL, &directory.ClientOptions{
+		ClientOptions: policy.ClientOptions{Transport: ct},
+	})
+	_require.NoError(err)
+
+	_, err = dClient.Rename(context.Background(), "renameddir", nil)
+	_require.NoError(err)
+	_require.NotNil(ct.req)
+
+	renameSourceVals := ct.req.Header["x-ms-rename-source"] //nolint:staticcheck // SA1008: the generated client stores this header under a non-canonical key, so it must be read with the same raw key.
+	_require.NotEmpty(renameSourceVals)
+	renameSource := renameSourceVals[0]
+	_require.Contains(renameSource, "my%20dir")
+	_require.NotContains(renameSource, "my dir")
+}
+
+func (s *UnrecordedTestSuite) TestDirGetSetTagsFileSystemIdentitySas() {
+	// Datalake tags is currently in public preview and not GA yet, skipping this test for now.
+	s.T().Skip("Datalake tags is in public preview and not GA yet")
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDatalake)
+	_require.Greater(len(accountName), 0)
+
+	cred, err := testcommon.GetGenericTokenCredential()
+	_require.NoError(err)
+
+	svcClient, err := service.NewClient("https://"+accountName+".dfs.core.windows.net/", cred, nil)
+	_require.NoError(err)
+
+	filesystemName := testcommon.GenerateFileSystemName(testName)
+	fsClient := testcommon.CreateNewFileSystem(context.Background(), _require, filesystemName, svcClient)
+	defer testcommon.DeleteFileSystem(context.Background(), _require, fsClient)
+
+	dirName := testcommon.GenerateDirName(testName)
+	dirClient := testcommon.CreateNewDir(context.Background(), _require, dirName, fsClient)
+
+	// Get user delegation key
+	currentTime := time.Now().UTC().Add(-10 * time.Second)
+	expiryTime := currentTime.Add(2 * time.Hour)
+	info := service.KeyInfo{
+		Start:  to.Ptr(currentTime.UTC().Format(sas.TimeFormat)),
+		Expiry: to.Ptr(expiryTime.UTC().Format(sas.TimeFormat)),
+	}
+
+	udc, err := svcClient.GetUserDelegationCredential(context.Background(), info, nil)
+	_require.NoError(err)
+
+	perms := sas.FileSystemPermissions{Read: true, Write: true, Tag: true}
+	sasQueryParams, err := sas.DatalakeSignatureValues{
+		Protocol:       sas.ProtocolHTTPS,
+		StartTime:      time.Now().UTC().Add(-10 * time.Second),
+		ExpiryTime:     time.Now().UTC().Add(15 * time.Minute),
+		FileSystemName: filesystemName,
+		Permissions:    perms.String(),
+	}.SignWithUserDelegation(udc)
+	_require.NoError(err)
+
+	sasURL := dirClient.DFSURL() + "?" + sasQueryParams.Encode()
+	sasClient, err := directory.NewClientWithNoCredential(sasURL, nil)
+	_require.NoError(err)
+
+	tags := map[string]string{
+		"tagKey0": "tagValue0",
+		"tagKey1": "tagValue1",
+	}
+
+	_, err = sasClient.SetTags(context.Background(), tags, nil)
+	_require.NoError(err)
+
+	getTagsResp, err := sasClient.GetTags(context.Background(), nil)
+	_require.NoError(err)
+	_require.Len(getTagsResp.BlobTagSet, len(tags))
+	tagMap := make(map[string]string)
+	for _, tag := range getTagsResp.BlobTagSet {
+		tagMap[*tag.Key] = *tag.Value
+	}
+	_require.Equal(tags["tagKey0"], tagMap["tagKey0"])
+	_require.Equal(tags["tagKey1"], tagMap["tagKey1"])
+}
+
+// TestDirectoryGetSASURLPreservesCustomQueryParams is a regression test for GetSASURL()
+// appending a duplicated "?" to the resulting URL when the client's underlying blob URL
+// already contained a query string (e.g. a customer-provided endpoint with pre-existing
+// custom query parameters), which previously produced a malformed SAS URL.
+func TestDirectoryGetSASURLPreservesCustomQueryParams(t *testing.T) {
+	_require := require.New(t)
+	const accountName = "fakestorageaccount"
+	// base64-encoded fake key; not a real secret.
+	const accountKey = "PSA7dl59RwZBFEBhBEtdrsq/g7VpjMFeSPzdC4SoBiQI3xVLg2y8HRoAF3PidfB8/i9v67QCNSAdVdJdKrmqSw=="
+	cred, err := azdatalake.NewSharedKeyCredential(accountName, accountKey)
+	_require.NoError(err)
+
+	dirURL := fmt.Sprintf("https://%s.dfs.core.windows.net/filesystem/dir?customparam=value", accountName)
+	dirClient, err := directory.NewClientWithSharedKeyCredential(dirURL, cred, nil)
+	_require.NoError(err)
+
+	sasURL, err := dirClient.GetSASURL(sas.DirectoryPermissions{Read: true}, time.Now().Add(time.Hour), nil)
+	_require.NoError(err)
+
+	_require.Equal(1, strings.Count(sasURL, "?"), "SAS URL must not contain a duplicated '?': %s", sasURL)
+	_require.Contains(sasURL, "customparam=value")
+	_require.Contains(sasURL, "sig=")
 }

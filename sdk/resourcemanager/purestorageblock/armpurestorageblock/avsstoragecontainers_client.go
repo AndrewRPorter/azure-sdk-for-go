@@ -18,6 +18,8 @@ import (
 
 // AvsStorageContainersClient contains the methods for the AvsStorageContainers group.
 // Don't use this type directly, use NewAvsStorageContainersClient() instead.
+//
+// Generated from API version 2026-05-01-preview
 type AvsStorageContainersClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type AvsStorageContainersClient struct {
 // NewAvsStorageContainersClient creates a new instance of AvsStorageContainersClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewAvsStorageContainersClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*AvsStorageContainersClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewAvsStorageContainersClient(subscriptionID string, credential azcore.Toke
 
 // BeginDelete - Delete an AVS storage container
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - storagePoolName - Name of the storage pool
 //   - storageContainerName - Name of the storage container
@@ -65,10 +68,8 @@ func (client *AvsStorageContainersClient) BeginDelete(ctx context.Context, resou
 	}
 }
 
-// Delete - Delete an AVS storage container
+// deleteOperation - Delete an AVS storage container
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 func (client *AvsStorageContainersClient) deleteOperation(ctx context.Context, resourceGroupName string, storagePoolName string, storageContainerName string, options *AvsStorageContainersClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AvsStorageContainersClient.BeginDelete"
@@ -90,11 +91,11 @@ func (client *AvsStorageContainersClient) deleteOperation(ctx context.Context, r
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *AvsStorageContainersClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, storageContainerName string, _ *AvsStorageContainersClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsStorageContainers/{storageContainerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -114,16 +115,13 @@ func (client *AvsStorageContainersClient) deleteCreateRequest(ctx context.Contex
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get an AVS storage container
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - storagePoolName - Name of the storage pool
 //   - storageContainerName - Name of the storage container
@@ -143,11 +141,7 @@ func (client *AvsStorageContainersClient) Get(ctx context.Context, resourceGroup
 	if err != nil {
 		return AvsStorageContainersClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return AvsStorageContainersClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -155,7 +149,7 @@ func (client *AvsStorageContainersClient) Get(ctx context.Context, resourceGroup
 func (client *AvsStorageContainersClient) getCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, storageContainerName string, _ *AvsStorageContainersClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsStorageContainers/{storageContainerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -175,15 +169,18 @@ func (client *AvsStorageContainersClient) getCreateRequest(ctx context.Context, 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *AvsStorageContainersClient) getHandleResponse(resp *http.Response) (AvsStorageContainersClientGetResponse, error) {
+func (client *AvsStorageContainersClient) getHandleResponse(resp *http.Response, successCodes ...int) (AvsStorageContainersClientGetResponse, error) {
 	result := AvsStorageContainersClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.AvsStorageContainer); err != nil {
 		return AvsStorageContainersClientGetResponse{}, err
 	}
@@ -191,8 +188,6 @@ func (client *AvsStorageContainersClient) getHandleResponse(resp *http.Response)
 }
 
 // NewListByStoragePoolPager - List AVS storage containers by storage pool
-//
-// Generated from API version 2024-11-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - storagePoolName - Name of the storage pool
 //   - options - AvsStorageContainersClientListByStoragePoolOptions contains the optional parameters for the AvsStorageContainersClient.NewListByStoragePoolPager
@@ -208,47 +203,61 @@ func (client *AvsStorageContainersClient) NewListByStoragePoolPager(resourceGrou
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByStoragePoolCreateRequest(ctx, resourceGroupName, storagePoolName, options)
-			}, nil)
+			req, err := client.listByStoragePoolCreateRequest(ctx, resourceGroupName, storagePoolName, nextLink, options)
 			if err != nil {
 				return AvsStorageContainersClientListByStoragePoolResponse{}, err
 			}
-			return client.listByStoragePoolHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return AvsStorageContainersClientListByStoragePoolResponse{}, err
+			}
+			return client.listByStoragePoolHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByStoragePoolCreateRequest creates the ListByStoragePool request.
-func (client *AvsStorageContainersClient) listByStoragePoolCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, _ *AvsStorageContainersClientListByStoragePoolOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsStorageContainers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *AvsStorageContainersClient) listByStoragePoolCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, nextLink string, _ *AvsStorageContainersClientListByStoragePoolOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsStorageContainers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if storagePoolName == "" {
+			return nil, errors.New("parameter storagePoolName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if storagePoolName == "" {
-		return nil, errors.New("parameter storagePoolName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260501Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByStoragePoolHandleResponse handles the ListByStoragePool response.
-func (client *AvsStorageContainersClient) listByStoragePoolHandleResponse(resp *http.Response) (AvsStorageContainersClientListByStoragePoolResponse, error) {
+func (client *AvsStorageContainersClient) listByStoragePoolHandleResponse(resp *http.Response, successCodes ...int) (AvsStorageContainersClientListByStoragePoolResponse, error) {
 	result := AvsStorageContainersClientListByStoragePoolResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.AvsStorageContainerListResult); err != nil {
 		return AvsStorageContainersClientListByStoragePoolResponse{}, err
 	}

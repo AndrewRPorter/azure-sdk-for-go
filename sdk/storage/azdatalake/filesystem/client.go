@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -27,6 +24,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/generated"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/sas"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/internal/sasurl"
 )
 
 // ClientOptions contains the optional parameters when creating a Client.
@@ -58,14 +56,19 @@ func NewClient(filesystemURL string, cred azcore.TokenCredential, options *Clien
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	containerClientOpts := container.ClientOptions{
 		ClientOptions: options.ClientOptions,
+		// sessions apply only to the requests this client sends to the blob endpoint
+		Session: conOptions.Session,
 	}
-	blobContainerClient, _ := container.NewClient(containerURL, cred, &containerClientOpts)
+	blobContainerClient, err := container.NewClient(containerURL, cred, &containerClientOpts)
+	if err != nil {
+		return nil, err
+	}
 	fsClient := base.NewFileSystemClient(filesystemURL, containerURL, blobContainerClient, azClient, nil, &cred, (*base.ClientOptions)(conOptions))
 
 	return (*Client)(fsClient), nil
@@ -90,10 +93,10 @@ func NewClientWithNoCredential(filesystemURL string, options *ClientOptions) (*C
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	containerClientOpts := container.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -125,10 +128,10 @@ func NewClientWithSharedKeyCredential(filesystemURL string, cred *SharedKeyCrede
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	containerClientOpts := container.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -299,10 +302,7 @@ func (fs *Client) NewListPathsPager(recursive bool, options *ListPathsOptions) *
 			if err != nil {
 				return ListPathsSegmentResponse{}, err
 			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return ListPathsSegmentResponse{}, runtime.NewResponseError(resp)
-			}
-			newResp, err := fs.generatedFSClientWithDFS().ListPathsHandleResponse(resp)
+			newResp, err := fs.generatedFSClientWithDFS().ListPathsHandleResponse(resp, http.StatusOK)
 			return newResp, exported.ConvertToDFSError(err)
 		},
 	})
@@ -334,10 +334,7 @@ func (fs *Client) NewListDirectoryPathsPager(options *ListDirectoryPathsOptions)
 			if err != nil {
 				return ListDirectoryPathsSegmentResponse{}, err
 			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return ListDirectoryPathsSegmentResponse{}, runtime.NewResponseError(resp)
-			}
-			newResp, err := fs.generatedFSClientWithBlob().ListBlobHierarchySegmentHandleResponse(resp)
+			newResp, err := fs.generatedFSClientWithBlob().ListBlobHierarchySegmentHandleResponse(resp, http.StatusOK)
 			return newResp, exported.ConvertToDFSError(err)
 		},
 	})
@@ -370,10 +367,7 @@ func (fs *Client) NewListDeletedPathsPager(options *ListDeletedPathsOptions) *ru
 			if err != nil {
 				return ListDeletedPathsSegmentResponse{}, err
 			}
-			if !runtime.HasStatusCode(resp, http.StatusOK) {
-				return ListDeletedPathsSegmentResponse{}, runtime.NewResponseError(resp)
-			}
-			newResp, err := fs.generatedFSClientWithBlob().ListBlobHierarchySegmentHandleResponse(resp)
+			newResp, err := fs.generatedFSClientWithBlob().ListBlobHierarchySegmentHandleResponse(resp, http.StatusOK)
 			return newResp, exported.ConvertToDFSError(err)
 		},
 	})
@@ -403,9 +397,7 @@ func (fs *Client) GetSASURL(permissions sas.FileSystemPermissions, expiry time.T
 		return "", err
 	}
 
-	endpoint := fs.BlobURL() + "?" + qps.Encode()
-
-	return endpoint, nil
+	return sasurl.Append(fs.BlobURL(), qps.Encode()), nil
 }
 
 // CreateFile Creates a new file within a file system.

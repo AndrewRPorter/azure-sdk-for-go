@@ -18,7 +18,7 @@ This project uses [Go modules](https://github.com/golang/go/wiki/Modules) for ve
 Install the Azure Networkcloud module:
 
 ```sh
-go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/networkcloud/armnetworkcloud
+go get github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/networkcloud/armnetworkcloud/v2
 ```
 
 ## Authorization
@@ -55,7 +55,7 @@ client, err := armnetworkcloud.NewClientFactory(<subscription ID>, cred, &option
 A client groups a set of related APIs, providing access to its functionality. Create one or more clients to access the APIs you require using client factory.
 
 ```go
-client := clientFactory.NewAgentPoolsClient()
+client := clientFactory.NewAccessBridgesClient()
 ```
 
 ## Fakes

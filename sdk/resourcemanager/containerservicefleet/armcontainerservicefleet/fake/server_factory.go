@@ -21,6 +21,12 @@ type ServerFactory struct {
 	// AutoUpgradeProfilesServer contains the fakes for client AutoUpgradeProfilesClient
 	AutoUpgradeProfilesServer AutoUpgradeProfilesServer
 
+	// ClusterMeshProfilesServer contains the fakes for client ClusterMeshProfilesClient
+	ClusterMeshProfilesServer ClusterMeshProfilesServer
+
+	// FleetManagedNamespacesServer contains the fakes for client FleetManagedNamespacesClient
+	FleetManagedNamespacesServer FleetManagedNamespacesServer
+
 	// FleetMembersServer contains the fakes for client FleetMembersClient
 	FleetMembersServer FleetMembersServer
 
@@ -29,6 +35,9 @@ type ServerFactory struct {
 
 	// FleetsServer contains the fakes for client FleetsClient
 	FleetsServer FleetsServer
+
+	// GatesServer contains the fakes for client GatesClient
+	GatesServer GatesServer
 
 	// OperationsServer contains the fakes for client OperationsClient
 	OperationsServer OperationsServer
@@ -53,9 +62,12 @@ type ServerFactoryTransport struct {
 	trMu                                 sync.Mutex
 	trAutoUpgradeProfileOperationsServer *AutoUpgradeProfileOperationsServerTransport
 	trAutoUpgradeProfilesServer          *AutoUpgradeProfilesServerTransport
+	trClusterMeshProfilesServer          *ClusterMeshProfilesServerTransport
+	trFleetManagedNamespacesServer       *FleetManagedNamespacesServerTransport
 	trFleetMembersServer                 *FleetMembersServerTransport
 	trFleetUpdateStrategiesServer        *FleetUpdateStrategiesServerTransport
 	trFleetsServer                       *FleetsServerTransport
+	trGatesServer                        *GatesServerTransport
 	trOperationsServer                   *OperationsServerTransport
 	trUpdateRunsServer                   *UpdateRunsServerTransport
 }
@@ -65,7 +77,7 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	client := method[:strings.Index(method, ".")]
@@ -74,31 +86,44 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 
 	switch client {
 	case "AutoUpgradeProfileOperationsClient":
-		initServer(s, &s.trAutoUpgradeProfileOperationsServer, func() *AutoUpgradeProfileOperationsServerTransport {
+		initServer(&s.trMu, &s.trAutoUpgradeProfileOperationsServer, func() *AutoUpgradeProfileOperationsServerTransport {
 			return NewAutoUpgradeProfileOperationsServerTransport(&s.srv.AutoUpgradeProfileOperationsServer)
 		})
 		resp, err = s.trAutoUpgradeProfileOperationsServer.Do(req)
 	case "AutoUpgradeProfilesClient":
-		initServer(s, &s.trAutoUpgradeProfilesServer, func() *AutoUpgradeProfilesServerTransport {
+		initServer(&s.trMu, &s.trAutoUpgradeProfilesServer, func() *AutoUpgradeProfilesServerTransport {
 			return NewAutoUpgradeProfilesServerTransport(&s.srv.AutoUpgradeProfilesServer)
 		})
 		resp, err = s.trAutoUpgradeProfilesServer.Do(req)
+	case "ClusterMeshProfilesClient":
+		initServer(&s.trMu, &s.trClusterMeshProfilesServer, func() *ClusterMeshProfilesServerTransport {
+			return NewClusterMeshProfilesServerTransport(&s.srv.ClusterMeshProfilesServer)
+		})
+		resp, err = s.trClusterMeshProfilesServer.Do(req)
+	case "FleetManagedNamespacesClient":
+		initServer(&s.trMu, &s.trFleetManagedNamespacesServer, func() *FleetManagedNamespacesServerTransport {
+			return NewFleetManagedNamespacesServerTransport(&s.srv.FleetManagedNamespacesServer)
+		})
+		resp, err = s.trFleetManagedNamespacesServer.Do(req)
 	case "FleetMembersClient":
-		initServer(s, &s.trFleetMembersServer, func() *FleetMembersServerTransport { return NewFleetMembersServerTransport(&s.srv.FleetMembersServer) })
+		initServer(&s.trMu, &s.trFleetMembersServer, func() *FleetMembersServerTransport { return NewFleetMembersServerTransport(&s.srv.FleetMembersServer) })
 		resp, err = s.trFleetMembersServer.Do(req)
 	case "FleetUpdateStrategiesClient":
-		initServer(s, &s.trFleetUpdateStrategiesServer, func() *FleetUpdateStrategiesServerTransport {
+		initServer(&s.trMu, &s.trFleetUpdateStrategiesServer, func() *FleetUpdateStrategiesServerTransport {
 			return NewFleetUpdateStrategiesServerTransport(&s.srv.FleetUpdateStrategiesServer)
 		})
 		resp, err = s.trFleetUpdateStrategiesServer.Do(req)
 	case "FleetsClient":
-		initServer(s, &s.trFleetsServer, func() *FleetsServerTransport { return NewFleetsServerTransport(&s.srv.FleetsServer) })
+		initServer(&s.trMu, &s.trFleetsServer, func() *FleetsServerTransport { return NewFleetsServerTransport(&s.srv.FleetsServer) })
 		resp, err = s.trFleetsServer.Do(req)
+	case "GatesClient":
+		initServer(&s.trMu, &s.trGatesServer, func() *GatesServerTransport { return NewGatesServerTransport(&s.srv.GatesServer) })
+		resp, err = s.trGatesServer.Do(req)
 	case "OperationsClient":
-		initServer(s, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
+		initServer(&s.trMu, &s.trOperationsServer, func() *OperationsServerTransport { return NewOperationsServerTransport(&s.srv.OperationsServer) })
 		resp, err = s.trOperationsServer.Do(req)
 	case "UpdateRunsClient":
-		initServer(s, &s.trUpdateRunsServer, func() *UpdateRunsServerTransport { return NewUpdateRunsServerTransport(&s.srv.UpdateRunsServer) })
+		initServer(&s.trMu, &s.trUpdateRunsServer, func() *UpdateRunsServerTransport { return NewUpdateRunsServerTransport(&s.srv.UpdateRunsServer) })
 		resp, err = s.trUpdateRunsServer.Do(req)
 	default:
 		err = fmt.Errorf("unhandled client %s", client)
@@ -109,12 +134,4 @@ func (s *ServerFactoryTransport) Do(req *http.Request) (*http.Response, error) {
 	}
 
 	return resp, nil
-}
-
-func initServer[T any](s *ServerFactoryTransport, dst **T, src func() *T) {
-	s.trMu.Lock()
-	if *dst == nil {
-		*dst = src()
-	}
-	s.trMu.Unlock()
 }

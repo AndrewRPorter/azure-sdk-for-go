@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-03-01-preview/AssociationPut.json
+// Generated from example definition: 2026-03-01/AssociationPut.json
 func ExampleAssociationsInterfaceClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -37,13 +37,13 @@ func ExampleAssociationsInterfaceClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.AssociationsInterfaceClientCreateOrUpdateResponse{
-	// 	Association: &armservicenetworking.Association{
+	// 	Association: armservicenetworking.Association{
 	// 		Name: to.Ptr("associatedvnet-1"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/associations"),
 	// 		ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
@@ -59,7 +59,7 @@ func ExampleAssociationsInterfaceClient_BeginCreateOrUpdate() {
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/AssociationDelete.json
+// Generated from example definition: 2026-03-01/AssociationDelete.json
 func ExampleAssociationsInterfaceClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -76,11 +76,11 @@ func ExampleAssociationsInterfaceClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2025-03-01-preview/AssociationGet.json
+// Generated from example definition: 2026-03-01/AssociationGet.json
 func ExampleAssociationsInterfaceClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleAssociationsInterfaceClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.AssociationsInterfaceClientGetResponse{
-	// 	Association: &armservicenetworking.Association{
+	// 	Association: armservicenetworking.Association{
 	// 		Name: to.Ptr("as1"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/associations"),
 	// 		ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),
@@ -115,7 +115,7 @@ func ExampleAssociationsInterfaceClient_Get() {
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/AssociationsGet.json
+// Generated from example definition: 2026-03-01/AssociationsGet.json
 func ExampleAssociationsInterfaceClient_NewListByTrafficControllerPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -159,7 +159,7 @@ func ExampleAssociationsInterfaceClient_NewListByTrafficControllerPager() {
 	}
 }
 
-// Generated from example definition: 2025-03-01-preview/AssociationPatch.json
+// Generated from example definition: 2026-03-01/AssociationPatch.json
 func ExampleAssociationsInterfaceClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -185,7 +185,7 @@ func ExampleAssociationsInterfaceClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armservicenetworking.AssociationsInterfaceClientUpdateResponse{
-	// 	Association: &armservicenetworking.Association{
+	// 	Association: armservicenetworking.Association{
 	// 		Name: to.Ptr("as1"),
 	// 		Type: to.Ptr("Microsoft.ServiceNetworking/trafficControllers/associations"),
 	// 		ID: to.Ptr("/subscriptions/subid/resourcegroups/rg1/providers/Microsoft.ServiceNetworking/trafficControllers/tc1/associations/as1"),

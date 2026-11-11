@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -19,6 +16,7 @@ import (
 	azexported "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/exported"
 	fakepoller "github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/pollers/fake"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/internal/shared"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/errorinfo"
 )
 
@@ -115,7 +113,9 @@ func UnmarshalRequestAsByteArray(req *http.Request, format azexported.Base64Enco
 	if err != nil {
 		return nil, errorinfo.NonRetriableError(err)
 	}
-	req.Body.Close()
+	if err := req.Body.Close(); err != nil {
+		return nil, err
+	}
 	var val []byte
 	if err := azexported.DecodeByteArray(string(body), &val, format); err != nil {
 		return nil, errorinfo.NonRetriableError(err)
@@ -134,7 +134,9 @@ func UnmarshalRequestAsJSON[T any](req *http.Request) (T, error) {
 	if err != nil {
 		return tt, errorinfo.NonRetriableError(err)
 	}
-	req.Body.Close()
+	if err := req.Body.Close(); err != nil {
+		return tt, err
+	}
 	if err = json.Unmarshal(body, &tt); err != nil {
 		err = errorinfo.NonRetriableError(err)
 	}
@@ -151,7 +153,9 @@ func UnmarshalRequestAsText(req *http.Request) (string, error) {
 	if err != nil {
 		return "", errorinfo.NonRetriableError(err)
 	}
-	req.Body.Close()
+	if err := req.Body.Close(); err != nil {
+		return "", err
+	}
 	return string(body), nil
 }
 
@@ -166,7 +170,9 @@ func UnmarshalRequestAsXML[T any](req *http.Request) (T, error) {
 	if err != nil {
 		return tt, errorinfo.NonRetriableError(err)
 	}
-	req.Body.Close()
+	if err := req.Body.Close(); err != nil {
+		return tt, err
+	}
 	if err = xml.Unmarshal(body, &tt); err != nil {
 		err = errorinfo.NonRetriableError(err)
 	}
@@ -228,4 +234,11 @@ func SanitizePagerPollerPath(path string) string {
 	path = exported.SanitizePagerPath(path)
 	path = fakepoller.SanitizePollerPath(path)
 	return path
+}
+
+// MarshalSSEResponder renders the events in an SSEResponder to a text/event-stream body.
+// The encode callback maps each typed event to an SSE frame.
+// This function is called by the fake server internals.
+func MarshalSSEResponder[T any](s *fake.SSEResponder[T], encode func(T) (streaming.SSEFrame, error)) (io.ReadCloser, error) {
+	return (*exported.SSEResponder[T])(s).MarshalEvents(encode)
 }

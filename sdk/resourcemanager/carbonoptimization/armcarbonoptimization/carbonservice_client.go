@@ -11,17 +11,20 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"net/http"
+	"strings"
 )
 
 // CarbonServiceClient contains the methods for the CarbonService group.
 // Don't use this type directly, use NewCarbonServiceClient() instead.
+//
+// Generated from API version 2025-04-01
 type CarbonServiceClient struct {
 	internal *arm.Client
 }
 
 // NewCarbonServiceClient creates a new instance of CarbonServiceClient with the specified values.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewCarbonServiceClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*CarbonServiceClient, error) {
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
@@ -35,8 +38,6 @@ func NewCarbonServiceClient(credential azcore.TokenCredential, options *arm.Clie
 
 // QueryCarbonEmissionDataAvailableDateRange - API for query carbon emission data available date range
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01
 //   - options - CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeOptions contains the optional parameters for the
 //     CarbonServiceClient.QueryCarbonEmissionDataAvailableDateRange method.
 func (client *CarbonServiceClient) QueryCarbonEmissionDataAvailableDateRange(ctx context.Context, options *CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeOptions) (CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse, error) {
@@ -53,11 +54,7 @@ func (client *CarbonServiceClient) QueryCarbonEmissionDataAvailableDateRange(ctx
 	if err != nil {
 		return CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse{}, err
-	}
-	resp, err := client.queryCarbonEmissionDataAvailableDateRangeHandleResponse(httpResp)
+	resp, err := client.queryCarbonEmissionDataAvailableDateRangeHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -69,15 +66,18 @@ func (client *CarbonServiceClient) queryCarbonEmissionDataAvailableDateRangeCrea
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250401)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // queryCarbonEmissionDataAvailableDateRangeHandleResponse handles the QueryCarbonEmissionDataAvailableDateRange response.
-func (client *CarbonServiceClient) queryCarbonEmissionDataAvailableDateRangeHandleResponse(resp *http.Response) (CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse, error) {
+func (client *CarbonServiceClient) queryCarbonEmissionDataAvailableDateRangeHandleResponse(resp *http.Response, successCodes ...int) (CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse, error) {
 	result := CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.CarbonEmissionDataAvailableDateRange); err != nil {
 		return CarbonServiceClientQueryCarbonEmissionDataAvailableDateRangeResponse{}, err
 	}
@@ -86,8 +86,6 @@ func (client *CarbonServiceClient) queryCarbonEmissionDataAvailableDateRangeHand
 
 // QueryCarbonEmissionReports - API for Carbon Emissions Reports
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01
 //   - queryParameters - Query parameters
 //   - options - CarbonServiceClientQueryCarbonEmissionReportsOptions contains the optional parameters for the CarbonServiceClient.QueryCarbonEmissionReports
 //     method.
@@ -105,11 +103,7 @@ func (client *CarbonServiceClient) QueryCarbonEmissionReports(ctx context.Contex
 	if err != nil {
 		return CarbonServiceClientQueryCarbonEmissionReportsResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return CarbonServiceClientQueryCarbonEmissionReportsResponse{}, err
-	}
-	resp, err := client.queryCarbonEmissionReportsHandleResponse(httpResp)
+	resp, err := client.queryCarbonEmissionReportsHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -121,8 +115,8 @@ func (client *CarbonServiceClient) queryCarbonEmissionReportsCreateRequest(ctx c
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20250401)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, queryParameters); err != nil {
@@ -132,8 +126,11 @@ func (client *CarbonServiceClient) queryCarbonEmissionReportsCreateRequest(ctx c
 }
 
 // queryCarbonEmissionReportsHandleResponse handles the QueryCarbonEmissionReports response.
-func (client *CarbonServiceClient) queryCarbonEmissionReportsHandleResponse(resp *http.Response) (CarbonServiceClientQueryCarbonEmissionReportsResponse, error) {
+func (client *CarbonServiceClient) queryCarbonEmissionReportsHandleResponse(resp *http.Response, successCodes ...int) (CarbonServiceClientQueryCarbonEmissionReportsResponse, error) {
 	result := CarbonServiceClientQueryCarbonEmissionReportsResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.CarbonEmissionDataListResult); err != nil {
 		return CarbonServiceClientQueryCarbonEmissionReportsResponse{}, err
 	}

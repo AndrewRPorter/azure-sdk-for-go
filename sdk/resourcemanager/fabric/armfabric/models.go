@@ -20,11 +20,11 @@ type Capacity struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; The name of the Microsoft Fabric capacity. It must be a minimum of 3 characters, and a maximum of 63.
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -48,10 +48,22 @@ type CapacityListResult struct {
 	NextLink *string
 }
 
+// CapacityOverageProperties - The capacity overage properties of the Fabric capacity resource
+type CapacityOverageProperties struct {
+	// The capacity overage state for the Fabric capacity resource.
+	State *CapacityOverageState
+
+	// 24-hour rolling threshold for capacity overage. Reaching this threshold results in capacity throttling.
+	ThresholdCapacityUnitHours *int32
+}
+
 // CapacityProperties - The Microsoft Fabric capacity properties.
 type CapacityProperties struct {
 	// REQUIRED; The capacity administration
 	Administration *CapacityAdministration
+
+	// REQUIRED; The capacity overage properties of the Fabric capacity resource.
+	Overage *CapacityOverageProperties
 
 	// READ-ONLY; The current deployment state of Microsoft Fabric resource. The provisioningState is to indicate states for resource
 	// provisioning.
@@ -77,6 +89,9 @@ type CapacityUpdate struct {
 type CapacityUpdateProperties struct {
 	// The capacity administration
 	Administration *CapacityAdministration
+
+	// The capacity overage properties of the Fabric capacity resource.
+	Overage *CapacityOverageProperties
 }
 
 // CheckNameAvailabilityRequest - The check availability request body.
@@ -100,13 +115,15 @@ type CheckNameAvailabilityResponse struct {
 	Reason *CheckNameAvailabilityReason
 }
 
-// Operation - Details of a REST API operation, returned from the Resource Provider Operations API
+// Operation - REST API Operation
+//
+// Details of a REST API operation, returned from the Resource Provider Operations API
 type Operation struct {
-	// Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
-	ActionType *ActionType
-
-	// READ-ONLY; Localized display information for this particular operation.
+	// Localized display information for this particular operation.
 	Display *OperationDisplay
+
+	// READ-ONLY; Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
+	ActionType *ActionType
 
 	// READ-ONLY; Whether the operation applies to data-plane. This is "true" for data-plane operations and "false" for Azure
 	// Resource Manager/control-plane operations.
@@ -121,7 +138,7 @@ type Operation struct {
 	Origin *Origin
 }
 
-// OperationDisplay - Localized display information for and operation.
+// OperationDisplay - Localized display information for an operation.
 type OperationDisplay struct {
 	// READ-ONLY; The short, localized friendly description of the operation; suitable for tool tips and detailed views.
 	Description *string
@@ -147,6 +164,39 @@ type OperationListResult struct {
 
 	// The link to the next page of items
 	NextLink *string
+}
+
+// PagedQuota - Paged collection of Quota items
+type PagedQuota struct {
+	// REQUIRED; The Quota items on this page
+	Value []*Quota
+
+	// The link to the next page of items
+	NextLink *string
+}
+
+// Quota - Describes Resource Quota
+type Quota struct {
+	// REQUIRED; The current usage of the resource.
+	CurrentValue *int64
+
+	// REQUIRED; The maximum permitted usage of the resource.
+	Limit *int64
+
+	// REQUIRED; The unit of usage measurement.
+	Unit *string
+
+	// READ-ONLY; The name of the quota.
+	Name *QuotaName
+}
+
+// QuotaName - The Quota Names
+type QuotaName struct {
+	// The localized name of the resource.
+	LocalizedValue *string
+
+	// The name of the resource.
+	Value *string
 }
 
 // RpSKU - Represents the SKU name and Azure pricing tier for Microsoft Fabric capacity resource.

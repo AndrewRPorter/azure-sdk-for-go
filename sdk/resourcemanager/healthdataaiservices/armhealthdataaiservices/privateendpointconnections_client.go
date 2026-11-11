@@ -18,6 +18,8 @@ import (
 
 // PrivateEndpointConnectionsClient - Private connection operations
 // Don't use this type directly, use NewPrivateEndpointConnectionsClient() instead.
+//
+// Generated from API version 2024-09-20
 type PrivateEndpointConnectionsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type PrivateEndpointConnectionsClient struct {
 // NewPrivateEndpointConnectionsClient creates a new instance of PrivateEndpointConnectionsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewPrivateEndpointConnectionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*PrivateEndpointConnectionsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewPrivateEndpointConnectionsClient(subscriptionID string, credential azcor
 
 // BeginCreate - Create a Private endpoint connection
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-20
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - deidServiceName - The name of the deid service
 //   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
@@ -66,10 +69,8 @@ func (client *PrivateEndpointConnectionsClient) BeginCreate(ctx context.Context,
 	}
 }
 
-// Create - Create a Private endpoint connection
+// create - Create a Private endpoint connection
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-20
 func (client *PrivateEndpointConnectionsClient) create(ctx context.Context, resourceGroupName string, deidServiceName string, privateEndpointConnectionName string, resource PrivateEndpointConnectionResource, options *PrivateEndpointConnectionsClientBeginCreateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateEndpointConnectionsClient.BeginCreate"
@@ -91,11 +92,11 @@ func (client *PrivateEndpointConnectionsClient) create(ctx context.Context, reso
 	return httpResp, nil
 }
 
-// createCreateRequest creates the Create request.
+// createCreateRequest creates the create request.
 func (client *PrivateEndpointConnectionsClient) createCreateRequest(ctx context.Context, resourceGroupName string, deidServiceName string, privateEndpointConnectionName string, resource PrivateEndpointConnectionResource, _ *PrivateEndpointConnectionsClientBeginCreateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthDataAIServices/deidServices/{deidServiceName}/privateEndpointConnections/{privateEndpointConnectionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -115,8 +116,8 @@ func (client *PrivateEndpointConnectionsClient) createCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-20")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240920)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -127,8 +128,6 @@ func (client *PrivateEndpointConnectionsClient) createCreateRequest(ctx context.
 
 // BeginDelete - Delete the private endpoint connection
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-20
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - deidServiceName - The name of the deid service
 //   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
@@ -151,10 +150,8 @@ func (client *PrivateEndpointConnectionsClient) BeginDelete(ctx context.Context,
 	}
 }
 
-// Delete - Delete the private endpoint connection
+// deleteOperation - Delete the private endpoint connection
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-20
 func (client *PrivateEndpointConnectionsClient) deleteOperation(ctx context.Context, resourceGroupName string, deidServiceName string, privateEndpointConnectionName string, options *PrivateEndpointConnectionsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "PrivateEndpointConnectionsClient.BeginDelete"
@@ -176,11 +173,11 @@ func (client *PrivateEndpointConnectionsClient) deleteOperation(ctx context.Cont
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *PrivateEndpointConnectionsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, deidServiceName string, privateEndpointConnectionName string, _ *PrivateEndpointConnectionsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthDataAIServices/deidServices/{deidServiceName}/privateEndpointConnections/{privateEndpointConnectionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -200,16 +197,13 @@ func (client *PrivateEndpointConnectionsClient) deleteCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-20")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20240920)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a specific private connection
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-09-20
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - deidServiceName - The name of the deid service
 //   - privateEndpointConnectionName - The name of the private endpoint connection associated with the Azure resource.
@@ -229,11 +223,7 @@ func (client *PrivateEndpointConnectionsClient) Get(ctx context.Context, resourc
 	if err != nil {
 		return PrivateEndpointConnectionsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return PrivateEndpointConnectionsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -241,7 +231,7 @@ func (client *PrivateEndpointConnectionsClient) Get(ctx context.Context, resourc
 func (client *PrivateEndpointConnectionsClient) getCreateRequest(ctx context.Context, resourceGroupName string, deidServiceName string, privateEndpointConnectionName string, _ *PrivateEndpointConnectionsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthDataAIServices/deidServices/{deidServiceName}/privateEndpointConnections/{privateEndpointConnectionName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -261,15 +251,18 @@ func (client *PrivateEndpointConnectionsClient) getCreateRequest(ctx context.Con
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-20")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20240920)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *PrivateEndpointConnectionsClient) getHandleResponse(resp *http.Response) (PrivateEndpointConnectionsClientGetResponse, error) {
+func (client *PrivateEndpointConnectionsClient) getHandleResponse(resp *http.Response, successCodes ...int) (PrivateEndpointConnectionsClientGetResponse, error) {
 	result := PrivateEndpointConnectionsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateEndpointConnectionResource); err != nil {
 		return PrivateEndpointConnectionsClientGetResponse{}, err
 	}
@@ -277,8 +270,6 @@ func (client *PrivateEndpointConnectionsClient) getHandleResponse(resp *http.Res
 }
 
 // NewListByDeidServicePager - List private endpoint connections on the given resource
-//
-// Generated from API version 2024-09-20
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - deidServiceName - The name of the deid service
 //   - options - PrivateEndpointConnectionsClientListByDeidServiceOptions contains the optional parameters for the PrivateEndpointConnectionsClient.NewListByDeidServicePager
@@ -294,47 +285,61 @@ func (client *PrivateEndpointConnectionsClient) NewListByDeidServicePager(resour
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByDeidServiceCreateRequest(ctx, resourceGroupName, deidServiceName, options)
-			}, nil)
+			req, err := client.listByDeidServiceCreateRequest(ctx, resourceGroupName, deidServiceName, nextLink, options)
 			if err != nil {
 				return PrivateEndpointConnectionsClientListByDeidServiceResponse{}, err
 			}
-			return client.listByDeidServiceHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return PrivateEndpointConnectionsClientListByDeidServiceResponse{}, err
+			}
+			return client.listByDeidServiceHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByDeidServiceCreateRequest creates the ListByDeidService request.
-func (client *PrivateEndpointConnectionsClient) listByDeidServiceCreateRequest(ctx context.Context, resourceGroupName string, deidServiceName string, _ *PrivateEndpointConnectionsClientListByDeidServiceOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthDataAIServices/deidServices/{deidServiceName}/privateEndpointConnections"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *PrivateEndpointConnectionsClient) listByDeidServiceCreateRequest(ctx context.Context, resourceGroupName string, deidServiceName string, nextLink string, _ *PrivateEndpointConnectionsClientListByDeidServiceOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthDataAIServices/deidServices/{deidServiceName}/privateEndpointConnections"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if deidServiceName == "" {
+			return nil, errors.New("parameter deidServiceName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{deidServiceName}", url.PathEscape(deidServiceName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if deidServiceName == "" {
-		return nil, errors.New("parameter deidServiceName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{deidServiceName}", url.PathEscape(deidServiceName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-09-20")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20240920)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByDeidServiceHandleResponse handles the ListByDeidService response.
-func (client *PrivateEndpointConnectionsClient) listByDeidServiceHandleResponse(resp *http.Response) (PrivateEndpointConnectionsClientListByDeidServiceResponse, error) {
+func (client *PrivateEndpointConnectionsClient) listByDeidServiceHandleResponse(resp *http.Response, successCodes ...int) (PrivateEndpointConnectionsClientListByDeidServiceResponse, error) {
 	result := PrivateEndpointConnectionsClientListByDeidServiceResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.PrivateEndpointConnectionResourceListResult); err != nil {
 		return PrivateEndpointConnectionsClientListByDeidServiceResponse{}, err
 	}

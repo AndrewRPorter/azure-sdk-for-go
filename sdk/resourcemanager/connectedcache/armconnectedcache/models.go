@@ -17,6 +17,9 @@ type AdditionalCacheNodeProperties struct {
 	// issues list to return the issues as part of the additional cache node properties
 	CacheNodePropertiesDetailsIssuesList []*string
 
+	// Resource creation method of mcc cache node resource, cli or portal
+	CreationMethod *int32
+
 	// Cache node resource drive configurations.
 	DriveConfiguration []*CacheNodeDriveConfiguration
 
@@ -41,14 +44,8 @@ type AdditionalCacheNodeProperties struct {
 	// Optional property #5 of Mcc response object
 	OptionalProperty5 *string
 
-	// Cache node resource Mcc proxy Url
-	ProxyURL *string
-
 	// proxyUrl configuration of the cache node
 	ProxyURLConfiguration *ProxyURLConfiguration
-
-	// Update Cycle Type
-	UpdateCycleType *CycleType
 
 	// Update related information details
 	UpdateInfoDetails *string
@@ -64,6 +61,10 @@ type AdditionalCacheNodeProperties struct {
 
 	// READ-ONLY; Cache node resource aggregated status text.
 	AggregatedStatusText *string
+
+	// READ-ONLY; Version of the Windows Subsystem for Linux application version used to run the cache node on the Windows host
+	// machine
+	AppVersionWsl *string
 
 	// READ-ONLY; Auto update version that is the applied to update on mcc cache node
 	AutoUpdateAppliedVersion *string
@@ -95,12 +96,60 @@ type AdditionalCacheNodeProperties struct {
 	// READ-ONLY; Cache node resource short state text.
 	CacheNodeStateShortText *string
 
+	// READ-ONLY; Operating system build of the container used to run the cache node
+	ContainerOsBuild *string
+
+	// READ-ONLY; Operating system edition of container used to run the cache node
+	ContainerOsEdition *string
+
+	// READ-ONLY; Operating system version of the container used to run the cache node
+	ContainerOsVersion *string
+
+	// READ-ONLY; cache node current tls certificate.
+	CurrentTLSCertificate *MccCacheNodeTLSCertificate
+
+	// READ-ONLY; Operating system build of the WSL Linux distribution used to run the cache node on Windows host machines
+	DistroOsBuildWsl *string
+
+	// READ-ONLY; Operating system edition of the WSL Linux distribution used to run the cache node on Windows host machines
+	DistroOsEditionWsl *string
+
+	// READ-ONLY; Operating system version of the WSL Linux distribution used to run the cache node on Windows host machines
+	DistroOsVersionWsl *string
+
+	// READ-ONLY; Operating system build of the cache node host machine
+	HostOsBuild *string
+
+	// READ-ONLY; Operating system edition of the cache node host machine
+	HostOsEdition *string
+
+	// READ-ONLY; Operating system version of the cache node host machine
+	HostOsVersion *string
+
+	// READ-ONLY; Version of the Windows deployment application used to deploy the cache node
+	InstallVersionMsix *string
+
+	// READ-ONLY; Version of the installation scripts used to deploy the cache node
+	InstallVersionScript *string
+
 	// READ-ONLY; Cache node resource flag indicating if cache node has been physically installed or provisioned on their physical
 	// lab.
 	IsProvisioned *bool
 
+	// READ-ONLY; Number of cache node issues.
+	IssuesCount *int32
+
+	// READ-ONLY; current cache node issue list.
+	IssuesList []*string
+
+	// READ-ONLY; cache node last auto update information.
+	LastAutoUpdateInfo *MccCacheNodeAutoUpdateInfo
+
 	// READ-ONLY; Cache node resource Mcc product version.
 	ProductVersion *string
+
+	// READ-ONLY; Cache node tls certificate status.
+	TLSStatus *string
 }
 
 // AdditionalCustomerProperties - Model representing customer for connected cache resource
@@ -180,9 +229,6 @@ type AdditionalCustomerProperties struct {
 	// READ-ONLY; Customer resource last PeeringDB update timestamp.
 	PeeringDbLastUpdateDate *time.Time
 
-	// READ-ONLY; Customer resource last PeeringDB update timestamp.
-	PeeringDbLastUpdateTime *time.Time
-
 	// READ-ONLY; Customer resource signup phase status code as integer.
 	SignupPhaseStatusCode *int32
 
@@ -228,17 +274,22 @@ type CacheNodeDriveConfiguration struct {
 
 // CacheNodeEntity - Model representing Cache Node for ConnectedCache resource
 type CacheNodeEntity struct {
-	// Customer requested day of week for mcc install of auto update cycle
+	// Customer requested day of week for mcc install of auto update cycle. 0 is default no selection. 1-7 are days of week, 1
+	// is Sunday, 2 is Monday, etc.
 	AutoUpdateRequestedDay *int32
 
 	// Customer requested time of the day for mcc install of auto update cycle, should be hh:mm
 	AutoUpdateRequestedTime *string
 
-	// Customer requested week of month for mcc install of auto update cycle
+	// Customer requested week of month for mcc install of auto update cycle. 0 is default no selection. 1-5 are valid weeks of
+	// month, 1 is first week, 2 is second week, etc.
 	AutoUpdateRequestedWeek *int32
 
-	// Auto Update Ring Type which is slow or fast etc.
+	// Auto Update Ring Type which is stable or beta as new values. slow or fast are legacy from version 2026-06-01.
 	AutoUpdateRingType *AutoUpdateRingType
+
+	// Cache node resource Bgp network interface.
+	BgpNetworkInterface *string
 
 	// Cache node resource identifier of the cache node
 	CacheNodeID *string
@@ -278,6 +329,21 @@ type CacheNodeEntity struct {
 
 	// Cache node resource maximum allowed egress in Mbps.
 	MaxAllowableEgressInMbps *int32
+
+	// Cache node port firewall rule creation opt-in for port 443 property
+	OpenFirewallPort443 *bool
+
+	// Cache node port firewall rule creation opt-in for port 5000 property
+	OpenFirewallPort5000 *bool
+
+	// Cache node port firewall rule creation opt-in for port 5001 property
+	OpenFirewallPort5001 *bool
+
+	// Cache node port firewall rule creation opt-in for port 80 property
+	OpenFirewallPort80 *bool
+
+	// Connected Cache runtime account type
+	RuntimeAccountType *string
 
 	// Cache node resource flag for determining if customer will be migrated.
 	ShouldMigrate *bool
@@ -393,6 +459,12 @@ type CacheNodeInstallProperties struct {
 	// Mcc customer resource Id.
 	CustomerID *string
 
+	// Cache node resource drive configurations.
+	DriveConfiguration []*CacheNodeDriveConfiguration
+
+	// proxyUrl configuration of the cache node
+	ProxyURLConfiguration *ProxyURLConfiguration
+
 	// READ-ONLY; Mcc primary account key. Internal to Mcc.
 	PrimaryAccountKey *string
 
@@ -401,61 +473,9 @@ type CacheNodeInstallProperties struct {
 
 	// READ-ONLY; Mcc secondary account key. Internal to Mcc.
 	SecondaryAccountKey *string
-}
 
-// CacheNodeOldResponse - Model representing Cache Node for ConnectedCache resource
-type CacheNodeOldResponse struct {
-	// The error details
-	Error *ErrorDetail
-
-	// statusCode used to get code details of Mcc response object
-	StatusCode *string
-
-	// statusDetails used to get inner details of Mcc response object
-	StatusDetails *string
-
-	// statusText used to get status details in string format of Mcc response object
-	StatusText *string
-
-	// READ-ONLY; The provisioned state of the resource
-	ProvisioningState *ProvisioningState
-
-	// READ-ONLY; status of the HTTP error code
-	Status *string
-}
-
-// CacheNodePreviewResource - Concrete tracked resource types can be created by aliasing this type using a specific property
-// type.
-type CacheNodePreviewResource struct {
-	// REQUIRED; The geo-location where the resource lives
-	Location *string
-
-	// The resource-specific properties for this resource.
-	Properties *CacheNodeOldResponse
-
-	// Resource tags.
-	Tags map[string]*string
-
-	// READ-ONLY; Name of the Customer resource
-	Name *string
-
-	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
-	ID *string
-
-	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
-	SystemData *SystemData
-
-	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
-	Type *string
-}
-
-// CacheNodePreviewResourceListResult - The response of a CacheNodePreviewResource list operation.
-type CacheNodePreviewResourceListResult struct {
-	// REQUIRED; The CacheNodePreviewResource items on this page
-	Value []*CacheNodePreviewResource
-
-	// The link to the next page of items
-	NextLink *string
+	// READ-ONLY; Mcc Tls certificate provisioning key.
+	TLSCertificateProvisioningKey *string
 }
 
 // CacheNodeProperty - Model representing an Mcc cache node connectedCache resource
@@ -580,11 +600,11 @@ type EnterpriseMccCacheNodeResource struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of the ConnectedCache resource
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -613,11 +633,11 @@ type EnterpriseMccCustomerResource struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of the Customer resource
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -635,50 +655,13 @@ type EnterpriseMccCustomerResourceListResult struct {
 	NextLink *string
 }
 
-// EnterprisePreviewResource - ConnectedCache Resource. Represents the high level Nodes needed to provision CacheNode and
-// customer resources used in private preview
-type EnterprisePreviewResource struct {
-	// REQUIRED; The geo-location where the resource lives
-	Location *string
-
-	// The resource-specific properties for this resource.
-	Properties *CacheNodeOldResponse
-
-	// Resource tags.
-	Tags map[string]*string
-
-	// READ-ONLY; Name of the Customer resource
-	Name *string
-
-	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
-	ID *string
-
-	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
-	SystemData *SystemData
-
-	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
-	Type *string
-}
-
-// EnterprisePreviewResourceListResult - The response of a EnterprisePreviewResource list operation.
-type EnterprisePreviewResourceListResult struct {
-	// REQUIRED; The EnterprisePreviewResource items on this page
-	Value []*EnterprisePreviewResource
-
-	// The link to the next page of items
-	NextLink *string
-}
-
 // ErrorAdditionalInfo - The resource management error additional info.
 type ErrorAdditionalInfo struct {
 	// READ-ONLY; The additional info.
-	Info *ErrorAdditionalInfoInfo
+	Info any
 
 	// READ-ONLY; The additional info type.
 	Type *string
-}
-
-type ErrorAdditionalInfoInfo struct {
 }
 
 // ErrorDetail - The error detail.
@@ -710,11 +693,11 @@ type IspCacheNodeResource struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of the ConnectedCache resource
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -743,11 +726,11 @@ type IspCustomerResource struct {
 	// Resource tags.
 	Tags map[string]*string
 
-	// READ-ONLY; Name of the Customer resource
-	Name *string
-
 	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
 	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
 
 	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
 	SystemData *SystemData
@@ -763,6 +746,96 @@ type IspCustomerResourceListResult struct {
 
 	// The link to the next page of items
 	NextLink *string
+}
+
+// MccCacheNodeAutoUpdateHistory - Mcc cache node resource auto update history.
+type MccCacheNodeAutoUpdateHistory struct {
+	// REQUIRED; The geo-location where the resource lives
+	Location *string
+
+	// Mcc cache node resource auto update history properties.
+	Properties *MccCacheNodeAutoUpdateHistoryProperties
+
+	// Resource tags.
+	Tags map[string]*string
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// MccCacheNodeAutoUpdateHistoryProperties - Mcc cache node resource auto update history properties.
+type MccCacheNodeAutoUpdateHistoryProperties struct {
+	// Cache node resource auto update history information.
+	AutoUpdateHistory []*MccCacheNodeAutoUpdateInfo
+
+	// READ-ONLY; Mcc cache node resource Id.
+	CacheNodeID *string
+
+	// READ-ONLY; Mcc customer resource Id.
+	CustomerID *string
+}
+
+// MccCacheNodeAutoUpdateInfo - Mcc cache node resource auto update properties.
+type MccCacheNodeAutoUpdateInfo struct {
+	// READ-ONLY; Auto update last applied status.
+	AutoUpdateLastAppliedStatus *int32
+
+	// READ-ONLY; Auto update last applied detailed status text.
+	AutoUpdateLastAppliedStatusDetailedText *string
+
+	// READ-ONLY; Auto update last applied status text.
+	AutoUpdateLastAppliedStatusText *string
+
+	// READ-ONLY; Auto update Ring Type.
+	AutoUpdateRingType *int32
+
+	// READ-ONLY; Auto update entity created datetime.
+	CreatedDateTimeUTC *time.Time
+
+	// READ-ONLY; Auto update image uri before update.
+	ImageURIBeforeUpdate *string
+
+	// READ-ONLY; Auto update image uri targetted to update.
+	ImageURITargeted *string
+
+	// READ-ONLY; Auto update image uri at Terminal.
+	ImageURITerminal *string
+
+	// READ-ONLY; Auto update image uri after update.
+	MovedToTerminalStateDateTime *time.Time
+
+	// READ-ONLY; This text describing the purpose of the plan of auto update.
+	PlanChangeLogText *string
+
+	// READ-ONLY; Auto update planId.
+	PlanID *int64
+
+	// READ-ONLY; Auto update image uri after update.
+	RuleRequestedDay *int32
+
+	// READ-ONLY; Auto update rule requested hour.
+	RuleRequestedHour *string
+
+	// READ-ONLY; Auto update rule requested minute.
+	RuleRequestedMinute *string
+
+	// READ-ONLY; Auto update image uri before update.
+	RuleRequestedWeek *int32
+
+	// READ-ONLY; Auto update time to go live date time.
+	TimeToGoLiveDateTime *string
+
+	// READ-ONLY; Auto update entity last updated datetime.
+	UpdatedRegistryDateTimeUTC *time.Time
 }
 
 // MccCacheNodeBgpCidrDetails - Represents all Cidr details of the Bgp request for a specific cache node resource
@@ -813,13 +886,135 @@ type MccCacheNodeInstallDetails struct {
 	Type *string
 }
 
-// Operation - Details of a REST API operation, returned from the Resource Provider Operations API
-type Operation struct {
-	// Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
-	ActionType *ActionType
+// MccCacheNodeIssueHistory - Mcc cache node resource issue history.
+type MccCacheNodeIssueHistory struct {
+	// REQUIRED; The geo-location where the resource lives
+	Location *string
 
-	// READ-ONLY; Localized display information for this particular operation.
+	// Mcc cache node resource issue history properties.
+	Properties *MccCacheNodeIssueHistoryProperties
+
+	// Resource tags.
+	Tags map[string]*string
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// MccCacheNodeIssueHistoryProperties - Mcc cache node resource issue history properties.
+type MccCacheNodeIssueHistoryProperties struct {
+	// Cache node resource issue details history.
+	MccIssueHistory []*MccIssue
+
+	// READ-ONLY; Mcc cache node resource Id.
+	CacheNodeID *string
+
+	// READ-ONLY; Mcc customer resource Id.
+	CustomerID *string
+}
+
+// MccCacheNodeTLSCertificate - Mcc cache node resource Tls certificate details.
+type MccCacheNodeTLSCertificate struct {
+	// READ-ONLY; Mcc cache node Tls certificate status.
+	ActionRequired *string
+
+	// READ-ONLY; Mcc cache node Tls certificate Type.
+	CertType *string
+
+	// READ-ONLY; Mcc cache node Tls certificate file name.
+	CertificateFileName *string
+
+	// READ-ONLY; Mcc cache node Tls certificate expiry date.
+	ExpiryDate *time.Time
+
+	// READ-ONLY; Mcc cache node Tls certificate not before date.
+	NotBeforeDate *time.Time
+
+	// READ-ONLY; Mcc cache node Tls certificate subject name.
+	Subject *string
+
+	// READ-ONLY; Mcc cache node Tls certificate subject alternate name.
+	SubjectAltName *string
+
+	// READ-ONLY; Mcc cache node Tls certificate thumbprint.
+	Thumbprint *string
+}
+
+// MccCacheNodeTLSCertificateHistory - Mcc cache node resource Tls certificate history details.
+type MccCacheNodeTLSCertificateHistory struct {
+	// REQUIRED; The geo-location where the resource lives
+	Location *string
+
+	// Mcc cache node resource Tls certificate details.
+	Properties *MccCacheNodeTLSCertificateProperties
+
+	// Resource tags.
+	Tags map[string]*string
+
+	// READ-ONLY; Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+	ID *string
+
+	// READ-ONLY; The name of the resource
+	Name *string
+
+	// READ-ONLY; Azure Resource Manager metadata containing createdBy and modifiedBy information.
+	SystemData *SystemData
+
+	// READ-ONLY; The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+	Type *string
+}
+
+// MccCacheNodeTLSCertificateProperties - Mcc cache node resource auto update properties.
+type MccCacheNodeTLSCertificateProperties struct {
+	// Cache node resource tls certificate history details.
+	TLSCertificateHistory []*MccCacheNodeTLSCertificate
+
+	// READ-ONLY; Mcc cache node resource Id.
+	CacheNodeID *string
+
+	// READ-ONLY; Mcc customer resource Id.
+	CustomerID *string
+}
+
+// MccIssue - Mcc cache node resource issue properties.
+type MccIssue struct {
+	// READ-ONLY; Mcc cache node issue detail string.
+	DetailString *string
+
+	// READ-ONLY; Mcc cache node issue related help link.
+	HelpLink *string
+
+	// READ-ONLY; Mcc cache node issue end date.
+	IssueEndDate *time.Time
+
+	// READ-ONLY; Mcc cache node issue start date.
+	IssueStartDate *time.Time
+
+	// READ-ONLY; Mcc cache node issue type.
+	MccIssueType *string
+
+	// READ-ONLY; Mcc cache node issues toastString.
+	ToastString *string
+}
+
+// Operation - REST API Operation
+//
+// Details of a REST API operation, returned from the Resource Provider Operations API
+type Operation struct {
+	// Localized display information for this particular operation.
 	Display *OperationDisplay
+
+	// READ-ONLY; Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
+	ActionType *ActionType
 
 	// READ-ONLY; Whether the operation applies to data-plane. This is "true" for data-plane operations and "false" for Azure
 	// Resource Manager/control-plane operations.
@@ -834,7 +1029,7 @@ type Operation struct {
 	Origin *Origin
 }
 
-// OperationDisplay - Localized display information for and operation.
+// OperationDisplay - Localized display information for an operation.
 type OperationDisplay struct {
 	// READ-ONLY; The short, localized friendly description of the operation; suitable for tool tips and detailed views.
 	Description *string

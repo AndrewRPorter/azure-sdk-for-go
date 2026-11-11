@@ -5,8 +5,7 @@
 package armavs
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/avs/armavs"
-	moduleVersion = "v2.1.0"
+	version20260301 string = "2026-03-01"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -146,6 +145,30 @@ func PossibleAzureHybridBenefitTypeValues() []AzureHybridBenefitType {
 	return []AzureHybridBenefitType{
 		AzureHybridBenefitTypeNone,
 		AzureHybridBenefitTypeSQLHost,
+	}
+}
+
+// BlockedDatesConstraintCategory - Reason for blocking operation on maintenance
+type BlockedDatesConstraintCategory string
+
+const (
+	// BlockedDatesConstraintCategoryHiPriorityEvent - Hi-Priority Event
+	BlockedDatesConstraintCategoryHiPriorityEvent BlockedDatesConstraintCategory = "HiPriorityEvent"
+	// BlockedDatesConstraintCategoryHoliday - Holidays
+	BlockedDatesConstraintCategoryHoliday BlockedDatesConstraintCategory = "Holiday"
+	// BlockedDatesConstraintCategoryOverlappingMaintenance - Constraint due to overlapping maintenance
+	BlockedDatesConstraintCategoryOverlappingMaintenance BlockedDatesConstraintCategory = "OverlappingMaintenance"
+	// BlockedDatesConstraintCategoryQuotaExhausted - Quota Exhausted
+	BlockedDatesConstraintCategoryQuotaExhausted BlockedDatesConstraintCategory = "QuotaExhausted"
+)
+
+// PossibleBlockedDatesConstraintCategoryValues returns the possible values for the BlockedDatesConstraintCategory const type.
+func PossibleBlockedDatesConstraintCategoryValues() []BlockedDatesConstraintCategory {
+	return []BlockedDatesConstraintCategory{
+		BlockedDatesConstraintCategoryHiPriorityEvent,
+		BlockedDatesConstraintCategoryHoliday,
+		BlockedDatesConstraintCategoryOverlappingMaintenance,
+		BlockedDatesConstraintCategoryQuotaExhausted,
 	}
 }
 
@@ -583,6 +606,21 @@ func PossibleHostKindValues() []HostKind {
 	}
 }
 
+// HostLicenseKind - The kind of host license.
+type HostLicenseKind string
+
+const (
+	// HostLicenseKindWindowsServer - The host is to be used with Azure Hybrid Benefit for Windows Server.
+	HostLicenseKindWindowsServer HostLicenseKind = "WindowsServer"
+)
+
+// PossibleHostLicenseKindValues returns the possible values for the HostLicenseKind const type.
+func PossibleHostLicenseKindValues() []HostLicenseKind {
+	return []HostLicenseKind{
+		HostLicenseKindWindowsServer,
+	}
+}
+
 // HostMaintenance - The reason for host maintenance.
 type HostMaintenance string
 
@@ -670,6 +708,278 @@ func PossibleIscsiPathProvisioningStateValues() []IscsiPathProvisioningState {
 		IscsiPathProvisioningStatePending,
 		IscsiPathProvisioningStateSucceeded,
 		IscsiPathProvisioningStateUpdating,
+	}
+}
+
+// LicenseKind - The kind of license.
+type LicenseKind string
+
+const (
+	LicenseKindVmwareFirewall LicenseKind = "VmwareFirewall"
+)
+
+// PossibleLicenseKindValues returns the possible values for the LicenseKind const type.
+func PossibleLicenseKindValues() []LicenseKind {
+	return []LicenseKind{
+		LicenseKindVmwareFirewall,
+	}
+}
+
+// LicenseName - The name of the license.
+type LicenseName string
+
+const (
+	// LicenseNameVmwareFirewall - VMware Firewall license
+	LicenseNameVmwareFirewall LicenseName = "VmwareFirewall"
+)
+
+// PossibleLicenseNameValues returns the possible values for the LicenseName const type.
+func PossibleLicenseNameValues() []LicenseName {
+	return []LicenseName{
+		LicenseNameVmwareFirewall,
+	}
+}
+
+// LicenseProvisioningState - provisioning state of the license
+type LicenseProvisioningState string
+
+const (
+	// LicenseProvisioningStateCanceled - Resource creation was canceled.
+	LicenseProvisioningStateCanceled LicenseProvisioningState = "Canceled"
+	// LicenseProvisioningStateFailed - Resource creation failed.
+	LicenseProvisioningStateFailed LicenseProvisioningState = "Failed"
+	// LicenseProvisioningStateSucceeded - Resource has been created.
+	LicenseProvisioningStateSucceeded LicenseProvisioningState = "Succeeded"
+)
+
+// PossibleLicenseProvisioningStateValues returns the possible values for the LicenseProvisioningState const type.
+func PossibleLicenseProvisioningStateValues() []LicenseProvisioningState {
+	return []LicenseProvisioningState{
+		LicenseProvisioningStateCanceled,
+		LicenseProvisioningStateFailed,
+		LicenseProvisioningStateSucceeded,
+	}
+}
+
+// MaintenanceActivityKind - Defines the type of maintenance activity
+type MaintenanceActivityKind string
+
+const (
+	// MaintenanceActivityKindBackup - Backup activity
+	MaintenanceActivityKindBackup MaintenanceActivityKind = "Backup"
+	// MaintenanceActivityKindCertificateRotation - Certificate rotation activity
+	MaintenanceActivityKindCertificateRotation MaintenanceActivityKind = "CertificateRotation"
+	// MaintenanceActivityKindDowngrade - Downgrade activity
+	MaintenanceActivityKindDowngrade MaintenanceActivityKind = "Downgrade"
+	// MaintenanceActivityKindUpgrade - Upgrade activity
+	MaintenanceActivityKindUpgrade MaintenanceActivityKind = "Upgrade"
+)
+
+// PossibleMaintenanceActivityKindValues returns the possible values for the MaintenanceActivityKind const type.
+func PossibleMaintenanceActivityKindValues() []MaintenanceActivityKind {
+	return []MaintenanceActivityKind{
+		MaintenanceActivityKindBackup,
+		MaintenanceActivityKindCertificateRotation,
+		MaintenanceActivityKindDowngrade,
+		MaintenanceActivityKindUpgrade,
+	}
+}
+
+// MaintenanceCheckType - Defines the type of maintenance readiness check
+type MaintenanceCheckType string
+
+const (
+	// MaintenanceCheckTypePrecheck - Pre-check maintenance readiness
+	MaintenanceCheckTypePrecheck MaintenanceCheckType = "Precheck"
+	// MaintenanceCheckTypePreflight - Pre-flight maintenance readiness
+	MaintenanceCheckTypePreflight MaintenanceCheckType = "Preflight"
+)
+
+// PossibleMaintenanceCheckTypeValues returns the possible values for the MaintenanceCheckType const type.
+func PossibleMaintenanceCheckTypeValues() []MaintenanceCheckType {
+	return []MaintenanceCheckType{
+		MaintenanceCheckTypePrecheck,
+		MaintenanceCheckTypePreflight,
+	}
+}
+
+// MaintenanceGroupKind - Defines the kind of group
+type MaintenanceGroupKind string
+
+const (
+	// MaintenanceGroupKindConsolidation - Consolidation grouping of maintenance operations
+	MaintenanceGroupKindConsolidation MaintenanceGroupKind = "Consolidation"
+	// MaintenanceGroupKindLogical - Logical grouping of maintenance operations
+	MaintenanceGroupKindLogical MaintenanceGroupKind = "Logical"
+)
+
+// PossibleMaintenanceGroupKindValues returns the possible values for the MaintenanceGroupKind const type.
+func PossibleMaintenanceGroupKindValues() []MaintenanceGroupKind {
+	return []MaintenanceGroupKind{
+		MaintenanceGroupKindConsolidation,
+		MaintenanceGroupKindLogical,
+	}
+}
+
+// MaintenanceManagementOperationKind - Defines the type of operation
+type MaintenanceManagementOperationKind string
+
+const (
+	// MaintenanceManagementOperationKindMaintenanceReadinessRefresh - Represents a maintenance readiness refresh operation
+	MaintenanceManagementOperationKindMaintenanceReadinessRefresh MaintenanceManagementOperationKind = "MaintenanceReadinessRefresh"
+	// MaintenanceManagementOperationKindReschedule - Represents a rescheduling operation
+	MaintenanceManagementOperationKindReschedule MaintenanceManagementOperationKind = "Reschedule"
+	// MaintenanceManagementOperationKindSchedule - Represents a scheduling operation
+	MaintenanceManagementOperationKindSchedule MaintenanceManagementOperationKind = "Schedule"
+)
+
+// PossibleMaintenanceManagementOperationKindValues returns the possible values for the MaintenanceManagementOperationKind const type.
+func PossibleMaintenanceManagementOperationKindValues() []MaintenanceManagementOperationKind {
+	return []MaintenanceManagementOperationKind{
+		MaintenanceManagementOperationKindMaintenanceReadinessRefresh,
+		MaintenanceManagementOperationKindReschedule,
+		MaintenanceManagementOperationKindSchedule,
+	}
+}
+
+// MaintenanceProvisioningState - provisioning state of the maintenance
+type MaintenanceProvisioningState string
+
+const (
+	// MaintenanceProvisioningStateCanceled - Resource creation was canceled.
+	MaintenanceProvisioningStateCanceled MaintenanceProvisioningState = "Canceled"
+	// MaintenanceProvisioningStateFailed - Resource creation failed.
+	MaintenanceProvisioningStateFailed MaintenanceProvisioningState = "Failed"
+	// MaintenanceProvisioningStateSucceeded - Resource has been created.
+	MaintenanceProvisioningStateSucceeded MaintenanceProvisioningState = "Succeeded"
+	// MaintenanceProvisioningStateUpdating - is updating
+	MaintenanceProvisioningStateUpdating MaintenanceProvisioningState = "Updating"
+)
+
+// PossibleMaintenanceProvisioningStateValues returns the possible values for the MaintenanceProvisioningState const type.
+func PossibleMaintenanceProvisioningStateValues() []MaintenanceProvisioningState {
+	return []MaintenanceProvisioningState{
+		MaintenanceProvisioningStateCanceled,
+		MaintenanceProvisioningStateFailed,
+		MaintenanceProvisioningStateSucceeded,
+		MaintenanceProvisioningStateUpdating,
+	}
+}
+
+// MaintenanceReadinessRefreshOperationStatus - The status of an MaintenanceReadinessRefresh operation
+type MaintenanceReadinessRefreshOperationStatus string
+
+const (
+	// MaintenanceReadinessRefreshOperationStatusFailed - Operation has failed
+	MaintenanceReadinessRefreshOperationStatusFailed MaintenanceReadinessRefreshOperationStatus = "Failed"
+	// MaintenanceReadinessRefreshOperationStatusInProgress - Operation is in progress
+	MaintenanceReadinessRefreshOperationStatusInProgress MaintenanceReadinessRefreshOperationStatus = "InProgress"
+	// MaintenanceReadinessRefreshOperationStatusNotApplicable - Operation is not applicable
+	MaintenanceReadinessRefreshOperationStatusNotApplicable MaintenanceReadinessRefreshOperationStatus = "NotApplicable"
+	// MaintenanceReadinessRefreshOperationStatusNotStarted - Operation has not started
+	MaintenanceReadinessRefreshOperationStatusNotStarted MaintenanceReadinessRefreshOperationStatus = "NotStarted"
+)
+
+// PossibleMaintenanceReadinessRefreshOperationStatusValues returns the possible values for the MaintenanceReadinessRefreshOperationStatus const type.
+func PossibleMaintenanceReadinessRefreshOperationStatusValues() []MaintenanceReadinessRefreshOperationStatus {
+	return []MaintenanceReadinessRefreshOperationStatus{
+		MaintenanceReadinessRefreshOperationStatusFailed,
+		MaintenanceReadinessRefreshOperationStatusInProgress,
+		MaintenanceReadinessRefreshOperationStatusNotApplicable,
+		MaintenanceReadinessRefreshOperationStatusNotStarted,
+	}
+}
+
+// MaintenanceReadinessStatus - Defines the readiness status of maintenance
+type MaintenanceReadinessStatus string
+
+const (
+	// MaintenanceReadinessStatusDataNotAvailable - Data is not available to determine readiness
+	MaintenanceReadinessStatusDataNotAvailable MaintenanceReadinessStatus = "DataNotAvailable"
+	// MaintenanceReadinessStatusNotApplicable - Readiness check is not applicable
+	MaintenanceReadinessStatusNotApplicable MaintenanceReadinessStatus = "NotApplicable"
+	// MaintenanceReadinessStatusNotReady - The system is not ready for maintenance
+	MaintenanceReadinessStatusNotReady MaintenanceReadinessStatus = "NotReady"
+	// MaintenanceReadinessStatusReady - The system is ready for maintenance
+	MaintenanceReadinessStatusReady MaintenanceReadinessStatus = "Ready"
+)
+
+// PossibleMaintenanceReadinessStatusValues returns the possible values for the MaintenanceReadinessStatus const type.
+func PossibleMaintenanceReadinessStatusValues() []MaintenanceReadinessStatus {
+	return []MaintenanceReadinessStatus{
+		MaintenanceReadinessStatusDataNotAvailable,
+		MaintenanceReadinessStatusNotApplicable,
+		MaintenanceReadinessStatusNotReady,
+		MaintenanceReadinessStatusReady,
+	}
+}
+
+// MaintenanceStateName - Customer presentable maintenance state
+type MaintenanceStateName string
+
+const (
+	// MaintenanceStateNameCanceled - Maintenance Cancelled
+	MaintenanceStateNameCanceled MaintenanceStateName = "Canceled"
+	// MaintenanceStateNameFailed - Maintenance Failed
+	MaintenanceStateNameFailed MaintenanceStateName = "Failed"
+	// MaintenanceStateNameInProgress - Maintenance In Progress
+	MaintenanceStateNameInProgress MaintenanceStateName = "InProgress"
+	// MaintenanceStateNameNotScheduled - Maintenance Not Scheduled
+	MaintenanceStateNameNotScheduled MaintenanceStateName = "NotScheduled"
+	// MaintenanceStateNameScheduled - Maintenance Scheduled
+	MaintenanceStateNameScheduled MaintenanceStateName = "Scheduled"
+	// MaintenanceStateNameSuccess - Maintenance Succeeded
+	MaintenanceStateNameSuccess MaintenanceStateName = "Success"
+)
+
+// PossibleMaintenanceStateNameValues returns the possible values for the MaintenanceStateName const type.
+func PossibleMaintenanceStateNameValues() []MaintenanceStateName {
+	return []MaintenanceStateName{
+		MaintenanceStateNameCanceled,
+		MaintenanceStateNameFailed,
+		MaintenanceStateNameInProgress,
+		MaintenanceStateNameNotScheduled,
+		MaintenanceStateNameScheduled,
+		MaintenanceStateNameSuccess,
+	}
+}
+
+// MaintenanceStatusFilter - status filter for the maintenance
+type MaintenanceStatusFilter string
+
+const (
+	// MaintenanceStatusFilterActive - is active
+	MaintenanceStatusFilterActive MaintenanceStatusFilter = "Active"
+	// MaintenanceStatusFilterInactive - is inactive
+	MaintenanceStatusFilterInactive MaintenanceStatusFilter = "Inactive"
+)
+
+// PossibleMaintenanceStatusFilterValues returns the possible values for the MaintenanceStatusFilter const type.
+func PossibleMaintenanceStatusFilterValues() []MaintenanceStatusFilter {
+	return []MaintenanceStatusFilter{
+		MaintenanceStatusFilterActive,
+		MaintenanceStatusFilterInactive,
+	}
+}
+
+// MaintenanceType - type of the maintenance
+type MaintenanceType string
+
+const (
+	// MaintenanceTypeESXI - maintenance for ESXi
+	MaintenanceTypeESXI MaintenanceType = "ESXI"
+	// MaintenanceTypeNSXT - maintenance for NSX-T
+	MaintenanceTypeNSXT MaintenanceType = "NSXT"
+	// MaintenanceTypeVCSA - maintenance for vCenter Server Appliance
+	MaintenanceTypeVCSA MaintenanceType = "VCSA"
+)
+
+// PossibleMaintenanceTypeValues returns the possible values for the MaintenanceType const type.
+func PossibleMaintenanceTypeValues() []MaintenanceType {
+	return []MaintenanceType{
+		MaintenanceTypeESXI,
+		MaintenanceTypeNSXT,
+		MaintenanceTypeVCSA,
 	}
 }
 
@@ -987,6 +1297,31 @@ func PossibleQuotaEnabledValues() []QuotaEnabled {
 	}
 }
 
+// RescheduleOperationConstraintKind - Constraints for rescheduling of maintenance
+type RescheduleOperationConstraintKind string
+
+const (
+	// RescheduleOperationConstraintKindAvailableWindowForMaintenanceWhileRescheduleOperation - Time window in which maintenance
+	// can be rescheduled
+	RescheduleOperationConstraintKindAvailableWindowForMaintenanceWhileRescheduleOperation RescheduleOperationConstraintKind = "AvailableWindowForMaintenance"
+	// RescheduleOperationConstraintKindBlockedWhileRescheduleOperation - Blocked time range constraint
+	RescheduleOperationConstraintKindBlockedWhileRescheduleOperation RescheduleOperationConstraintKind = "Blocked"
+	// RescheduleOperationConstraintKindReschedulingWindow - Defines allowed window for rescheduling
+	RescheduleOperationConstraintKindReschedulingWindow RescheduleOperationConstraintKind = "ReschedulingWindow"
+	// RescheduleOperationConstraintKindWeekendRescheduling - Defines weekend rescheduling restriction
+	RescheduleOperationConstraintKindWeekendRescheduling RescheduleOperationConstraintKind = "WeekendRescheduling"
+)
+
+// PossibleRescheduleOperationConstraintKindValues returns the possible values for the RescheduleOperationConstraintKind const type.
+func PossibleRescheduleOperationConstraintKindValues() []RescheduleOperationConstraintKind {
+	return []RescheduleOperationConstraintKind{
+		RescheduleOperationConstraintKindAvailableWindowForMaintenanceWhileRescheduleOperation,
+		RescheduleOperationConstraintKindBlockedWhileRescheduleOperation,
+		RescheduleOperationConstraintKindReschedulingWindow,
+		RescheduleOperationConstraintKindWeekendRescheduling,
+	}
+}
+
 // ResourceIdentityType - Type of managed service identity (either system assigned, or none).
 type ResourceIdentityType string
 
@@ -1099,6 +1434,31 @@ func PossibleSSLEnumValues() []SSLEnum {
 	return []SSLEnum{
 		SSLEnumDisabled,
 		SSLEnumEnabled,
+	}
+}
+
+// ScheduleOperationConstraintKind - Constraints for scheduling of maintenance
+type ScheduleOperationConstraintKind string
+
+const (
+	// ScheduleOperationConstraintKindAvailableWindowForMaintenanceWhileScheduleOperation - Time window in which maintenance can
+	// be scheduled
+	ScheduleOperationConstraintKindAvailableWindowForMaintenanceWhileScheduleOperation ScheduleOperationConstraintKind = "AvailableWindowForMaintenance"
+	// ScheduleOperationConstraintKindBlockedWhileScheduleOperation - Blocked time range constraint
+	ScheduleOperationConstraintKindBlockedWhileScheduleOperation ScheduleOperationConstraintKind = "Blocked"
+	// ScheduleOperationConstraintKindSchedulingWindow - Time window in which Customer has option to schedule maintenance
+	ScheduleOperationConstraintKindSchedulingWindow ScheduleOperationConstraintKind = "SchedulingWindow"
+	// ScheduleOperationConstraintKindWeekendScheduling - Defines weekend scheduling restriction
+	ScheduleOperationConstraintKindWeekendScheduling ScheduleOperationConstraintKind = "WeekendScheduling"
+)
+
+// PossibleScheduleOperationConstraintKindValues returns the possible values for the ScheduleOperationConstraintKind const type.
+func PossibleScheduleOperationConstraintKindValues() []ScheduleOperationConstraintKind {
+	return []ScheduleOperationConstraintKind{
+		ScheduleOperationConstraintKindAvailableWindowForMaintenanceWhileScheduleOperation,
+		ScheduleOperationConstraintKindBlockedWhileScheduleOperation,
+		ScheduleOperationConstraintKindSchedulingWindow,
+		ScheduleOperationConstraintKindWeekendScheduling,
 	}
 }
 
@@ -1346,6 +1706,21 @@ func PossibleVMTypeEnumValues() []VMTypeEnum {
 		VMTypeEnumEDGE,
 		VMTypeEnumREGULAR,
 		VMTypeEnumSERVICE,
+	}
+}
+
+// VcfLicenseKind - The kind of license.
+type VcfLicenseKind string
+
+const (
+	// VcfLicenseKindVcf5 - A VMware Cloud Foundation (VCF) 5.0 license
+	VcfLicenseKindVcf5 VcfLicenseKind = "vcf5"
+)
+
+// PossibleVcfLicenseKindValues returns the possible values for the VcfLicenseKind const type.
+func PossibleVcfLicenseKindValues() []VcfLicenseKind {
+	return []VcfLicenseKind{
+		VcfLicenseKindVcf5,
 	}
 }
 

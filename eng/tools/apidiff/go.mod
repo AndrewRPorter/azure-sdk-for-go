@@ -4,11 +4,11 @@ go 1.18
 
 require (
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
-	github.com/Azure/azure-sdk-for-go/eng/tools/internal v0.0.0-20250324071034-2354f19ea1a2
-	github.com/spf13/cobra v1.9.1
+	github.com/Azure/azure-sdk-for-go/eng/tools/internal v0.0.0-20261102123029-7ff7eca6585b
+	github.com/spf13/cobra v1.10.2
 )
 
 require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
+	github.com/spf13/pflag v1.0.10 // indirect
 )

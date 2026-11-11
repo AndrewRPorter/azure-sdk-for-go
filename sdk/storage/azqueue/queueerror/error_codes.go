@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -10,7 +7,7 @@ import (
 	"errors"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/internal/generated"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azqueue/v2/internal/generated"
 )
 
 // HasCode returns true if the provided error is an *azcore.ResponseError
@@ -34,66 +31,67 @@ func HasCode(err error, codes ...Code) bool {
 type Code = generated.StorageErrorCode
 
 const (
-	AccountAlreadyExists                 Code = "AccountAlreadyExists"
-	AccountBeingCreated                  Code = "AccountBeingCreated"
-	AccountIsDisabled                    Code = "AccountIsDisabled"
-	AuthenticationFailed                 Code = "AuthenticationFailed"
-	AuthorizationFailure                 Code = "AuthorizationFailure"
-	AuthorizationPermissionMismatch      Code = "AuthorizationPermissionMismatch"
-	AuthorizationProtocolMismatch        Code = "AuthorizationProtocolMismatch"
-	AuthorizationResourceTypeMismatch    Code = "AuthorizationResourceTypeMismatch"
-	AuthorizationServiceMismatch         Code = "AuthorizationServiceMismatch"
-	AuthorizationSourceIPMismatch        Code = "AuthorizationSourceIPMismatch"
-	ConditionHeadersNotSupported         Code = "ConditionHeadersNotSupported"
-	ConditionNotMet                      Code = "ConditionNotMet"
-	EmptyMetadataKey                     Code = "EmptyMetadataKey"
-	FeatureVersionMismatch               Code = "FeatureVersionMismatch"
-	InsufficientAccountPermissions       Code = "InsufficientAccountPermissions"
-	InternalError                        Code = "InternalError"
-	InvalidAuthenticationInfo            Code = "InvalidAuthenticationInfo"
-	InvalidHTTPVerb                      Code = "InvalidHttpVerb"
-	InvalidHeaderValue                   Code = "InvalidHeaderValue"
-	InvalidInput                         Code = "InvalidInput"
-	InvalidMD5                           Code = "InvalidMd5"
-	InvalidMarker                        Code = "InvalidMarker"
-	InvalidMetadata                      Code = "InvalidMetadata"
-	InvalidQueryParameterValue           Code = "InvalidQueryParameterValue"
-	InvalidRange                         Code = "InvalidRange"
-	InvalidResourceName                  Code = "InvalidResourceName"
-	InvalidURI                           Code = "InvalidUri"
-	InvalidXMLDocument                   Code = "InvalidXmlDocument"
-	InvalidXMLNodeValue                  Code = "InvalidXmlNodeValue"
-	MD5Mismatch                          Code = "Md5Mismatch"
-	MessageNotFound                      Code = "MessageNotFound"
-	MessageTooLarge                      Code = "MessageTooLarge"
-	MetadataTooLarge                     Code = "MetadataTooLarge"
-	MissingContentLengthHeader           Code = "MissingContentLengthHeader"
-	MissingRequiredHeader                Code = "MissingRequiredHeader"
-	MissingRequiredQueryParameter        Code = "MissingRequiredQueryParameter"
-	MissingRequiredXMLNode               Code = "MissingRequiredXmlNode"
-	MultipleConditionHeadersNotSupported Code = "MultipleConditionHeadersNotSupported"
-	OperationTimedOut                    Code = "OperationTimedOut"
-	OutOfRangeInput                      Code = "OutOfRangeInput"
-	OutOfRangeQueryParameterValue        Code = "OutOfRangeQueryParameterValue"
-	PopReceiptMismatch                   Code = "PopReceiptMismatch"
-	QueueAlreadyExists                   Code = "QueueAlreadyExists"
-	QueueBeingDeleted                    Code = "QueueBeingDeleted"
-	QueueDisabled                        Code = "QueueDisabled"
-	QueueNotEmpty                        Code = "QueueNotEmpty"
-	QueueNotFound                        Code = "QueueNotFound"
-	RequestBodyTooLarge                  Code = "RequestBodyTooLarge"
-	RequestURLFailedToParse              Code = "RequestUrlFailedToParse"
-	ResourceAlreadyExists                Code = "ResourceAlreadyExists"
-	ResourceNotFound                     Code = "ResourceNotFound"
-	ResourceTypeMismatch                 Code = "ResourceTypeMismatch"
-	ServerBusy                           Code = "ServerBusy"
-	UnsupportedHTTPVerb                  Code = "UnsupportedHttpVerb"
-	UnsupportedHeader                    Code = "UnsupportedHeader"
-	UnsupportedQueryParameter            Code = "UnsupportedQueryParameter"
-	UnsupportedXMLNode                   Code = "UnsupportedXmlNode"
+	AccountAlreadyExists                 Code = generated.StorageErrorCodeAccountAlreadyExists
+	AccountBeingCreated                  Code = generated.StorageErrorCodeAccountBeingCreated
+	AccountIsDisabled                    Code = generated.StorageErrorCodeAccountIsDisabled
+	AuthenticationFailed                 Code = generated.StorageErrorCodeAuthenticationFailed
+	AuthorizationFailure                 Code = generated.StorageErrorCodeAuthorizationFailure
+	AuthorizationPermissionMismatch      Code = generated.StorageErrorCodeAuthorizationPermissionMismatch
+	AuthorizationProtocolMismatch        Code = generated.StorageErrorCodeAuthorizationProtocolMismatch
+	AuthorizationResourceTypeMismatch    Code = generated.StorageErrorCodeAuthorizationResourceTypeMismatch
+	AuthorizationServiceMismatch         Code = generated.StorageErrorCodeAuthorizationServiceMismatch
+	AuthorizationSourceIPMismatch        Code = generated.StorageErrorCodeAuthorizationSourceIPMismatch
+	ConditionHeadersNotSupported         Code = generated.StorageErrorCodeConditionHeadersNotSupported
+	ConditionNotMet                      Code = generated.StorageErrorCodeConditionNotMet
+	EmptyMetadataKey                     Code = generated.StorageErrorCodeEmptyMetadataKey
+	FeatureVersionMismatch               Code = generated.StorageErrorCodeFeatureVersionMismatch
+	InsufficientAccountPermissions       Code = generated.StorageErrorCodeInsufficientAccountPermissions
+	InternalError                        Code = generated.StorageErrorCodeInternalError
+	InvalidAuthenticationInfo            Code = generated.StorageErrorCodeInvalidAuthenticationInfo
+	InvalidHTTPVerb                      Code = generated.StorageErrorCodeInvalidHTTPVerb
+	InvalidHeaderValue                   Code = generated.StorageErrorCodeInvalidHeaderValue
+	InvalidInput                         Code = generated.StorageErrorCodeInvalidInput
+	InvalidMD5                           Code = generated.StorageErrorCodeInvalidMD5
+	InvalidMarker                        Code = generated.StorageErrorCodeInvalidMarker
+	InvalidMetadata                      Code = generated.StorageErrorCodeInvalidMetadata
+	InvalidQueryParameterValue           Code = generated.StorageErrorCodeInvalidQueryParameterValue
+	InvalidRange                         Code = generated.StorageErrorCodeInvalidRange
+	InvalidResourceName                  Code = generated.StorageErrorCodeInvalidResourceName
+	InvalidURI                           Code = generated.StorageErrorCodeInvalidURI
+	InvalidXMLDocument                   Code = generated.StorageErrorCodeInvalidXMLDocument
+	InvalidXMLNodeValue                  Code = generated.StorageErrorCodeInvalidXMLNodeValue
+	MD5Mismatch                          Code = generated.StorageErrorCodeMD5Mismatch
+	MessageNotFound                      Code = generated.StorageErrorCodeMessageNotFound
+	MessageTooLarge                      Code = generated.StorageErrorCodeMessageTooLarge
+	MetadataTooLarge                     Code = generated.StorageErrorCodeMetadataTooLarge
+	MissingContentLengthHeader           Code = generated.StorageErrorCodeMissingContentLengthHeader
+	MissingRequiredHeader                Code = generated.StorageErrorCodeMissingRequiredHeader
+	MissingRequiredQueryParameter        Code = generated.StorageErrorCodeMissingRequiredQueryParameter
+	MissingRequiredXMLNode               Code = generated.StorageErrorCodeMissingRequiredXMLNode
+	MultipleConditionHeadersNotSupported Code = generated.StorageErrorCodeMultipleConditionHeadersNotSupported
+	OperationTimedOut                    Code = generated.StorageErrorCodeOperationTimedOut
+	OutOfRangeInput                      Code = generated.StorageErrorCodeOutOfRangeInput
+	OutOfRangeQueryParameterValue        Code = generated.StorageErrorCodeOutOfRangeQueryParameterValue
+	PopReceiptMismatch                   Code = generated.StorageErrorCodePopReceiptMismatch
+	QueueAlreadyExists                   Code = generated.StorageErrorCodeQueueAlreadyExists
+	QueueBeingDeleted                    Code = generated.StorageErrorCodeQueueBeingDeleted
+	QueueDisabled                        Code = generated.StorageErrorCodeQueueDisabled
+	QueueNotEmpty                        Code = generated.StorageErrorCodeQueueNotEmpty
+	QueueNotFound                        Code = generated.StorageErrorCodeQueueNotFound
+	RequestBodyTooLarge                  Code = generated.StorageErrorCodeRequestBodyTooLarge
+	RequestURLFailedToParse              Code = generated.StorageErrorCodeRequestURLFailedToParse
+	ResourceAlreadyExists                Code = generated.StorageErrorCodeResourceAlreadyExists
+	ResourceNotFound                     Code = generated.StorageErrorCodeResourceNotFound
+	ResourceTypeMismatch                 Code = generated.StorageErrorCodeResourceTypeMismatch
+	ServerBusy                           Code = generated.StorageErrorCodeServerBusy
+	UnsupportedHTTPVerb                  Code = generated.StorageErrorCodeUnsupportedHTTPVerb
+	UnsupportedHeader                    Code = generated.StorageErrorCodeUnsupportedHeader
+	UnsupportedQueryParameter            Code = generated.StorageErrorCodeUnsupportedQueryParameter
+	UnsupportedXMLNode                   Code = generated.StorageErrorCodeUnsupportedXMLNode
 )
 
 var (
 	// MissingSharedKeyCredential - Error is returned when SAS URL is being created without SharedKeyCredential.
+	//nolint:staticcheck // ST1012: Renaming these errors would be a breaking change, so suppressing linter warning.
 	MissingSharedKeyCredential = errors.New("SAS can only be signed with a SharedKeyCredential")
 )

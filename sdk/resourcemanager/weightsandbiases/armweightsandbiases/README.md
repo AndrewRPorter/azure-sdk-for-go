@@ -1,5 +1,7 @@
 # Azure Weight Sandbiases Module for Go
 
+> **DEPRECATED**: The Microsoft.WeightsAndBiases service will be retired on September 30, 2026. This package will no longer be maintained after that date. There is no replacement service or SDK module. Refer to our [deprecation policy](https://aka.ms/azsdk/support-policies) for more details.
+
 The `armweightsandbiases` module provides operations for working with Azure Weightsandbiases.
 
 [Source code](https://github.com/Azure/azure-sdk-for-go/tree/main/sdk/resourcemanager/weightsandbiases/armweightsandbiases)
@@ -8,8 +10,8 @@ The `armweightsandbiases` module provides operations for working with Azure Weig
 
 ## Prerequisites
 
-- an [Azure subscription](https://azure.microsoft.com/free/)
-- Go 1.18 or above (You could download and install the latest version of Go from [here](https://go.dev/doc/install). It will replace the existing Go on your machine. If you want to install multiple Go versions on the same machine, you could refer this [doc](https://go.dev/doc/manage-install).)
+- An [Azure subscription](https://azure.microsoft.com/free/)
+- [Supported](https://aka.ms/azsdk/go/supported-versions) version of Go (You could download and install the latest version of Go from [here](https://go.dev/doc/install). It will replace the existing Go on your machine. If you want to install multiple Go versions on the same machine, you could refer this [doc](https://go.dev/doc/manage-install).)
 
 ## Install the package
 

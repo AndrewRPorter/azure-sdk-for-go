@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -10,7 +7,9 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 	"sync"
@@ -28,6 +27,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/generated"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/sas"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/internal/sasurl"
 )
 
 // ClientOptions contains the optional parameters when creating a Client.
@@ -49,6 +49,7 @@ func NewClient(fileURL string, cred azcore.TokenCredential, options *ClientOptio
 		InsecureAllowCredentialWithHTTP: conOptions.InsecureAllowCredentialWithHTTP,
 	})
 	plOpts := runtime.PipelineOptions{
+		PerCall:  []policy.Policy{shared.NewRangePolicy()},
 		PerRetry: []policy.Policy{authPolicy},
 	}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
@@ -69,7 +70,7 @@ func NewClient(fileURL string, cred azcore.TokenCredential, options *ClientOptio
 // The directoryPath is optional in the fileURL. If omitted, it points to file within the specified share.
 func NewClientWithNoCredential(fileURL string, options *ClientOptions) (*Client, error) {
 	conOptions := shared.GetClientOptions(options)
-	plOpts := runtime.PipelineOptions{}
+	plOpts := runtime.PipelineOptions{PerCall: []policy.Policy{shared.NewRangePolicy()}}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
 
 	azClient, err := azcore.NewClient(exported.ModuleName, exported.ModuleVersion, plOpts, &conOptions.ClientOptions)
@@ -90,6 +91,7 @@ func NewClientWithSharedKeyCredential(fileURL string, cred *SharedKeyCredential,
 	authPolicy := exported.NewSharedKeyCredPolicy(cred)
 	conOptions := shared.GetClientOptions(options)
 	plOpts := runtime.PipelineOptions{
+		PerCall:  []policy.Policy{shared.NewRangePolicy()},
 		PerRetry: []policy.Policy{authPolicy},
 	}
 	base.SetPipelineOptions((*base.ClientOptions)(conOptions), &plOpts)
@@ -144,23 +146,46 @@ func (f *Client) URL() string {
 	return f.generated().Endpoint()
 }
 
+func (f *Client) checkAddressing(operation string, addressing base.Addressing) error {
+	return base.CheckAddressing(f.URL(), "file.Client."+operation, addressing)
+}
+
 // Create operation creates a new file or replaces a file. Note it only initializes the file with no content.
 //   - fileContentLength: Specifies the maximum size for the file in bytes, up to 4 TB.
 //
 // ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/create-file.
 func (f *Client) Create(ctx context.Context, fileContentLength int64, options *CreateOptions) (CreateResponse, error) {
-	fileCreateOptions, fileHTTPHeaders, leaseAccessConditions := options.format()
-	resp, err := f.generated().Create(ctx, fileContentLength, fileCreateOptions, fileHTTPHeaders, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("Create", base.PathOnly); err != nil {
+		return CreateResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+
+	if options != nil && options.OptionalBody != nil && options.TransactionalValidation != nil {
+		// Defensive: CRC64 types (precomputed/computed) aren't publicly exported from this
+		// package so callers can't reach this, but reject them to avoid a silent no-op via SetCRC64.
+		if _, ok := options.TransactionalValidation.(TransferValidationTypeMD5); !ok &&
+			exported.GetStructuredBodyType(options.TransactionalValidation) == "" {
+			return CreateResponse{}, errors.New("unsupported TransactionalValidation type for Create; only MD5 and structured message CRC64 are supported")
+		}
+		body, err := options.TransactionalValidation.Apply(options.OptionalBody, opts)
+		if err != nil {
+			return CreateResponse{}, err
+		}
+		opts.Optionalbody = body
+	}
+
+	return f.generated().Create(ctx, fileContentLength, opts)
 }
 
 // Delete operation removes the file from the storage account.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/delete-file2.
 func (f *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().Delete(ctx, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("Delete", base.PathOnly); err != nil {
+		return DeleteResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().Delete(ctx, opts)
 }
 
 // Rename operation renames a file, and can optionally set system properties for the file.
@@ -168,12 +193,15 @@ func (f *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResp
 //
 // For more information, see https://learn.microsoft.com/rest/api/storageservices/rename-file.
 func (f *Client) Rename(ctx context.Context, destinationPath string, options *RenameOptions) (RenameResponse, error) {
+	if err := f.checkAddressing("Rename", base.PathOnly); err != nil {
+		return RenameResponse{}, err
+	}
 	destinationPath = strings.Trim(strings.TrimSpace(destinationPath), "/")
 	if len(destinationPath) == 0 {
 		return RenameResponse{}, errors.New("destination path must not be empty")
 	}
 
-	opts, srcLease, destLease, smbInfo, fileHTTPHeaders := options.format()
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot, f.getClientOptions().AllowSourceTrailingDot)
 
 	urlParts, err := sas.ParseURL(f.URL())
 	if err != nil {
@@ -196,7 +224,7 @@ func (f *Client) Rename(ctx context.Context, destinationPath string, options *Re
 
 	destFileClient := (*Client)(base.NewFileClient(destURL, f.generated().InternalClient(), f.sharedKey(), f.getClientOptions()))
 
-	resp, err := destFileClient.generated().Rename(ctx, f.URL(), opts, srcLease, destLease, smbInfo, fileHTTPHeaders)
+	resp, err := destFileClient.generated().Rename(ctx, f.URL(), opts)
 	return RenameResponse{
 		FileClientRenameResponse: resp,
 	}, err
@@ -206,26 +234,32 @@ func (f *Client) Rename(ctx context.Context, destinationPath string, options *Re
 // ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/get-file-properties.
 func (f *Client) GetProperties(ctx context.Context, options *GetPropertiesOptions) (GetPropertiesResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().GetProperties(ctx, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("GetProperties", base.PathOrFileID); err != nil {
+		return GetPropertiesResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().GetProperties(ctx, opts)
 }
 
 // SetHTTPHeaders operation sets HTTP headers on the file.
 // ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/set-file-properties.
 func (f *Client) SetHTTPHeaders(ctx context.Context, options *SetHTTPHeadersOptions) (SetHTTPHeadersResponse, error) {
-	opts, fileHTTPHeaders, leaseAccessConditions := options.format()
-	resp, err := f.generated().SetHTTPHeaders(ctx, opts, fileHTTPHeaders, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("SetHTTPHeaders", base.PathOnly); err != nil {
+		return SetHTTPHeadersResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().SetHTTPHeaders(ctx, opts)
 }
 
 // SetMetadata operation sets user-defined metadata for the specified file.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/set-file-metadata.
 func (f *Client) SetMetadata(ctx context.Context, options *SetMetadataOptions) (SetMetadataResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().SetMetadata(ctx, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("SetMetadata", base.PathOnly); err != nil {
+		return SetMetadataResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().SetMetadata(ctx, opts)
 }
 
 // StartCopyFromURL operation copies the data at the source URL to a file.
@@ -233,8 +267,11 @@ func (f *Client) SetMetadata(ctx context.Context, options *SetMetadataOptions) (
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/copy-file.
 func (f *Client) StartCopyFromURL(ctx context.Context, copySource string, options *StartCopyFromURLOptions) (StartCopyFromURLResponse, error) {
-	opts, copyFileSmbInfo, leaseAccessConditions := options.format()
-	resp, err := f.generated().StartCopy(ctx, copySource, opts, copyFileSmbInfo, leaseAccessConditions)
+	if err := f.checkAddressing("StartCopyFromURL", base.PathOnly); err != nil {
+		return StartCopyFromURLResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot, f.getClientOptions().AllowSourceTrailingDot)
+	resp, err := f.generated().StartCopy(ctx, copySource, opts)
 	return resp, err
 }
 
@@ -243,17 +280,21 @@ func (f *Client) StartCopyFromURL(ctx context.Context, copySource string, option
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/abort-copy-file.
 func (f *Client) AbortCopy(ctx context.Context, copyID string, options *AbortCopyOptions) (AbortCopyResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().AbortCopy(ctx, copyID, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("AbortCopy", base.PathOnly); err != nil {
+		return AbortCopyResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().AbortCopy(ctx, copyID, opts)
 }
 
 // Resize operation resizes the file to the specified size.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/set-file-properties.
 func (f *Client) Resize(ctx context.Context, size int64, options *ResizeOptions) (ResizeResponse, error) {
-	opts, leaseAccessConditions := options.format(size)
-	resp, err := f.generated().SetHTTPHeaders(ctx, opts, nil, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("Resize", base.PathOnly); err != nil {
+		return ResizeResponse{}, err
+	}
+	opts := options.format(size, f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().SetHTTPHeaders(ctx, opts)
 }
 
 // UploadRange operation uploads a range of bytes to a file.
@@ -262,13 +303,34 @@ func (f *Client) Resize(ctx context.Context, size int64, options *ResizeOptions)
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/put-range.
 func (f *Client) UploadRange(ctx context.Context, offset int64, body io.ReadSeekCloser, options *UploadRangeOptions) (UploadRangeResponse, error) {
-	rangeParam, contentLength, uploadRangeOptions, leaseAccessConditions, err := options.format(offset, body)
+	if err := f.checkAddressing("UploadRange", base.PathOnly); err != nil {
+		return UploadRangeResponse{}, err
+	}
+	rangeParam, contentLength, uploadRangeOptions, err := options.format(offset, body, f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
 	if err != nil {
 		return UploadRangeResponse{}, err
 	}
 
-	resp, err := f.generated().UploadRange(ctx, rangeParam, RangeWriteTypeUpdate, contentLength, body, uploadRangeOptions, leaseAccessConditions)
-	return resp, err
+	if options != nil && options.TransactionalValidation != nil {
+		if _, ok := options.TransactionalValidation.(TransferValidationTypeMD5); !ok {
+			body, err = options.TransactionalValidation.Apply(body, uploadRangeOptions)
+			if err != nil {
+				return UploadRangeResponse{}, err
+			}
+			// Apply may return a replacement reader (the structured message encoder or a
+			// rewound buffer for computed CRC64). The generated client reads the request body
+			// from uploadRangeOptions.Optionalbody, so the transformed reader must be assigned
+			// back onto it; otherwise the original, unframed (and possibly already-consumed)
+			// reader is sent instead.
+			uploadRangeOptions.Optionalbody = body
+			contentLength, err = shared.ValidateSeekableStreamAt0AndGetCount(body)
+			if err != nil {
+				return UploadRangeResponse{}, err
+			}
+		}
+	}
+
+	return f.generated().UploadRange(ctx, rangeParam, RangeWriteTypeUpdate, contentLength, uploadRangeOptions)
 }
 
 // ClearRange operation clears the specified range and releases the space used in storage for that range.
@@ -276,13 +338,15 @@ func (f *Client) UploadRange(ctx context.Context, offset int64, body io.ReadSeek
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/put-range.
 func (f *Client) ClearRange(ctx context.Context, contentRange HTTPRange, options *ClearRangeOptions) (ClearRangeResponse, error) {
-	rangeParam, leaseAccessConditions, err := options.format(contentRange)
+	if err := f.checkAddressing("ClearRange", base.PathOnly); err != nil {
+		return ClearRangeResponse{}, err
+	}
+	rangeParam, opts, err := options.format(contentRange, f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
 	if err != nil {
 		return ClearRangeResponse{}, err
 	}
 
-	resp, err := f.generated().UploadRange(ctx, rangeParam, RangeWriteTypeClear, 0, nil, nil, leaseAccessConditions)
-	return resp, err
+	return f.generated().UploadRange(ctx, rangeParam, RangeWriteTypeClear, 0, opts)
 }
 
 // UploadRangeFromURL operation uploads a range of bytes to a file where the contents are read from a URL.
@@ -292,21 +356,59 @@ func (f *Client) ClearRange(ctx context.Context, contentRange HTTPRange, options
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/put-range-from-url.
 func (f *Client) UploadRangeFromURL(ctx context.Context, copySource string, sourceOffset int64, destinationOffset int64, count int64, options *UploadRangeFromURLOptions) (UploadRangeFromURLResponse, error) {
-	destRange, opts, sourceModifiedAccessConditions, leaseAccessConditions, err := options.format(sourceOffset, destinationOffset, count)
+	if err := f.checkAddressing("UploadRangeFromURL", base.PathOnly); err != nil {
+		return UploadRangeFromURLResponse{}, err
+	}
+	destRange, opts, err := options.format(sourceOffset, destinationOffset, count, f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot, f.getClientOptions().AllowSourceTrailingDot)
 	if err != nil {
 		return UploadRangeFromURLResponse{}, err
 	}
 
-	resp, err := f.generated().UploadRangeFromURL(ctx, destRange, copySource, 0, opts, sourceModifiedAccessConditions, leaseAccessConditions)
-	return resp, err
+	return f.generated().UploadRangeFromURL(ctx, destRange, copySource, generated.FileRangeWriteFromURLTypeUpdate, 0, opts)
 }
 
 // GetRangeList operation returns the list of valid ranges for a file.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/list-ranges.
 func (f *Client) GetRangeList(ctx context.Context, options *GetRangeListOptions) (GetRangeListResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().GetRangeList(ctx, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("GetRangeList", base.PathOnly); err != nil {
+		return GetRangeListResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().GetRangeList(ctx, opts)
+}
+
+// NewListRangesPager returns a pager for the valid ranges of a file. Each page contains a segment of ranges
+// and a continuation token for retrieving the next page. Set MaxResults on the options to control page size.
+// When PrevShareSnapshot is set, the pager returns ranges that have changed between the previous snapshot
+// and the target (diff mode).
+// For more information, see https://learn.microsoft.com/rest/api/storageservices/list-ranges.
+func (f *Client) NewListRangesPager(options *ListRangesOptions) *runtime.Pager[ListRangesSegmentResponse] {
+	listOptions := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return runtime.NewPager(runtime.PagingHandler[ListRangesSegmentResponse]{
+		More: func(page ListRangesSegmentResponse) bool {
+			return page.NextMarker != nil && len(*page.NextMarker) > 0
+		},
+		Fetcher: func(ctx context.Context, page *ListRangesSegmentResponse) (ListRangesSegmentResponse, error) {
+			if err := f.checkAddressing("NewListRangesPager", base.PathOnly); err != nil {
+				return ListRangesSegmentResponse{}, err
+			}
+			if page != nil {
+				listOptions.Marker = page.NextMarker
+			}
+			req, err := f.generated().ListAllRangesCreateRequest(ctx, &listOptions)
+			if err != nil {
+				return ListRangesSegmentResponse{}, err
+			}
+			resp, err := f.generated().InternalClient().Pipeline().Do(req)
+			if err != nil {
+				return ListRangesSegmentResponse{}, err
+			}
+			if !runtime.HasStatusCode(resp, http.StatusOK) {
+				return ListRangesSegmentResponse{}, runtime.NewResponseError(resp)
+			}
+			return f.generated().ListAllRangesHandleResponse(resp)
+		},
+	})
 }
 
 // ForceCloseHandles operation closes a handle or handles opened on a file.
@@ -314,46 +416,73 @@ func (f *Client) GetRangeList(ctx context.Context, options *GetRangeListOptions)
 //
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/force-close-handles.
 func (f *Client) ForceCloseHandles(ctx context.Context, handleID string, options *ForceCloseHandlesOptions) (ForceCloseHandlesResponse, error) {
-	opts := options.format()
-	resp, err := f.generated().ForceCloseHandles(ctx, handleID, opts)
-	return resp, err
+	if err := f.checkAddressing("ForceCloseHandles", base.PathOnly); err != nil {
+		return ForceCloseHandlesResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().ForceCloseHandles(ctx, handleID, opts)
 }
 
 // ListHandles operation returns a list of open handles on a file.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/list-handles.
 func (f *Client) ListHandles(ctx context.Context, options *ListHandlesOptions) (ListHandlesResponse, error) {
-	opts := options.format()
-	resp, err := f.generated().ListHandles(ctx, opts)
-	return resp, err
+	if err := f.checkAddressing("ListHandles", base.PathOnly); err != nil {
+		return ListHandlesResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
+	return f.generated().ListHandles(ctx, opts)
 }
 
 // CreateHardLink operation creates Hard Link to targetFile in same share.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/create-hard-link.
 func (f *Client) CreateHardLink(ctx context.Context, targetFile string, options *CreateHardLinkOptions) (CreateHardLinkResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().CreateHardLink(ctx, targetFile, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("CreateHardLink", base.PathOnly); err != nil {
+		return CreateHardLinkResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent)
+	return f.generated().CreateHardLink(ctx, targetFile, opts)
 }
 
 // CreateSymbolicLink operation creates a Symbolic Link to targetFile in same share.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/create-symbolic-link.
 func (f *Client) CreateSymbolicLink(ctx context.Context, linkText string, options *CreateSymbolicLinkOptions) (CreateSymbolicLinkResponse, error) {
-	opts, leaseAccessConditions := options.format()
-	resp, err := f.generated().CreateSymbolicLink(ctx, linkText, opts, leaseAccessConditions)
-	return resp, err
+	if err := f.checkAddressing("CreateSymbolicLink", base.PathOnly); err != nil {
+		return CreateSymbolicLinkResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent)
+	return f.generated().CreateSymbolicLink(ctx, linkText, opts)
 }
 
 // GetSymbolicLink operation allows to read the value of a symbolic link.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/read-symbolic-link.
 func (f *Client) GetSymbolicLink(ctx context.Context, options *GetSymbolicLinkOptions) (GetSymbolicLinkResponse, error) {
-	opts := options.format()
-	resp, err := f.generated().GetSymbolicLink(ctx, opts)
-	return resp, err
+	if err := f.checkAddressing("GetSymbolicLink", base.PathOnly); err != nil {
+		return GetSymbolicLinkResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent)
+	return f.generated().GetSymbolicLink(ctx, opts)
+}
+
+// GetFileLinks operation returns the hard links of the file, along with all user-defined metadata, content properties,
+// and system properties for the file. The name of each hard link is decoded if the service returned it encoded.
+//
+// This operation is only supported when the Client addresses the file by its file ID; use
+// share.Client.NewFileClientByFileID to create such a Client. On a Client that addresses the file by its path,
+// it returns an error wrapping fileerror.FileIDRequired without sending a request.
+func (f *Client) GetFileLinks(ctx context.Context, options *GetFileLinksOptions) (GetFileLinksResponse, error) {
+	if err := f.checkAddressing("GetFileLinks", base.FileIDOnly); err != nil {
+		return GetFileLinksResponse{}, err
+	}
+	opts := options.format(f.getClientOptions().FileRequestIntent)
+	return f.generated().GetHardLinks(ctx, opts)
 }
 
 // GetSASURL is a convenience method for generating a SAS token for the currently pointed at file.
 // It can only be used if the credential supplied during creation was a SharedKeyCredential.
 func (f *Client) GetSASURL(permissions sas.FilePermissions, expiry time.Time, o *GetSASURLOptions) (string, error) {
+	if err := f.checkAddressing("GetSASURL", base.PathOnly); err != nil {
+		return "", err
+	}
 	if f.sharedKey() == nil {
 		return "", fileerror.MissingSharedKeyCredential
 	}
@@ -376,9 +505,7 @@ func (f *Client) GetSASURL(permissions sas.FilePermissions, expiry time.Time, o 
 		return "", err
 	}
 
-	endpoint := f.URL() + "?" + qps.Encode()
-
-	return endpoint, nil
+	return sasurl.Append(f.URL(), qps.Encode()), nil
 }
 
 // Concurrent Upload Functions -----------------------------------------------------------------------------------------
@@ -442,15 +569,27 @@ func (f *Client) uploadFromReader(ctx context.Context, reader io.ReaderAt, actua
 
 // UploadBuffer uploads a buffer in chunks to an Azure file.
 func (f *Client) UploadBuffer(ctx context.Context, buffer []byte, options *UploadBufferOptions) error {
+	if err := f.checkAddressing("UploadBuffer", base.PathOnly); err != nil {
+		return err
+	}
 	uploadOptions := uploadFromReaderOptions{}
 	if options != nil {
 		uploadOptions = *options
 	}
+
+	if uploadOptions.TransactionalValidation != nil &&
+		!exported.SupportsMultiBlock(uploadOptions.TransactionalValidation) {
+		return fileerror.UnsupportedChecksum
+	}
+
 	return f.uploadFromReader(ctx, bytes.NewReader(buffer), int64(len(buffer)), &uploadOptions)
 }
 
 // UploadFile uploads a file in chunks to an Azure file.
 func (f *Client) UploadFile(ctx context.Context, file *os.File, options *UploadFileOptions) error {
+	if err := f.checkAddressing("UploadFile", base.PathOnly); err != nil {
+		return err
+	}
 	stat, err := file.Stat()
 	if err != nil {
 		return err
@@ -459,14 +598,28 @@ func (f *Client) UploadFile(ctx context.Context, file *os.File, options *UploadF
 	if options != nil {
 		uploadOptions = *options
 	}
+
+	if uploadOptions.TransactionalValidation != nil &&
+		!exported.SupportsMultiBlock(uploadOptions.TransactionalValidation) {
+		return fileerror.UnsupportedChecksum
+	}
+
 	return f.uploadFromReader(ctx, file, stat.Size(), &uploadOptions)
 }
 
 // UploadStream copies the file held in io.Reader to the file at fileClient.
 // A Context deadline or cancellation will cause this to error.
 func (f *Client) UploadStream(ctx context.Context, body io.Reader, options *UploadStreamOptions) error {
+	if err := f.checkAddressing("UploadStream", base.PathOnly); err != nil {
+		return err
+	}
 	if options == nil {
 		options = &UploadStreamOptions{}
+	}
+
+	if options.TransactionalValidation != nil &&
+		!exported.SupportsMultiBlock(options.TransactionalValidation) {
+		return fileerror.UnsupportedChecksum
 	}
 
 	err := copyFromReader(ctx, body, f, *options, newMMBPool)
@@ -538,7 +691,11 @@ func (f *Client) download(ctx context.Context, writer io.WriterAt, o downloadOpt
 				return err
 			}
 			if computeReadLength {
-				atomic.AddInt64(&dataDownloaded, *dr.ContentLength)
+				if dr.StructuredBodyType != nil && *dr.StructuredBodyType != "" && dr.ContentRange != nil {
+					atomic.AddInt64(&dataDownloaded, parseContentRangeLength(*dr.ContentRange))
+				} else {
+					atomic.AddInt64(&dataDownloaded, *dr.ContentLength)
+				}
 			}
 			err = body.Close()
 			return err
@@ -554,26 +711,37 @@ func (f *Client) download(ctx context.Context, writer io.WriterAt, o downloadOpt
 // ParseNTFSFileAttributes method can be used to convert the file attributes returned in response to NTFSFileAttributes.
 // For more information, see https://learn.microsoft.com/en-us/rest/api/storageservices/get-file.
 func (f *Client) DownloadStream(ctx context.Context, options *DownloadStreamOptions) (DownloadStreamResponse, error) {
-	opts, leaseAccessConditions := options.format()
+	if err := f.checkAddressing("DownloadStream", base.PathOnly); err != nil {
+		return DownloadStreamResponse{}, err
+	}
 	if options == nil {
 		options = &DownloadStreamOptions{}
 	}
+	opts := options.format(f.getClientOptions().FileRequestIntent, f.getClientOptions().AllowTrailingDot)
 
-	resp, err := f.generated().Download(ctx, opts, leaseAccessConditions)
+	resp, err := f.generated().Download(ctx, opts)
 	if err != nil {
 		return DownloadStreamResponse{}, err
 	}
 
+	if resp.StructuredBodyType != nil && *resp.StructuredBodyType != "" {
+		resp.Body = shared.NewSMDecoder(resp.Body)
+	}
+
 	return DownloadStreamResponse{
-		DownloadResponse:      resp,
-		client:                f,
-		getInfo:               httpGetterInfo{Range: options.Range},
-		leaseAccessConditions: options.LeaseAccessConditions,
+		DownloadResponse:        resp,
+		client:                  f,
+		getInfo:                 httpGetterInfo{Range: options.Range},
+		leaseAccessConditions:   options.LeaseAccessConditions,
+		transactionalValidation: options.TransactionalValidation,
 	}, err
 }
 
 // DownloadBuffer downloads an Azure file to a buffer with parallel.
 func (f *Client) DownloadBuffer(ctx context.Context, buffer []byte, o *DownloadBufferOptions) (int64, error) {
+	if err := f.checkAddressing("DownloadBuffer", base.PathOnly); err != nil {
+		return 0, err
+	}
 	if o == nil {
 		o = &DownloadBufferOptions{}
 	}
@@ -584,6 +752,9 @@ func (f *Client) DownloadBuffer(ctx context.Context, buffer []byte, o *DownloadB
 // DownloadFile downloads an Azure file to a local file.
 // The file would be truncated if the size doesn't match.
 func (f *Client) DownloadFile(ctx context.Context, file *os.File, o *DownloadFileOptions) (int64, error) {
+	if err := f.checkAddressing("DownloadFile", base.PathOnly); err != nil {
+		return 0, err
+	}
 	if o == nil {
 		o = &DownloadFileOptions{}
 	}
@@ -622,4 +793,12 @@ func (f *Client) DownloadFile(ctx context.Context, file *os.File, o *DownloadFil
 	} else { // if the file's size is 0, there is no need in downloading it
 		return 0, nil
 	}
+}
+
+func parseContentRangeLength(contentRange string) int64 {
+	var start, end int64
+	if _, err := fmt.Sscanf(contentRange, "bytes %d-%d/", &start, &end); err != nil {
+		return 0
+	}
+	return end - start + 1
 }

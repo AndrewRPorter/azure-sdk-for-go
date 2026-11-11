@@ -1,6 +1,8 @@
 parameters:
   ServiceDirectory: ''
+  TestResourcesDirectory: ''
   ArmTemplateParameters: '@{}'
+  AdditionalParameters: '@{}'
   DeleteAfterHours: 8
   Location: ''
   EnvVars: {}
@@ -10,6 +12,7 @@ parameters:
   UseFederatedAuth: true
   PersistOidcToken: false
   SelfContainedPostScript: self-contained-test-resources-post.ps1
+  SkipEnvironmentSetup: false
 
 # SubscriptionConfiguration will be splatted into the parameters of the test
 # resources script. It should be JSON in the form:
@@ -40,7 +43,8 @@ parameters:
 steps:
   - template: /eng/common/pipelines/templates/steps/cache-ps-modules.yml
 
-  - template: /eng/common/TestResources/setup-environments.yml
+  - ${{ if eq(parameters.SkipEnvironmentSetup, false) }}:
+    - template: /eng/common/TestResources/setup-environments.yml
 
   - ${{ if eq(parameters.PersistOidcToken, true) }}:
     - task: AzureCLI@2
@@ -98,10 +102,12 @@ steps:
           eng/common/TestResources/New-TestResources.ps1 `
             -ResourceType '${{ parameters.ResourceType }}' `
             -ServiceDirectory '${{ parameters.ServiceDirectory }}' `
+            -TestResourcesDirectory '${{ parameters.TestResourcesDirectory }}' `
             -Location '${{ parameters.Location }}' `
             -DeleteAfterHours '${{ parameters.DeleteAfterHours }}' `
             @subscriptionConfiguration `
-            -AdditionalParameters ${{ parameters.ArmTemplateParameters }} `
+            -ArmTemplateParameters ${{ parameters.ArmTemplateParameters }} `
+            -AdditionalParameters ${{ parameters.AdditionalParameters }} `
             -AllowIpRanges ('$(azsdk-corp-net-ip-ranges)' -split ',') `
             -SelfContainedPostScript $postScriptPath `
             -CI `
@@ -142,10 +148,12 @@ steps:
         eng/common/TestResources/New-TestResources.ps1 `
           -ResourceType '${{ parameters.ResourceType }}' `
           -ServiceDirectory '${{ parameters.ServiceDirectory }}' `
+          -TestResourcesDirectory '${{ parameters.TestResourcesDirectory }}' `
           -Location '${{ parameters.Location }}' `
           -DeleteAfterHours '${{ parameters.DeleteAfterHours }}' `
           @subscriptionConfiguration `
-          -AdditionalParameters ${{ parameters.ArmTemplateParameters }} `
+          -ArmTemplateParameters ${{ parameters.ArmTemplateParameters }} `
+          -AdditionalParameters ${{ parameters.AdditionalParameters }} `
           -AllowIpRanges ('$(azsdk-corp-net-ip-ranges)' -split ',') `
           -CI `
           -ServicePrincipalAuth `

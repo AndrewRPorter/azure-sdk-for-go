@@ -18,6 +18,8 @@ import (
 
 // TrafficControllerInterfaceClient contains the methods for the TrafficControllerInterface group.
 // Don't use this type directly, use NewTrafficControllerInterfaceClient() instead.
+//
+// Generated from API version 2026-03-01
 type TrafficControllerInterfaceClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type TrafficControllerInterfaceClient struct {
 // NewTrafficControllerInterfaceClient creates a new instance of TrafficControllerInterfaceClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewTrafficControllerInterfaceClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*TrafficControllerInterfaceClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewTrafficControllerInterfaceClient(subscriptionID string, credential azcor
 
 // BeginCreateOrUpdate - Create a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - trafficControllerName - traffic controller name for path
 //   - resource - Resource create parameters.
@@ -66,10 +69,8 @@ func (client *TrafficControllerInterfaceClient) BeginCreateOrUpdate(ctx context.
 	}
 }
 
-// CreateOrUpdate - Create a TrafficController
+// createOrUpdate - Create a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 func (client *TrafficControllerInterfaceClient) createOrUpdate(ctx context.Context, resourceGroupName string, trafficControllerName string, resource TrafficController, options *TrafficControllerInterfaceClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "TrafficControllerInterfaceClient.BeginCreateOrUpdate"
@@ -91,11 +92,11 @@ func (client *TrafficControllerInterfaceClient) createOrUpdate(ctx context.Conte
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *TrafficControllerInterfaceClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, trafficControllerName string, resource TrafficController, _ *TrafficControllerInterfaceClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers/{trafficControllerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -111,8 +112,8 @@ func (client *TrafficControllerInterfaceClient) createOrUpdateCreateRequest(ctx 
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -123,8 +124,6 @@ func (client *TrafficControllerInterfaceClient) createOrUpdateCreateRequest(ctx 
 
 // BeginDelete - Delete a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - trafficControllerName - traffic controller name for path
 //   - options - TrafficControllerInterfaceClientBeginDeleteOptions contains the optional parameters for the TrafficControllerInterfaceClient.BeginDelete
@@ -146,10 +145,8 @@ func (client *TrafficControllerInterfaceClient) BeginDelete(ctx context.Context,
 	}
 }
 
-// Delete - Delete a TrafficController
+// deleteOperation - Delete a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 func (client *TrafficControllerInterfaceClient) deleteOperation(ctx context.Context, resourceGroupName string, trafficControllerName string, options *TrafficControllerInterfaceClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "TrafficControllerInterfaceClient.BeginDelete"
@@ -171,11 +168,11 @@ func (client *TrafficControllerInterfaceClient) deleteOperation(ctx context.Cont
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *TrafficControllerInterfaceClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, trafficControllerName string, _ *TrafficControllerInterfaceClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers/{trafficControllerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -191,16 +188,13 @@ func (client *TrafficControllerInterfaceClient) deleteCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - trafficControllerName - traffic controller name for path
 //   - options - TrafficControllerInterfaceClientGetOptions contains the optional parameters for the TrafficControllerInterfaceClient.Get
@@ -219,11 +213,7 @@ func (client *TrafficControllerInterfaceClient) Get(ctx context.Context, resourc
 	if err != nil {
 		return TrafficControllerInterfaceClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return TrafficControllerInterfaceClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -231,7 +221,7 @@ func (client *TrafficControllerInterfaceClient) Get(ctx context.Context, resourc
 func (client *TrafficControllerInterfaceClient) getCreateRequest(ctx context.Context, resourceGroupName string, trafficControllerName string, _ *TrafficControllerInterfaceClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers/{trafficControllerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -247,15 +237,18 @@ func (client *TrafficControllerInterfaceClient) getCreateRequest(ctx context.Con
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *TrafficControllerInterfaceClient) getHandleResponse(resp *http.Response) (TrafficControllerInterfaceClientGetResponse, error) {
+func (client *TrafficControllerInterfaceClient) getHandleResponse(resp *http.Response, successCodes ...int) (TrafficControllerInterfaceClientGetResponse, error) {
 	result := TrafficControllerInterfaceClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TrafficController); err != nil {
 		return TrafficControllerInterfaceClientGetResponse{}, err
 	}
@@ -263,8 +256,6 @@ func (client *TrafficControllerInterfaceClient) getHandleResponse(resp *http.Res
 }
 
 // NewListByResourceGroupPager - List TrafficController resources by resource group
-//
-// Generated from API version 2025-03-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - options - TrafficControllerInterfaceClientListByResourceGroupOptions contains the optional parameters for the TrafficControllerInterfaceClient.NewListByResourceGroupPager
 //     method.
@@ -279,43 +270,57 @@ func (client *TrafficControllerInterfaceClient) NewListByResourceGroupPager(reso
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByResourceGroupCreateRequest(ctx, resourceGroupName, options)
-			}, nil)
+			req, err := client.listByResourceGroupCreateRequest(ctx, resourceGroupName, nextLink, options)
 			if err != nil {
 				return TrafficControllerInterfaceClientListByResourceGroupResponse{}, err
 			}
-			return client.listByResourceGroupHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return TrafficControllerInterfaceClientListByResourceGroupResponse{}, err
+			}
+			return client.listByResourceGroupHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByResourceGroupCreateRequest creates the ListByResourceGroup request.
-func (client *TrafficControllerInterfaceClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, _ *TrafficControllerInterfaceClientListByResourceGroupOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *TrafficControllerInterfaceClient) listByResourceGroupCreateRequest(ctx context.Context, resourceGroupName string, nextLink string, _ *TrafficControllerInterfaceClientListByResourceGroupOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByResourceGroupHandleResponse handles the ListByResourceGroup response.
-func (client *TrafficControllerInterfaceClient) listByResourceGroupHandleResponse(resp *http.Response) (TrafficControllerInterfaceClientListByResourceGroupResponse, error) {
+func (client *TrafficControllerInterfaceClient) listByResourceGroupHandleResponse(resp *http.Response, successCodes ...int) (TrafficControllerInterfaceClientListByResourceGroupResponse, error) {
 	result := TrafficControllerInterfaceClientListByResourceGroupResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TrafficControllerListResult); err != nil {
 		return TrafficControllerInterfaceClientListByResourceGroupResponse{}, err
 	}
@@ -323,8 +328,6 @@ func (client *TrafficControllerInterfaceClient) listByResourceGroupHandleRespons
 }
 
 // NewListBySubscriptionPager - List TrafficController resources by subscription ID
-//
-// Generated from API version 2025-03-01-preview
 //   - options - TrafficControllerInterfaceClientListBySubscriptionOptions contains the optional parameters for the TrafficControllerInterfaceClient.NewListBySubscriptionPager
 //     method.
 func (client *TrafficControllerInterfaceClient) NewListBySubscriptionPager(options *TrafficControllerInterfaceClientListBySubscriptionOptions) *runtime.Pager[TrafficControllerInterfaceClientListBySubscriptionResponse] {
@@ -338,39 +341,53 @@ func (client *TrafficControllerInterfaceClient) NewListBySubscriptionPager(optio
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySubscriptionCreateRequest(ctx, options)
-			}, nil)
+			req, err := client.listBySubscriptionCreateRequest(ctx, nextLink, options)
 			if err != nil {
 				return TrafficControllerInterfaceClientListBySubscriptionResponse{}, err
 			}
-			return client.listBySubscriptionHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return TrafficControllerInterfaceClientListBySubscriptionResponse{}, err
+			}
+			return client.listBySubscriptionHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySubscriptionCreateRequest creates the ListBySubscription request.
-func (client *TrafficControllerInterfaceClient) listBySubscriptionCreateRequest(ctx context.Context, _ *TrafficControllerInterfaceClientListBySubscriptionOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ServiceNetworking/trafficControllers"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *TrafficControllerInterfaceClient) listBySubscriptionCreateRequest(ctx context.Context, nextLink string, _ *TrafficControllerInterfaceClientListBySubscriptionOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/providers/Microsoft.ServiceNetworking/trafficControllers"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260301)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySubscriptionHandleResponse handles the ListBySubscription response.
-func (client *TrafficControllerInterfaceClient) listBySubscriptionHandleResponse(resp *http.Response) (TrafficControllerInterfaceClientListBySubscriptionResponse, error) {
+func (client *TrafficControllerInterfaceClient) listBySubscriptionHandleResponse(resp *http.Response, successCodes ...int) (TrafficControllerInterfaceClientListBySubscriptionResponse, error) {
 	result := TrafficControllerInterfaceClientListBySubscriptionResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TrafficControllerListResult); err != nil {
 		return TrafficControllerInterfaceClientListBySubscriptionResponse{}, err
 	}
@@ -379,8 +396,6 @@ func (client *TrafficControllerInterfaceClient) listBySubscriptionHandleResponse
 
 // Update - Update a TrafficController
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-03-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - trafficControllerName - traffic controller name for path
 //   - properties - The resource properties to be updated.
@@ -400,11 +415,7 @@ func (client *TrafficControllerInterfaceClient) Update(ctx context.Context, reso
 	if err != nil {
 		return TrafficControllerInterfaceClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return TrafficControllerInterfaceClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -412,7 +423,7 @@ func (client *TrafficControllerInterfaceClient) Update(ctx context.Context, reso
 func (client *TrafficControllerInterfaceClient) updateCreateRequest(ctx context.Context, resourceGroupName string, trafficControllerName string, properties TrafficControllerUpdate, _ *TrafficControllerInterfaceClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceNetworking/trafficControllers/{trafficControllerName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -428,8 +439,8 @@ func (client *TrafficControllerInterfaceClient) updateCreateRequest(ctx context.
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-03-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260301)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -439,8 +450,11 @@ func (client *TrafficControllerInterfaceClient) updateCreateRequest(ctx context.
 }
 
 // updateHandleResponse handles the Update response.
-func (client *TrafficControllerInterfaceClient) updateHandleResponse(resp *http.Response) (TrafficControllerInterfaceClientUpdateResponse, error) {
+func (client *TrafficControllerInterfaceClient) updateHandleResponse(resp *http.Response, successCodes ...int) (TrafficControllerInterfaceClientUpdateResponse, error) {
 	result := TrafficControllerInterfaceClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TrafficController); err != nil {
 		return TrafficControllerInterfaceClientUpdateResponse{}, err
 	}

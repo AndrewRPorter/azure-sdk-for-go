@@ -5,8 +5,10 @@ $LanguageDisplayName = "go"
 # get version from specific files (*constants.go, *version.go)
 function Get-GoModuleVersionInfo($modPath)
 {
-  $NO_PREFIX_VERSION_LINE_REGEX = ".+\s*=\s*`"(?<bad_version>$([AzureEngSemanticVersion]::SEMVER_REGEX))`""
-  $VERSION_LINE_REGEX = ".+\s*=\s*`".*v(?<version>$([AzureEngSemanticVersion]::SEMVER_REGEX))`""
+  # Only SDK version declarations qualify; service enums can also contain semantic versions.
+  $VERSION_CONSTANT_REGEX = "(?m)^\s*(?:const\s+)?(?:moduleVersion|serviceLibVersion|version)\s*(?:string\s*)?=\s*"
+  $NO_PREFIX_VERSION_LINE_REGEX = "$VERSION_CONSTANT_REGEX`"(?<bad_version>$([AzureEngSemanticVersion]::SEMVER_REGEX))`""
+  $VERSION_LINE_REGEX = "$VERSION_CONSTANT_REGEX`"v(?<version>$([AzureEngSemanticVersion]::SEMVER_REGEX))`""
 
   $versionFiles = Get-ChildItem -Recurse -Path $modPath -Filter *.go
 
@@ -34,12 +36,27 @@ function Get-GoModuleVersionInfo($modPath)
   return $null
 }
 
+# returns the major version suffix (e.g. 2) from a module's identity.
+# if there's no major version, $null is returned
+function Get-GoModuleMajorVersion($modPath)
+{
+  $content = Get-Content $modPath -Raw
+
+  # module github.com/Azure/azure-sdk-for-go/sdk/azcore/v2
+  # we want to return the 2. note that we must enable multi-line
+  # mode so that the ^ and $ anchors properly work.
+  if ($content -match "(?m)^module\s+\S+/v(?<majorVersion>\d+)\s*$") {
+    return "$($matches["majorVersion"])"
+  }
+  return $null
+}
+
 function Get-GoModuleProperties($goModPath)
 {
   $goModPath = $goModPath -replace "\\", "/"
   # We should keep this regex in sync with what is in the azure-sdk repo at https://github.com/Azure/azure-sdk/blob/main/eng/scripts/Query-Azure-Packages.ps1#L238
   # The serviceName named capture group is unused but used in azure-sdk, so it's kept here for parity
-  if (!$goModPath.Contains("testdata") -and !$goModPath.Contains("sdk/samples") -and $goModPath -match "(?<modPath>(sdk|profile|eng)/(?<serviceDir>(.*?(?<serviceName>[^/]+)/)?(?<modName>[^/]+$)))")
+  if (!$goModPath.Contains("testdata") -and !$goModPath.Contains("sdk/samples") -and $goModPath -match ".*(?<modPath>(sdk|profile|eng)/(?<serviceDir>(.*?(?<serviceName>[^/]+)/)?(?<modName>[^/]+$)))")
   {
     $modPath = $matches["modPath"]
     $modName = $matches["modName"] # We may need to start reading this from the go.mod file if the path and mod config start to differ
@@ -226,7 +243,12 @@ function SetPackageVersion ($PackageName, $Version, $ReleaseDate, $PackageProper
 
 function Find-Go-Artifacts-For-Apireview($ArtifactPath, $PackageName)
 {
-  $artifact = @(Get-ChildItem -Path (Join-Path $ArtifactPath $PackageName) -Filter "*.gosource")
+  $packageArtifactPath = Join-Path $ArtifactPath $PackageName
+  if (!(Test-Path $packageArtifactPath)) {
+    return $null
+  }
+
+  $artifact = @(Get-ChildItem -Path $packageArtifactPath -Filter "*.gosource")
   if ($artifact)
   {
     $packages = @{

@@ -18,6 +18,8 @@ import (
 
 // AvsVMVolumesClient contains the methods for the AvsVMVolumes group.
 // Don't use this type directly, use NewAvsVMVolumesClient() instead.
+//
+// Generated from API version 2026-05-01-preview
 type AvsVMVolumesClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type AvsVMVolumesClient struct {
 // NewAvsVMVolumesClient creates a new instance of AvsVMVolumesClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewAvsVMVolumesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*AvsVMVolumesClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewAvsVMVolumesClient(subscriptionID string, credential azcore.TokenCredent
 
 // BeginDelete - Delete a volume in an AVS VM
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - storagePoolName - Name of the storage pool
 //   - avsVMID - ID of the AVS VM
@@ -66,10 +69,8 @@ func (client *AvsVMVolumesClient) BeginDelete(ctx context.Context, resourceGroup
 	}
 }
 
-// Delete - Delete a volume in an AVS VM
+// deleteOperation - Delete a volume in an AVS VM
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 func (client *AvsVMVolumesClient) deleteOperation(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, options *AvsVMVolumesClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AvsVMVolumesClient.BeginDelete"
@@ -91,11 +92,11 @@ func (client *AvsVMVolumesClient) deleteOperation(ctx context.Context, resourceG
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *AvsVMVolumesClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, _ *AvsVMVolumesClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes/{volumeId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -119,160 +120,13 @@ func (client *AvsVMVolumesClient) deleteCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
-}
-
-// Get - Get a volume in an AVS VM
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - storagePoolName - Name of the storage pool
-//   - avsVMID - ID of the AVS VM
-//   - volumeID - ID of the volume in the AVS VM
-//   - options - AvsVMVolumesClientGetOptions contains the optional parameters for the AvsVMVolumesClient.Get method.
-func (client *AvsVMVolumesClient) Get(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, options *AvsVMVolumesClientGetOptions) (AvsVMVolumesClientGetResponse, error) {
-	var err error
-	const operationName = "AvsVMVolumesClient.Get"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.getCreateRequest(ctx, resourceGroupName, storagePoolName, avsVMID, volumeID, options)
-	if err != nil {
-		return AvsVMVolumesClientGetResponse{}, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return AvsVMVolumesClientGetResponse{}, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return AvsVMVolumesClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
-	return resp, err
-}
-
-// getCreateRequest creates the Get request.
-func (client *AvsVMVolumesClient) getCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, _ *AvsVMVolumesClientGetOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes/{volumeId}"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if storagePoolName == "" {
-		return nil, errors.New("parameter storagePoolName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
-	if avsVMID == "" {
-		return nil, errors.New("parameter avsVMID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{avsVmId}", url.PathEscape(avsVMID))
-	if volumeID == "" {
-		return nil, errors.New("parameter volumeID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{volumeId}", url.PathEscape(volumeID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// getHandleResponse handles the Get response.
-func (client *AvsVMVolumesClient) getHandleResponse(resp *http.Response) (AvsVMVolumesClientGetResponse, error) {
-	result := AvsVMVolumesClientGetResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.AvsVMVolume); err != nil {
-		return AvsVMVolumesClientGetResponse{}, err
-	}
-	return result, nil
-}
-
-// NewListByAvsVMPager - List volumes in an AVS VM
-//
-// Generated from API version 2024-11-01-preview
-//   - resourceGroupName - The name of the resource group. The name is case insensitive.
-//   - storagePoolName - Name of the storage pool
-//   - avsVMID - ID of the AVS VM
-//   - options - AvsVMVolumesClientListByAvsVMOptions contains the optional parameters for the AvsVMVolumesClient.NewListByAvsVMPager
-//     method.
-func (client *AvsVMVolumesClient) NewListByAvsVMPager(resourceGroupName string, storagePoolName string, avsVMID string, options *AvsVMVolumesClientListByAvsVMOptions) *runtime.Pager[AvsVMVolumesClientListByAvsVMResponse] {
-	return runtime.NewPager(runtime.PagingHandler[AvsVMVolumesClientListByAvsVMResponse]{
-		More: func(page AvsVMVolumesClientListByAvsVMResponse) bool {
-			return page.NextLink != nil && len(*page.NextLink) > 0
-		},
-		Fetcher: func(ctx context.Context, page *AvsVMVolumesClientListByAvsVMResponse) (AvsVMVolumesClientListByAvsVMResponse, error) {
-			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AvsVMVolumesClient.NewListByAvsVMPager")
-			nextLink := ""
-			if page != nil {
-				nextLink = *page.NextLink
-			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByAvsVMCreateRequest(ctx, resourceGroupName, storagePoolName, avsVMID, options)
-			}, nil)
-			if err != nil {
-				return AvsVMVolumesClientListByAvsVMResponse{}, err
-			}
-			return client.listByAvsVMHandleResponse(resp)
-		},
-		Tracer: client.internal.Tracer(),
-	})
-}
-
-// listByAvsVMCreateRequest creates the ListByAvsVM request.
-func (client *AvsVMVolumesClient) listByAvsVMCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, _ *AvsVMVolumesClientListByAvsVMOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if storagePoolName == "" {
-		return nil, errors.New("parameter storagePoolName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
-	if avsVMID == "" {
-		return nil, errors.New("parameter avsVMID cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{avsVmId}", url.PathEscape(avsVMID))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
-// listByAvsVMHandleResponse handles the ListByAvsVM response.
-func (client *AvsVMVolumesClient) listByAvsVMHandleResponse(resp *http.Response) (AvsVMVolumesClientListByAvsVMResponse, error) {
-	result := AvsVMVolumesClientListByAvsVMResponse{}
-	if err := runtime.UnmarshalAsJSON(resp, &result.AvsVMVolumeListResult); err != nil {
-		return AvsVMVolumesClientListByAvsVMResponse{}, err
-	}
-	return result, nil
 }
 
 // BeginUpdate - Update a volume in an AVS VM
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - storagePoolName - Name of the storage pool
 //   - avsVMID - ID of the AVS VM
@@ -297,10 +151,8 @@ func (client *AvsVMVolumesClient) BeginUpdate(ctx context.Context, resourceGroup
 	}
 }
 
-// Update - Update a volume in an AVS VM
+// update - Update a volume in an AVS VM
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-11-01-preview
 func (client *AvsVMVolumesClient) update(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, properties AvsVMVolumeUpdate, options *AvsVMVolumesClientBeginUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "AvsVMVolumesClient.BeginUpdate"
@@ -322,11 +174,11 @@ func (client *AvsVMVolumesClient) update(ctx context.Context, resourceGroupName 
 	return httpResp, nil
 }
 
-// updateCreateRequest creates the Update request.
+// updateCreateRequest creates the update request.
 func (client *AvsVMVolumesClient) updateCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, properties AvsVMVolumeUpdate, _ *AvsVMVolumesClientBeginUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes/{volumeId}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -350,12 +202,165 @@ func (client *AvsVMVolumesClient) updateCreateRequest(ctx context.Context, resou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-11-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
 		return nil, err
 	}
 	return req, nil
+}
+
+// Get - Get a volume in an AVS VM
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - storagePoolName - Name of the storage pool
+//   - avsVMID - ID of the AVS VM
+//   - volumeID - ID of the volume in the AVS VM
+//   - options - AvsVMVolumesClientGetOptions contains the optional parameters for the AvsVMVolumesClient.Get method.
+func (client *AvsVMVolumesClient) Get(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, options *AvsVMVolumesClientGetOptions) (AvsVMVolumesClientGetResponse, error) {
+	var err error
+	const operationName = "AvsVMVolumesClient.Get"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.getCreateRequest(ctx, resourceGroupName, storagePoolName, avsVMID, volumeID, options)
+	if err != nil {
+		return AvsVMVolumesClientGetResponse{}, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return AvsVMVolumesClientGetResponse{}, err
+	}
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
+	return resp, err
+}
+
+// getCreateRequest creates the Get request.
+func (client *AvsVMVolumesClient) getCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, volumeID string, _ *AvsVMVolumesClientGetOptions) (*policy.Request, error) {
+	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes/{volumeId}"
+	if client.subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+	if resourceGroupName == "" {
+		return nil, errors.New("parameter resourceGroupName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+	if storagePoolName == "" {
+		return nil, errors.New("parameter storagePoolName cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
+	if avsVMID == "" {
+		return nil, errors.New("parameter avsVMID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{avsVmId}", url.PathEscape(avsVMID))
+	if volumeID == "" {
+		return nil, errors.New("parameter volumeID cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{volumeId}", url.PathEscape(volumeID))
+	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20260501Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
+// getHandleResponse handles the Get response.
+func (client *AvsVMVolumesClient) getHandleResponse(resp *http.Response, successCodes ...int) (AvsVMVolumesClientGetResponse, error) {
+	result := AvsVMVolumesClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.AvsVMVolume); err != nil {
+		return AvsVMVolumesClientGetResponse{}, err
+	}
+	return result, nil
+}
+
+// NewListByAvsVMPager - List volumes in an AVS VM
+//   - resourceGroupName - The name of the resource group. The name is case insensitive.
+//   - storagePoolName - Name of the storage pool
+//   - avsVMID - ID of the AVS VM
+//   - options - AvsVMVolumesClientListByAvsVMOptions contains the optional parameters for the AvsVMVolumesClient.NewListByAvsVMPager
+//     method.
+func (client *AvsVMVolumesClient) NewListByAvsVMPager(resourceGroupName string, storagePoolName string, avsVMID string, options *AvsVMVolumesClientListByAvsVMOptions) *runtime.Pager[AvsVMVolumesClientListByAvsVMResponse] {
+	return runtime.NewPager(runtime.PagingHandler[AvsVMVolumesClientListByAvsVMResponse]{
+		More: func(page AvsVMVolumesClientListByAvsVMResponse) bool {
+			return page.NextLink != nil && len(*page.NextLink) > 0
+		},
+		Fetcher: func(ctx context.Context, page *AvsVMVolumesClientListByAvsVMResponse) (AvsVMVolumesClientListByAvsVMResponse, error) {
+			ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, "AvsVMVolumesClient.NewListByAvsVMPager")
+			nextLink := ""
+			if page != nil {
+				nextLink = *page.NextLink
+			}
+			req, err := client.listByAvsVMCreateRequest(ctx, resourceGroupName, storagePoolName, avsVMID, nextLink, options)
+			if err != nil {
+				return AvsVMVolumesClientListByAvsVMResponse{}, err
+			}
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return AvsVMVolumesClientListByAvsVMResponse{}, err
+			}
+			return client.listByAvsVMHandleResponse(resp, http.StatusOK)
+		},
+		Tracer: client.internal.Tracer(),
+	})
+}
+
+// listByAvsVMCreateRequest creates the ListByAvsVM request.
+func (client *AvsVMVolumesClient) listByAvsVMCreateRequest(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, nextLink string, _ *AvsVMVolumesClientListByAvsVMOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/PureStorage.Block/storagePools/{storagePoolName}/avsVms/{avsVmId}/avsVmVolumes"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if storagePoolName == "" {
+			return nil, errors.New("parameter storagePoolName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{storagePoolName}", url.PathEscape(storagePoolName))
+		if avsVMID == "" {
+			return nil, errors.New("parameter avsVMID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{avsVmId}", url.PathEscape(avsVMID))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260501Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
+	return req, nil
+}
+
+// listByAvsVMHandleResponse handles the ListByAvsVM response.
+func (client *AvsVMVolumesClient) listByAvsVMHandleResponse(resp *http.Response, successCodes ...int) (AvsVMVolumesClientListByAvsVMResponse, error) {
+	result := AvsVMVolumesClientListByAvsVMResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
+	if err := runtime.UnmarshalAsJSON(resp, &result.AvsVMVolumeListResult); err != nil {
+		return AvsVMVolumesClientListByAvsVMResponse{}, err
+	}
+	return result, nil
 }

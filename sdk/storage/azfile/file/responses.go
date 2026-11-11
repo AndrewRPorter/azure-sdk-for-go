@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -46,9 +43,10 @@ type DownloadResponse = generated.FileClientDownloadResponse
 type DownloadStreamResponse struct {
 	DownloadResponse
 
-	client                *Client
-	getInfo               httpGetterInfo
-	leaseAccessConditions *LeaseAccessConditions
+	client                  *Client
+	getInfo                 httpGetterInfo
+	leaseAccessConditions   *LeaseAccessConditions
+	transactionalValidation TransferValidationType
 }
 
 // NewRetryReader constructs new RetryReader stream for reading data. If a connection fails while
@@ -62,8 +60,9 @@ func (r *DownloadStreamResponse) NewRetryReader(ctx context.Context, options *Re
 
 	return newRetryReader(ctx, r.Body, r.getInfo, func(ctx context.Context, getInfo httpGetterInfo) (io.ReadCloser, error) {
 		options := DownloadStreamOptions{
-			Range:                 getInfo.Range,
-			LeaseAccessConditions: r.leaseAccessConditions,
+			Range:                   getInfo.Range,
+			LeaseAccessConditions:   r.leaseAccessConditions,
+			TransactionalValidation: r.transactionalValidation,
 		}
 		resp, err := r.client.DownloadStream(ctx, &options)
 		if err != nil {
@@ -88,6 +87,9 @@ type UploadRangeFromURLResponse = generated.FileClientUploadRangeFromURLResponse
 // GetRangeListResponse contains the response from method Client.GetRangeList.
 type GetRangeListResponse = generated.FileClientGetRangeListResponse
 
+// ListRangesSegmentResponse contains the response from method Client.NewListRangesPager.
+type ListRangesSegmentResponse = generated.FileClientListAllRangesResponse
+
 // ForceCloseHandlesResponse contains the response from method Client.ForceCloseHandles.
 type ForceCloseHandlesResponse = generated.FileClientForceCloseHandlesResponse
 
@@ -105,3 +107,12 @@ type CreateSymbolicLinkResponse = generated.FileClientCreateSymbolicLinkResponse
 
 // GetSymbolicLinkResponse contains response from method Client.GetSymbolicLink
 type GetSymbolicLinkResponse = generated.FileClientGetSymbolicLinkResponse
+
+// GetFileLinksResponse contains the response from method Client.GetFileLinks.
+type GetFileLinksResponse = generated.FileClientGetHardLinksResponse
+
+// HardLink - A hard link to a file.
+type HardLink = generated.HardLink
+
+// HardLinkList - The list of hard links for a file.
+type HardLinkList = generated.HardLinkList

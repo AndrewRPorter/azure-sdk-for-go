@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -213,6 +210,71 @@ func TestJoinPaths(t *testing.T) {
 			paths:    []string{"/path/one", "path/two/"},
 			expected: "http://test.contoso.com/path/one/path/two/?qp1=abc&qp2=def",
 		},
+		{
+			root:     "https://fakestorage.blob.core.windows.net/path",
+			paths:    []string{"?comp=container"},
+			expected: "https://fakestorage.blob.core.windows.net/path?comp=container",
+		},
+		{
+			root:     "https://fakestorage.blob.core.windows.net/path1/path2",
+			paths:    []string{"?comp=snapshot"},
+			expected: "https://fakestorage.blob.core.windows.net/path1/path2?comp=snapshot",
+		},
+		{
+			root:     "https://fakestorage.blob.core.windows.net?qp1=abc&qp2=def",
+			paths:    []string{"?comp=snapshot"},
+			expected: "https://fakestorage.blob.core.windows.net?comp=snapshot&qp1=abc&qp2=def",
+		},
+		{
+			root:     "https://fakestorage.blob.core.windows.net/?qp1=abc&qp2=def",
+			paths:    []string{"?comp=snapshot"},
+			expected: "https://fakestorage.blob.core.windows.net/?comp=snapshot&qp1=abc&qp2=def",
+		},
+		{
+			root:     "https://fakestorage.blob.core.windows.net/",
+			paths:    []string{"?restype=service&comp=properties"},
+			expected: "https://fakestorage.blob.core.windows.net/?restype=service&comp=properties",
+		},
+		{
+			root:     "http://test.contoso.com",
+			paths:    []string{"path/one?q=1"},
+			expected: "http://test.contoso.com/path/one?q=1",
+		},
+		{
+			root:     "http://test.contoso.com?qp1=abc",
+			paths:    []string{"?comp=snapshot&qp2=def"},
+			expected: "http://test.contoso.com?comp=snapshot&qp2=def&qp1=abc",
+		},
+		{
+			root:     "http://test.contoso.com",
+			paths:    []string{"path"},
+			expected: "http://test.contoso.com/path",
+		},
+		{
+			root:     "http://test.contoso.com/",
+			paths:    []string{"/path"},
+			expected: "http://test.contoso.com/path",
+		},
+		{
+			root:     "http://test.contoso.com",
+			paths:    []string{},
+			expected: "http://test.contoso.com",
+		},
+		{
+			root:     "http://test.contoso.com/base?existing=1",
+			paths:    []string{"?new=2"},
+			expected: "http://test.contoso.com/base?new=2&existing=1",
+		},
+		{
+			root:     "http://test.contoso.com",
+			paths:    []string{"api/v1.0", "resource"},
+			expected: "http://test.contoso.com/api/v1.0/resource",
+		},
+		{
+			root:     "http://test.contoso.com",
+			paths:    nil,
+			expected: "http://test.contoso.com",
+		},
 	}
 
 	for _, tt := range tests {
@@ -228,7 +290,7 @@ func TestRequestValidFail(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.Raw().Header.Add("inval d", "header")
-	p := exported.NewPipeline(nil)
+	p := exported.NewPipeline(nil, nil)
 	resp, err := p.Do(req)
 	if err == nil {
 		t.Fatal("unexpected nil error")
@@ -435,4 +497,14 @@ func TestNewUUID(t *testing.T) {
 	require.NoError(t, err)
 	// xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 	require.Regexp(t, regexp.MustCompile(`[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}`), u)
+}
+
+func TestNewRequestForNextLink(t *testing.T) {
+	// NOTE: the full tests for this are in the exported package.
+	// we add a simple test here due to how code coverage is calculated.
+	const endpoint = "https://contoso.com"
+	const nextLink = "https://contoso.com/next"
+	req, err := NewRequestForNextLink(context.Background(), http.MethodGet, endpoint, nextLink)
+	require.NoError(t, err)
+	require.Equal(t, nextLink, req.Raw().URL.String())
 }

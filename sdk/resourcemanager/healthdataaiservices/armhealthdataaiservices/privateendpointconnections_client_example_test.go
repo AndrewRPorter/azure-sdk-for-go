@@ -38,13 +38,13 @@ func ExamplePrivateEndpointConnectionsClient_BeginCreate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armhealthdataaiservices.PrivateEndpointConnectionsClientCreateResponse{
-	// 	PrivateEndpointConnectionResource: &armhealthdataaiservices.PrivateEndpointConnectionResource{
+	// 	PrivateEndpointConnectionResource: armhealthdataaiservices.PrivateEndpointConnectionResource{
 	// 		Properties: &armhealthdataaiservices.PrivateEndpointConnectionProperties{
 	// 			PrivateEndpoint: &armhealthdataaiservices.PrivateEndpoint{
 	// 				ID: to.Ptr("gpnxxbbtsysdhhclm"),
@@ -65,10 +65,10 @@ func ExamplePrivateEndpointConnectionsClient_BeginCreate() {
 	// 		SystemData: &armhealthdataaiservices.SystemData{
 	// 			CreatedBy: to.Ptr("p"),
 	// 			CreatedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.985Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 985000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pmbozfvwrblbknedeb"),
 	// 			LastModifiedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.986Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 986000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -91,7 +91,7 @@ func ExamplePrivateEndpointConnectionsClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
@@ -114,7 +114,7 @@ func ExamplePrivateEndpointConnectionsClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armhealthdataaiservices.PrivateEndpointConnectionsClientGetResponse{
-	// 	PrivateEndpointConnectionResource: &armhealthdataaiservices.PrivateEndpointConnectionResource{
+	// 	PrivateEndpointConnectionResource: armhealthdataaiservices.PrivateEndpointConnectionResource{
 	// 		Properties: &armhealthdataaiservices.PrivateEndpointConnectionProperties{
 	// 			PrivateEndpoint: &armhealthdataaiservices.PrivateEndpoint{
 	// 				ID: to.Ptr("gpnxxbbtsysdhhclm"),
@@ -135,10 +135,10 @@ func ExamplePrivateEndpointConnectionsClient_Get() {
 	// 		SystemData: &armhealthdataaiservices.SystemData{
 	// 			CreatedBy: to.Ptr("p"),
 	// 			CreatedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.985Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 985000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("pmbozfvwrblbknedeb"),
 	// 			LastModifiedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.986Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 986000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
@@ -190,10 +190,10 @@ func ExamplePrivateEndpointConnectionsClient_NewListByDeidServicePager() {
 		// 				SystemData: &armhealthdataaiservices.SystemData{
 		// 					CreatedBy: to.Ptr("p"),
 		// 					CreatedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.985Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 985000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("pmbozfvwrblbknedeb"),
 		// 					LastModifiedByType: to.Ptr(armhealthdataaiservices.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-04-13T19:47:24.986Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.April, 13, 19, 47, 24, 986000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

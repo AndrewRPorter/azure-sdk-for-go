@@ -1,14 +1,62 @@
 ## Release History
 
-### 1.0.2-beta.1 (Unreleased)
+### 2.2.0-beta.2 (Unreleased)
 
 #### Features Added
 
 #### Breaking Changes
 
 #### Bugs Fixed
+* Fixed SAS signing to convert `StartTime` and `ExpiryTime` values to UTC before encoding them, so non-UTC times keep the intended instant.
 
 #### Other Changes
+* Updated `azcore` version to `1.23.2`
+* The `queueerror.Code` constants now reference the generated `StorageErrorCode` values instead of duplicating string literals, keeping them in sync with the service definition.
+
+### 2.1.1 (2026-10-05)
+
+#### Bugs Fixed
+* Fixed `QueueClient.GetSASURL()` and `ServiceClient.GetSASURL()` appending a duplicated `?` to the resulting URL when the client's underlying URL already contained a query string, which produced a malformed SAS URL.
+
+#### Other Changes
+* Updated `azcore` version to `1.23.2`
+
+### 2.2.0-beta.1 (2026-07-24)
+
+#### Other Changes
+* Updated `azidentity` version to `1.14.0`
+
+### 2.1.0 (2026-05-15)
+
+#### Features Added
+* Includes all features from `2.1.0-beta.1`
+
+### 2.1.0-beta.1 (2026-04-23)
+
+#### Features Added
+* Added support for service version 2026-04-06.
+* Added cross-tenant support for Principal-Bound User Delegation SAS.
+
+### 2.0.1 (2026-01-12)
+
+#### Features Added
+* Added support for User Delegation SAS.
+* Added support for service version 2026-02-06.
+
+### 2.0.0 (2025-10-16)
+
+#### Other Changes
+* Updated service version to `2025-11-05`
+* Updated `azidentity` version to `1.13.0`
+* Updated `azcore` version to `1.19.1`
+
+### 2.0.0-beta.1 (2025-07-08)
+
+#### Breaking Changes
+* The type of ApproximateMessagesCount has changed from *int32 to *int64 to support large queues with more than int32 max value messages.
+
+### Other Changes
+* Updated `azidentity` version to `1.10.1`
 
 ### 1.0.1 (2025-04-30)
 

@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,9 +5,18 @@ package service_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
+	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/recording"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/fileerror"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/internal/exported"
@@ -20,22 +26,18 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azfile/share"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"net/http"
-	"strconv"
-	"strings"
-	"testing"
-	"time"
 )
 
 func Test(t *testing.T) {
 	recordMode := recording.GetRecordMode()
 	t.Logf("Running service Tests in %s mode\n", recordMode)
-	if recordMode == recording.LiveMode {
+	switch recordMode {
+	case recording.LiveMode:
 		suite.Run(t, &ServiceRecordedTestsSuite{})
 		suite.Run(t, &ServiceUnrecordedTestsSuite{})
-	} else if recordMode == recording.PlaybackMode {
+	case recording.PlaybackMode:
 		suite.Run(t, &ServiceRecordedTestsSuite{})
-	} else if recordMode == recording.RecordingMode {
+	case recording.RecordingMode:
 		suite.Run(t, &ServiceRecordedTestsSuite{})
 	}
 }
@@ -104,6 +106,60 @@ func (s *ServiceRecordedTestsSuite) TestAccountNewShareURLValidName() {
 	_require.Equal(shareClient.URL(), correctURL)
 }
 
+func (s *ServiceUnrecordedTestsSuite) TestGetUserDelegationCredentialError() {
+	_require := require.New(s.T())
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDefault)
+	_require.Greater(len(accountName), 0)
+
+	cred, err := testcommon.GetGenericTokenCredential()
+	_require.NoError(err)
+
+	svcClient, err := service.NewClient("https://"+accountName+".file.core.windows.net/", cred, nil)
+	_require.NoError(err)
+
+	dummyTenantID := "00000000-0000-0000-0000-000000000000"
+	now := time.Now().UTC()
+	start := now.Add(-5 * time.Minute)
+	expiry := now.Add(5 * time.Minute)
+	info := service.KeyInfo{
+		Start:                 to.Ptr(start.Format(time.RFC3339)),
+		Expiry:                to.Ptr(expiry.Format(time.RFC3339)),
+		DelegatedUserTenantID: to.Ptr(dummyTenantID),
+	}
+
+	_, err = svcClient.GetUserDelegationCredential(context.Background(), info, nil)
+	_require.Error(err)
+	testcommon.ValidateFileErrorCode(_require, err, fileerror.AuthenticationFailed)
+}
+
+func (s *ServiceUnrecordedTestsSuite) TestGetUserDelegationCredential() {
+	_require := require.New(s.T())
+
+	accountName, _ := testcommon.GetGenericAccountInfo(testcommon.TestAccountDefault)
+	_require.Greater(len(accountName), 0)
+
+	cred, err := testcommon.GetGenericTokenCredential()
+	_require.NoError(err)
+
+	options := &service.ClientOptions{}
+	testcommon.SetClientOptions(s.T(), &options.ClientOptions)
+	svcClient, err := service.NewClient("https://"+accountName+".file.core.windows.net/", cred, options)
+	_require.NoError(err)
+
+	now := time.Now().UTC()
+	start := now.Add(-5 * time.Minute)
+	expiry := now.Add(5 * time.Minute)
+	info := service.KeyInfo{
+		Start:  to.Ptr(start.Format(time.RFC3339)),
+		Expiry: to.Ptr(expiry.Format(time.RFC3339)),
+	}
+
+	response, err := svcClient.GetUserDelegationCredential(context.Background(), info, nil)
+	_require.NoError(err)
+	_require.NotNil(response)
+}
+
 func (s *ServiceRecordedTestsSuite) TestServiceClientFromConnectionString() {
 	_require := require.New(s.T())
 
@@ -153,7 +209,7 @@ func (s *ServiceRecordedTestsSuite) TestAccountProperties() {
 	_require.NoError(err)
 	_require.NotNil(setPropsResp.RequestID)
 
-	time.Sleep(time.Second * 30)
+	recording.Sleep(time.Second * 30)
 
 	getPropsResp, err := svcClient.GetProperties(context.Background(), nil)
 	_require.NoError(err)
@@ -275,6 +331,81 @@ func (s *ServiceRecordedTestsSuite) TestAccountListSharesNonDefault() {
 	}
 }
 
+func (s *ServiceRecordedTestsSuite) TestListSharesCreationTime() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	svcClient, err := testcommon.GetServiceClient(s.T(), testcommon.TestAccountDefault, nil)
+	_require.NoError(err)
+
+	shareName := testcommon.GenerateShareName(testName)
+	shareClient := testcommon.CreateNewShare(context.Background(), _require, shareName, svcClient)
+	defer testcommon.DeleteShare(context.Background(), _require, shareClient)
+
+	props, err := shareClient.GetProperties(context.Background(), nil)
+	_require.NoError(err)
+	_require.NotNil(props.CreationTime)
+
+	var shareItem *service.Share
+	pager := svcClient.NewListSharesPager(&service.ListSharesOptions{
+		Prefix: to.Ptr(shareName),
+	})
+	for pager.More() {
+		resp, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, item := range resp.Shares {
+			if item.Name != nil && *item.Name == shareName {
+				shareItem = item
+			}
+		}
+	}
+
+	_require.NotNil(shareItem)
+	_require.NotNil(shareItem.Properties)
+	_require.NotNil(shareItem.Properties.ETag)
+	_require.NotNil(shareItem.Properties.CreationTime)
+	_require.True(props.CreationTime.Equal(*shareItem.Properties.CreationTime))
+}
+
+func TestListSharesCreationTimeMocked(t *testing.T) {
+	_require := require.New(t)
+	client, srv := newMockServiceClient(t)
+	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://account.file.core.windows.net/">
+  <Shares>
+    <Share>
+      <Name>withcreationtime</Name>
+      <Properties>
+        <Last-Modified>Tue, 13 Oct 2026 10:20:31 GMT</Last-Modified>
+        <Etag>"0x8DE0000000000001"</Etag>
+        <Quota>100</Quota>
+        <Creation-Time>Tue, 13 Oct 2026 10:20:30 GMT</Creation-Time>
+      </Properties>
+    </Share>
+    <Share>
+      <Name>withoutcreationtime</Name>
+      <Properties>
+        <Last-Modified>Tue, 13 Oct 2026 10:20:31 GMT</Last-Modified>
+        <Etag>"0x8DE0000000000002"</Etag>
+        <Quota>100</Quota>
+      </Properties>
+    </Share>
+  </Shares>
+  <NextMarker />
+</EnumerationResults>`)))
+
+	resp, err := client.NewListSharesPager(nil).NextPage(context.Background())
+	_require.NoError(err)
+	_require.Len(resp.Shares, 2)
+
+	_require.Equal("withcreationtime", *resp.Shares[0].Name)
+	_require.NotNil(resp.Shares[0].Properties.CreationTime)
+	_require.True(time.Date(2026, time.October, 13, 10, 20, 30, 0, time.UTC).Equal(*resp.Shares[0].Properties.CreationTime))
+
+	_require.Equal("withoutcreationtime", *resp.Shares[1].Name)
+	_require.Nil(resp.Shares[1].Properties.CreationTime)
+}
+
 func (s *ServiceRecordedTestsSuite) TestListSharesEnableSnapshotVirtualDirectoryAccess() {
 	_require := require.New(s.T())
 	testName := s.T().Name()
@@ -380,7 +511,7 @@ func (s *ServiceUnrecordedTestsSuite) TestSASServiceClientRestoreShare() {
 	_require.NoError(err)
 
 	// wait for share deletion
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	sharesCnt := 0
 	shareVersion := ""
@@ -517,7 +648,7 @@ func (s *ServiceRecordedTestsSuite) TestServiceCreateDeleteRestoreShare() {
 	_require.NoError(err)
 
 	// wait for share deletion
-	time.Sleep(60 * time.Second)
+	recording.Sleep(60 * time.Second)
 
 	sharesCnt := 0
 	shareVersion := ""
@@ -593,6 +724,84 @@ func (s *ServiceUnrecordedTestsSuite) TestServiceCreateDeleteDirOAuth() {
 
 	_, err = dirClient.Delete(context.Background(), nil)
 	_require.NoError(err)
+}
+
+func (s *ServiceUnrecordedTestsSuite) TestUserDelegationSASWithDelegatedUserObjectId() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	// Construct a fake UDK for local signing
+	now := time.Now().UTC().Add(-1 * time.Minute)
+	expiry := now.Add(30 * time.Minute)
+	serviceCode := "f"
+	version := sas.Version
+	oid := "00000000-0000-0000-0000-000000000000"
+	tid := "11111111-1111-1111-1111-111111111111"
+	val := to.Ptr("AAAAAAAAAAAAAAAAAAAAAA==")
+
+	udk := exported.UserDelegationKey{
+		SignedStart:   &now,
+		SignedExpiry:  &expiry,
+		SignedService: &serviceCode,
+		SignedVersion: &version,
+		SignedOID:     &oid,
+		SignedTID:     &tid,
+		Value:         val,
+	}
+	udc := exported.NewUserDelegationCredential("testaccount", udk)
+
+	shareName := testcommon.GenerateShareName(testName)
+	sv := sas.SignatureValues{
+		Protocol:                    sas.ProtocolHTTPS,
+		StartTime:                   now,
+		ExpiryTime:                  expiry,
+		Permissions:                 (&sas.SharePermissions{Read: true, List: true}).String(),
+		ShareName:                   shareName,
+		SignedDelegatedUserObjectID: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+	}
+	qp, err := sv.SignWithUserDelegation(udc)
+	_require.NoError(err)
+	enc := qp.Encode()
+	_require.Contains(enc, "sduoid=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+}
+
+func (s *ServiceUnrecordedTestsSuite) TestUserDelegationSASWithDelegatedUserTenantID() {
+	_require := require.New(s.T())
+	testName := s.T().Name()
+
+	now := time.Now().UTC().Add(-time.Minute)
+	expiry := now.Add(30 * time.Minute)
+	serviceCode := "f"
+	version := sas.Version
+	oid := "00000000-0000-0000-0000-000000000000"
+	tid := "11111111-1111-1111-1111-111111111111"
+	skdutid := "22222222-2222-2222-2222-222222222222"
+	val := to.Ptr("AAAAAAAAAAAAAAAAAAAAAA==")
+
+	udk := exported.UserDelegationKey{
+		SignedStart:                 &now,
+		SignedExpiry:                &expiry,
+		SignedService:               &serviceCode,
+		SignedVersion:               &version,
+		SignedOID:                   &oid,
+		SignedTID:                   &tid,
+		SignedDelegatedUserTenantID: &skdutid,
+		Value:                       val,
+	}
+	udc := exported.NewUserDelegationCredential("testaccount", udk)
+
+	shareName := testcommon.GenerateShareName(testName)
+	sv := sas.SignatureValues{
+		Protocol:    sas.ProtocolHTTPS,
+		StartTime:   now,
+		ExpiryTime:  expiry,
+		Permissions: (&sas.SharePermissions{Read: true, List: true}).String(),
+		ShareName:   shareName,
+	}
+	qp, err := sv.SignWithUserDelegation(udc)
+	_require.NoError(err)
+	enc := qp.Encode()
+	_require.Contains(enc, "skdutid="+skdutid)
 }
 
 func (s *ServiceUnrecordedTestsSuite) TestAccountSASEncryptionScope() {
@@ -784,4 +993,122 @@ func (s *ServiceRecordedTestsSuite) TestAccountPropertiesWithNFS() {
 	resp, err := premiumShareClient.GetProperties(context.Background(), nil)
 	_require.NoError(err)
 	_require.Equal(resp.EnabledProtocols, to.Ptr("NFS"))
+}
+
+// TestServiceGetSASURLPreservesCustomQueryParams is a regression test for GetSASURL()
+// appending a duplicated "?" to the resulting URL when the client's URL already contained a
+// query string (e.g. a customer-provided endpoint with pre-existing custom query parameters),
+// which previously produced a malformed SAS URL.
+func TestServiceGetSASURLPreservesCustomQueryParams(t *testing.T) {
+	_require := require.New(t)
+	const accountName = "fakestorageaccount"
+	// base64-encoded fake key; not a real secret.
+	const accountKey = "PSA7dl59RwZBFEBhBEtdrsq/g7VpjMFeSPzdC4SoBiQI3xVLg2y8HRoAF3PidfB8/i9v67QCNSAdVdJdKrmqSw=="
+	cred, err := service.NewSharedKeyCredential(accountName, accountKey)
+	_require.NoError(err)
+
+	serviceURL := fmt.Sprintf("https://%s.file.core.windows.net/?customparam=value", accountName)
+	svcClient, err := service.NewClientWithSharedKeyCredential(serviceURL, cred, nil)
+	_require.NoError(err)
+
+	sasURL, err := svcClient.GetSASURL(
+		sas.AccountResourceTypes{Object: true},
+		sas.AccountPermissions{Read: true},
+		time.Now().Add(time.Hour),
+		nil,
+	)
+	_require.NoError(err)
+
+	_require.Equal(1, strings.Count(sasURL, "?"), "SAS URL must not contain a duplicated '?': %s", sasURL)
+	_require.Contains(sasURL, "customparam=value")
+	_require.Contains(sasURL, "sig=")
+}
+
+// TestServiceGetSASURLNoTrailingSlashBeforeQuery is a regression test for GetSASURL()
+// corrupting the query string when the client's URL has a query string but no trailing slash
+// after the account path (e.g. https://acct.file.core.windows.net?customparam=value). The
+// trailing slash added for consistency with the portal must be appended to the account path,
+// not to the query string value.
+func TestServiceGetSASURLNoTrailingSlashBeforeQuery(t *testing.T) {
+	_require := require.New(t)
+	const accountName = "fakestorageaccount"
+	// base64-encoded fake key; not a real secret.
+	const accountKey = "PSA7dl59RwZBFEBhBEtdrsq/g7VpjMFeSPzdC4SoBiQI3xVLg2y8HRoAF3PidfB8/i9v67QCNSAdVdJdKrmqSw=="
+	cred, err := service.NewSharedKeyCredential(accountName, accountKey)
+	_require.NoError(err)
+
+	serviceURL := fmt.Sprintf("https://%s.file.core.windows.net?customparam=value", accountName)
+	svcClient, err := service.NewClientWithSharedKeyCredential(serviceURL, cred, nil)
+	_require.NoError(err)
+
+	sasURL, err := svcClient.GetSASURL(
+		sas.AccountResourceTypes{Object: true},
+		sas.AccountPermissions{Read: true},
+		time.Now().Add(time.Hour),
+		nil,
+	)
+	_require.NoError(err)
+
+	_require.Equal(1, strings.Count(sasURL, "?"), "SAS URL must not contain a duplicated '?': %s", sasURL)
+	_require.Contains(sasURL, "customparam=value&", "query value must not be corrupted with an appended slash: %s", sasURL)
+	_require.NotContains(sasURL, "customparam=value/", "query value must not have a trailing slash appended: %s", sasURL)
+	_require.True(strings.HasPrefix(sasURL, fmt.Sprintf("https://%s.file.core.windows.net/?", accountName)), "trailing slash must be appended to the account path: %s", sasURL)
+}
+
+func newMockServiceClient(t *testing.T) (*service.Client, *mock.Server) {
+	srv, clientOptions := testcommon.NewMockServer(t)
+	client, err := service.NewClientWithNoCredential("https://account.file.core.windows.net/", &service.ClientOptions{
+		ClientOptions: clientOptions,
+	})
+	require.NoError(t, err)
+	return client, srv
+}
+
+func TestListSharesPagerMocked(t *testing.T) {
+	_require := require.New(t)
+	client, srv := newMockServiceClient(t)
+	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://account.file.core.windows.net/">
+	<Shares>
+		<Share><Name>share1</Name><Properties><Last-Modified>Mon, 11 May 2026 04:19:33 GMT</Last-Modified><Etag>"0x8DEAF1480FD31EF"</Etag><Quota>100</Quota></Properties></Share>
+	</Shares>
+	<NextMarker>marker1</NextMarker>
+</EnumerationResults>`)))
+	// the second page is only returned for a request that continues from the marker of the first page
+	srv.AppendResponse(mock.WithStatusCode(http.StatusOK), mock.WithBody([]byte(`<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://account.file.core.windows.net/">
+	<Shares>
+		<Share><Name>share2</Name><Properties><Last-Modified>Mon, 11 May 2026 04:19:33 GMT</Last-Modified><Etag>"0x8DEAF1480FD31F0"</Etag><Quota>200</Quota></Properties></Share>
+	</Shares>
+	<NextMarker />
+</EnumerationResults>`)), mock.WithPredicate(func(req *http.Request) bool {
+		return req.URL.Query().Get("marker") == "marker1"
+	}))
+	srv.AppendResponse(mock.WithStatusCode(http.StatusBadRequest))
+
+	var names []string
+	pager := client.NewListSharesPager(nil)
+	for pager.More() {
+		page, err := pager.NextPage(context.Background())
+		_require.NoError(err)
+		for _, s := range page.Shares {
+			names = append(names, *s.Name)
+		}
+	}
+	_require.Equal([]string{"share1", "share2"}, names)
+	_require.Equal(2, srv.Requests())
+}
+
+func TestListSharesPagerErrorMocked(t *testing.T) {
+	_require := require.New(t)
+	client, srv := newMockServiceClient(t)
+	srv.AppendResponse(mock.WithStatusCode(http.StatusForbidden),
+		mock.WithHeader("x-ms-error-code", string(fileerror.AuthorizationFailure)),
+		mock.WithBody([]byte(`<?xml version="1.0" encoding="utf-8"?><Error><Code>AuthorizationFailure</Code><Message>This request is not authorized to perform this operation.</Message></Error>`)))
+
+	_, err := client.NewListSharesPager(nil).NextPage(context.Background())
+	var respErr *azcore.ResponseError
+	_require.True(errors.As(err, &respErr))
+	_require.Equal(http.StatusForbidden, respErr.StatusCode)
+	_require.True(fileerror.HasCode(err, fileerror.AuthorizationFailure))
 }

@@ -18,13 +18,15 @@ import (
 
 // SolutionConfigurationsClient contains the methods for the SolutionConfigurations group.
 // Don't use this type directly, use NewSolutionConfigurationsClient() instead.
+//
+// Generated from API version 2027-01-01
 type SolutionConfigurationsClient struct {
 	internal *arm.Client
 }
 
 // NewSolutionConfigurationsClient creates a new instance of SolutionConfigurationsClient with the specified values.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewSolutionConfigurationsClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*SolutionConfigurationsClient, error) {
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
@@ -36,10 +38,76 @@ func NewSolutionConfigurationsClient(credential azcore.TokenCredential, options 
 	return client, nil
 }
 
+// BeginSyncNow - Trigger immediate sync with source cloud
+// If the operation fails it returns an *azcore.ResponseError type.
+//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
+//   - solutionConfiguration - Represent Solution Configuration Resource.
+//   - options - SolutionConfigurationsClientBeginSyncNowOptions contains the optional parameters for the SolutionConfigurationsClient.BeginSyncNow
+//     method.
+func (client *SolutionConfigurationsClient) BeginSyncNow(ctx context.Context, resourceURI string, solutionConfiguration string, options *SolutionConfigurationsClientBeginSyncNowOptions) (*runtime.Poller[SolutionConfigurationsClientSyncNowResponse], error) {
+	if options == nil || options.ResumeToken == "" {
+		resp, err := client.syncNow(ctx, resourceURI, solutionConfiguration, options)
+		if err != nil {
+			return nil, err
+		}
+		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[SolutionConfigurationsClientSyncNowResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+		return poller, err
+	} else {
+		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[SolutionConfigurationsClientSyncNowResponse]{
+			Tracer: client.internal.Tracer(),
+		})
+	}
+}
+
+// syncNow - Trigger immediate sync with source cloud
+// If the operation fails it returns an *azcore.ResponseError type.
+func (client *SolutionConfigurationsClient) syncNow(ctx context.Context, resourceURI string, solutionConfiguration string, options *SolutionConfigurationsClientBeginSyncNowOptions) (*http.Response, error) {
+	var err error
+	const operationName = "SolutionConfigurationsClient.BeginSyncNow"
+	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
+	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
+	defer func() { endSpan(err) }()
+	req, err := client.syncNowCreateRequest(ctx, resourceURI, solutionConfiguration, options)
+	if err != nil {
+		return nil, err
+	}
+	httpResp, err := client.internal.Pipeline().Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
+		err = runtime.NewResponseError(httpResp)
+		return nil, err
+	}
+	return httpResp, nil
+}
+
+// syncNowCreateRequest creates the syncNow request.
+func (client *SolutionConfigurationsClient) syncNowCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, _ *SolutionConfigurationsClientBeginSyncNowOptions) (*policy.Request, error) {
+	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}/syncNow"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if solutionConfiguration == "" {
+		return nil, errors.New("parameter solutionConfiguration cannot be empty")
+	}
+	urlPath = strings.ReplaceAll(urlPath, "{solutionConfiguration}", url.PathEscape(solutionConfiguration))
+	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	if err != nil {
+		return nil, err
+	}
+	reqQP := req.Raw().URL.Query()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+	req.Raw().Header["Accept"] = []string{"application/json"}
+	return req, nil
+}
+
 // CreateOrUpdate - Create a SolutionConfiguration
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - solutionConfiguration - Represent Solution Configuration Resource.
 //   - resource - Resource create parameters.
@@ -59,17 +127,16 @@ func (client *SolutionConfigurationsClient) CreateOrUpdate(ctx context.Context, 
 	if err != nil {
 		return SolutionConfigurationsClientCreateOrUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusCreated) {
-		err = runtime.NewResponseError(httpResp)
-		return SolutionConfigurationsClientCreateOrUpdateResponse{}, err
-	}
-	resp, err := client.createOrUpdateHandleResponse(httpResp)
+	resp, err := client.createOrUpdateHandleResponse(httpResp, http.StatusOK, http.StatusCreated)
 	return resp, err
 }
 
 // createOrUpdateCreateRequest creates the CreateOrUpdate request.
 func (client *SolutionConfigurationsClient) createOrUpdateCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, resource SolutionConfiguration, _ *SolutionConfigurationsClientCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
 	if solutionConfiguration == "" {
 		return nil, errors.New("parameter solutionConfiguration cannot be empty")
@@ -80,8 +147,8 @@ func (client *SolutionConfigurationsClient) createOrUpdateCreateRequest(ctx cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -91,8 +158,11 @@ func (client *SolutionConfigurationsClient) createOrUpdateCreateRequest(ctx cont
 }
 
 // createOrUpdateHandleResponse handles the CreateOrUpdate response.
-func (client *SolutionConfigurationsClient) createOrUpdateHandleResponse(resp *http.Response) (SolutionConfigurationsClientCreateOrUpdateResponse, error) {
+func (client *SolutionConfigurationsClient) createOrUpdateHandleResponse(resp *http.Response, successCodes ...int) (SolutionConfigurationsClientCreateOrUpdateResponse, error) {
 	result := SolutionConfigurationsClientCreateOrUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.SolutionConfiguration); err != nil {
 		return SolutionConfigurationsClientCreateOrUpdateResponse{}, err
 	}
@@ -101,8 +171,6 @@ func (client *SolutionConfigurationsClient) createOrUpdateHandleResponse(resp *h
 
 // Delete - Delete a SolutionConfiguration
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - solutionConfiguration - Represent Solution Configuration Resource.
 //   - options - SolutionConfigurationsClientDeleteOptions contains the optional parameters for the SolutionConfigurationsClient.Delete
@@ -131,6 +199,9 @@ func (client *SolutionConfigurationsClient) Delete(ctx context.Context, resource
 // deleteCreateRequest creates the Delete request.
 func (client *SolutionConfigurationsClient) deleteCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, _ *SolutionConfigurationsClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
 	if solutionConfiguration == "" {
 		return nil, errors.New("parameter solutionConfiguration cannot be empty")
@@ -141,16 +212,13 @@ func (client *SolutionConfigurationsClient) deleteCreateRequest(ctx context.Cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a SolutionConfiguration
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - solutionConfiguration - Represent Solution Configuration Resource.
 //   - options - SolutionConfigurationsClientGetOptions contains the optional parameters for the SolutionConfigurationsClient.Get
@@ -169,17 +237,16 @@ func (client *SolutionConfigurationsClient) Get(ctx context.Context, resourceURI
 	if err != nil {
 		return SolutionConfigurationsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return SolutionConfigurationsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
 // getCreateRequest creates the Get request.
 func (client *SolutionConfigurationsClient) getCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, _ *SolutionConfigurationsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
 	if solutionConfiguration == "" {
 		return nil, errors.New("parameter solutionConfiguration cannot be empty")
@@ -190,15 +257,18 @@ func (client *SolutionConfigurationsClient) getCreateRequest(ctx context.Context
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *SolutionConfigurationsClient) getHandleResponse(resp *http.Response) (SolutionConfigurationsClientGetResponse, error) {
+func (client *SolutionConfigurationsClient) getHandleResponse(resp *http.Response, successCodes ...int) (SolutionConfigurationsClientGetResponse, error) {
 	result := SolutionConfigurationsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.SolutionConfiguration); err != nil {
 		return SolutionConfigurationsClientGetResponse{}, err
 	}
@@ -206,8 +276,6 @@ func (client *SolutionConfigurationsClient) getHandleResponse(resp *http.Respons
 }
 
 // NewListPager - List SolutionConfiguration resources by parent
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - options - SolutionConfigurationsClientListOptions contains the optional parameters for the SolutionConfigurationsClient.NewListPager
 //     method.
@@ -222,121 +290,67 @@ func (client *SolutionConfigurationsClient) NewListPager(resourceURI string, opt
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listCreateRequest(ctx, resourceURI, options)
-			}, nil)
+			req, err := client.listCreateRequest(ctx, resourceURI, nextLink, options)
 			if err != nil {
 				return SolutionConfigurationsClientListResponse{}, err
 			}
-			return client.listHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return SolutionConfigurationsClientListResponse{}, err
+			}
+			return client.listHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listCreateRequest creates the List request.
-func (client *SolutionConfigurationsClient) listCreateRequest(ctx context.Context, resourceURI string, _ *SolutionConfigurationsClientListOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations"
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+func (client *SolutionConfigurationsClient) listCreateRequest(ctx context.Context, resourceURI string, nextLink string, _ *SolutionConfigurationsClientListOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations"
+		if resourceURI == "" {
+			return nil, errors.New("parameter resourceURI cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20270101)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listHandleResponse handles the List response.
-func (client *SolutionConfigurationsClient) listHandleResponse(resp *http.Response) (SolutionConfigurationsClientListResponse, error) {
+func (client *SolutionConfigurationsClient) listHandleResponse(resp *http.Response, successCodes ...int) (SolutionConfigurationsClientListResponse, error) {
 	result := SolutionConfigurationsClientListResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.SolutionConfigurationListResult); err != nil {
 		return SolutionConfigurationsClientListResponse{}, err
 	}
 	return result, nil
 }
 
-// BeginSyncNow - Trigger immediate sync with source cloud
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
-//   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
-//   - solutionConfiguration - Represent Solution Configuration Resource.
-//   - options - SolutionConfigurationsClientBeginSyncNowOptions contains the optional parameters for the SolutionConfigurationsClient.BeginSyncNow
-//     method.
-func (client *SolutionConfigurationsClient) BeginSyncNow(ctx context.Context, resourceURI string, solutionConfiguration string, options *SolutionConfigurationsClientBeginSyncNowOptions) (*runtime.Poller[SolutionConfigurationsClientSyncNowResponse], error) {
-	if options == nil || options.ResumeToken == "" {
-		resp, err := client.syncNow(ctx, resourceURI, solutionConfiguration, options)
-		if err != nil {
-			return nil, err
-		}
-		poller, err := runtime.NewPoller(resp, client.internal.Pipeline(), &runtime.NewPollerOptions[SolutionConfigurationsClientSyncNowResponse]{
-			Tracer: client.internal.Tracer(),
-		})
-		return poller, err
-	} else {
-		return runtime.NewPollerFromResumeToken(options.ResumeToken, client.internal.Pipeline(), &runtime.NewPollerFromResumeTokenOptions[SolutionConfigurationsClientSyncNowResponse]{
-			Tracer: client.internal.Tracer(),
-		})
-	}
-}
-
-// SyncNow - Trigger immediate sync with source cloud
-// If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
-func (client *SolutionConfigurationsClient) syncNow(ctx context.Context, resourceURI string, solutionConfiguration string, options *SolutionConfigurationsClientBeginSyncNowOptions) (*http.Response, error) {
-	var err error
-	const operationName = "SolutionConfigurationsClient.BeginSyncNow"
-	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
-	ctx, endSpan := runtime.StartSpan(ctx, operationName, client.internal.Tracer(), nil)
-	defer func() { endSpan(err) }()
-	req, err := client.syncNowCreateRequest(ctx, resourceURI, solutionConfiguration, options)
-	if err != nil {
-		return nil, err
-	}
-	httpResp, err := client.internal.Pipeline().Do(req)
-	if err != nil {
-		return nil, err
-	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusAccepted) {
-		err = runtime.NewResponseError(httpResp)
-		return nil, err
-	}
-	return httpResp, nil
-}
-
-// syncNowCreateRequest creates the SyncNow request.
-func (client *SolutionConfigurationsClient) syncNowCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, _ *SolutionConfigurationsClientBeginSyncNowOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}/syncNow"
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	if solutionConfiguration == "" {
-		return nil, errors.New("parameter solutionConfiguration cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{solutionConfiguration}", url.PathEscape(solutionConfiguration))
-	req, err := runtime.NewRequest(ctx, http.MethodPost, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
-	if err != nil {
-		return nil, err
-	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
-	return req, nil
-}
-
 // Update - Update a SolutionConfiguration
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - solutionConfiguration - Represent Solution Configuration Resource.
 //   - properties - The resource properties to be updated.
 //   - options - SolutionConfigurationsClientUpdateOptions contains the optional parameters for the SolutionConfigurationsClient.Update
 //     method.
-func (client *SolutionConfigurationsClient) Update(ctx context.Context, resourceURI string, solutionConfiguration string, properties SolutionConfiguration, options *SolutionConfigurationsClientUpdateOptions) (SolutionConfigurationsClientUpdateResponse, error) {
+func (client *SolutionConfigurationsClient) Update(ctx context.Context, resourceURI string, solutionConfiguration string, properties SolutionConfigurationUpdate, options *SolutionConfigurationsClientUpdateOptions) (SolutionConfigurationsClientUpdateResponse, error) {
 	var err error
 	const operationName = "SolutionConfigurationsClient.Update"
 	ctx = context.WithValue(ctx, runtime.CtxAPINameKey{}, operationName)
@@ -350,17 +364,16 @@ func (client *SolutionConfigurationsClient) Update(ctx context.Context, resource
 	if err != nil {
 		return SolutionConfigurationsClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return SolutionConfigurationsClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
 // updateCreateRequest creates the Update request.
-func (client *SolutionConfigurationsClient) updateCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, properties SolutionConfiguration, _ *SolutionConfigurationsClientUpdateOptions) (*policy.Request, error) {
+func (client *SolutionConfigurationsClient) updateCreateRequest(ctx context.Context, resourceURI string, solutionConfiguration string, properties SolutionConfigurationUpdate, _ *SolutionConfigurationsClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/solutionConfigurations/{solutionConfiguration}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
 	if solutionConfiguration == "" {
 		return nil, errors.New("parameter solutionConfiguration cannot be empty")
@@ -371,8 +384,8 @@ func (client *SolutionConfigurationsClient) updateCreateRequest(ctx context.Cont
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, properties); err != nil {
@@ -382,8 +395,11 @@ func (client *SolutionConfigurationsClient) updateCreateRequest(ctx context.Cont
 }
 
 // updateHandleResponse handles the Update response.
-func (client *SolutionConfigurationsClient) updateHandleResponse(resp *http.Response) (SolutionConfigurationsClientUpdateResponse, error) {
+func (client *SolutionConfigurationsClient) updateHandleResponse(resp *http.Response, successCodes ...int) (SolutionConfigurationsClientUpdateResponse, error) {
 	result := SolutionConfigurationsClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.SolutionConfiguration); err != nil {
 		return SolutionConfigurationsClientUpdateResponse{}, err
 	}

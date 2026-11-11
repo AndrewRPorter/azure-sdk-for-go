@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -21,6 +18,19 @@ func PossibleFilePermissionFormatValues() []FilePermissionFormat {
 	return generated.PossibleFilePermissionFormatValues()
 }
 
+// PropertySemantics has two values - New and Restore, SMB only
+type PropertySemantics = generated.FilePropertySemantics
+
+const (
+	FilePropertySemanticsNew     PropertySemantics = "New"
+	FilePropertySemanticsRestore PropertySemantics = "Restore"
+)
+
+// PossiblePropertySemanticsValues returns the possible values for the PropertySemantics const type.
+func PossiblePropertySemanticsValues() []PropertySemantics {
+	return generated.PossibleFilePropertySemanticsValues()
+}
+
 // ListFilesIncludeType defines values for ListFilesIncludeType
 type ListFilesIncludeType = generated.ListFilesIncludeType
 
@@ -32,8 +42,14 @@ const (
 )
 
 // PossibleListFilesIncludeTypeValues returns the possible values for the ListFilesIncludeType const type.
+// NFS List V2 values are generated but not yet exposed.
 func PossibleListFilesIncludeTypeValues() []ListFilesIncludeType {
-	return generated.PossibleListFilesIncludeTypeValues()
+	return []ListFilesIncludeType{
+		ListFilesIncludeTypeAttributes,
+		ListFilesIncludeTypeETag,
+		ListFilesIncludeTypePermissionKey,
+		ListFilesIncludeTypeTimestamps,
+	}
 }
 
 // ShareTokenIntent is required if authorization header specifies an OAuth token.

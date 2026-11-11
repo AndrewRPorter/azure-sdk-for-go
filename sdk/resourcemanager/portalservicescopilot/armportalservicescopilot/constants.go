@@ -5,8 +5,7 @@
 package armportalservicescopilot
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/portalservicescopilot/armportalservicescopilot"
-	moduleVersion = "v0.1.0"
+	version20240401Preview string = "2024-04-01-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.

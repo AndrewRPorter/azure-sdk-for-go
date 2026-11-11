@@ -5,8 +5,7 @@
 package armmongocluster
 
 const (
-	moduleName    = "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/mongocluster/armmongocluster"
-	moduleVersion = "v1.1.0-beta.1"
+	version20260615Preview string = "2026-06-15-preview"
 )
 
 // ActionType - Extensible enum. Indicates the action type. "Internal" refers to actions that are for internal only APIs.
@@ -184,6 +183,63 @@ func PossibleIdentityProviderTypeValues() []IdentityProviderType {
 	}
 }
 
+// KeyEncryptionKeyIdentityType - The type of identity for key encryption key.
+type KeyEncryptionKeyIdentityType string
+
+const (
+	// KeyEncryptionKeyIdentityTypeUserAssignedIdentity - User assigned identity.
+	KeyEncryptionKeyIdentityTypeUserAssignedIdentity KeyEncryptionKeyIdentityType = "UserAssignedIdentity"
+)
+
+// PossibleKeyEncryptionKeyIdentityTypeValues returns the possible values for the KeyEncryptionKeyIdentityType const type.
+func PossibleKeyEncryptionKeyIdentityTypeValues() []KeyEncryptionKeyIdentityType {
+	return []KeyEncryptionKeyIdentityType{
+		KeyEncryptionKeyIdentityTypeUserAssignedIdentity,
+	}
+}
+
+// ManagedServiceIdentityType - Type of managed service identity (where both SystemAssigned and UserAssigned types are allowed).
+type ManagedServiceIdentityType string
+
+const (
+	// ManagedServiceIdentityTypeNone - No managed identity.
+	ManagedServiceIdentityTypeNone ManagedServiceIdentityType = "None"
+	// ManagedServiceIdentityTypeSystemAssigned - System assigned managed identity.
+	ManagedServiceIdentityTypeSystemAssigned ManagedServiceIdentityType = "SystemAssigned"
+	// ManagedServiceIdentityTypeSystemAssignedUserAssigned - System and user assigned managed identity.
+	ManagedServiceIdentityTypeSystemAssignedUserAssigned ManagedServiceIdentityType = "SystemAssigned,UserAssigned"
+	// ManagedServiceIdentityTypeUserAssigned - User assigned managed identity.
+	ManagedServiceIdentityTypeUserAssigned ManagedServiceIdentityType = "UserAssigned"
+)
+
+// PossibleManagedServiceIdentityTypeValues returns the possible values for the ManagedServiceIdentityType const type.
+func PossibleManagedServiceIdentityTypeValues() []ManagedServiceIdentityType {
+	return []ManagedServiceIdentityType{
+		ManagedServiceIdentityTypeNone,
+		ManagedServiceIdentityTypeSystemAssigned,
+		ManagedServiceIdentityTypeSystemAssignedUserAssigned,
+		ManagedServiceIdentityTypeUserAssigned,
+	}
+}
+
+// NetworkBypassMode - The network bypass mode for the Mongo cluster.
+type NetworkBypassMode string
+
+const (
+	// NetworkBypassModeAzureCosmosDB - Allows Azure Cosmos DB service to bypass network restrictions.
+	NetworkBypassModeAzureCosmosDB NetworkBypassMode = "AzureCosmosDB"
+	// NetworkBypassModeNone - No network bypass is enabled.
+	NetworkBypassModeNone NetworkBypassMode = "None"
+)
+
+// PossibleNetworkBypassModeValues returns the possible values for the NetworkBypassMode const type.
+func PossibleNetworkBypassModeValues() []NetworkBypassMode {
+	return []NetworkBypassMode{
+		NetworkBypassModeAzureCosmosDB,
+		NetworkBypassModeNone,
+	}
+}
+
 // Origin - The intended executor of the operation; as in Resource Based Access Control (RBAC) and audit logs UX. Default
 // value is "user,system"
 type Origin string
@@ -290,12 +346,16 @@ const (
 	// PromoteOptionForced - Promote option forces the promotion without waiting for the replica to be caught up to the primary.
 	// This can result in data-loss so should only be used during disaster recovery scenarios.
 	PromoteOptionForced PromoteOption = "Forced"
+	// PromoteOptionPlanned - Promote option waits for the replica to be caught up to the primary before promoting, guaranteeing
+	// no data loss during the promotion.
+	PromoteOptionPlanned PromoteOption = "Planned"
 )
 
 // PossiblePromoteOptionValues returns the possible values for the PromoteOption const type.
 func PossiblePromoteOptionValues() []PromoteOption {
 	return []PromoteOption{
 		PromoteOptionForced,
+		PromoteOptionPlanned,
 	}
 }
 
@@ -455,13 +515,13 @@ func PossibleStorageTypeValues() []StorageType {
 type UserRole string
 
 const (
-	// UserRoleDatabaseOwner - Datbase owner role permissions on the target scope.
-	UserRoleDatabaseOwner UserRole = "dbOwner"
+	// UserRoleRoot - Root role permissions on the target scope.
+	UserRoleRoot UserRole = "root"
 )
 
 // PossibleUserRoleValues returns the possible values for the UserRole const type.
 func PossibleUserRoleValues() []UserRole {
 	return []UserRole{
-		UserRoleDatabaseOwner,
+		UserRoleRoot,
 	}
 }

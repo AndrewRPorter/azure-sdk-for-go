@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -34,6 +31,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/path"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/internal/shared"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azdatalake/sas"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/internal/sasurl"
 )
 
 // ClientOptions contains the optional parameters when creating a Client.
@@ -65,14 +63,19 @@ func NewClient(fileURL string, cred azcore.TokenCredential, options *ClientOptio
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
+		// sessions apply only to the requests this client sends to the blob endpoint
+		Session: conOptions.Session,
 	}
-	blobClient, _ := blockblob.NewClient(blobURL, cred, &blobClientOpts)
+	blobClient, err := blockblob.NewClient(blobURL, cred, &blobClientOpts)
+	if err != nil {
+		return nil, err
+	}
 	fileClient := base.NewPathClient(fileURL, blobURL, blobClient, azClient, nil, &cred, (*base.ClientOptions)(conOptions))
 
 	return (*Client)(fileClient), nil
@@ -98,10 +101,10 @@ func NewClientWithNoCredential(fileURL string, options *ClientOptions) (*Client,
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -134,10 +137,10 @@ func NewClientWithSharedKeyCredential(fileURL string, cred *SharedKeyCredential,
 		options = &ClientOptions{}
 	}
 	perCallPolicies := []policy.Policy{shared.NewIncludeBlobResponsePolicy()}
-	if options.ClientOptions.PerCallPolicies != nil {
-		perCallPolicies = append(perCallPolicies, options.ClientOptions.PerCallPolicies...)
+	if options.PerCallPolicies != nil {
+		perCallPolicies = append(perCallPolicies, options.PerCallPolicies...)
 	}
-	options.ClientOptions.PerCallPolicies = perCallPolicies
+	options.PerCallPolicies = perCallPolicies
 	blobClientOpts := blockblob.ClientOptions{
 		ClientOptions: options.ClientOptions,
 	}
@@ -214,8 +217,7 @@ func (f *Client) BlobURL() string {
 
 // Create creates a new file.
 func (f *Client) Create(ctx context.Context, options *CreateOptions) (CreateResponse, error) {
-	lac, mac, httpHeaders, createOpts, cpkOpts := options.format()
-	resp, err := f.generatedFileClientWithDFS().Create(ctx, createOpts, httpHeaders, lac, mac, nil, cpkOpts)
+	resp, err := f.generatedFileClientWithDFS().Create(ctx, options.format())
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -223,9 +225,18 @@ func (f *Client) Create(ctx context.Context, options *CreateOptions) (CreateResp
 // Delete deletes a file.
 func (f *Client) Delete(ctx context.Context, options *DeleteOptions) (DeleteResponse, error) {
 	lac, mac, deleteOpts := path.FormatDeleteOptions(options, false)
-	resp, err := f.generatedFileClientWithDFS().Delete(ctx, deleteOpts, lac, mac)
+	if lac != nil {
+		deleteOpts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		deleteOpts.IfMatch = mac.IfMatch
+		deleteOpts.IfNoneMatch = mac.IfNoneMatch
+		deleteOpts.IfModifiedSince = mac.IfModifiedSince
+		deleteOpts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	resp, err := f.generatedFileClientWithDFS().Delete(ctx, deleteOpts)
 	err = exported.ConvertToDFSError(err)
-	return resp, err
+	return path.FormatDeleteResponse(resp), err
 }
 
 // GetProperties gets the properties of a file.
@@ -259,7 +270,10 @@ func (f *Client) Rename(ctx context.Context, destinationPath string, options *Re
 		return RenameResponse{}, err
 	}
 	srcParts := strings.Split(f.DFSURL(), "?")
-	newSrcPath := oldPath.Path
+	// Use the percent-encoded path for the x-ms-rename-source header. oldPath.Path is
+	// decoded, so source names containing spaces or non-ASCII characters would be sent
+	// unencoded and rejected by the service with 400 InvalidSourceUri. See #23831/#24369.
+	newSrcPath := oldPath.EscapedPath()
 	newSrcQuery := ""
 	if len(srcParts) == 2 {
 		newSrcQuery = srcParts[1]
@@ -297,7 +311,27 @@ func (f *Client) Rename(ctx context.Context, destinationPath string, options *Re
 		return RenameResponse{}, exported.ConvertToDFSError(err)
 	}
 	newFileClient := (*Client)(base.NewPathClient(newPathURL, newBlobURL, newBlobClient, f.generatedFileClientWithDFS().InternalClient().WithClientName(exported.ModuleName), f.sharedKey(), f.identityCredential(), f.getClientOptions()))
-	resp, err := newFileClient.generatedFileClientWithDFS().Create(ctx, createOpts, nil, lac, mac, smac, cpkOpts)
+	if lac != nil {
+		createOpts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		createOpts.IfMatch = mac.IfMatch
+		createOpts.IfNoneMatch = mac.IfNoneMatch
+		createOpts.IfModifiedSince = mac.IfModifiedSince
+		createOpts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	if smac != nil {
+		createOpts.SourceIfMatch = smac.SourceIfMatch
+		createOpts.SourceIfNoneMatch = smac.SourceIfNoneMatch
+		createOpts.SourceIfModifiedSince = smac.SourceIfModifiedSince
+		createOpts.SourceIfUnmodifiedSince = smac.SourceIfUnmodifiedSince
+	}
+	if cpkOpts != nil {
+		createOpts.EncryptionAlgorithm = cpkOpts.EncryptionAlgorithm
+		createOpts.EncryptionKey = cpkOpts.EncryptionKey
+		createOpts.EncryptionKeySHA256 = cpkOpts.EncryptionKeySHA256
+	}
+	resp, err := newFileClient.generatedFileClientWithDFS().Create(ctx, createOpts)
 	return path.FormatRenameResponse(&resp), exported.ConvertToDFSError(err)
 }
 
@@ -321,7 +355,16 @@ func (f *Client) SetAccessControl(ctx context.Context, options *SetAccessControl
 	if err != nil {
 		return SetAccessControlResponse{}, err
 	}
-	resp, err := f.generatedFileClientWithDFS().SetAccessControl(ctx, opts, lac, mac)
+	if lac != nil {
+		opts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		opts.IfMatch = mac.IfMatch
+		opts.IfNoneMatch = mac.IfNoneMatch
+		opts.IfModifiedSince = mac.IfModifiedSince
+		opts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	resp, err := f.generatedFileClientWithDFS().SetAccessControl(ctx, opts)
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -337,7 +380,24 @@ func (f *Client) UpdateAccessControl(ctx context.Context, acl string, options *U
 // GetAccessControl gets the owner, owning group, and permissions for a file.
 func (f *Client) GetAccessControl(ctx context.Context, options *GetAccessControlOptions) (GetAccessControlResponse, error) {
 	opts, lac, mac := path.FormatGetAccessControlOptions(options)
-	resp, err := f.generatedFileClientWithDFS().GetProperties(ctx, opts, lac, mac)
+	if lac != nil {
+		opts.LeaseID = lac.LeaseID
+	}
+	if mac != nil {
+		opts.IfMatch = mac.IfMatch
+		opts.IfNoneMatch = mac.IfNoneMatch
+		opts.IfModifiedSince = mac.IfModifiedSince
+		opts.IfUnmodifiedSince = mac.IfUnmodifiedSince
+	}
+	resp, err := f.generatedFileClientWithDFS().GetProperties(ctx, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
+}
+
+// GetSystemProperties returns all system defined properties for a file.
+func (f *Client) GetSystemProperties(ctx context.Context, options *GetSystemPropertiesOptions) (GetSystemPropertiesResponse, error) {
+	opts := path.FormatGetSystemPropertiesOptions(options)
+	resp, err := f.generatedFileClientWithDFS().GetProperties(ctx, opts)
 	err = exported.ConvertToDFSError(err)
 	return resp, err
 }
@@ -366,6 +426,25 @@ func (f *Client) SetHTTPHeaders(ctx context.Context, httpHeaders HTTPHeaders, op
 	path.FormatSetHTTPHeadersResponse(&newResp, &resp)
 	err = exported.ConvertToDFSError(err)
 	return newResp, err
+}
+
+// GetTags gets the tags associated with a file.
+func (f *Client) GetTags(ctx context.Context, options *GetTagsOptions) (GetTagsResponse, error) {
+	opts := path.FormatGetTagsOptions(options)
+	resp, err := f.blobClient().GetTags(ctx, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
+}
+
+// SetTags sets tags on a file.
+// A file can have up to 10 tags. Tag keys must be between 1 and 128 characters. Tag values must be between 0 and 256 characters.
+// Valid tag key and value characters include lower and upper case letters, digits (0-9),
+// space (' '), plus ('+'), minus ('-'), period ('.'), forward slash ('/'), colon (':'), equals ('='), and underscore ('_').
+func (f *Client) SetTags(ctx context.Context, tags map[string]string, options *SetTagsOptions) (SetTagsResponse, error) {
+	opts := path.FormatSetTagsOptions(options)
+	resp, err := f.blobClient().SetTags(ctx, tags, opts)
+	err = exported.ConvertToDFSError(err)
+	return resp, err
 }
 
 // GetSASURL is a convenience method for generating a SAS token for the currently pointed at file.
@@ -397,38 +476,50 @@ func (f *Client) GetSASURL(permissions sas.FilePermissions, expiry time.Time, o 
 		return "", err
 	}
 
-	endpoint := f.BlobURL() + "?" + qps.Encode()
-
-	return endpoint, nil
+	return sasurl.Append(f.BlobURL(), qps.Encode()), nil
 }
 
 // AppendData appends data to existing file with a given offset.
 func (f *Client) AppendData(ctx context.Context, offset int64, body io.ReadSeekCloser, options *AppendDataOptions) (AppendDataResponse, error) {
-	appendDataOptions, leaseAccessConditions, cpkInfo, err := options.format(offset, body)
+	body, appendDataOptions, err := options.format(offset, body)
 	if err != nil {
 		return AppendDataResponse{}, err
 	}
-	resp, err := f.generatedFileClientWithDFS().AppendData(ctx, body, appendDataOptions, nil, leaseAccessConditions, cpkInfo)
+	resp, err := f.generatedFileClientWithDFS().AppendData(ctx, body, appendDataOptions)
 	return resp, exported.ConvertToDFSError(err)
 }
 
 // FlushData commits appended data to file
 func (f *Client) FlushData(ctx context.Context, offset int64, options *FlushDataOptions) (FlushDataResponse, error) {
-	flushDataOpts, modifiedAccessConditions, leaseAccessConditions, httpHeaderOpts, cpkInfoOpts, err := options.format(offset)
+	flushDataOpts, err := options.format(offset)
 	if err != nil {
 		return FlushDataResponse{}, err
 	}
 
-	resp, err := f.generatedFileClientWithDFS().FlushData(ctx, flushDataOpts, httpHeaderOpts, leaseAccessConditions, modifiedAccessConditions, cpkInfoOpts)
+	resp, err := f.generatedFileClientWithDFS().FlushData(ctx, flushDataOpts)
 	return resp, exported.ConvertToDFSError(err)
 }
 
 // Concurrent Upload Functions -----------------------------------------------------------------------------------------
 
+// rejectPrecomputedValidation returns datalakeerror.UnsupportedChecksum when tv is a user-supplied
+// precomputed checksum (e.g. TransferValidationTypeCRC64). Multipart uploads split the payload across
+// multiple AppendData calls, so a single precomputed checksum for the whole payload cannot validate
+// every chunk. Computed CRC64 (a func type, hashed per chunk) and structured message CRC64 are allowed.
+func rejectPrecomputedValidation(tv TransferValidationType) error {
+	if tv != nil && !exported.SupportsMultiBlock(tv) {
+		return datalakeerror.UnsupportedChecksum
+	}
+	return nil
+}
+
 // uploadFromReader uploads a buffer in chunks to an Azure file.
 func (f *Client) uploadFromReader(ctx context.Context, reader io.ReaderAt, actualSize int64, o *uploadFromReaderOptions) error {
 	if actualSize > MaxFileSize {
 		return errors.New("buffer is too large to upload to a file")
+	}
+	if err := rejectPrecomputedValidation(o.TransactionalValidation); err != nil {
+		return err
 	}
 	if o.ChunkSize == 0 {
 		o.ChunkSize = MaxAppendBytes
@@ -531,6 +622,9 @@ func (f *Client) UploadStream(ctx context.Context, body io.Reader, options *Uplo
 		options = &UploadStreamOptions{}
 	}
 
+	if err := rejectPrecomputedValidation(options.TransactionalValidation); err != nil {
+		return err
+	}
 	if options.EncryptionContext != nil {
 		_, err := f.Create(ctx, &CreateOptions{EncryptionContext: options.EncryptionContext})
 		if err != nil {
@@ -558,16 +652,20 @@ func (f *Client) DownloadStream(ctx context.Context, o *DownloadStreamOptions) (
 	var respFromCtx *http.Response
 	ctxWithResp := shared.WithCaptureBlobResponse(ctx, &respFromCtx)
 	resp, err := f.blobClient().DownloadStream(ctxWithResp, opts)
+	if err != nil {
+		return DownloadStreamResponse{}, exported.ConvertToDFSError(err)
+	}
 	newResp := FormatDownloadStreamResponse(&resp, respFromCtx)
 	fullResp := DownloadStreamResponse{
-		client:           f,
-		DownloadResponse: newResp,
-		getInfo:          httpGetterInfo{Range: o.Range, ETag: newResp.ETag},
-		cpkInfo:          o.CPKInfo,
-		cpkScope:         o.CPKScopeInfo,
+		client:                  f,
+		DownloadResponse:        newResp,
+		getInfo:                 httpGetterInfo{Range: o.Range, ETag: newResp.ETag},
+		cpkInfo:                 o.CPKInfo,
+		cpkScope:                o.CPKScopeInfo,
+		transactionalValidation: o.TransactionalValidation,
 	}
 
-	return fullResp, exported.ConvertToDFSError(err)
+	return fullResp, nil
 }
 
 // DownloadBuffer downloads an Azure file to a buffer with parallel.

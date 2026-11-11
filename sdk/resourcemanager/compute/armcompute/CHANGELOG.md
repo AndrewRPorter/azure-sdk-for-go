@@ -1,5 +1,381 @@
 # Release History
 
+## 9.0.0 (2026-10-15)
+### Breaking Changes
+
+- Operation `*CapacityReservationGroupsClient.Delete` has been changed to LRO, use `*CapacityReservationGroupsClient.BeginDelete` instead.
+
+### Features Added
+
+- New struct `FlexProfile`
+- New field `PrivateIPAddressPrefixLength` in struct `VirtualMachineNetworkInterfaceIPConfigurationProperties`
+- New field `FlexProfile` in struct `VirtualMachineProperties`
+- New field `PrivateIPAddressPrefixLength` in struct `VirtualMachineScaleSetIPConfigurationProperties`
+- New field `PrivateIPAddressPrefixLength` in struct `VirtualMachineScaleSetUpdateIPConfigurationProperties`
+
+
+## 8.4.0 (2026-09-20)
+### Features Added
+
+- New value `ConfidentialVMEncryptionTypeDataDiskEncryptedWithCmk` added to enum type `ConfidentialVMEncryptionType`
+- New enum type `GalleryImageVersionState` with values `GalleryImageVersionStateActive`, `GalleryImageVersionStateSoftDeleted`
+- New enum type `MetadataType` with values `MetadataTypeSecretsProvisioningImageMetadata`, `MetadataTypeUserProvidedSecretsProvisioningMetadata`
+- New enum type `SecretsProvisioningComponentName` with values `SecretsProvisioningComponentNameAzureGuestAgent`, `SecretsProvisioningComponentNameCloudInit`, `SecretsProvisioningComponentNameOS`, `SecretsProvisioningComponentNameSecretsProvisioningLibrary`
+- New struct `DataDiskImageSecurityProfile`
+- New struct `ImageMetadataProfile`
+- New struct `MetadataKeyValue`
+- New struct `SecretsProvisioningComponent`
+- New struct `SecretsProvisioningSettings`
+- New field `ConsumptionEndTime`, `ImageState` in struct `CommunityGalleryImageVersionProperties`
+- New field `SecurityProfile` in struct `DataDiskImageEncryption`
+- New field `ImageMetadataProfiles` in struct `GalleryImageVersionProperties`
+- New field `BypassSoftDelete` in struct `GalleryImageVersionsClientBeginDeleteOptions`
+- New field `ConsumptionEndTime`, `HardDeletionTargetTime` in struct `GallerySoftDeletedResourceProperties`
+- New field `SecretsProvisioningSettings` in struct `ImageVersionSecurityProfile`
+- New field `ConsumptionEndTime`, `ImageState` in struct `SharedGalleryImageVersionProperties`
+- New field `GracePeriodInDays`, `RetentionPeriodInDays` in struct `SoftDeletePolicy`
+
+
+## 8.3.0 (2026-08-12)
+### Features Added
+
+- New value `ReservationTypeOpen` added to enum type `ReservationType`
+- New value `VirtualMachinePriorityTypesSpotPlus` added to enum type `VirtualMachinePriorityTypes`
+- New enum type `CapacityReservationType` with values `CapacityReservationTypeBlock`, `CapacityReservationTypeDisabled`, `CapacityReservationTypeNotEligible`, `CapacityReservationTypeOpen`, `CapacityReservationTypeTargeted`
+- New enum type `DiskAPIVersion` with values `DiskAPIVersion20250102`, `DiskAPIVersion20260302`
+- New enum type `ListVersionsExpandOptions` with values `ListVersionsExpandOptionsProperties`
+- New enum type `ProcessorMode` with values `ProcessorModeDeterministic`, `ProcessorModeOpportunistic`
+- New enum type `ReleaseCategory` with values `ReleaseCategoryBugFix`, `ReleaseCategoryCompatibilityUpdate`, `ReleaseCategoryNewFeature`, `ReleaseCategoryOther`, `ReleaseCategorySecurityFix`
+- New enum type `ReservationState` with values `ReservationStateApproved`, `ReservationStateCommitted`, `ReservationStateDeclined`, `ReservationStateFulfillmentFailed`, `ReservationStateLive`, `ReservationStatePartiallyFulfilled`, `ReservationStatePending`
+- New enum type `RunProfile` with values `RunProfileHybrid`, `RunProfileLongRunning`, `RunProfileOther`, `RunProfileRunOnce`
+- New enum type `UrgencyLevel` with values `UrgencyLevelEmergency`, `UrgencyLevelExpedited`, `UrgencyLevelRegular`
+- New enum type `VirtualMachineDiskDelayAction` with values `VirtualMachineDiskDelayActionAutomaticReattach`, `VirtualMachineDiskDelayActionNone`
+- New enum type `VirtualMachineDiskNetworkAccessPolicy` with values `VirtualMachineDiskNetworkAccessPolicyAllowAll`, `VirtualMachineDiskNetworkAccessPolicyAllowPrivate`, `VirtualMachineDiskNetworkAccessPolicyDenyAll`
+- New function `*ClientFactory.NewVirtualMachineDiagnosticRunCommandsClient() *VirtualMachineDiagnosticRunCommandsClient`
+- New function `*ClientFactory.NewVirtualMachineScaleSetVMDiagnosticRunCommandsClient() *VirtualMachineScaleSetVMDiagnosticRunCommandsClient`
+- New function `NewVirtualMachineDiagnosticRunCommandsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*VirtualMachineDiagnosticRunCommandsClient, error)`
+- New function `*VirtualMachineDiagnosticRunCommandsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, vmName string, runCommandName string, runCommand VirtualMachineDiagnosticRunCommand, options *VirtualMachineDiagnosticRunCommandsClientBeginCreateOrUpdateOptions) (*runtime.Poller[VirtualMachineDiagnosticRunCommandsClientCreateOrUpdateResponse], error)`
+- New function `*VirtualMachineDiagnosticRunCommandsClient.BeginDelete(ctx context.Context, resourceGroupName string, vmName string, runCommandName string, options *VirtualMachineDiagnosticRunCommandsClientBeginDeleteOptions) (*runtime.Poller[VirtualMachineDiagnosticRunCommandsClientDeleteResponse], error)`
+- New function `*VirtualMachineDiagnosticRunCommandsClient.NewDiagnosticListByVirtualMachinePager(resourceGroupName string, vmName string, options *VirtualMachineDiagnosticRunCommandsClientDiagnosticListByVirtualMachineOptions) *runtime.Pager[VirtualMachineDiagnosticRunCommandsClientDiagnosticListByVirtualMachineResponse]`
+- New function `*VirtualMachineDiagnosticRunCommandsClient.GetByVirtualMachine(ctx context.Context, resourceGroupName string, vmName string, runCommandName string, options *VirtualMachineDiagnosticRunCommandsClientGetByVirtualMachineOptions) (VirtualMachineDiagnosticRunCommandsClientGetByVirtualMachineResponse, error)`
+- New function `*VirtualMachineDiagnosticRunCommandsClient.BeginUpdate(ctx context.Context, resourceGroupName string, vmName string, runCommandName string, runCommand VirtualMachineRunCommandUpdate, options *VirtualMachineDiagnosticRunCommandsClientBeginUpdateOptions) (*runtime.Poller[VirtualMachineDiagnosticRunCommandsClientUpdateResponse], error)`
+- New function `NewVirtualMachineScaleSetVMDiagnosticRunCommandsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*VirtualMachineScaleSetVMDiagnosticRunCommandsClient, error)`
+- New function `*VirtualMachineScaleSetVMDiagnosticRunCommandsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, vmScaleSetName string, instanceID string, runCommandName string, runCommand VirtualMachineDiagnosticRunCommand, options *VirtualMachineScaleSetVMDiagnosticRunCommandsClientBeginCreateOrUpdateOptions) (*runtime.Poller[VirtualMachineScaleSetVMDiagnosticRunCommandsClientCreateOrUpdateResponse], error)`
+- New function `*VirtualMachineScaleSetVMDiagnosticRunCommandsClient.BeginDelete(ctx context.Context, resourceGroupName string, vmScaleSetName string, instanceID string, runCommandName string, options *VirtualMachineScaleSetVMDiagnosticRunCommandsClientBeginDeleteOptions) (*runtime.Poller[VirtualMachineScaleSetVMDiagnosticRunCommandsClientDeleteResponse], error)`
+- New function `*VirtualMachineScaleSetVMDiagnosticRunCommandsClient.NewDiagnosticListPager(resourceGroupName string, vmScaleSetName string, instanceID string, options *VirtualMachineScaleSetVMDiagnosticRunCommandsClientDiagnosticListOptions) *runtime.Pager[VirtualMachineScaleSetVMDiagnosticRunCommandsClientDiagnosticListResponse]`
+- New function `*VirtualMachineScaleSetVMDiagnosticRunCommandsClient.Get(ctx context.Context, resourceGroupName string, vmScaleSetName string, instanceID string, runCommandName string, options *VirtualMachineScaleSetVMDiagnosticRunCommandsClientGetOptions) (VirtualMachineScaleSetVMDiagnosticRunCommandsClientGetResponse, error)`
+- New function `*VirtualMachineScaleSetVMDiagnosticRunCommandsClient.BeginUpdate(ctx context.Context, resourceGroupName string, vmScaleSetName string, instanceID string, runCommandName string, runCommand VirtualMachineRunCommandUpdate, options *VirtualMachineScaleSetVMDiagnosticRunCommandsClientBeginUpdateOptions) (*runtime.Poller[VirtualMachineScaleSetVMDiagnosticRunCommandsClientUpdateResponse], error)`
+- New function `*VirtualMachineScaleSetsClient.BeginMigrateVMAvailabilityZone(ctx context.Context, resourceGroupName string, vmScaleSetName string, body MigrateVMAvailabilityZoneInput, options *VirtualMachineScaleSetsClientBeginMigrateVMAvailabilityZoneOptions) (*runtime.Poller[VirtualMachineScaleSetsClientMigrateVMAvailabilityZoneResponse], error)`
+- New struct `AdditionalDiskProperties`
+- New struct `CapacityReservationStateInfo`
+- New struct `DiskAvailabilityPolicy`
+- New struct `ExtensionFeatureMetadata`
+- New struct `ExtensionFeatureTag`
+- New struct `MigrateVMAvailabilityZoneInput`
+- New struct `VirtualMachineDiagnosticRunCommand`
+- New struct `VirtualMachineDiagnosticRunCommandsListResult`
+- New struct `VirtualMachineDiskProperties`
+- New field `ReservationStateInfo` in struct `CapacityReservationInstanceView`
+- New field `ReservationStateInfo` in struct `CapacityReservationInstanceViewWithName`
+- New field `DisableCapacityReservationAssignment` in struct `CapacityReservationProfile`
+- New field `UsedReservedCountBySubscription` in struct `CapacityReservationUtilization`
+- New field `ProcessorMode` in struct `HardwareProfile`
+- New field `UseLocalFileRules` in struct `HostEndpointSettings`
+- New field `AdditionalDiskProperties` in struct `ManagedDiskParameters`
+- New field `MinimumCommitmentDays`, `ModifiableUntil` in struct `ScheduleProfile`
+- New field `DiskAPIVersion` in struct `StorageProfile`
+- New field `ExtensionFeatureMetadata`, `ReleaseCategory`, `ReleaseNotes`, `RunProfile`, `UrgencyLevel` in struct `VirtualMachineExtensionImageProperties`
+- New field `Expand` in struct `VirtualMachineExtensionImagesClientListVersionsOptions`
+- New field `FirstPartyServiceTagID` in struct `VirtualMachineIPTag`
+- New field `CapacityReservationType` in struct `VirtualMachineInstanceView`
+- New field `ProcessorMode` in struct `VirtualMachineScaleSetHardwareProfile`
+- New field `FirstPartyServiceTagID` in struct `VirtualMachineScaleSetIPTag`
+- New field `AdditionalDiskProperties` in struct `VirtualMachineScaleSetManagedDiskParameters`
+- New field `DiskAPIVersion` in struct `VirtualMachineScaleSetStorageProfile`
+- New field `DiskAPIVersion` in struct `VirtualMachineScaleSetUpdateStorageProfile`
+- New field `CapacityReservationType` in struct `VirtualMachineScaleSetVMInstanceView`
+- New field `CapacityReservation` in struct `VirtualMachineScaleSetVMProperties`
+
+
+## 8.2.0 (2026-07-15)
+### Features Added
+
+- New value `RollingUpgradeStatusCodeRollingBack` added to enum type `RollingUpgradeStatusCode`
+- New value `UpgradeStateRollingBack` added to enum type `UpgradeState`
+- New enum type `ConfidentialVMVersion` with values `ConfidentialVMVersionV1`, `ConfidentialVMVersionV2`
+- New enum type `ImmutabilityPolicyType` with values `ImmutabilityPolicyTypeLocked`, `ImmutabilityPolicyTypeUnlocked`
+- New function `*ClientFactory.NewSharedGalleryInvitesClient() *SharedGalleryInvitesClient`
+- New function `*ClientFactory.NewTenantLevelSharedGalleryInvitesClient() *TenantLevelSharedGalleryInvitesClient`
+- New function `NewSharedGalleryInvitesClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*SharedGalleryInvitesClient, error)`
+- New function `*SharedGalleryInvitesClient.BeginGallerySharingAccept(ctx context.Context, location string, sharedGallerySubscriptionID string, sharedGalleryName string, options *SharedGalleryInvitesClientBeginGallerySharingAcceptOptions) (*runtime.Poller[SharedGalleryInvitesClientGallerySharingAcceptResponse], error)`
+- New function `*SharedGalleryInvitesClient.BeginGallerySharingReject(ctx context.Context, location string, sharedGallerySubscriptionID string, sharedGalleryName string, options *SharedGalleryInvitesClientBeginGallerySharingRejectOptions) (*runtime.Poller[SharedGalleryInvitesClientGallerySharingRejectResponse], error)`
+- New function `*SnapshotsClient.BeginUpdateImmutabilityPolicy(ctx context.Context, resourceGroupName string, snapshotName string, immutabilityPolicyData ImmutabilityPolicyData, options *SnapshotsClientBeginUpdateImmutabilityPolicyOptions) (*runtime.Poller[SnapshotsClientUpdateImmutabilityPolicyResponse], error)`
+- New function `*SnapshotsClient.BeginUpdateImmutabilityPolicyLock(ctx context.Context, resourceGroupName string, snapshotName string, immutabilityPolicyData ImmutabilityPolicyLockData, options *SnapshotsClientBeginUpdateImmutabilityPolicyLockOptions) (*runtime.Poller[SnapshotsClientUpdateImmutabilityPolicyLockResponse], error)`
+- New function `NewTenantLevelSharedGalleryInvitesClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*TenantLevelSharedGalleryInvitesClient, error)`
+- New function `*TenantLevelSharedGalleryInvitesClient.BeginTenantLevelGallerySharingAccept(ctx context.Context, location string, sharedGallerySubscriptionID string, sharedGalleryName string, options *TenantLevelSharedGalleryInvitesClientBeginTenantLevelGallerySharingAcceptOptions) (*runtime.Poller[TenantLevelSharedGalleryInvitesClientTenantLevelGallerySharingAcceptResponse], error)`
+- New function `*TenantLevelSharedGalleryInvitesClient.BeginTenantLevelGallerySharingReject(ctx context.Context, location string, sharedGallerySubscriptionID string, sharedGalleryName string, options *TenantLevelSharedGalleryInvitesClientBeginTenantLevelGallerySharingRejectOptions) (*runtime.Poller[TenantLevelSharedGalleryInvitesClientTenantLevelGallerySharingRejectResponse], error)`
+- New struct `ImmutabilityPolicy`
+- New struct `ImmutabilityPolicyData`
+- New struct `ImmutabilityPolicyLockData`
+- New field `SnapshotAccessState` in struct `DiskRestorePointProperties`
+- New field `ConfidentialVMVersion` in struct `DiskSecurityProfile`
+- New field `ImmutabilityPolicy` in struct `SnapshotProperties`
+
+
+## 8.1.0 (2026-06-17)
+### Features Added
+
+- New enum type `InterconnectBlockExpandTypes` with values `InterconnectBlockExpandTypesInstanceView`
+- New function `*ClientFactory.NewInterconnectBlocksClient() *InterconnectBlocksClient`
+- New function `NewInterconnectBlocksClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*InterconnectBlocksClient, error)`
+- New function `*InterconnectBlocksClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, interconnectBlockName string, resource InterconnectBlock, options *InterconnectBlocksClientBeginCreateOrUpdateOptions) (*runtime.Poller[InterconnectBlocksClientCreateOrUpdateResponse], error)`
+- New function `*InterconnectBlocksClient.BeginDelete(ctx context.Context, resourceGroupName string, interconnectBlockName string, options *InterconnectBlocksClientBeginDeleteOptions) (*runtime.Poller[InterconnectBlocksClientDeleteResponse], error)`
+- New function `*InterconnectBlocksClient.Get(ctx context.Context, resourceGroupName string, interconnectBlockName string, options *InterconnectBlocksClientGetOptions) (InterconnectBlocksClientGetResponse, error)`
+- New function `*InterconnectBlocksClient.NewListByResourceGroupPager(resourceGroupName string, options *InterconnectBlocksClientListByResourceGroupOptions) *runtime.Pager[InterconnectBlocksClientListByResourceGroupResponse]`
+- New function `*InterconnectBlocksClient.NewListBySubscriptionPager(options *InterconnectBlocksClientListBySubscriptionOptions) *runtime.Pager[InterconnectBlocksClientListBySubscriptionResponse]`
+- New function `*InterconnectBlocksClient.BeginUpdate(ctx context.Context, resourceGroupName string, interconnectBlockName string, properties InterconnectBlockUpdate, options *InterconnectBlocksClientBeginUpdateOptions) (*runtime.Poller[InterconnectBlocksClientUpdateResponse], error)`
+- New struct `AutomaticSKUMigrationPolicy`
+- New struct `InterconnectBlock`
+- New struct `InterconnectBlockInstanceView`
+- New struct `InterconnectBlockListResult`
+- New struct `InterconnectBlockProfile`
+- New struct `InterconnectBlockProperties`
+- New struct `InterconnectBlockUpdate`
+- New struct `InterconnectGroupProfile`
+- New struct `InterconnectInstanceView`
+- New field `InterconnectGroupProfile` in struct `NetworkProfile`
+- New field `AutomaticSKUMigrationPolicy` in struct `SKUProfile`
+- New field `InterconnectInstanceView` in struct `VirtualMachineInstanceView`
+- New field `InterconnectBlockProfile` in struct `VirtualMachineProperties`
+- New field `InterconnectGroupProfile` in struct `VirtualMachineScaleSetNetworkProfile`
+- New field `InterconnectGroupProfile` in struct `VirtualMachineScaleSetUpdateNetworkProfile`
+- New field `InterconnectBlockProfile` in struct `VirtualMachineScaleSetUpdateVMProfile`
+- New field `InterconnectInstanceView` in struct `VirtualMachineScaleSetVMInstanceView`
+- New field `InterconnectGroupProfile` in struct `VirtualMachineScaleSetVMNetworkProfileConfiguration`
+- New field `InterconnectBlockProfile` in struct `VirtualMachineScaleSetVMProfile`
+- New field `InterconnectBlockProfile` in struct `VirtualMachineScaleSetVMProperties`
+
+
+## 8.0.0 (2026-04-21)
+### Breaking Changes
+
+- All Cloud Services (classic) related types, clients, and functions have been removed due to the [Azure Cloud Services (classic) retirement](https://azure.microsoft.com/updates?id=486344).
+
+### Features Added
+
+- New value `SecurityTypesStandard` added to enum type `SecurityTypes`
+- New value `ZonalPlatformFaultDomainAlignModeBestEffortAligned` added to enum type `ZonalPlatformFaultDomainAlignMode`
+- New enum type `LifecycleHookAction` with values `LifecycleHookActionApprove`, `LifecycleHookActionReject`
+- New enum type `LifecycleHookActionState` with values `LifecycleHookActionStateApproved`, `LifecycleHookActionStateRejected`, `LifecycleHookActionStateWaiting`
+- New enum type `StorageAlignmentStatus` with values `StorageAlignmentStatusAligned`, `StorageAlignmentStatusUnaligned`
+- New enum type `StorageFaultDomainAlignmentType` with values `StorageFaultDomainAlignmentTypeAligned`, `StorageFaultDomainAlignmentTypeBestEffortAligned`
+- New enum type `VMScaleSetLifecycleHookEventState` with values `VMScaleSetLifecycleHookEventStateActive`, `VMScaleSetLifecycleHookEventStateCompleted`
+- New enum type `VMScaleSetLifecycleHookEventType` with values `VMScaleSetLifecycleHookEventTypeUpgradeAutoOSRollingBatchStarting`, `VMScaleSetLifecycleHookEventTypeUpgradeAutoOSScheduling`
+- New function `*ClientFactory.NewVirtualMachineScaleSetLifeCycleHookEventsClient() *VirtualMachineScaleSetLifeCycleHookEventsClient`
+- New function `PossibleLifecycleHookActionValues() []LifecycleHookAction`
+- New function `NewVirtualMachineScaleSetLifeCycleHookEventsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*VirtualMachineScaleSetLifeCycleHookEventsClient, error)`
+- New function `*VirtualMachineScaleSetLifeCycleHookEventsClient.Get(ctx context.Context, resourceGroupName string, vmScaleSetName string, lifecycleHookEventName string, options *VirtualMachineScaleSetLifeCycleHookEventsClientGetOptions) (VirtualMachineScaleSetLifeCycleHookEventsClientGetResponse, error)`
+- New function `*VirtualMachineScaleSetLifeCycleHookEventsClient.NewListPager(resourceGroupName string, vmScaleSetName string, options *VirtualMachineScaleSetLifeCycleHookEventsClientListOptions) *runtime.Pager[VirtualMachineScaleSetLifeCycleHookEventsClientListResponse]`
+- New function `*VirtualMachineScaleSetLifeCycleHookEventsClient.Update(ctx context.Context, resourceGroupName string, vmScaleSetName string, lifecycleHookEventName string, properties VMScaleSetLifecycleHookEventUpdate, options *VirtualMachineScaleSetLifeCycleHookEventsClientUpdateOptions) (VirtualMachineScaleSetLifeCycleHookEventsClientUpdateResponse, error)`
+- New struct `ExternalHealthPolicy`
+- New struct `LifecycleHook`
+- New struct `LifecycleHooksProfile`
+- New struct `OperationRecoverySettings`
+- New struct `ReimageRecoveryPolicy`
+- New struct `ResiliencyProfile`
+- New struct `RestartRecoveryPolicy`
+- New struct `StartRecoveryPolicy`
+- New struct `VMScaleSetLifecycleHookEvent`
+- New struct `VMScaleSetLifecycleHookEventAdditionalContext`
+- New struct `VMScaleSetLifecycleHookEventListResult`
+- New struct `VMScaleSetLifecycleHookEventProperties`
+- New struct `VMScaleSetLifecycleHookEventTargetResource`
+- New struct `VMScaleSetLifecycleHookEventUpdate`
+- New struct `ZoneMovement`
+- New field `Expand` in struct `CapacityReservationsClientListByCapacityReservationGroupOptions`
+- New field `StorageFaultDomainAlignment` in struct `DataDisk`
+- New field `EnableFullCaching` in struct `DiffDiskSettings`
+- New field `StorageAlignmentStatus` in struct `DiskInstanceView`
+- New field `StorageFaultDomainAlignment` in struct `OSDisk`
+- New field `OperationRecoverySettings` in struct `ResiliencyPolicy`
+- New field `ResiliencyProfile` in struct `VirtualMachineProperties`
+- New field `StorageFaultDomainAlignment` in struct `VirtualMachineScaleSetDataDisk`
+- New field `StorageFaultDomainAlignment` in struct `VirtualMachineScaleSetOSDisk`
+- New field `ExternalHealthPolicy`, `LifecycleHooksProfile` in struct `VirtualMachineScaleSetProperties`
+- New field `Placement` in struct `VirtualMachineScaleSetUpdate`
+- New field `StorageFaultDomainAlignment` in struct `VirtualMachineScaleSetUpdateOSDisk`
+- New field `LifecycleHooksProfile` in struct `VirtualMachineScaleSetUpdateProperties`
+- New field `VirtualMachineResourceID` in struct `VirtualMachineScaleSetVMProperties`
+- New field `ForceDeallocate` in struct `VirtualMachinesClientBeginDeallocateOptions`
+
+
+## 7.3.0 (2026-01-23)
+### Features Added
+
+- New enum type `GalleryScriptParameterType` with values `GalleryScriptParameterTypeBoolean`, `GalleryScriptParameterTypeDouble`, `GalleryScriptParameterTypeEnum`, `GalleryScriptParameterTypeInt`, `GalleryScriptParameterTypeString`
+- New enum type `StorageAccountStrategy` with values `StorageAccountStrategyDefaultStandardLRS`, `StorageAccountStrategyPreferStandardZRS`
+- New function `*ClientFactory.NewGalleryScriptVersionsClient() *GalleryScriptVersionsClient`
+- New function `*ClientFactory.NewGalleryScriptsClient() *GalleryScriptsClient`
+- New function `NewGalleryScriptVersionsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*GalleryScriptVersionsClient, error)`
+- New function `*GalleryScriptVersionsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScriptVersionName string, galleryScriptVersion GalleryScriptVersion, options *GalleryScriptVersionsClientBeginCreateOrUpdateOptions) (*runtime.Poller[GalleryScriptVersionsClientCreateOrUpdateResponse], error)`
+- New function `*GalleryScriptVersionsClient.BeginDelete(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScriptVersionName string, options *GalleryScriptVersionsClientBeginDeleteOptions) (*runtime.Poller[GalleryScriptVersionsClientDeleteResponse], error)`
+- New function `*GalleryScriptVersionsClient.Get(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScriptVersionName string, options *GalleryScriptVersionsClientGetOptions) (GalleryScriptVersionsClientGetResponse, error)`
+- New function `*GalleryScriptVersionsClient.NewListByGalleryScriptPager(resourceGroupName string, galleryName string, galleryScriptName string, options *GalleryScriptVersionsClientListByGalleryScriptOptions) *runtime.Pager[GalleryScriptVersionsClientListByGalleryScriptResponse]`
+- New function `*GalleryScriptVersionsClient.BeginUpdate(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScriptVersionName string, galleryScriptVersion GalleryScriptVersionUpdate, options *GalleryScriptVersionsClientBeginUpdateOptions) (*runtime.Poller[GalleryScriptVersionsClientUpdateResponse], error)`
+- New function `NewGalleryScriptsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*GalleryScriptsClient, error)`
+- New function `*GalleryScriptsClient.BeginCreateOrUpdate(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScript GalleryScript, options *GalleryScriptsClientBeginCreateOrUpdateOptions) (*runtime.Poller[GalleryScriptsClientCreateOrUpdateResponse], error)`
+- New function `*GalleryScriptsClient.BeginDelete(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, options *GalleryScriptsClientBeginDeleteOptions) (*runtime.Poller[GalleryScriptsClientDeleteResponse], error)`
+- New function `*GalleryScriptsClient.Get(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, options *GalleryScriptsClientGetOptions) (GalleryScriptsClientGetResponse, error)`
+- New function `*GalleryScriptsClient.NewListByGalleryPager(resourceGroupName string, galleryName string, options *GalleryScriptsClientListByGalleryOptions) *runtime.Pager[GalleryScriptsClientListByGalleryResponse]`
+- New function `*GalleryScriptsClient.BeginUpdate(ctx context.Context, resourceGroupName string, galleryName string, galleryScriptName string, galleryScript GalleryScriptUpdate, options *GalleryScriptsClientBeginUpdateOptions) (*runtime.Poller[GalleryScriptsClientUpdateResponse], error)`
+- New struct `GalleryScript`
+- New struct `GalleryScriptList`
+- New struct `GalleryScriptParameter`
+- New struct `GalleryScriptProperties`
+- New struct `GalleryScriptUpdate`
+- New struct `GalleryScriptVersion`
+- New struct `GalleryScriptVersionList`
+- New struct `GalleryScriptVersionProperties`
+- New struct `GalleryScriptVersionPublishingProfile`
+- New struct `GalleryScriptVersionSafetyProfile`
+- New struct `GalleryScriptVersionUpdate`
+- New struct `ScriptSource`
+- New field `StorageAccountStrategy` in struct `GalleryApplicationVersionPublishingProfile`
+- New field `StorageAccountStrategy` in struct `GalleryImageVersionPublishingProfile`
+
+
+## 7.2.0 (2025-11-21)
+### Features Added
+
+- New field `EnableFips1403Encryption` in struct `AdditionalCapabilities`
+- New field `SnapshotAccessState` in struct `DiskRestorePointInstanceView`
+- New field `InstantAccess` in struct `RestorePointCollectionProperties`
+- New field `InstantAccessDurationMinutes` in struct `RestorePointProperties`
+
+
+## 7.1.0 (2025-10-09)
+### Features Added
+
+- New value `OrchestrationServiceNamesAutomaticZoneRebalancing` added to enum type `OrchestrationServiceNames`
+- New value `ZonePlacementPolicyTypeAuto` added to enum type `ZonePlacementPolicyType`
+- New enum type `HighSpeedInterconnectPlacement` with values `HighSpeedInterconnectPlacementNone`, `HighSpeedInterconnectPlacementTrunk`
+- New enum type `OrchestrationServiceOperationStatus` with values `OrchestrationServiceOperationStatusCompleted`, `OrchestrationServiceOperationStatusInProgress`
+- New enum type `ReservationType` with values `ReservationTypeBlock`, `ReservationTypeTargeted`
+- New enum type `ScriptShellTypes` with values `ScriptShellTypesDefault`, `ScriptShellTypesPowershell7`
+- New function `*VirtualMachineScaleSetsClient.BeginScaleOut(context.Context, string, string, VMScaleSetScaleOutInput, *VirtualMachineScaleSetsClientBeginScaleOutOptions) (*runtime.Poller[VirtualMachineScaleSetsClientScaleOutResponse], error)`
+- New struct `AllInstancesDown`
+- New struct `MaxInstancePercentPerZonePolicy`
+- New struct `ScheduleProfile`
+- New struct `VMScaleSetScaleOutInput`
+- New struct `VMScaleSetScaleOutInputProperties`
+- New struct `ZoneAllocationPolicy`
+- New field `ReservationType` in struct `CapacityReservationGroupProperties`
+- New field `ScheduleProfile` in struct `CapacityReservationProperties`
+- New field `ScheduledEventsAPIVersion` in struct `EventGridAndResourceGraph`
+- New field `LastStatusChangeTime`, `LatestOperationStatus` in struct `OrchestrationServiceSummary`
+- New field `AddProxyAgentExtension` in struct `ProxyAgentSettings`
+- New field `ZoneAllocationPolicy` in struct `ResiliencyPolicy`
+- New field `AllInstancesDown` in struct `ScheduledEventsPolicy`
+- New field `Tags` in struct `VirtualMachineNetworkInterfaceConfiguration`
+- New field `Tags` in struct `VirtualMachinePublicIPAddressConfiguration`
+- New field `GalleryScriptReferenceID`, `ScriptShell` in struct `VirtualMachineRunCommandScriptSource`
+- New field `Placement` in struct `VirtualMachineScaleSet`
+- New field `Tags` in struct `VirtualMachineScaleSetNetworkConfiguration`
+- New field `HighSpeedInterconnectPlacement` in struct `VirtualMachineScaleSetProperties`
+- New field `Tags` in struct `VirtualMachineScaleSetPublicIPAddressConfiguration`
+- New field `Tags` in struct `VirtualMachineScaleSetUpdateNetworkConfiguration`
+- New field `Tags` in struct `VirtualMachineScaleSetUpdatePublicIPAddressConfiguration`
+- New field `PatchNameMasksToExclude`, `PatchNameMasksToInclude` in struct `WindowsParameters`
+
+
+## 7.0.0 (2025-07-23)
+### Breaking Changes
+
+- Type of `OperationValue.Display` has been changed from `*OperationValueDisplay` to `*OperationDisplay`
+- Type of `OperationValue.Origin` has been changed from `*string` to `*Origin`
+- Enum `AvailabilitySetSKUTypes` has been removed
+- Enum `Expand` has been removed
+- Operation `*VirtualMachineImagesClient.NewListWithPropertiesPager` does not support pagination anymore, use `*VirtualMachineImagesClient.ListWithProperties` instead.
+- Struct `DiskImageEncryption` has been removed
+- Struct `GalleryArtifactPublishingProfileBase` has been removed
+- Struct `GalleryArtifactSafetyProfileBase` has been removed
+- Struct `GalleryArtifactSource` has been removed
+- Struct `GalleryArtifactVersionSource` has been removed
+- Struct `GalleryDiskImage` has been removed
+- Struct `GalleryResourceProfilePropertiesBase` has been removed
+- Struct `GalleryResourceProfileVersionPropertiesBase` has been removed
+- Struct `ImageDisk` has been removed
+- Struct `LatestGalleryImageVersion` has been removed
+- Struct `LogAnalyticsInputBase` has been removed
+- Struct `ManagedArtifact` has been removed
+- Struct `OperationValueDisplay` has been removed
+- Struct `PirCommunityGalleryResource` has been removed
+- Struct `PirResource` has been removed
+- Struct `PirSharedGalleryResource` has been removed
+- Struct `ProxyOnlyResource` has been removed
+- Struct `ProxyResource` has been removed
+- Struct `Resource` has been removed
+- Struct `ResourceWithOptionalLocation` has been removed
+- Struct `SharedGalleryDiskImage` has been removed
+- Struct `UpdateResource` has been removed
+- Struct `UpdateResourceDefinition` has been removed
+- Struct `VirtualMachineImagesWithPropertiesListResult` has been removed
+
+### Features Added
+
+- New enum type `ActionType` with values `ActionTypeInternal`
+- New enum type `AvailabilityPolicyDiskDelay` with values `AvailabilityPolicyDiskDelayAutomaticReattach`, `AvailabilityPolicyDiskDelayNone`
+- New enum type `CreatedByType` with values `CreatedByTypeApplication`, `CreatedByTypeKey`, `CreatedByTypeManagedIdentity`, `CreatedByTypeUser`
+- New enum type `Origin` with values `OriginSystem`, `OriginUser`, `OriginUserSystem`
+- New enum type `SnapshotAccessState` with values `SnapshotAccessStateAvailable`, `SnapshotAccessStateAvailableWithInstantAccess`, `SnapshotAccessStateInstantAccess`, `SnapshotAccessStatePending`, `SnapshotAccessStateUnknown`
+- New enum type `SupportedSecurityOption` with values `SupportedSecurityOptionTrustedLaunchAndConfidentialVMSupported`, `SupportedSecurityOptionTrustedLaunchSupported`
+- New struct `AvailabilityPolicy`
+- New struct `OperationDisplay`
+- New field `SecurityMetadataAccessSAS` in struct `AccessURI`
+- New field `SystemData` in struct `AvailabilitySet`
+- New field `SystemData` in struct `CapacityReservation`
+- New field `SystemData` in struct `CapacityReservationGroup`
+- New field `InstantAccessDurationMinutes`, `SecurityMetadataURI` in struct `CreationData`
+- New field `SystemData` in struct `DedicatedHost`
+- New field `SystemData` in struct `DedicatedHostGroup`
+- New field `NextLink` in struct `DedicatedHostSizeListResult`
+- New field `SystemData` in struct `Disk`
+- New field `SystemData` in struct `DiskAccess`
+- New field `SystemData` in struct `DiskEncryptionSet`
+- New field `AvailabilityPolicy` in struct `DiskProperties`
+- New field `SystemData` in struct `DiskRestorePoint`
+- New field `AvailabilityPolicy` in struct `DiskUpdateProperties`
+- New field `SystemData` in struct `Gallery`
+- New field `SystemData` in struct `GalleryApplication`
+- New field `SystemData` in struct `GalleryApplicationVersion`
+- New field `SystemData` in struct `GalleryImage`
+- New field `SystemData` in struct `GalleryImageVersion`
+- New field `SystemData` in struct `GalleryInVMAccessControlProfile`
+- New field `SystemData` in struct `GalleryInVMAccessControlProfileVersion`
+- New field `SystemData` in struct `GallerySoftDeletedResource`
+- New field `SystemData` in struct `Image`
+- New field `NextLink` in struct `OperationListResult`
+- New field `ActionType`, `IsDataAction` in struct `OperationValue`
+- New field `SystemData` in struct `PrivateEndpointConnection`
+- New field `SystemData` in struct `ProximityPlacementGroup`
+- New field `SystemData` in struct `RestorePoint`
+- New field `SystemData` in struct `RestorePointCollection`
+- New field `SystemData` in struct `RollingUpgradeStatusInfo`
+- New field `SystemData` in struct `SSHPublicKeyResource`
+- New field `SystemData` in struct `Snapshot`
+- New field `SnapshotAccessState` in struct `SnapshotProperties`
+- New field `SnapshotAccessState` in struct `SnapshotUpdateProperties`
+- New field `SupportedSecurityOption` in struct `SupportedCapabilities`
+- New field `CreatedBy`, `CreatedByType`, `LastModifiedBy`, `LastModifiedByType` in struct `SystemData`
+- New field `SystemData` in struct `VirtualMachine`
+- New field `SystemData` in struct `VirtualMachineExtension`
+- New field `SystemData` in struct `VirtualMachineExtensionImage`
+- New field `SystemData` in struct `VirtualMachineRunCommand`
+- New field `SystemData` in struct `VirtualMachineScaleSet`
+- New field `SystemData` in struct `VirtualMachineScaleSetVM`
+- New field `NextLink` in struct `VirtualMachineSizeListResult`
+
+
 ## 6.4.0 (2025-03-28)
 ### Features Added
 

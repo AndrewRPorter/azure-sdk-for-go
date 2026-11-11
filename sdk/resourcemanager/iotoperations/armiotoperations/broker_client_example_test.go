@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2024-11-01/Broker_CreateOrUpdate_Complex.json
+// Generated from example definition: 2026-07-01/Broker_CreateOrUpdate_Complex.json
 func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateComplex() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -45,7 +45,7 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateComplex() {
 			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileMedium),
 		},
 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 		},
 	}, nil)
@@ -54,13 +54,13 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateComplex() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armiotoperations.BrokerClientCreateOrUpdateResponse{
-	// 	BrokerResource: &armiotoperations.BrokerResource{
+	// 	BrokerResource: armiotoperations.BrokerResource{
 	// 		Properties: &armiotoperations.BrokerProperties{
 	// 			Cardinality: &armiotoperations.Cardinality{
 	// 				BackendChain: &armiotoperations.BackendChain{
@@ -83,25 +83,25 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateComplex() {
 	// 			ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 	// 		},
 	// 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-	// 			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+	// 			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 	// 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 	// 		Name: to.Ptr("llptmlifnqqwairx"),
-	// 		Type: to.Ptr("qwrfzxjfxvismlqvigot"),
+	// 		Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 	// 		SystemData: &armiotoperations.SystemData{
-	// 			CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+	// 			CreatedBy: to.Ptr("contosouser"),
 	// 			CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("gnicpuszwd"),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("contosouser"),
 	// 			LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-11-01/Broker_CreateOrUpdate_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01/Broker_CreateOrUpdate_MaximumSet_Gen.json
 func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -257,10 +257,11 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdate() {
 			GenerateResourceLimits: &armiotoperations.GenerateResourceLimits{
 				CPU: to.Ptr(armiotoperations.OperationalModeEnabled),
 			},
-			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
+			MemoryProfile:                            to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
+			HighPriorityMessagesBackpressureHandling: to.Ptr(armiotoperations.HighPriorityMessagesBackpressureHandlingAccept),
 		},
 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 		},
 	}, nil)
@@ -269,13 +270,13 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armiotoperations.BrokerClientCreateOrUpdateResponse{
-	// 	BrokerResource: &armiotoperations.BrokerResource{
+	// 	BrokerResource: armiotoperations.BrokerResource{
 	// 		Properties: &armiotoperations.BrokerProperties{
 	// 			Advanced: &armiotoperations.AdvancedSettings{
 	// 				Clients: &armiotoperations.ClientConfig{
@@ -421,28 +422,29 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdate() {
 	// 				CPU: to.Ptr(armiotoperations.OperationalModeEnabled),
 	// 			},
 	// 			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
+	// 			HighPriorityMessagesBackpressureHandling: to.Ptr(armiotoperations.HighPriorityMessagesBackpressureHandlingAccept),
 	// 			ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 	// 		},
 	// 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-	// 			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+	// 			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 	// 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 	// 		Name: to.Ptr("dowrkel"),
-	// 		Type: to.Ptr("xshjnsdgadygb"),
+	// 		Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 	// 		SystemData: &armiotoperations.SystemData{
-	// 			CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+	// 			CreatedBy: to.Ptr("contosouser"),
 	// 			CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("gnicpuszwd"),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("contosouser"),
 	// 			LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-11-01/Broker_CreateOrUpdate_Minimal.json
+// Generated from example definition: 2026-07-01/Broker_CreateOrUpdate_Minimal.json
 func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateMinimal() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -458,7 +460,7 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateMinimal() {
 			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
 		},
 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 		},
 	}, nil)
@@ -467,13 +469,13 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateMinimal() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armiotoperations.BrokerClientCreateOrUpdateResponse{
-	// 	BrokerResource: &armiotoperations.BrokerResource{
+	// 	BrokerResource: armiotoperations.BrokerResource{
 	// 		Properties: &armiotoperations.BrokerProperties{
 	// 			Advanced: &armiotoperations.AdvancedSettings{
 	// 				Clients: &armiotoperations.ClientConfig{
@@ -622,25 +624,25 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateMinimal() {
 	// 			ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 	// 		},
 	// 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-	// 			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+	// 			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 	// 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 	// 		Name: to.Ptr("dowrkel"),
-	// 		Type: to.Ptr("xshjnsdgadygb"),
+	// 		Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 	// 		SystemData: &armiotoperations.SystemData{
-	// 			CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+	// 			CreatedBy: to.Ptr("contosouser"),
 	// 			CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("gnicpuszwd"),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("contosouser"),
 	// 			LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-11-01/Broker_CreateOrUpdate_Simple.json
+// Generated from example definition: 2026-07-01/Broker_CreateOrUpdate_Simple.json
 func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateSimple() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -670,7 +672,7 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateSimple() {
 			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileLow),
 		},
 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 		},
 	}, nil)
@@ -679,13 +681,13 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateSimple() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armiotoperations.BrokerClientCreateOrUpdateResponse{
-	// 	BrokerResource: &armiotoperations.BrokerResource{
+	// 	BrokerResource: armiotoperations.BrokerResource{
 	// 		Properties: &armiotoperations.BrokerProperties{
 	// 			Advanced: &armiotoperations.AdvancedSettings{
 	// 				Clients: &armiotoperations.ClientConfig{
@@ -834,25 +836,25 @@ func ExampleBrokerClient_BeginCreateOrUpdate_brokerCreateOrUpdateSimple() {
 	// 			ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 	// 		},
 	// 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-	// 			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+	// 			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 	// 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 	// 		Name: to.Ptr("dowrkel"),
-	// 		Type: to.Ptr("xshjnsdgadygb"),
+	// 		Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 	// 		SystemData: &armiotoperations.SystemData{
-	// 			CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+	// 			CreatedBy: to.Ptr("contosouser"),
 	// 			CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("gnicpuszwd"),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("contosouser"),
 	// 			LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-11-01/Broker_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01/Broker_Delete_MaximumSet_Gen.json
 func ExampleBrokerClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -869,11 +871,11 @@ func ExampleBrokerClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2024-11-01/Broker_Get_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01/Broker_Get_MaximumSet_Gen.json
 func ExampleBrokerClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -892,7 +894,7 @@ func ExampleBrokerClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armiotoperations.BrokerClientGetResponse{
-	// 	BrokerResource: &armiotoperations.BrokerResource{
+	// 	BrokerResource: armiotoperations.BrokerResource{
 	// 		Properties: &armiotoperations.BrokerProperties{
 	// 			Advanced: &armiotoperations.AdvancedSettings{
 	// 				Clients: &armiotoperations.ClientConfig{
@@ -1038,28 +1040,29 @@ func ExampleBrokerClient_Get() {
 	// 				CPU: to.Ptr(armiotoperations.OperationalModeEnabled),
 	// 			},
 	// 			MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
+	// 			HighPriorityMessagesBackpressureHandling: to.Ptr(armiotoperations.HighPriorityMessagesBackpressureHandlingAccept),
 	// 			ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 	// 		},
 	// 		ExtendedLocation: &armiotoperations.ExtendedLocation{
-	// 			Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+	// 			Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 	// 			Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 	// 		},
 	// 		ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 	// 		Name: to.Ptr("dowrkel"),
-	// 		Type: to.Ptr("xshjnsdgadygb"),
+	// 		Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 	// 		SystemData: &armiotoperations.SystemData{
-	// 			CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+	// 			CreatedBy: to.Ptr("contosouser"),
 	// 			CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-	// 			LastModifiedBy: to.Ptr("gnicpuszwd"),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+	// 			LastModifiedBy: to.Ptr("contosouser"),
 	// 			LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-11-01/Broker_ListByResourceGroup_MaximumSet_Gen.json
+// Generated from example definition: 2026-07-01/Broker_ListByResourceGroup_MaximumSet_Gen.json
 func ExampleBrokerClient_NewListByResourceGroupPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -1230,22 +1233,23 @@ func ExampleBrokerClient_NewListByResourceGroupPager() {
 		// 						CPU: to.Ptr(armiotoperations.OperationalModeEnabled),
 		// 					},
 		// 					MemoryProfile: to.Ptr(armiotoperations.BrokerMemoryProfileTiny),
+		// 					HighPriorityMessagesBackpressureHandling: to.Ptr(armiotoperations.HighPriorityMessagesBackpressureHandlingAccept),
 		// 					ProvisioningState: to.Ptr(armiotoperations.ProvisioningStateSucceeded),
 		// 				},
 		// 				ExtendedLocation: &armiotoperations.ExtendedLocation{
-		// 					Name: to.Ptr("qmbrfwcpwwhggszhrdjv"),
+		// 					Name: to.Ptr("/subscriptions/F8C729F9-DF9C-4743-848F-96EE433D8E53/resourceGroups/rgiotoperations/providers/Microsoft.ExtendedLocation/customLocations/resource-123"),
 		// 					Type: to.Ptr(armiotoperations.ExtendedLocationTypeCustomLocation),
 		// 				},
 		// 				ID: to.Ptr("/subscriptions/0000000-0000-0000-0000-000000000000/resourceGroups/resourceGroup123/providers/Microsoft.IoTOperations/instances/resource-name123/brokers/resource-name123"),
 		// 				Name: to.Ptr("dowrkel"),
-		// 				Type: to.Ptr("xshjnsdgadygb"),
+		// 				Type: to.Ptr("Microsoft.IoTOperations/instances/brokers"),
 		// 				SystemData: &armiotoperations.SystemData{
-		// 					CreatedBy: to.Ptr("ssvaslsmudloholronopqyxjcu"),
+		// 					CreatedBy: to.Ptr("contosouser"),
 		// 					CreatedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
-		// 					LastModifiedBy: to.Ptr("gnicpuszwd"),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
+		// 					LastModifiedBy: to.Ptr("contosouser"),
 		// 					LastModifiedByType: to.Ptr(armiotoperations.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-08-09T18:13:29.389Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.August, 9, 18, 13, 29, 389000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},

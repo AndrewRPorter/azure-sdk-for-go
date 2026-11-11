@@ -18,6 +18,8 @@ import (
 
 // TaskHubsClient contains the methods for the TaskHubs group.
 // Don't use this type directly, use NewTaskHubsClient() instead.
+//
+// Generated from API version 2026-07-01-preview
 type TaskHubsClient struct {
 	internal       *arm.Client
 	subscriptionID string
@@ -26,8 +28,11 @@ type TaskHubsClient struct {
 // NewTaskHubsClient creates a new instance of TaskHubsClient with the specified values.
 //   - subscriptionID - The ID of the target subscription. The value must be an UUID.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewTaskHubsClient(subscriptionID string, credential azcore.TokenCredential, options *arm.ClientOptions) (*TaskHubsClient, error) {
+	if subscriptionID == "" {
+		return nil, errors.New("parameter subscriptionID cannot be empty")
+	}
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
 		return nil, err
@@ -41,8 +46,6 @@ func NewTaskHubsClient(subscriptionID string, credential azcore.TokenCredential,
 
 // BeginCreateOrUpdate - Create or Update a Task Hub
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - taskHubName - The name of the TaskHub
@@ -66,10 +69,8 @@ func (client *TaskHubsClient) BeginCreateOrUpdate(ctx context.Context, resourceG
 	}
 }
 
-// CreateOrUpdate - Create or Update a Task Hub
+// createOrUpdate - Create or Update a Task Hub
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *TaskHubsClient) createOrUpdate(ctx context.Context, resourceGroupName string, schedulerName string, taskHubName string, resource TaskHub, options *TaskHubsClientBeginCreateOrUpdateOptions) (*http.Response, error) {
 	var err error
 	const operationName = "TaskHubsClient.BeginCreateOrUpdate"
@@ -91,11 +92,11 @@ func (client *TaskHubsClient) createOrUpdate(ctx context.Context, resourceGroupN
 	return httpResp, nil
 }
 
-// createOrUpdateCreateRequest creates the CreateOrUpdate request.
+// createOrUpdateCreateRequest creates the createOrUpdate request.
 func (client *TaskHubsClient) createOrUpdateCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, taskHubName string, resource TaskHub, _ *TaskHubsClientBeginCreateOrUpdateOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/taskHubs/{taskHubName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -115,8 +116,8 @@ func (client *TaskHubsClient) createOrUpdateCreateRequest(ctx context.Context, r
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, resource); err != nil {
@@ -127,8 +128,6 @@ func (client *TaskHubsClient) createOrUpdateCreateRequest(ctx context.Context, r
 
 // BeginDelete - Delete a Task Hub
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - taskHubName - The name of the TaskHub
@@ -150,10 +149,8 @@ func (client *TaskHubsClient) BeginDelete(ctx context.Context, resourceGroupName
 	}
 }
 
-// Delete - Delete a Task Hub
+// deleteOperation - Delete a Task Hub
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 func (client *TaskHubsClient) deleteOperation(ctx context.Context, resourceGroupName string, schedulerName string, taskHubName string, options *TaskHubsClientBeginDeleteOptions) (*http.Response, error) {
 	var err error
 	const operationName = "TaskHubsClient.BeginDelete"
@@ -175,11 +172,11 @@ func (client *TaskHubsClient) deleteOperation(ctx context.Context, resourceGroup
 	return httpResp, nil
 }
 
-// deleteCreateRequest creates the Delete request.
+// deleteCreateRequest creates the delete request.
 func (client *TaskHubsClient) deleteCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, taskHubName string, _ *TaskHubsClientBeginDeleteOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/taskHubs/{taskHubName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -199,16 +196,13 @@ func (client *TaskHubsClient) deleteCreateRequest(ctx context.Context, resourceG
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Get a Task Hub
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - taskHubName - The name of the TaskHub
@@ -227,11 +221,7 @@ func (client *TaskHubsClient) Get(ctx context.Context, resourceGroupName string,
 	if err != nil {
 		return TaskHubsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return TaskHubsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
@@ -239,7 +229,7 @@ func (client *TaskHubsClient) Get(ctx context.Context, resourceGroupName string,
 func (client *TaskHubsClient) getCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, taskHubName string, _ *TaskHubsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/taskHubs/{taskHubName}"
 	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+		return nil, errors.New("parameter subscriptionID cannot be empty")
 	}
 	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
 	if resourceGroupName == "" {
@@ -259,15 +249,18 @@ func (client *TaskHubsClient) getCreateRequest(ctx context.Context, resourceGrou
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20260701Preview)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *TaskHubsClient) getHandleResponse(resp *http.Response) (TaskHubsClientGetResponse, error) {
+func (client *TaskHubsClient) getHandleResponse(resp *http.Response, successCodes ...int) (TaskHubsClientGetResponse, error) {
 	result := TaskHubsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TaskHub); err != nil {
 		return TaskHubsClientGetResponse{}, err
 	}
@@ -275,8 +268,6 @@ func (client *TaskHubsClient) getHandleResponse(resp *http.Response) (TaskHubsCl
 }
 
 // NewListBySchedulerPager - List Task Hubs
-//
-// Generated from API version 2025-04-01-preview
 //   - resourceGroupName - The name of the resource group. The name is case insensitive.
 //   - schedulerName - The name of the Scheduler
 //   - options - TaskHubsClientListBySchedulerOptions contains the optional parameters for the TaskHubsClient.NewListBySchedulerPager
@@ -292,47 +283,61 @@ func (client *TaskHubsClient) NewListBySchedulerPager(resourceGroupName string, 
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listBySchedulerCreateRequest(ctx, resourceGroupName, schedulerName, options)
-			}, nil)
+			req, err := client.listBySchedulerCreateRequest(ctx, resourceGroupName, schedulerName, nextLink, options)
 			if err != nil {
 				return TaskHubsClientListBySchedulerResponse{}, err
 			}
-			return client.listBySchedulerHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return TaskHubsClientListBySchedulerResponse{}, err
+			}
+			return client.listBySchedulerHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listBySchedulerCreateRequest creates the ListByScheduler request.
-func (client *TaskHubsClient) listBySchedulerCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, _ *TaskHubsClientListBySchedulerOptions) (*policy.Request, error) {
-	urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/taskHubs"
-	if client.subscriptionID == "" {
-		return nil, errors.New("parameter client.subscriptionID cannot be empty")
+func (client *TaskHubsClient) listBySchedulerCreateRequest(ctx context.Context, resourceGroupName string, schedulerName string, nextLink string, _ *TaskHubsClientListBySchedulerOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DurableTask/schedulers/{schedulerName}/taskHubs"
+		if client.subscriptionID == "" {
+			return nil, errors.New("parameter subscriptionID cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
+		if resourceGroupName == "" {
+			return nil, errors.New("parameter resourceGroupName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
+		if schedulerName == "" {
+			return nil, errors.New("parameter schedulerName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
 	}
-	urlPath = strings.ReplaceAll(urlPath, "{subscriptionId}", url.PathEscape(client.subscriptionID))
-	if resourceGroupName == "" {
-		return nil, errors.New("parameter resourceGroupName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{resourceGroupName}", url.PathEscape(resourceGroupName))
-	if schedulerName == "" {
-		return nil, errors.New("parameter schedulerName cannot be empty")
-	}
-	urlPath = strings.ReplaceAll(urlPath, "{schedulerName}", url.PathEscape(schedulerName))
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2025-04-01-preview")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20260701Preview)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listBySchedulerHandleResponse handles the ListByScheduler response.
-func (client *TaskHubsClient) listBySchedulerHandleResponse(resp *http.Response) (TaskHubsClientListBySchedulerResponse, error) {
+func (client *TaskHubsClient) listBySchedulerHandleResponse(resp *http.Response, successCodes ...int) (TaskHubsClientListBySchedulerResponse, error) {
 	result := TaskHubsClientListBySchedulerResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.TaskHubListResult); err != nil {
 		return TaskHubsClientListBySchedulerResponse{}, err
 	}

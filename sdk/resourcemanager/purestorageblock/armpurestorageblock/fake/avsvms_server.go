@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // AvsVMsServer is a fake server for instances of the armpurestorageblock.AvsVMsClient type.
@@ -24,6 +25,10 @@ type AvsVMsServer struct {
 	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
 	BeginDelete func(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, options *armpurestorageblock.AvsVMsClientBeginDeleteOptions) (resp azfake.PollerResponder[armpurestorageblock.AvsVMsClientDeleteResponse], errResp azfake.ErrorResponder)
 
+	// BeginUpdate is the fake for method AvsVMsClient.BeginUpdate
+	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
+	BeginUpdate func(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, properties armpurestorageblock.AvsVMUpdate, options *armpurestorageblock.AvsVMsClientBeginUpdateOptions) (resp azfake.PollerResponder[armpurestorageblock.AvsVMsClientUpdateResponse], errResp azfake.ErrorResponder)
+
 	// Get is the fake for method AvsVMsClient.Get
 	// HTTP status codes to indicate success: http.StatusOK
 	Get func(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, options *armpurestorageblock.AvsVMsClientGetOptions) (resp azfake.Responder[armpurestorageblock.AvsVMsClientGetResponse], errResp azfake.ErrorResponder)
@@ -31,10 +36,6 @@ type AvsVMsServer struct {
 	// NewListByStoragePoolPager is the fake for method AvsVMsClient.NewListByStoragePoolPager
 	// HTTP status codes to indicate success: http.StatusOK
 	NewListByStoragePoolPager func(resourceGroupName string, storagePoolName string, options *armpurestorageblock.AvsVMsClientListByStoragePoolOptions) (resp azfake.PagerResponder[armpurestorageblock.AvsVMsClientListByStoragePoolResponse])
-
-	// BeginUpdate is the fake for method AvsVMsClient.BeginUpdate
-	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
-	BeginUpdate func(ctx context.Context, resourceGroupName string, storagePoolName string, avsVMID string, properties armpurestorageblock.AvsVMUpdate, options *armpurestorageblock.AvsVMsClientBeginUpdateOptions) (resp azfake.PollerResponder[armpurestorageblock.AvsVMsClientUpdateResponse], errResp azfake.ErrorResponder)
 }
 
 // NewAvsVMsServerTransport creates a new instance of AvsVMsServerTransport with the provided implementation.
@@ -44,8 +45,8 @@ func NewAvsVMsServerTransport(srv *AvsVMsServer) *AvsVMsServerTransport {
 	return &AvsVMsServerTransport{
 		srv:                       srv,
 		beginDelete:               newTracker[azfake.PollerResponder[armpurestorageblock.AvsVMsClientDeleteResponse]](),
-		newListByStoragePoolPager: newTracker[azfake.PagerResponder[armpurestorageblock.AvsVMsClientListByStoragePoolResponse]](),
 		beginUpdate:               newTracker[azfake.PollerResponder[armpurestorageblock.AvsVMsClientUpdateResponse]](),
+		newListByStoragePoolPager: newTracker[azfake.PagerResponder[armpurestorageblock.AvsVMsClientListByStoragePoolResponse]](),
 	}
 }
 
@@ -54,8 +55,8 @@ func NewAvsVMsServerTransport(srv *AvsVMsServer) *AvsVMsServerTransport {
 type AvsVMsServerTransport struct {
 	srv                       *AvsVMsServer
 	beginDelete               *tracker[azfake.PollerResponder[armpurestorageblock.AvsVMsClientDeleteResponse]]
-	newListByStoragePoolPager *tracker[azfake.PagerResponder[armpurestorageblock.AvsVMsClientListByStoragePoolResponse]]
 	beginUpdate               *tracker[azfake.PollerResponder[armpurestorageblock.AvsVMsClientUpdateResponse]]
+	newListByStoragePoolPager *tracker[azfake.PagerResponder[armpurestorageblock.AvsVMsClientListByStoragePoolResponse]]
 }
 
 // Do implements the policy.Transporter interface for AvsVMsServerTransport.
@@ -63,16 +64,14 @@ func (a *AvsVMsServerTransport) Do(req *http.Request) (*http.Response, error) {
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return a.dispatchToMethodFake(req, method)
 }
 
 func (a *AvsVMsServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -83,21 +82,18 @@ func (a *AvsVMsServerTransport) dispatchToMethodFake(req *http.Request, method s
 			switch method {
 			case "AvsVMsClient.BeginDelete":
 				res.resp, res.err = a.dispatchBeginDelete(req)
+			case "AvsVMsClient.BeginUpdate":
+				res.resp, res.err = a.dispatchBeginUpdate(req)
 			case "AvsVMsClient.Get":
 				res.resp, res.err = a.dispatchGet(req)
 			case "AvsVMsClient.NewListByStoragePoolPager":
 				res.resp, res.err = a.dispatchNewListByStoragePoolPager(req)
-			case "AvsVMsClient.BeginUpdate":
-				res.resp, res.err = a.dispatchBeginUpdate(req)
 			default:
 				res.err = fmt.Errorf("unhandled API %s", method)
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -114,7 +110,7 @@ func (a *AvsVMsServerTransport) dispatchBeginDelete(req *http.Request) (*http.Re
 	}
 	beginDelete := a.beginDelete.get(req)
 	if beginDelete == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/avsVms/(?P<avsVmId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/avsVms/(?P<avsVmId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
 		if len(matches) < 5 {
@@ -145,7 +141,7 @@ func (a *AvsVMsServerTransport) dispatchBeginDelete(req *http.Request) (*http.Re
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		a.beginDelete.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -156,91 +152,13 @@ func (a *AvsVMsServerTransport) dispatchBeginDelete(req *http.Request) (*http.Re
 	return resp, nil
 }
 
-func (a *AvsVMsServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
-	if a.srv.Get == nil {
-		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
-	}
-	const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/avsVms/(?P<avsVmId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
-	regex := regexp.MustCompile(regexStr)
-	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if len(matches) < 5 {
-		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-	}
-	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-	if err != nil {
-		return nil, err
-	}
-	storagePoolNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storagePoolName")])
-	if err != nil {
-		return nil, err
-	}
-	avsVMIDParam, err := url.PathUnescape(matches[regex.SubexpIndex("avsVmId")])
-	if err != nil {
-		return nil, err
-	}
-	respr, errRespr := a.srv.Get(req.Context(), resourceGroupNameParam, storagePoolNameParam, avsVMIDParam, nil)
-	if respErr := server.GetError(errRespr, req); respErr != nil {
-		return nil, respErr
-	}
-	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
-	}
-	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).AvsVM, req)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (a *AvsVMsServerTransport) dispatchNewListByStoragePoolPager(req *http.Request) (*http.Response, error) {
-	if a.srv.NewListByStoragePoolPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListByStoragePoolPager not implemented")}
-	}
-	newListByStoragePoolPager := a.newListByStoragePoolPager.get(req)
-	if newListByStoragePoolPager == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/avsVms`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if len(matches) < 4 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
-		if err != nil {
-			return nil, err
-		}
-		storagePoolNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storagePoolName")])
-		if err != nil {
-			return nil, err
-		}
-		resp := a.srv.NewListByStoragePoolPager(resourceGroupNameParam, storagePoolNameParam, nil)
-		newListByStoragePoolPager = &resp
-		a.newListByStoragePoolPager.add(req, newListByStoragePoolPager)
-		server.PagerResponderInjectNextLinks(newListByStoragePoolPager, req, func(page *armpurestorageblock.AvsVMsClientListByStoragePoolResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListByStoragePoolPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		a.newListByStoragePoolPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListByStoragePoolPager) {
-		a.newListByStoragePoolPager.remove(req)
-	}
-	return resp, nil
-}
-
 func (a *AvsVMsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Response, error) {
 	if a.srv.BeginUpdate == nil {
 		return nil, &nonRetriableError{errors.New("fake for method BeginUpdate not implemented")}
 	}
 	beginUpdate := a.beginUpdate.get(req)
 	if beginUpdate == nil {
-		const regexStr = `/subscriptions/(?P<subscriptionId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/resourceGroups/(?P<resourceGroupName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/avsVms/(?P<avsVmId>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/avsVms/(?P<avsVmId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
 		if len(matches) < 5 {
@@ -275,7 +193,7 @@ func (a *AvsVMsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Re
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
 		a.beginUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted", resp.StatusCode)}
 	}
@@ -283,6 +201,84 @@ func (a *AvsVMsServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Re
 		a.beginUpdate.remove(req)
 	}
 
+	return resp, nil
+}
+
+func (a *AvsVMsServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
+	if a.srv.Get == nil {
+		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
+	}
+	const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/avsVms/(?P<avsVmId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
+	regex := regexp.MustCompile(regexStr)
+	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+	if len(matches) < 5 {
+		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+	}
+	resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+	if err != nil {
+		return nil, err
+	}
+	storagePoolNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storagePoolName")])
+	if err != nil {
+		return nil, err
+	}
+	avsVMIDParam, err := url.PathUnescape(matches[regex.SubexpIndex("avsVmId")])
+	if err != nil {
+		return nil, err
+	}
+	respr, errRespr := a.srv.Get(req.Context(), resourceGroupNameParam, storagePoolNameParam, avsVMIDParam, nil)
+	if respErr := server.GetError(errRespr, req); respErr != nil {
+		return nil, respErr
+	}
+	respContent := server.GetResponseContent(respr)
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
+	}
+	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).AvsVM, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (a *AvsVMsServerTransport) dispatchNewListByStoragePoolPager(req *http.Request) (*http.Response, error) {
+	if a.srv.NewListByStoragePoolPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListByStoragePoolPager not implemented")}
+	}
+	newListByStoragePoolPager := a.newListByStoragePoolPager.get(req)
+	if newListByStoragePoolPager == nil {
+		const regexStr = `/subscriptions/(?P<subscriptionId>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/resourceGroups/(?P<resourceGroupName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/providers/PureStorage\.Block/storagePools/(?P<storagePoolName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)/avsVms`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 4 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resourceGroupNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceGroupName")])
+		if err != nil {
+			return nil, err
+		}
+		storagePoolNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storagePoolName")])
+		if err != nil {
+			return nil, err
+		}
+		resp := a.srv.NewListByStoragePoolPager(resourceGroupNameParam, storagePoolNameParam, nil)
+		newListByStoragePoolPager = &resp
+		a.newListByStoragePoolPager.add(req, newListByStoragePoolPager)
+		server.PagerResponderInjectNextLinks(newListByStoragePoolPager, req, func(page *armpurestorageblock.AvsVMsClientListByStoragePoolResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListByStoragePoolPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		a.newListByStoragePoolPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListByStoragePoolPager) {
+		a.newListByStoragePoolPager.remove(req)
+	}
 	return resp, nil
 }
 

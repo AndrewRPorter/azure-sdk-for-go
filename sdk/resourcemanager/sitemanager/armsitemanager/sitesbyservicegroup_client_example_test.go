@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2025-03-01-preview/SitesByServiceGroup_CreateOrUpdate_MaximumSet_Gen.json
+// Generated from example definition: 2025-06-01/SitesByServiceGroup_CreateOrUpdate_MaximumSet_Gen.json
 func ExampleSitesByServiceGroupClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -45,13 +45,13 @@ func ExampleSitesByServiceGroupClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armsitemanager.SitesByServiceGroupClientCreateOrUpdateResponse{
-	// 	Site: &armsitemanager.Site{
+	// 	Site: armsitemanager.Site{
 	// 		Properties: &armsitemanager.SiteProperties{
 	// 			DisplayName: to.Ptr("string"),
 	// 			Labels: map[string]*string{
@@ -74,16 +74,16 @@ func ExampleSitesByServiceGroupClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armsitemanager.SystemData{
 	// 			CreatedBy: to.Ptr("julxbiyjzi"),
 	// 			CreatedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("bceneuzzvzqmiocbrfef"),
 	// 			LastModifiedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/SitesByServiceGroup_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2025-06-01/SitesByServiceGroup_Delete_MaximumSet_Gen.json
 func ExampleSitesByServiceGroupClient_Delete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleSitesByServiceGroupClient_Delete() {
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/SitesByServiceGroup_Get_MaximumSet_Gen.json
+// Generated from example definition: 2025-06-01/SitesByServiceGroup_Get_MaximumSet_Gen.json
 func ExampleSitesByServiceGroupClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleSitesByServiceGroupClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armsitemanager.SitesByServiceGroupClientGetResponse{
-	// 	Site: &armsitemanager.Site{
+	// 	Site: armsitemanager.Site{
 	// 		Properties: &armsitemanager.SiteProperties{
 	// 			DisplayName: to.Ptr("string"),
 	// 			Labels: map[string]*string{
@@ -147,16 +147,16 @@ func ExampleSitesByServiceGroupClient_Get() {
 	// 		SystemData: &armsitemanager.SystemData{
 	// 			CreatedBy: to.Ptr("julxbiyjzi"),
 	// 			CreatedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("bceneuzzvzqmiocbrfef"),
 	// 			LastModifiedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2025-03-01-preview/SitesByServiceGroup_ListByServiceGroup_MaximumSet_Gen.json
+// Generated from example definition: 2025-06-01/SitesByServiceGroup_ListByServiceGroup_MaximumSet_Gen.json
 func ExampleSitesByServiceGroupClient_NewListByServiceGroupPager() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -204,10 +204,10 @@ func ExampleSitesByServiceGroupClient_NewListByServiceGroupPager() {
 		// 				SystemData: &armsitemanager.SystemData{
 		// 					CreatedBy: to.Ptr("julxbiyjzi"),
 		// 					CreatedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("bceneuzzvzqmiocbrfef"),
 		// 					LastModifiedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -217,7 +217,7 @@ func ExampleSitesByServiceGroupClient_NewListByServiceGroupPager() {
 	}
 }
 
-// Generated from example definition: 2025-03-01-preview/SitesByServiceGroup_Update_MaximumSet_Gen.json
+// Generated from example definition: 2025-06-01/SitesByServiceGroup_Update_MaximumSet_Gen.json
 func ExampleSitesByServiceGroupClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -252,7 +252,7 @@ func ExampleSitesByServiceGroupClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armsitemanager.SitesByServiceGroupClientUpdateResponse{
-	// 	Site: &armsitemanager.Site{
+	// 	Site: armsitemanager.Site{
 	// 		Properties: &armsitemanager.SiteProperties{
 	// 			DisplayName: to.Ptr("string"),
 	// 			Labels: map[string]*string{
@@ -275,10 +275,10 @@ func ExampleSitesByServiceGroupClient_Update() {
 	// 		SystemData: &armsitemanager.SystemData{
 	// 			CreatedBy: to.Ptr("julxbiyjzi"),
 	// 			CreatedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("bceneuzzvzqmiocbrfef"),
 	// 			LastModifiedByType: to.Ptr(armsitemanager.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-12-30T07:53:03.972Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.December, 30, 7, 53, 3, 972000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

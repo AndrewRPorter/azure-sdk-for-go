@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
@@ -8,19 +5,27 @@ package azappconfig
 
 import (
 	"context"
-	"fmt"
 	"net/url"
+	"reflect"
+	"strings"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
-	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/internal/auth"
-	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/internal/generated"
-	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/internal/synctoken"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/audience"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/auth"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/generated"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/querynormalization"
+	"github.com/Azure/azure-sdk-for-go/sdk/data/azappconfig/v2/internal/synctoken"
 )
 
 const timeFormat = time.RFC3339Nano
+
+const (
+	appConfigStagingDomain = "appconfig-staging.azure.com"
+	defaultAudience        = "https://appconfig.azure.com"
+)
 
 // Client is the struct for interacting with an Azure App Configuration instance.
 type Client struct {
@@ -40,9 +45,30 @@ func NewClient(endpoint string, cred azcore.TokenCredential, options *ClientOpti
 		return nil, err
 	}
 
-	return newClient(endpoint, runtime.NewBearerTokenPolicy(cred, []string{
-		fmt.Sprintf("%s://%s/.default", u.Scheme, u.Host),
-	}, nil), options)
+	audience := getAudience(u)
+	if options != nil && !reflect.ValueOf(options.Cloud).IsZero() {
+		if cfg, ok := options.Cloud.Services[ServiceName]; ok && cfg.Audience != "" {
+			audience = cfg.Audience
+		}
+	}
+
+	return newClient(endpoint, runtime.NewBearerTokenPolicy(cred, []string{audience + "/.default"}, nil), options)
+}
+
+func getAudience(endpoint *url.URL) string {
+	host := strings.ToLower(endpoint.Hostname())
+	if strings.HasSuffix(host, "."+appConfigStagingDomain) {
+		return "https://" + appConfigStagingDomain
+	}
+
+	labels := strings.Split(host, ".")
+	for i := len(labels) - 1; i >= 0; i-- {
+		if labels[i] == "appconfig" || labels[i] == "azconfig" {
+			return "https://" + strings.Join(labels[i:], ".")
+		}
+	}
+
+	return defaultAudience
 }
 
 // NewClientFromConnectionString parses the connection string and returns a pointer to a Client object.
@@ -60,9 +86,16 @@ func newClient(endpoint string, authPolicy policy.Policy, options *ClientOptions
 		options = &ClientOptions{}
 	}
 
+	audienceConfigured := false
+	if !reflect.ValueOf(options.Cloud).IsZero() {
+		if cfg, ok := options.Cloud.Services[ServiceName]; ok && cfg.Audience != "" {
+			audienceConfigured = true
+		}
+	}
+
 	cache := synctoken.NewCache()
 	client, err := azcore.NewClient(moduleName, moduleVersion, runtime.PipelineOptions{
-		PerRetry: []policy.Policy{authPolicy, synctoken.NewPolicy(cache)},
+		PerRetry: []policy.Policy{querynormalization.NewPolicy(), authPolicy, synctoken.NewPolicy(cache), audience.NewAudienceErrorHandlingPolicy(audienceConfigured)},
 		Tracing: runtime.TracingOptions{
 			Namespace: "Microsoft.AppConfig",
 		},
@@ -98,11 +131,11 @@ func (c *Client) AddSetting(ctx context.Context, key string, value *string, opti
 		options = &AddSettingOptions{}
 	}
 
-	setting := Setting{Key: &key, Value: value, Label: options.Label, ContentType: options.ContentType}
+	setting := Setting{Key: &key, Value: value, Label: options.Label, ContentType: options.ContentType, Description: options.Description, Tags: options.Tags}
 
 	etagAny := azcore.ETagAny
 	kv, opts := setting.toGeneratedPutOptions(nil, &etagAny)
-	resp, err := c.appConfigClient.PutKeyValue(ctx, *setting.Key, kv, &opts)
+	resp, err := c.appConfigClient.PutKeyValue(ctx, generated.PutKeyValueRequestContentTypeApplicationJSON, *setting.Key, kv, &opts)
 	if err != nil {
 		return AddSettingResponse{}, err
 	}
@@ -156,7 +189,7 @@ func (c *Client) GetSetting(ctx context.Context, key string, options *GetSetting
 	return GetSettingResponse{
 		Setting:      settingFromGenerated(resp.KeyValue),
 		SyncToken:    SyncToken(*resp.SyncToken),
-		LastModified: resp.KeyValue.LastModified,
+		LastModified: resp.LastModified,
 	}, nil
 }
 
@@ -209,10 +242,10 @@ func (c *Client) SetSetting(ctx context.Context, key string, value *string, opti
 		options = &SetSettingOptions{}
 	}
 
-	setting := Setting{Key: &key, Value: value, Label: options.Label, ContentType: options.ContentType}
+	setting := Setting{Key: &key, Value: value, Label: options.Label, ContentType: options.ContentType, Description: options.Description, Tags: options.Tags}
 
 	kv, opts := setting.toGeneratedPutOptions(options.OnlyIfUnchanged, nil)
-	resp, err := c.appConfigClient.PutKeyValue(ctx, *setting.Key, kv, &opts)
+	resp, err := c.appConfigClient.PutKeyValue(ctx, generated.PutKeyValueRequestContentTypeApplicationJSON, *setting.Key, kv, &opts)
 	if err != nil {
 		return SetSettingResponse{}, err
 	}
@@ -226,7 +259,7 @@ func (c *Client) SetSetting(ctx context.Context, key string, value *string, opti
 // NewListRevisionsPager creates a pager that retrieves the revisions of one or more
 // configuration setting entities that match the specified setting selector.
 func (c *Client) NewListRevisionsPager(selector SettingSelector, options *ListRevisionsOptions) *runtime.Pager[ListRevisionsPageResponse] {
-	pagerInternal := c.appConfigClient.NewGetRevisionsPager(selector.toGeneratedGetRevisions())
+	pagerInternal := c.appConfigClient.NewGetRevisionsPagerWithNextLinks(selector.toGeneratedGetRevisions())
 	return runtime.NewPager(runtime.PagingHandler[ListRevisionsPageResponse]{
 		More: func(ListRevisionsPageResponse) bool {
 			return pagerInternal.More()
@@ -281,13 +314,51 @@ func (c *Client) NewListSettingsPager(selector SettingSelector, options *ListSet
 	})
 }
 
+// NewCheckSettingsPager creates a pager that uses HEAD requests to efficiently check for changes
+// in configuration settings that match the specified setting selector.
+func (c *Client) NewCheckSettingsPager(selector SettingSelector, options *CheckSettingsOptions) *runtime.Pager[CheckSettingsPageResponse] {
+	if options == nil {
+		options = &CheckSettingsOptions{}
+	}
+	pagerInternal := c.appConfigClient.NewCheckKeyValuesPagerWithMatchConditions(options.MatchConditions, selector.toGeneratedCheckKeyValues())
+	return runtime.NewPager(runtime.PagingHandler[CheckSettingsPageResponse]{
+		More: func(CheckSettingsPageResponse) bool {
+			return pagerInternal.More()
+		},
+		Fetcher: func(ctx context.Context, cur *CheckSettingsPageResponse) (CheckSettingsPageResponse, error) {
+			page, err := pagerInternal.NextPage(ctx)
+			if err != nil {
+				return CheckSettingsPageResponse{}, err
+			}
+
+			resp := CheckSettingsPageResponse{
+				ETag: (*azcore.ETag)(page.ETag),
+			}
+			if page.SyncToken != nil {
+				resp.SyncToken = SyncToken(*page.SyncToken)
+			}
+			return resp, nil
+		},
+		Tracer: c.appConfigClient.Tracer(),
+	})
+}
+
 // NewListSnapshotsPager - Gets a list of key-value snapshots.
 //
 //   - options - NewListSnapshotsPagerOptions contains the optional parameters to retrieve a snapshot
 //     method.
 func (c *Client) NewListSnapshotsPager(options *ListSnapshotsOptions) *runtime.Pager[ListSnapshotsResponse] {
-	opts := (*generated.AzureAppConfigurationClientGetSnapshotsOptions)(options)
-	ssRespPager := c.appConfigClient.NewGetSnapshotsPager(opts)
+	var opts *generated.AzureAppConfigurationClientGetSnapshotsOptions
+	if options != nil {
+		opts = &generated.AzureAppConfigurationClientGetSnapshotsOptions{
+			After:  options.After,
+			Name:   options.Name,
+			Select: options.Select,
+			Status: options.Status,
+		}
+	}
+
+	ssRespPager := c.appConfigClient.NewGetSnapshotsPagerWithNextLinks(opts)
 
 	return runtime.NewPager(runtime.PagingHandler[ListSnapshotsResponse]{
 		More: func(ListSnapshotsResponse) bool {
@@ -315,6 +386,7 @@ func (c *Client) NewListSnapshotsPager(options *ListSnapshotsOptions) *runtime.P
 				snapshots[i] = Snapshot{
 					Filters:         convertedFilters,
 					CompositionType: snapshot.CompositionType,
+					Description:     snapshot.Description,
 					RetentionPeriod: snapshot.RetentionPeriod,
 					Tags:            snapshot.Tags,
 					Created:         snapshot.Created,
@@ -345,7 +417,7 @@ func (c *Client) NewListSettingsForSnapshotPager(snapshotName string, options *L
 		options = &ListSettingsForSnapshotOptions{}
 	}
 
-	ssRespPager := c.appConfigClient.NewGetKeyValuesPager(&generated.AzureAppConfigurationClientGetKeyValuesOptions{
+	ssRespPager := c.appConfigClient.NewGetKeyValuesPagerWithNextLinks(&generated.AzureAppConfigurationClientGetKeyValuesOptions{
 		AcceptDatetime: options.AcceptDatetime,
 		After:          options.After,
 		IfMatch:        (*string)(options.IfMatch),
@@ -407,6 +479,7 @@ func (c *Client) BeginCreateSnapshot(ctx context.Context, snapshotName string, s
 
 	entity := generated.Snapshot{
 		CompositionType: options.CompositionType,
+		Description:     options.Description,
 		Filters:         filter,
 		Name:            &snapshotName,
 		RetentionPeriod: options.RetentionPeriod,
@@ -423,7 +496,7 @@ func (c *Client) BeginCreateSnapshot(ctx context.Context, snapshotName string, s
 	ctx, endSpan := runtime.StartSpan(ctx, "Client.BeginCreateSnapshot", c.appConfigClient.Tracer(), nil)
 	defer func() { endSpan(err) }()
 
-	resp, err := c.appConfigClient.CreateSnapshot(ctx, snapshotName, entity, nil)
+	resp, err := c.appConfigClient.CreateSnapshot(ctx, generated.CreateSnapshotRequestContentTypeApplicationJSON, snapshotName, entity, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -468,15 +541,16 @@ func (c *Client) GetSnapshot(ctx context.Context, snapshotName string, options *
 		Snapshot: Snapshot{
 			Filters:         convertedFilters,
 			CompositionType: getResp.CompositionType,
+			Description:     getResp.Description,
 			RetentionPeriod: getResp.RetentionPeriod,
 			Tags:            getResp.Tags,
 			Created:         getResp.Created,
 			ETag:            (*azcore.ETag)(getResp.Etag),
 			Expires:         getResp.Expires,
 			ItemsCount:      getResp.ItemsCount,
-			Name:            getResp.Snapshot.Name,
+			Name:            getResp.Name,
 			Size:            getResp.Size,
-			Status:          getResp.Snapshot.Status,
+			Status:          getResp.Status,
 		},
 		SyncToken: SyncToken(*getResp.SyncToken),
 		Link:      getResp.Link,
@@ -542,7 +616,7 @@ func (c *Client) updateSnapshotStatus(ctx context.Context, snapshotName string, 
 		Status: &status,
 	}
 
-	updateResp, err := c.appConfigClient.UpdateSnapshot(ctx, snapshotName, entity, &generated.AzureAppConfigurationClientUpdateSnapshotOptions{
+	updateResp, err := c.appConfigClient.UpdateSnapshot(ctx, generated.UpdateSnapshotRequestContentTypeApplicationJSON, snapshotName, entity, &generated.AzureAppConfigurationClientUpdateSnapshotOptions{
 		IfMatch:     (*string)(options.IfMatch),
 		IfNoneMatch: (*string)(options.IfNoneMatch),
 	})
@@ -563,15 +637,16 @@ func (c *Client) updateSnapshotStatus(ctx context.Context, snapshotName string, 
 		Snapshot: Snapshot{
 			Filters:         convertedFilters,
 			CompositionType: updateResp.CompositionType,
+			Description:     updateResp.Description,
 			RetentionPeriod: updateResp.RetentionPeriod,
 			Tags:            updateResp.Tags,
 			Created:         updateResp.Created,
 			ETag:            (*azcore.ETag)(updateResp.Etag),
 			Expires:         updateResp.Expires,
 			ItemsCount:      updateResp.ItemsCount,
-			Name:            updateResp.Snapshot.Name,
+			Name:            updateResp.Name,
 			Size:            updateResp.Size,
-			Status:          updateResp.Snapshot.Status,
+			Status:          updateResp.Status,
 		},
 		SyncToken: SyncToken(*updateResp.SyncToken),
 		Link:      updateResp.Link,

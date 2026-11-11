@@ -1,5 +1,116 @@
 # Release History
 
+## 4.0.0 (2026-10-30)
+### Breaking Changes
+
+- Type of `A2AProtectedItemDetail.VMManagedDisks` has been changed from `[]*A2AVMManagedDiskInputDetails` to `[]*A2AClusterVMManagedDiskInputDetails`
+- Type of `InMageRcmMobilityAgentDetails.AgentReinstallState` has been changed from `[]*MobilityAgentReinstallType` to `*MobilityAgentReinstallType`
+
+### Features Added
+
+- New enum type `DiskNetworkAccessPolicy` with values `DiskNetworkAccessPolicyAllowAll`, `DiskNetworkAccessPolicyAllowPrivate`, `DiskNetworkAccessPolicyDenyAll`
+- New enum type `DiskPublicNetworkAccess` with values `DiskPublicNetworkAccessDisabled`, `DiskPublicNetworkAccessEnabled`
+- New enum type `IPVersion` with values `IPVersionIPv4`, `IPVersionIPv6`
+- New enum type `RecoveryNetworkConfigAutoSyncPolicy` with values `RecoveryNetworkConfigAutoSyncPolicyDisabled`, `RecoveryNetworkConfigAutoSyncPolicyEnabled`
+- New struct `A2AClusterVMManagedDiskInputDetails`
+- New struct `ConfidentialDiskEncryptionInfo`
+- New struct `UpdateConfidentialDiskEncryptionInfo`
+- New field `RecoveryConfidentialDataDiskEncryptionIdentity` in struct `A2AEnableProtectionInput`
+- New field `ConfidentialDiskEncryptionInfo`, `RecoveryDiskAccessID`, `RecoveryNetworkAccessPolicy`, `RecoveryPublicNetworkAccess` in struct `A2AProtectedManagedDiskDetails`
+- New field `RecoveryConfidentialDataDiskEncryptionIdentity` in struct `A2AReplicationDetails`
+- New field `RecoveryConfidentialDataDiskEncryptionIdentity` in struct `A2ASwitchProtectionInput`
+- New field `RecoveryConfidentialDataDiskEncryptionIdentity` in struct `A2AUpdateReplicationProtectedItemInput`
+- New field `ConfidentialDiskEncryptionInfo`, `RecoveryDiskAccessID`, `RecoveryNetworkAccessPolicy`, `RecoveryPublicNetworkAccess` in struct `A2AVMManagedDiskInputDetails`
+- New field `ConfidentialDiskEncryptionInfo` in struct `A2AVMManagedDiskUpdateDetails`
+- New field `IPVersion` in struct `IPConfigDetails`
+- New field `ConfidentialDiskEncryptionSetID` in struct `InMageRcmDiskInput`
+- New field `ConfidentialDiskEncryptionSetID` in struct `InMageRcmDisksDefaultInput`
+- New field `TargetExtendedLocation` in struct `InMageRcmEnableProtectionInput`
+- New field `ConfidentialDiskEncryptionSetID` in struct `InMageRcmProtectedDiskDetails`
+- New field `TargetExtendedLocation` in struct `InMageRcmReplicationDetails`
+- New field `ConfidentialDiskEncryptionSetID` in struct `VMwareCbtDiskInput`
+- New field `ConfidentialDiskEncryptionSetID` in struct `VMwareCbtProtectedDiskDetails`
+- New field `RecoveryNetworkConfigAutoSync` in struct `VaultSettingCreationInputProperties`
+- New field `RecoveryNetworkConfigAutoSync` in struct `VaultSettingProperties`
+
+
+## 3.0.0 (2026-06-24)
+### Breaking Changes
+
+- Struct `ApplianceQueryParameter` has been removed
+- Struct `EventQueryParameter` has been removed
+- Struct `FabricQueryParameter` has been removed
+- Struct `MigrationItemsQueryParameter` has been removed
+- Struct `ProtectableItemQueryParameter` has been removed
+- Struct `ProtectedClustersQueryParameter` has been removed
+- Struct `ProtectedItemsQueryParameter` has been removed
+
+### Features Added
+
+- New value `AgentUpgradeBlockedReasonReInstallRequired` added to enum type `AgentUpgradeBlockedReason`
+- New enum type `AgentReinstallBlockedReason` with values `AgentReinstallBlockedReasonAgentNoHeartbeat`, `AgentReinstallBlockedReasonDistroNotSupported`, `AgentReinstallBlockedReasonUnknown`
+- New enum type `CreatedByType` with values `CreatedByTypeApplication`, `CreatedByTypeKey`, `CreatedByTypeManagedIdentity`, `CreatedByTypeUser`
+- New enum type `MobilityAgentReinstallType` with values `MobilityAgentReinstallTypeAutoTriggered`, `MobilityAgentReinstallTypeUserTriggered`
+- New function `*ReplicationProtectedItemsClient.BeginReinstallMobilityService(ctx context.Context, resourceGroupName string, resourceName string, fabricName string, protectionContainerName string, replicatedProtectedItemName string, updateMobilityServiceRequest ReinstallMobilityServiceRequest, options *ReplicationProtectedItemsClientBeginReinstallMobilityServiceOptions) (*runtime.Poller[ReplicationProtectedItemsClientReinstallMobilityServiceResponse], error)`
+- New struct `A2AAgentReinstallBlockingErrorDetails`
+- New struct `InMageRcmAgentReinstallBlockingErrorDetails`
+- New struct `ReinstallMobilityServiceRequest`
+- New struct `ReinstallMobilityServiceRequestProperties`
+- New struct `SystemData`
+- New field `PlatformFaultDomain` in struct `A2AEnableProtectionInput`
+- New field `AgentReinstallAttemptToVersion`, `AutoAgentUpgradeRetryCount`, `DistroName`, `DistroNameForWhichAgentIsInstalled`, `IsAgentReinstallRequired`, `IsAgentUpgradeInProgress`, `IsAgentUpgradeRetryThresholdExhausted`, `IsAgentUpgradeable`, `OSFamilyName`, `PlatformFaultDomain`, `ReasonsBlockingReInstall`, `ReasonsBlockingReinstallDetails` in struct `A2AReplicationDetails`
+- New field `PlatformFaultDomain` in struct `A2ASwitchProtectionInput`
+- New field `PlatformFaultDomain`, `RecoveryAvailabilityZone` in struct `A2AUpdateReplicationProtectedItemInput`
+- New field `SystemData` in struct `Alert`
+- New field `SystemData` in struct `Event`
+- New field `SystemData` in struct `Fabric`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `HyperVReplicaAzureDiskInputDetails`
+- New field `TargetCapacityReservationGroupID` in struct `HyperVReplicaAzureEnableProtectionInput`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `HyperVReplicaAzureManagedDiskDetails`
+- New field `TargetCapacityReservationGroupID` in struct `HyperVReplicaAzurePlannedFailoverProviderInput`
+- New field `TargetCapacityReservationGroupID` in struct `HyperVReplicaAzureReplicationDetails`
+- New field `TargetCapacityReservationGroupID` in struct `HyperVReplicaAzureUpdateReplicationProtectedItemInput`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `InMageRcmDiskInput`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `InMageRcmDisksDefaultInput`
+- New field `TargetCapacityReservationGroupID` in struct `InMageRcmEnableProtectionInput`
+- New field `AgentReinstallAttemptToVersion`, `AgentReinstallJobID`, `AgentReinstallState`, `DistroName`, `DistroNameForWhichAgentIsInstalled`, `IsAgentReinstallRequired`, `IsAgentUpgradeable`, `IsLastReinstallSuccessful`, `LastAgentReinstallType`, `OSFamilyName`, `ReasonsBlockingReinstall`, `ReasonsBlockingReinstallDetails` in struct `InMageRcmMobilityAgentDetails`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `InMageRcmProtectedDiskDetails`
+- New field `TargetCapacityReservationGroupID` in struct `InMageRcmReplicationDetails`
+- New field `TargetCapacityReservationGroupID` in struct `InMageRcmUnplannedFailoverInput`
+- New field `TargetCapacityReservationGroupID`, `VMDisks` in struct `InMageRcmUpdateReplicationProtectedItemInput`
+- New field `SystemData` in struct `Job`
+- New field `SystemData` in struct `LogicalNetwork`
+- New field `SystemData` in struct `MigrationItem`
+- New field `SystemData` in struct `MigrationRecoveryPoint`
+- New field `SystemData` in struct `Network`
+- New field `SystemData` in struct `NetworkMapping`
+- New field `SystemData` in struct `Policy`
+- New field `SystemData` in struct `ProtectableItem`
+- New field `SystemData` in struct `ProtectionContainer`
+- New field `SystemData` in struct `ProtectionContainerMapping`
+- New field `SystemData` in struct `RecoveryPlan`
+- New field `SystemData` in struct `RecoveryPoint`
+- New field `SystemData` in struct `RecoveryServicesProvider`
+- New field `SystemData` in struct `ReplicationEligibilityResults`
+- New field `SystemData` in struct `ReplicationProtectedItem`
+- New field `SystemData` in struct `ReplicationProtectionCluster`
+- New field `SystemData` in struct `ReplicationProtectionIntent`
+- New field `SystemData` in struct `StorageClassification`
+- New field `SystemData` in struct `StorageClassificationMapping`
+- New field `SystemData` in struct `SupportedOperatingSystems`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `UpdateDiskInput`
+- New field `SystemData` in struct `VCenter`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `VMwareCbtDiskInput`
+- New field `TargetCapacityReservationGroupID` in struct `VMwareCbtEnableMigrationInput`
+- New field `TargetCapacityReservationGroupID` in struct `VMwareCbtMigrateInput`
+- New field `TargetCapacityReservationGroupID` in struct `VMwareCbtMigrationDetails`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `VMwareCbtProtectedDiskDetails`
+- New field `DiskSizeInGB`, `Iops`, `ThroughputInMbps` in struct `VMwareCbtUpdateDiskInput`
+- New field `TargetCapacityReservationGroupID` in struct `VMwareCbtUpdateMigrationItemInput`
+- New field `SystemData` in struct `VaultHealthDetails`
+- New field `SystemData` in struct `VaultSetting`
+
+
 ## 2.4.0 (2025-04-25)
 ### Features Added
 

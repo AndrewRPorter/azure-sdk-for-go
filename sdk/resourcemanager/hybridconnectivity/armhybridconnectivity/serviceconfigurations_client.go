@@ -6,6 +6,7 @@ package armhybridconnectivity
 
 import (
 	"context"
+	"errors"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
@@ -16,13 +17,15 @@ import (
 
 // ServiceConfigurationsClient contains the methods for the ServiceConfigurations group.
 // Don't use this type directly, use NewServiceConfigurationsClient() instead.
+//
+// Generated from API version 2027-01-01
 type ServiceConfigurationsClient struct {
 	internal *arm.Client
 }
 
 // NewServiceConfigurationsClient creates a new instance of ServiceConfigurationsClient with the specified values.
 //   - credential - used to authorize requests. Usually a credential from azidentity.
-//   - options - pass nil to accept the default values.
+//   - options - Contains optional client configuration. Pass nil to accept the default values.
 func NewServiceConfigurationsClient(credential azcore.TokenCredential, options *arm.ClientOptions) (*ServiceConfigurationsClient, error) {
 	cl, err := arm.NewClient(moduleName, moduleVersion, credential, options)
 	if err != nil {
@@ -36,8 +39,6 @@ func NewServiceConfigurationsClient(credential azcore.TokenCredential, options *
 
 // CreateOrupdate - Create or update a service in serviceConfiguration for the endpoint resource.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - endpointName - The endpoint name.
 //   - serviceConfigurationName - The service name.
@@ -58,27 +59,32 @@ func (client *ServiceConfigurationsClient) CreateOrupdate(ctx context.Context, r
 	if err != nil {
 		return ServiceConfigurationsClientCreateOrupdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK, http.StatusCreated) {
-		err = runtime.NewResponseError(httpResp)
-		return ServiceConfigurationsClientCreateOrupdateResponse{}, err
-	}
-	resp, err := client.createOrupdateHandleResponse(httpResp)
+	resp, err := client.createOrupdateHandleResponse(httpResp, http.StatusOK, http.StatusCreated)
 	return resp, err
 }
 
 // createOrupdateCreateRequest creates the CreateOrupdate request.
 func (client *ServiceConfigurationsClient) createOrupdateCreateRequest(ctx context.Context, resourceURI string, endpointName string, serviceConfigurationName string, serviceConfigurationResource ServiceConfigurationResource, _ *ServiceConfigurationsClientCreateOrupdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations/{serviceConfigurationName}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if endpointName == "" {
+		return nil, errors.New("parameter endpointName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
+	if serviceConfigurationName == "" {
+		return nil, errors.New("parameter serviceConfigurationName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{serviceConfigurationName}", serviceConfigurationName)
 	req, err := runtime.NewRequest(ctx, http.MethodPut, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, serviceConfigurationResource); err != nil {
@@ -88,8 +94,11 @@ func (client *ServiceConfigurationsClient) createOrupdateCreateRequest(ctx conte
 }
 
 // createOrupdateHandleResponse handles the CreateOrupdate response.
-func (client *ServiceConfigurationsClient) createOrupdateHandleResponse(resp *http.Response) (ServiceConfigurationsClientCreateOrupdateResponse, error) {
+func (client *ServiceConfigurationsClient) createOrupdateHandleResponse(resp *http.Response, successCodes ...int) (ServiceConfigurationsClientCreateOrupdateResponse, error) {
 	result := ServiceConfigurationsClientCreateOrupdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ServiceConfigurationResource); err != nil {
 		return ServiceConfigurationsClientCreateOrupdateResponse{}, err
 	}
@@ -98,8 +107,6 @@ func (client *ServiceConfigurationsClient) createOrupdateHandleResponse(resp *ht
 
 // Delete - Deletes the service details to the target resource.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - endpointName - The endpoint name.
 //   - serviceConfigurationName - The service name.
@@ -129,24 +136,30 @@ func (client *ServiceConfigurationsClient) Delete(ctx context.Context, resourceU
 // deleteCreateRequest creates the Delete request.
 func (client *ServiceConfigurationsClient) deleteCreateRequest(ctx context.Context, resourceURI string, endpointName string, serviceConfigurationName string, _ *ServiceConfigurationsClientDeleteOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations/{serviceConfigurationName}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if endpointName == "" {
+		return nil, errors.New("parameter endpointName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
+	if serviceConfigurationName == "" {
+		return nil, errors.New("parameter serviceConfigurationName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{serviceConfigurationName}", serviceConfigurationName)
 	req, err := runtime.NewRequest(ctx, http.MethodDelete, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	return req, nil
 }
 
 // Get - Gets the details about the service to the resource.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - endpointName - The endpoint name.
 //   - serviceConfigurationName - The service name.
@@ -166,34 +179,42 @@ func (client *ServiceConfigurationsClient) Get(ctx context.Context, resourceURI 
 	if err != nil {
 		return ServiceConfigurationsClientGetResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ServiceConfigurationsClientGetResponse{}, err
-	}
-	resp, err := client.getHandleResponse(httpResp)
+	resp, err := client.getHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
 // getCreateRequest creates the Get request.
 func (client *ServiceConfigurationsClient) getCreateRequest(ctx context.Context, resourceURI string, endpointName string, serviceConfigurationName string, _ *ServiceConfigurationsClientGetOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations/{serviceConfigurationName}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if endpointName == "" {
+		return nil, errors.New("parameter endpointName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
+	if serviceConfigurationName == "" {
+		return nil, errors.New("parameter serviceConfigurationName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{serviceConfigurationName}", serviceConfigurationName)
 	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	return req, nil
 }
 
 // getHandleResponse handles the Get response.
-func (client *ServiceConfigurationsClient) getHandleResponse(resp *http.Response) (ServiceConfigurationsClientGetResponse, error) {
+func (client *ServiceConfigurationsClient) getHandleResponse(resp *http.Response, successCodes ...int) (ServiceConfigurationsClientGetResponse, error) {
 	result := ServiceConfigurationsClientGetResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ServiceConfigurationResource); err != nil {
 		return ServiceConfigurationsClientGetResponse{}, err
 	}
@@ -202,9 +223,7 @@ func (client *ServiceConfigurationsClient) getHandleResponse(resp *http.Response
 
 // NewListByEndpointResourcePager - Lists of all the services associated with endpoint resource.
 //
-// # API to enumerate registered services in service configurations under a Endpoint Resource
-//
-// Generated from API version 2024-12-01
+// API to enumerate registered services in service configurations under a Endpoint Resource
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - endpointName - The endpoint name.
 //   - options - ServiceConfigurationsClientListByEndpointResourceOptions contains the optional parameters for the ServiceConfigurationsClient.NewListByEndpointResourcePager
@@ -220,37 +239,57 @@ func (client *ServiceConfigurationsClient) NewListByEndpointResourcePager(resour
 			if page != nil {
 				nextLink = *page.NextLink
 			}
-			resp, err := runtime.FetcherForNextLink(ctx, client.internal.Pipeline(), nextLink, func(ctx context.Context) (*policy.Request, error) {
-				return client.listByEndpointResourceCreateRequest(ctx, resourceURI, endpointName, options)
-			}, nil)
+			req, err := client.listByEndpointResourceCreateRequest(ctx, resourceURI, endpointName, nextLink, options)
 			if err != nil {
 				return ServiceConfigurationsClientListByEndpointResourceResponse{}, err
 			}
-			return client.listByEndpointResourceHandleResponse(resp)
+			resp, err := client.internal.Pipeline().Do(req)
+			if err != nil {
+				return ServiceConfigurationsClientListByEndpointResourceResponse{}, err
+			}
+			return client.listByEndpointResourceHandleResponse(resp, http.StatusOK)
 		},
 		Tracer: client.internal.Tracer(),
 	})
 }
 
 // listByEndpointResourceCreateRequest creates the ListByEndpointResource request.
-func (client *ServiceConfigurationsClient) listByEndpointResourceCreateRequest(ctx context.Context, resourceURI string, endpointName string, _ *ServiceConfigurationsClientListByEndpointResourceOptions) (*policy.Request, error) {
-	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations"
-	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
-	urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
-	req, err := runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+func (client *ServiceConfigurationsClient) listByEndpointResourceCreateRequest(ctx context.Context, resourceURI string, endpointName string, nextLink string, _ *ServiceConfigurationsClientListByEndpointResourceOptions) (*policy.Request, error) {
+	firstPage := nextLink == ""
+	var req *policy.Request
+	var err error
+	if firstPage {
+		urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations"
+		if resourceURI == "" {
+			return nil, errors.New("parameter resourceURI cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+		if endpointName == "" {
+			return nil, errors.New("parameter endpointName cannot be empty")
+		}
+		urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
+		req, err = runtime.NewRequest(ctx, http.MethodGet, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
+	} else {
+		req, err = runtime.NewRequestForNextLink(ctx, http.MethodGet, client.internal.Endpoint(), nextLink)
+	}
 	if err != nil {
 		return nil, err
 	}
-	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
-	req.Raw().Header["Accept"] = []string{"application/json"}
+	if firstPage {
+		reqQP := req.Raw().URL.Query()
+		reqQP.Set("api-version", version20270101)
+		req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
+		req.Raw().Header["Accept"] = []string{"application/json"}
+	}
 	return req, nil
 }
 
 // listByEndpointResourceHandleResponse handles the ListByEndpointResource response.
-func (client *ServiceConfigurationsClient) listByEndpointResourceHandleResponse(resp *http.Response) (ServiceConfigurationsClientListByEndpointResourceResponse, error) {
+func (client *ServiceConfigurationsClient) listByEndpointResourceHandleResponse(resp *http.Response, successCodes ...int) (ServiceConfigurationsClientListByEndpointResourceResponse, error) {
 	result := ServiceConfigurationsClientListByEndpointResourceResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ServiceConfigurationList); err != nil {
 		return ServiceConfigurationsClientListByEndpointResourceResponse{}, err
 	}
@@ -259,8 +298,6 @@ func (client *ServiceConfigurationsClient) listByEndpointResourceHandleResponse(
 
 // Update - Update the service details in the service configurations of the target resource.
 // If the operation fails it returns an *azcore.ResponseError type.
-//
-// Generated from API version 2024-12-01
 //   - resourceURI - The fully qualified Azure Resource manager identifier of the resource.
 //   - endpointName - The endpoint name.
 //   - serviceConfigurationName - The service name.
@@ -281,27 +318,32 @@ func (client *ServiceConfigurationsClient) Update(ctx context.Context, resourceU
 	if err != nil {
 		return ServiceConfigurationsClientUpdateResponse{}, err
 	}
-	if !runtime.HasStatusCode(httpResp, http.StatusOK) {
-		err = runtime.NewResponseError(httpResp)
-		return ServiceConfigurationsClientUpdateResponse{}, err
-	}
-	resp, err := client.updateHandleResponse(httpResp)
+	resp, err := client.updateHandleResponse(httpResp, http.StatusOK)
 	return resp, err
 }
 
 // updateCreateRequest creates the Update request.
 func (client *ServiceConfigurationsClient) updateCreateRequest(ctx context.Context, resourceURI string, endpointName string, serviceConfigurationName string, serviceConfigurationResource ServiceConfigurationResourcePatch, _ *ServiceConfigurationsClientUpdateOptions) (*policy.Request, error) {
 	urlPath := "/{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}/serviceConfigurations/{serviceConfigurationName}"
+	if resourceURI == "" {
+		return nil, errors.New("parameter resourceURI cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{resourceUri}", resourceURI)
+	if endpointName == "" {
+		return nil, errors.New("parameter endpointName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{endpointName}", endpointName)
+	if serviceConfigurationName == "" {
+		return nil, errors.New("parameter serviceConfigurationName cannot be empty")
+	}
 	urlPath = strings.ReplaceAll(urlPath, "{serviceConfigurationName}", serviceConfigurationName)
 	req, err := runtime.NewRequest(ctx, http.MethodPatch, runtime.JoinPaths(client.internal.Endpoint(), urlPath))
 	if err != nil {
 		return nil, err
 	}
 	reqQP := req.Raw().URL.Query()
-	reqQP.Set("api-version", "2024-12-01")
-	req.Raw().URL.RawQuery = reqQP.Encode()
+	reqQP.Set("api-version", version20270101)
+	req.Raw().URL.RawQuery = strings.ReplaceAll(reqQP.Encode(), "+", "%20")
 	req.Raw().Header["Accept"] = []string{"application/json"}
 	req.Raw().Header["Content-Type"] = []string{"application/json"}
 	if err := runtime.MarshalAsJSON(req, serviceConfigurationResource); err != nil {
@@ -311,8 +353,11 @@ func (client *ServiceConfigurationsClient) updateCreateRequest(ctx context.Conte
 }
 
 // updateHandleResponse handles the Update response.
-func (client *ServiceConfigurationsClient) updateHandleResponse(resp *http.Response) (ServiceConfigurationsClientUpdateResponse, error) {
+func (client *ServiceConfigurationsClient) updateHandleResponse(resp *http.Response, successCodes ...int) (ServiceConfigurationsClientUpdateResponse, error) {
 	result := ServiceConfigurationsClientUpdateResponse{}
+	if !runtime.HasStatusCode(resp, successCodes...) {
+		return result, runtime.NewResponseError(resp)
+	}
 	if err := runtime.UnmarshalAsJSON(resp, &result.ServiceConfigurationResource); err != nil {
 		return ServiceConfigurationsClientUpdateResponse{}, err
 	}

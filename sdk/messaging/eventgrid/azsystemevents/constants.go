@@ -22,7 +22,7 @@ func PossibleACSCallEndedByKindValues() []ACSCallEndedByKind {
 	}
 }
 
-// ACSCallParticipantRoleKind - Call participant role kind.
+// ACSCallParticipantRoleKind - Call participant kind.
 type ACSCallParticipantRoleKind string
 
 const (
@@ -46,6 +46,42 @@ func PossibleACSCallParticipantRoleKindValues() []ACSCallParticipantRoleKind {
 		ACSCallParticipantRoleKindConsumer,
 		ACSCallParticipantRoleKindOrganizer,
 		ACSCallParticipantRoleKindPresenter,
+	}
+}
+
+// ACSChatRetentionPolicyKind - Chat Retention Policy kind
+type ACSChatRetentionPolicyKind string
+
+const (
+	// ACSChatRetentionPolicyKindNone - None
+	ACSChatRetentionPolicyKindNone ACSChatRetentionPolicyKind = "none"
+	// ACSChatRetentionPolicyKindThreadCreationDate - ThreadCreationDate
+	ACSChatRetentionPolicyKindThreadCreationDate ACSChatRetentionPolicyKind = "threadCreationDate"
+)
+
+// PossibleACSChatRetentionPolicyKindValues returns the possible values for the ACSChatRetentionPolicyKind const type.
+func PossibleACSChatRetentionPolicyKindValues() []ACSChatRetentionPolicyKind {
+	return []ACSChatRetentionPolicyKind{
+		ACSChatRetentionPolicyKindNone,
+		ACSChatRetentionPolicyKindThreadCreationDate,
+	}
+}
+
+// ACSChatThreadDeletedReasonType - Chat Thread Deletion Reason Type
+type ACSChatThreadDeletedReasonType string
+
+const (
+	// ACSChatThreadDeletedReasonTypeDeletedByPolicy - DeletedByPolicy
+	ACSChatThreadDeletedReasonTypeDeletedByPolicy ACSChatThreadDeletedReasonType = "deletedByPolicy"
+	// ACSChatThreadDeletedReasonTypeDeletedByUser - DeletedByUser
+	ACSChatThreadDeletedReasonTypeDeletedByUser ACSChatThreadDeletedReasonType = "deletedByUser"
+)
+
+// PossibleACSChatThreadDeletedReasonTypeValues returns the possible values for the ACSChatThreadDeletedReasonType const type.
+func PossibleACSChatThreadDeletedReasonTypeValues() []ACSChatThreadDeletedReasonType {
+	return []ACSChatThreadDeletedReasonType{
+		ACSChatThreadDeletedReasonTypeDeletedByPolicy,
+		ACSChatThreadDeletedReasonTypeDeletedByUser,
 	}
 }
 
@@ -143,6 +179,63 @@ func PossibleACSMessageDeliveryStatusValues() []ACSMessageDeliveryStatus {
 		ACSMessageDeliveryStatusSent,
 		ACSMessageDeliveryStatusUnknown,
 		ACSMessageDeliveryStatusWarning,
+	}
+}
+
+// ACSRecordingChannelType - Recording channel type
+type ACSRecordingChannelType string
+
+const (
+	// ACSRecordingChannelTypeMixed - Mixed channel type
+	ACSRecordingChannelTypeMixed ACSRecordingChannelType = "Mixed"
+	// ACSRecordingChannelTypeUnmixed - Unmixed channel type
+	ACSRecordingChannelTypeUnmixed ACSRecordingChannelType = "Unmixed"
+)
+
+// PossibleACSRecordingChannelTypeValues returns the possible values for the ACSRecordingChannelType const type.
+func PossibleACSRecordingChannelTypeValues() []ACSRecordingChannelType {
+	return []ACSRecordingChannelType{
+		ACSRecordingChannelTypeMixed,
+		ACSRecordingChannelTypeUnmixed,
+	}
+}
+
+// ACSRecordingContentType - Recording content type
+type ACSRecordingContentType string
+
+const (
+	// ACSRecordingContentTypeAudio - Audio content type
+	ACSRecordingContentTypeAudio ACSRecordingContentType = "Audio"
+	// ACSRecordingContentTypeAudioVideo - AudioVideo content type
+	ACSRecordingContentTypeAudioVideo ACSRecordingContentType = "AudioVideo"
+)
+
+// PossibleACSRecordingContentTypeValues returns the possible values for the ACSRecordingContentType const type.
+func PossibleACSRecordingContentTypeValues() []ACSRecordingContentType {
+	return []ACSRecordingContentType{
+		ACSRecordingContentTypeAudio,
+		ACSRecordingContentTypeAudioVideo,
+	}
+}
+
+// ACSRecordingFormatType - Recording format type
+type ACSRecordingFormatType string
+
+const (
+	// ACSRecordingFormatTypeMP3 - MP3 format
+	ACSRecordingFormatTypeMP3 ACSRecordingFormatType = "Mp3"
+	// ACSRecordingFormatTypeMP4 - MP4 format
+	ACSRecordingFormatTypeMP4 ACSRecordingFormatType = "Mp4"
+	// ACSRecordingFormatTypeWav - WAV format
+	ACSRecordingFormatTypeWav ACSRecordingFormatType = "Wav"
+)
+
+// PossibleACSRecordingFormatTypeValues returns the possible values for the ACSRecordingFormatType const type.
+func PossibleACSRecordingFormatTypeValues() []ACSRecordingFormatType {
+	return []ACSRecordingFormatType{
+		ACSRecordingFormatTypeMP3,
+		ACSRecordingFormatTypeMP4,
+		ACSRecordingFormatTypeWav,
 	}
 }
 
@@ -383,6 +476,8 @@ type CommunicationIdentifierModelKind string
 const (
 	// CommunicationIdentifierModelKindCommunicationUser - Communication User
 	CommunicationIdentifierModelKindCommunicationUser CommunicationIdentifierModelKind = "communicationUser"
+	// CommunicationIdentifierModelKindMicrosoftTeamsApp - Microsoft Teams App
+	CommunicationIdentifierModelKindMicrosoftTeamsApp CommunicationIdentifierModelKind = "microsoftTeamsApp"
 	// CommunicationIdentifierModelKindMicrosoftTeamsUser - Microsoft Teams User
 	CommunicationIdentifierModelKindMicrosoftTeamsUser CommunicationIdentifierModelKind = "microsoftTeamsUser"
 	// CommunicationIdentifierModelKindPhoneNumber - Phone Number
@@ -395,6 +490,7 @@ const (
 func PossibleCommunicationIdentifierModelKindValues() []CommunicationIdentifierModelKind {
 	return []CommunicationIdentifierModelKind{
 		CommunicationIdentifierModelKindCommunicationUser,
+		CommunicationIdentifierModelKindMicrosoftTeamsApp,
 		CommunicationIdentifierModelKindMicrosoftTeamsUser,
 		CommunicationIdentifierModelKindPhoneNumber,
 		CommunicationIdentifierModelKindUnknown,
@@ -988,60 +1084,43 @@ func PossibleHealthcareFhirResourceTypeValues() []HealthcareFhirResourceType {
 	}
 }
 
-// RecordingChannelKind - Recording channel type
-type RecordingChannelKind string
+// LifecycleHookAction - The action that will be applied to a target resource in the Virtual Machine Scale Set Lifecycle Hook
+// event if the platform does not receive a response from the customer for the target resource before waitUntil.
+type LifecycleHookAction string
 
 const (
-	// RecordingChannelKindMixed - Mixed channel type
-	RecordingChannelKindMixed RecordingChannelKind = "Mixed"
-	// RecordingChannelKindUnmixed - Unmixed channel type
-	RecordingChannelKindUnmixed RecordingChannelKind = "Unmixed"
+	// LifecycleHookActionApprove - The Lifecycle Hook of a target resource in a Lifecycle Hook event will be approved.
+	LifecycleHookActionApprove LifecycleHookAction = "Approve"
+	// LifecycleHookActionReject - The Lifecycle Hook of a target resource in a Lifecycle Hook event will be rejected.
+	LifecycleHookActionReject LifecycleHookAction = "Reject"
 )
 
-// PossibleRecordingChannelKindValues returns the possible values for the RecordingChannelKind const type.
-func PossibleRecordingChannelKindValues() []RecordingChannelKind {
-	return []RecordingChannelKind{
-		RecordingChannelKindMixed,
-		RecordingChannelKindUnmixed,
+// PossibleLifecycleHookActionValues returns the possible values for the LifecycleHookAction const type.
+func PossibleLifecycleHookActionValues() []LifecycleHookAction {
+	return []LifecycleHookAction{
+		LifecycleHookActionApprove,
+		LifecycleHookActionReject,
 	}
 }
 
-// RecordingContentType - Recording content type
-type RecordingContentType string
+// LifecycleHookActionState - Approval status of a target resource in a Virtual Machine Scale Set Lifecycle Hook event.
+type LifecycleHookActionState string
 
 const (
-	// RecordingContentTypeAudio - Audio content type
-	RecordingContentTypeAudio RecordingContentType = "Audio"
-	// RecordingContentTypeAudioVideo - AudioVideo content type
-	RecordingContentTypeAudioVideo RecordingContentType = "AudioVideo"
+	// LifecycleHookActionStateApproved - The Lifecycle Hook for the target resource is approved.
+	LifecycleHookActionStateApproved LifecycleHookActionState = "Approved"
+	// LifecycleHookActionStateRejected - The Lifecycle Hook for the target resource is rejected.
+	LifecycleHookActionStateRejected LifecycleHookActionState = "Rejected"
+	// LifecycleHookActionStateWaiting - The Lifecycle Hook for the target resource is waiting for approval.
+	LifecycleHookActionStateWaiting LifecycleHookActionState = "Waiting"
 )
 
-// PossibleRecordingContentTypeValues returns the possible values for the RecordingContentType const type.
-func PossibleRecordingContentTypeValues() []RecordingContentType {
-	return []RecordingContentType{
-		RecordingContentTypeAudio,
-		RecordingContentTypeAudioVideo,
-	}
-}
-
-// RecordingFormatType - Recording format type
-type RecordingFormatType string
-
-const (
-	// RecordingFormatTypeMp3 - MP3 format
-	RecordingFormatTypeMp3 RecordingFormatType = "Mp3"
-	// RecordingFormatTypeMp4 - MP4 format
-	RecordingFormatTypeMp4 RecordingFormatType = "Mp4"
-	// RecordingFormatTypeWav - WAV format
-	RecordingFormatTypeWav RecordingFormatType = "Wav"
-)
-
-// PossibleRecordingFormatTypeValues returns the possible values for the RecordingFormatType const type.
-func PossibleRecordingFormatTypeValues() []RecordingFormatType {
-	return []RecordingFormatType{
-		RecordingFormatTypeMp3,
-		RecordingFormatTypeMp4,
-		RecordingFormatTypeWav,
+// PossibleLifecycleHookActionStateValues returns the possible values for the LifecycleHookActionState const type.
+func PossibleLifecycleHookActionStateValues() []LifecycleHookActionState {
+	return []LifecycleHookActionState{
+		LifecycleHookActionStateApproved,
+		LifecycleHookActionStateRejected,
+		LifecycleHookActionStateWaiting,
 	}
 }
 
@@ -1147,5 +1226,48 @@ func PossibleStorageTaskCompletedStatusValues() []StorageTaskCompletedStatus {
 	return []StorageTaskCompletedStatus{
 		StorageTaskCompletedStatusFailed,
 		StorageTaskCompletedStatusSucceeded,
+	}
+}
+
+// VirtualMachineScaleSetLifecycleHookEventState - The states that a Virtual Machine Scale Set Lifecycle Hook event can be
+// in. This is not settable by the customer. It is set only by the platform.
+type VirtualMachineScaleSetLifecycleHookEventState string
+
+const (
+	// VirtualMachineScaleSetLifecycleHookEventStateActive - The Lifecycle Hook event is active. E.g., waiting on a response from
+	// the customer.
+	VirtualMachineScaleSetLifecycleHookEventStateActive VirtualMachineScaleSetLifecycleHookEventState = "Active"
+	// VirtualMachineScaleSetLifecycleHookEventStateCompleted - The Lifecycle Hook event is completed. i.e., all the target resources
+	// in the event have moved to a terminal state.
+	VirtualMachineScaleSetLifecycleHookEventStateCompleted VirtualMachineScaleSetLifecycleHookEventState = "Completed"
+)
+
+// PossibleVirtualMachineScaleSetLifecycleHookEventStateValues returns the possible values for the VirtualMachineScaleSetLifecycleHookEventState const type.
+func PossibleVirtualMachineScaleSetLifecycleHookEventStateValues() []VirtualMachineScaleSetLifecycleHookEventState {
+	return []VirtualMachineScaleSetLifecycleHookEventState{
+		VirtualMachineScaleSetLifecycleHookEventStateActive,
+		VirtualMachineScaleSetLifecycleHookEventStateCompleted,
+	}
+}
+
+// VirtualMachineScaleSetLifecycleHookEventType - Specifies the scenario for which the customer is interested in receiving
+// Virtual Machine Scale Set Lifecycle Hook events.
+type VirtualMachineScaleSetLifecycleHookEventType string
+
+const (
+	// VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSRollingBatchStarting - Lifecycle Hook event sent to the customer
+	// before upgrade starts on a batch of virtual machines belonging to a Virtual Machine Scale Set during an Auto OS Upgrade
+	// operation.
+	VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSRollingBatchStarting VirtualMachineScaleSetLifecycleHookEventType = "UpgradeAutoOSRollingBatchStarting"
+	// VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSScheduling - Lifecycle Hook event sent to the customer before
+	// an Auto OS Upgrade operation starts on the Virtual Machine Scale Set.
+	VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSScheduling VirtualMachineScaleSetLifecycleHookEventType = "UpgradeAutoOSScheduling"
+)
+
+// PossibleVirtualMachineScaleSetLifecycleHookEventTypeValues returns the possible values for the VirtualMachineScaleSetLifecycleHookEventType const type.
+func PossibleVirtualMachineScaleSetLifecycleHookEventTypeValues() []VirtualMachineScaleSetLifecycleHookEventType {
+	return []VirtualMachineScaleSetLifecycleHookEventType{
+		VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSRollingBatchStarting,
+		VirtualMachineScaleSetLifecycleHookEventTypeUpgradeAutoOSScheduling,
 	}
 }

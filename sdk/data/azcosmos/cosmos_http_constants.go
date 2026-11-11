@@ -3,7 +3,14 @@
 
 package azcosmos
 
+import "net/http"
+
+//go:generate go -C ./valuelist run . ../cosmos_http_constants.go ../cosmos_http_constants_generated.go
+
+// AFTER adding any new constants to the header list below, run `go generate` in this package to regenerate the generated file listing all possible headers.
+
 // Headers
+// valueList allKnownHttpHeaders
 const (
 	cosmosHeaderRequestCharge                      string = "x-ms-request-charge"
 	cosmosHeaderActivityId                         string = "x-ms-activity-id"
@@ -16,6 +23,8 @@ const (
 	cosmosHeaderSessionToken                       string = "x-ms-session-token"
 	cosmosHeaderConsistencyLevel                   string = "x-ms-consistency-level"
 	cosmosHeaderPartitionKey                       string = "x-ms-documentdb-partitionkey"
+	cosmosHeaderChangeFeed                         string = "A-IM"
+	cosmosHeaderIfModifiedSince                    string = "If-Modified-Since"
 	cosmosHeaderPrefer                             string = "Prefer"
 	cosmosHeaderIsUpsert                           string = "x-ms-documentdb-is-upsert"
 	cosmosHeaderOfferThroughput                    string = "x-ms-offer-throughput"
@@ -39,6 +48,7 @@ const (
 	cosmosHeaderEnableCrossPartitionQuery          string = "x-ms-documentdb-query-enablecrosspartition"
 	cosmosHeaderIsQueryPlanRequest                 string = "x-ms-cosmos-is-query-plan-request"
 	cosmosHeaderSupportedQueryFeatures             string = "x-ms-cosmos-supported-query-features"
+	cosmosHeaderAllowTentativeWrites               string = "x-ms-cosmos-allow-tentative-writes"
 	cosmosHeaderPartitionKeyRangeId                string = "x-ms-documentdb-partitionkeyrangeid"
 	headerXmsDate                                  string = "x-ms-date"
 	headerAuthorization                            string = "Authorization"
@@ -84,16 +94,38 @@ const (
 	headerXmsItemCount                             string = "x-ms-item-count"
 	headerDedicatedGatewayMaxAge                   string = "x-ms-dedicatedgateway-max-age"
 	headerDedicatedGatewayBypassCache              string = "x-ms-dedicatedgateway-bypass-cache"
+	cosmosHeaderPriorityLevel                      string = "x-ms-cosmos-priority-level"
+	cosmosHeaderThroughputBucket                   string = "x-ms-cosmos-throughput-bucket"
 )
 
 const (
 	cosmosHeaderValuesPreferMinimal string = "return=minimal"
 	cosmosHeaderValuesQuery         string = "application/query+json"
+	cosmosHeaderValuesChangeFeed    string = "Incremental Feed"
+	cosmosHeaderValuesMaxItemAll    string = "-1"
 )
 
 // Substatus Codes
+// NOTE: Some substatus values are reused across different HTTP status codes.
+// Always check the HTTP status code first before interpreting the substatus.
+// - 1002: ReadSessionNotAvailable (404) / PartitionKeyRangeGone (410)
+// - 1008: DatabaseAccountNotFound (403) / CompletingPartitionMigration (410)
 const (
-	subStatusWriteForbidden          string = "3"
-	subStatusDatabaseAccountNotFound string = "1008"
-	subStatusReadSessionNotAvailable string = "1002"
+	subStatusWriteForbidden               string = "3"
+	subStatusDatabaseAccountNotFound      string = "1008"
+	subStatusReadSessionNotAvailable      string = "1002"
+	subStatusPartitionKeyRangeGone        string = "1002"
+	subStatusCompletingSplit              string = "1007"
+	subStatusCompletingPartitionMigration string = "1008"
 )
+
+// isPartitionKeyRangeGoneError checks if an error response indicates a
+// partition key range gone condition (HTTP 410 with split-related substatus).
+func isPartitionKeyRangeGoneError(statusCode int, subStatus string) bool {
+	if statusCode != http.StatusGone {
+		return false
+	}
+	return subStatus == subStatusPartitionKeyRangeGone ||
+		subStatus == subStatusCompletingSplit ||
+		subStatus == subStatusCompletingPartitionMigration
+}

@@ -45,6 +45,16 @@ type FleetsClientListVirtualMachineScaleSetsOptions struct {
 	// placeholder for future optional parameters
 }
 
+// FleetsClientListVirtualMachinesOptions contains the optional parameters for the FleetsClient.NewListVirtualMachinesPager
+// method.
+type FleetsClientListVirtualMachinesOptions struct {
+	// Filter expression to filter the virtual machines.
+	Filter *string
+
+	// Skip token for pagination. Uses the token from a previous response to fetch the next page of results.
+	Skiptoken *string
+}
+
 // OperationsClientListOptions contains the optional parameters for the OperationsClient.NewListPager method.
 type OperationsClientListOptions struct {
 	// placeholder for future optional parameters

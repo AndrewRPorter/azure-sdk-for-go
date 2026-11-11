@@ -14,8 +14,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/to"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/hybridconnectivity/armhybridconnectivity"
 	"net/http"
-	"net/url"
 	"regexp"
+	"slices"
 )
 
 // ServiceConfigurationsServer is a fake server for instances of the armhybridconnectivity.ServiceConfigurationsClient type.
@@ -63,16 +63,14 @@ func (s *ServiceConfigurationsServerTransport) Do(req *http.Request) (*http.Resp
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return s.dispatchToMethodFake(req, method)
 }
 
 func (s *ServiceConfigurationsServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
 		var intercepted bool
 		var res result
@@ -96,10 +94,7 @@ func (s *ServiceConfigurationsServerTransport) dispatchToMethodFake(req *http.Re
 			}
 
 		}
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
-		}
+		resultChan <- res
 	}()
 
 	select {
@@ -114,34 +109,25 @@ func (s *ServiceConfigurationsServerTransport) dispatchCreateOrupdate(req *http.
 	if s.srv.CreateOrupdate == nil {
 		return nil, &nonRetriableError{errors.New("fake for method CreateOrupdate not implemented")}
 	}
-	const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/serviceConfigurations/(?P<serviceConfigurationName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/serviceConfigurations/(?P<serviceConfigurationName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
+	if len(matches) < 4 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	body, err := server.UnmarshalRequestAsJSON[armhybridconnectivity.ServiceConfigurationResource](req)
 	if err != nil {
 		return nil, err
 	}
-	resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-	if err != nil {
-		return nil, err
-	}
-	endpointNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("endpointName")])
-	if err != nil {
-		return nil, err
-	}
-	serviceConfigurationNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("serviceConfigurationName")])
-	if err != nil {
-		return nil, err
-	}
+	resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+	endpointNameParam := matches[regex.SubexpIndex("endpointName")]
+	serviceConfigurationNameParam := matches[regex.SubexpIndex("serviceConfigurationName")]
 	respr, errRespr := s.srv.CreateOrupdate(req.Context(), resourceURIParam, endpointNameParam, serviceConfigurationNameParam, body, nil)
 	if respErr := server.GetError(errRespr, req); respErr != nil {
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK, http.StatusCreated}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusCreated}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusCreated", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ServiceConfigurationResource, req)
@@ -155,30 +141,21 @@ func (s *ServiceConfigurationsServerTransport) dispatchDelete(req *http.Request)
 	if s.srv.Delete == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Delete not implemented")}
 	}
-	const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/serviceConfigurations/(?P<serviceConfigurationName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/serviceConfigurations/(?P<serviceConfigurationName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
+	if len(matches) < 4 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
-	resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-	if err != nil {
-		return nil, err
-	}
-	endpointNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("endpointName")])
-	if err != nil {
-		return nil, err
-	}
-	serviceConfigurationNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("serviceConfigurationName")])
-	if err != nil {
-		return nil, err
-	}
+	resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+	endpointNameParam := matches[regex.SubexpIndex("endpointName")]
+	serviceConfigurationNameParam := matches[regex.SubexpIndex("serviceConfigurationName")]
 	respr, errRespr := s.srv.Delete(req.Context(), resourceURIParam, endpointNameParam, serviceConfigurationNameParam, nil)
 	if respErr := server.GetError(errRespr, req); respErr != nil {
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK, http.StatusNoContent}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusNoContent}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusNoContent", respContent.HTTPStatus)}
 	}
 	resp, err := server.NewResponse(respContent, req, nil)
@@ -192,30 +169,21 @@ func (s *ServiceConfigurationsServerTransport) dispatchGet(req *http.Request) (*
 	if s.srv.Get == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
 	}
-	const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/serviceConfigurations/(?P<serviceConfigurationName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/serviceConfigurations/(?P<serviceConfigurationName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
+	if len(matches) < 4 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
-	resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-	if err != nil {
-		return nil, err
-	}
-	endpointNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("endpointName")])
-	if err != nil {
-		return nil, err
-	}
-	serviceConfigurationNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("serviceConfigurationName")])
-	if err != nil {
-		return nil, err
-	}
+	resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+	endpointNameParam := matches[regex.SubexpIndex("endpointName")]
+	serviceConfigurationNameParam := matches[regex.SubexpIndex("serviceConfigurationName")]
 	respr, errRespr := s.srv.Get(req.Context(), resourceURIParam, endpointNameParam, serviceConfigurationNameParam, nil)
 	if respErr := server.GetError(errRespr, req); respErr != nil {
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ServiceConfigurationResource, req)
@@ -231,20 +199,14 @@ func (s *ServiceConfigurationsServerTransport) dispatchNewListByEndpointResource
 	}
 	newListByEndpointResourcePager := s.newListByEndpointResourcePager.get(req)
 	if newListByEndpointResourcePager == nil {
-		const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/serviceConfigurations`
+		const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/serviceConfigurations`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
+		if len(matches) < 3 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
-		resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-		if err != nil {
-			return nil, err
-		}
-		endpointNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("endpointName")])
-		if err != nil {
-			return nil, err
-		}
+		resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+		endpointNameParam := matches[regex.SubexpIndex("endpointName")]
 		resp := s.srv.NewListByEndpointResourcePager(resourceURIParam, endpointNameParam, nil)
 		newListByEndpointResourcePager = &resp
 		s.newListByEndpointResourcePager.add(req, newListByEndpointResourcePager)
@@ -256,7 +218,7 @@ func (s *ServiceConfigurationsServerTransport) dispatchNewListByEndpointResource
 	if err != nil {
 		return nil, err
 	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
 		s.newListByEndpointResourcePager.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
 	}
@@ -270,34 +232,25 @@ func (s *ServiceConfigurationsServerTransport) dispatchUpdate(req *http.Request)
 	if s.srv.Update == nil {
 		return nil, &nonRetriableError{errors.New("fake for method Update not implemented")}
 	}
-	const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/serviceConfigurations/(?P<serviceConfigurationName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+	const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.HybridConnectivity/endpoints/(?P<endpointName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/serviceConfigurations/(?P<serviceConfigurationName>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)`
 	regex := regexp.MustCompile(regexStr)
 	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 3 {
+	if len(matches) < 4 {
 		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 	}
 	body, err := server.UnmarshalRequestAsJSON[armhybridconnectivity.ServiceConfigurationResourcePatch](req)
 	if err != nil {
 		return nil, err
 	}
-	resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-	if err != nil {
-		return nil, err
-	}
-	endpointNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("endpointName")])
-	if err != nil {
-		return nil, err
-	}
-	serviceConfigurationNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("serviceConfigurationName")])
-	if err != nil {
-		return nil, err
-	}
+	resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+	endpointNameParam := matches[regex.SubexpIndex("endpointName")]
+	serviceConfigurationNameParam := matches[regex.SubexpIndex("serviceConfigurationName")]
 	respr, errRespr := s.srv.Update(req.Context(), resourceURIParam, endpointNameParam, serviceConfigurationNameParam, body, nil)
 	if respErr := server.GetError(errRespr, req); respErr != nil {
 		return nil, respErr
 	}
 	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
 	}
 	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).ServiceConfigurationResource, req)

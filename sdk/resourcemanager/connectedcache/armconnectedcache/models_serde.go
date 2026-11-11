@@ -8,7 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime/datetime"
 	"reflect"
+	"time"
 )
 
 // MarshalJSON implements the json.Marshaller interface for type AdditionalCacheNodeProperties.
@@ -17,12 +19,13 @@ func (a AdditionalCacheNodeProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "aggregatedStatusCode", a.AggregatedStatusCode)
 	populate(objectMap, "aggregatedStatusDetails", a.AggregatedStatusDetails)
 	populate(objectMap, "aggregatedStatusText", a.AggregatedStatusText)
+	populate(objectMap, "appVersionWsl", a.AppVersionWsl)
 	populate(objectMap, "autoUpdateAppliedVersion", a.AutoUpdateAppliedVersion)
-	populateDateTimeRFC3339(objectMap, "autoUpdateLastAppliedDateTime", a.AutoUpdateLastAppliedDateTime)
+	populateTime[datetime.RFC3339](objectMap, "autoUpdateLastAppliedDateTime", a.AutoUpdateLastAppliedDateTime, true)
 	populate(objectMap, "autoUpdateLastAppliedDetails", a.AutoUpdateLastAppliedDetails)
 	populate(objectMap, "autoUpdateLastAppliedState", a.AutoUpdateLastAppliedState)
-	populateDateTimeRFC3339(objectMap, "autoUpdateLastTriggeredDateTime", a.AutoUpdateLastTriggeredDateTime)
-	populateDateTimeRFC3339(objectMap, "autoUpdateNextAvailableDateTime", a.AutoUpdateNextAvailableDateTime)
+	populateTime[datetime.RFC3339](objectMap, "autoUpdateLastTriggeredDateTime", a.AutoUpdateLastTriggeredDateTime, true)
+	populateTime[datetime.RFC3339](objectMap, "autoUpdateNextAvailableDateTime", a.AutoUpdateNextAvailableDateTime, true)
 	populate(objectMap, "autoUpdateNextAvailableVersion", a.AutoUpdateNextAvailableVersion)
 	populate(objectMap, "autoUpdateVersion", a.AutoUpdateVersion)
 	populate(objectMap, "bgpConfiguration", a.BgpConfiguration)
@@ -30,9 +33,25 @@ func (a AdditionalCacheNodeProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "cacheNodeState", a.CacheNodeState)
 	populate(objectMap, "cacheNodeStateDetailedText", a.CacheNodeStateDetailedText)
 	populate(objectMap, "cacheNodeStateShortText", a.CacheNodeStateShortText)
+	populate(objectMap, "containerOsBuild", a.ContainerOsBuild)
+	populate(objectMap, "containerOsEdition", a.ContainerOsEdition)
+	populate(objectMap, "containerOsVersion", a.ContainerOsVersion)
+	populate(objectMap, "creationMethod", a.CreationMethod)
+	populate(objectMap, "currentTlsCertificate", a.CurrentTLSCertificate)
+	populate(objectMap, "distroOsBuildWsl", a.DistroOsBuildWsl)
+	populate(objectMap, "distroOsEditionWsl", a.DistroOsEditionWsl)
+	populate(objectMap, "distroOsVersionWsl", a.DistroOsVersionWsl)
 	populate(objectMap, "driveConfiguration", a.DriveConfiguration)
+	populate(objectMap, "hostOsBuild", a.HostOsBuild)
+	populate(objectMap, "hostOsEdition", a.HostOsEdition)
+	populate(objectMap, "hostOsVersion", a.HostOsVersion)
+	populate(objectMap, "installVersionMsix", a.InstallVersionMsix)
+	populate(objectMap, "installVersionScript", a.InstallVersionScript)
 	populate(objectMap, "isProvisioned", a.IsProvisioned)
 	populate(objectMap, "isProxyRequired", a.IsProxyRequired)
+	populate(objectMap, "issuesCount", a.IssuesCount)
+	populate(objectMap, "issuesList", a.IssuesList)
+	populate(objectMap, "lastAutoUpdateInfo", a.LastAutoUpdateInfo)
 	populate(objectMap, "osType", a.OSType)
 	populate(objectMap, "optionalProperty1", a.OptionalProperty1)
 	populate(objectMap, "optionalProperty2", a.OptionalProperty2)
@@ -40,11 +59,10 @@ func (a AdditionalCacheNodeProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "optionalProperty4", a.OptionalProperty4)
 	populate(objectMap, "optionalProperty5", a.OptionalProperty5)
 	populate(objectMap, "productVersion", a.ProductVersion)
-	populate(objectMap, "proxyUrl", a.ProxyURL)
 	populate(objectMap, "proxyUrlConfiguration", a.ProxyURLConfiguration)
-	populate(objectMap, "updateCycleType", a.UpdateCycleType)
+	populate(objectMap, "tlsStatus", a.TLSStatus)
 	populate(objectMap, "updateInfoDetails", a.UpdateInfoDetails)
-	populateDateTimeRFC3339(objectMap, "updateRequestedDateTime", a.UpdateRequestedDateTime)
+	populateTime[datetime.RFC3339](objectMap, "updateRequestedDateTime", a.UpdateRequestedDateTime, true)
 	return json.Marshal(objectMap)
 }
 
@@ -52,7 +70,7 @@ func (a AdditionalCacheNodeProperties) MarshalJSON() ([]byte, error) {
 func (a *AdditionalCacheNodeProperties) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", a, err)
+		return fmt.Errorf("unmarshalling type %T: %s", a, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -66,11 +84,14 @@ func (a *AdditionalCacheNodeProperties) UnmarshalJSON(data []byte) error {
 		case "aggregatedStatusText":
 			err = unpopulate(val, "AggregatedStatusText", &a.AggregatedStatusText)
 			delete(rawMsg, key)
+		case "appVersionWsl":
+			err = unpopulate(val, "AppVersionWsl", &a.AppVersionWsl)
+			delete(rawMsg, key)
 		case "autoUpdateAppliedVersion":
 			err = unpopulate(val, "AutoUpdateAppliedVersion", &a.AutoUpdateAppliedVersion)
 			delete(rawMsg, key)
 		case "autoUpdateLastAppliedDateTime":
-			err = unpopulateDateTimeRFC3339(val, "AutoUpdateLastAppliedDateTime", &a.AutoUpdateLastAppliedDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "AutoUpdateLastAppliedDateTime", &a.AutoUpdateLastAppliedDateTime)
 			delete(rawMsg, key)
 		case "autoUpdateLastAppliedDetails":
 			err = unpopulate(val, "AutoUpdateLastAppliedDetails", &a.AutoUpdateLastAppliedDetails)
@@ -79,10 +100,10 @@ func (a *AdditionalCacheNodeProperties) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "AutoUpdateLastAppliedState", &a.AutoUpdateLastAppliedState)
 			delete(rawMsg, key)
 		case "autoUpdateLastTriggeredDateTime":
-			err = unpopulateDateTimeRFC3339(val, "AutoUpdateLastTriggeredDateTime", &a.AutoUpdateLastTriggeredDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "AutoUpdateLastTriggeredDateTime", &a.AutoUpdateLastTriggeredDateTime)
 			delete(rawMsg, key)
 		case "autoUpdateNextAvailableDateTime":
-			err = unpopulateDateTimeRFC3339(val, "AutoUpdateNextAvailableDateTime", &a.AutoUpdateNextAvailableDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "AutoUpdateNextAvailableDateTime", &a.AutoUpdateNextAvailableDateTime)
 			delete(rawMsg, key)
 		case "autoUpdateNextAvailableVersion":
 			err = unpopulate(val, "AutoUpdateNextAvailableVersion", &a.AutoUpdateNextAvailableVersion)
@@ -105,14 +126,62 @@ func (a *AdditionalCacheNodeProperties) UnmarshalJSON(data []byte) error {
 		case "cacheNodeStateShortText":
 			err = unpopulate(val, "CacheNodeStateShortText", &a.CacheNodeStateShortText)
 			delete(rawMsg, key)
+		case "containerOsBuild":
+			err = unpopulate(val, "ContainerOsBuild", &a.ContainerOsBuild)
+			delete(rawMsg, key)
+		case "containerOsEdition":
+			err = unpopulate(val, "ContainerOsEdition", &a.ContainerOsEdition)
+			delete(rawMsg, key)
+		case "containerOsVersion":
+			err = unpopulate(val, "ContainerOsVersion", &a.ContainerOsVersion)
+			delete(rawMsg, key)
+		case "creationMethod":
+			err = unpopulate(val, "CreationMethod", &a.CreationMethod)
+			delete(rawMsg, key)
+		case "currentTlsCertificate":
+			err = unpopulate(val, "CurrentTLSCertificate", &a.CurrentTLSCertificate)
+			delete(rawMsg, key)
+		case "distroOsBuildWsl":
+			err = unpopulate(val, "DistroOsBuildWsl", &a.DistroOsBuildWsl)
+			delete(rawMsg, key)
+		case "distroOsEditionWsl":
+			err = unpopulate(val, "DistroOsEditionWsl", &a.DistroOsEditionWsl)
+			delete(rawMsg, key)
+		case "distroOsVersionWsl":
+			err = unpopulate(val, "DistroOsVersionWsl", &a.DistroOsVersionWsl)
+			delete(rawMsg, key)
 		case "driveConfiguration":
 			err = unpopulate(val, "DriveConfiguration", &a.DriveConfiguration)
+			delete(rawMsg, key)
+		case "hostOsBuild":
+			err = unpopulate(val, "HostOsBuild", &a.HostOsBuild)
+			delete(rawMsg, key)
+		case "hostOsEdition":
+			err = unpopulate(val, "HostOsEdition", &a.HostOsEdition)
+			delete(rawMsg, key)
+		case "hostOsVersion":
+			err = unpopulate(val, "HostOsVersion", &a.HostOsVersion)
+			delete(rawMsg, key)
+		case "installVersionMsix":
+			err = unpopulate(val, "InstallVersionMsix", &a.InstallVersionMsix)
+			delete(rawMsg, key)
+		case "installVersionScript":
+			err = unpopulate(val, "InstallVersionScript", &a.InstallVersionScript)
 			delete(rawMsg, key)
 		case "isProvisioned":
 			err = unpopulate(val, "IsProvisioned", &a.IsProvisioned)
 			delete(rawMsg, key)
 		case "isProxyRequired":
 			err = unpopulate(val, "IsProxyRequired", &a.IsProxyRequired)
+			delete(rawMsg, key)
+		case "issuesCount":
+			err = unpopulate(val, "IssuesCount", &a.IssuesCount)
+			delete(rawMsg, key)
+		case "issuesList":
+			err = unpopulate(val, "IssuesList", &a.IssuesList)
+			delete(rawMsg, key)
+		case "lastAutoUpdateInfo":
+			err = unpopulate(val, "LastAutoUpdateInfo", &a.LastAutoUpdateInfo)
 			delete(rawMsg, key)
 		case "osType":
 			err = unpopulate(val, "OSType", &a.OSType)
@@ -135,24 +204,21 @@ func (a *AdditionalCacheNodeProperties) UnmarshalJSON(data []byte) error {
 		case "productVersion":
 			err = unpopulate(val, "ProductVersion", &a.ProductVersion)
 			delete(rawMsg, key)
-		case "proxyUrl":
-			err = unpopulate(val, "ProxyURL", &a.ProxyURL)
-			delete(rawMsg, key)
 		case "proxyUrlConfiguration":
 			err = unpopulate(val, "ProxyURLConfiguration", &a.ProxyURLConfiguration)
 			delete(rawMsg, key)
-		case "updateCycleType":
-			err = unpopulate(val, "UpdateCycleType", &a.UpdateCycleType)
+		case "tlsStatus":
+			err = unpopulate(val, "TLSStatus", &a.TLSStatus)
 			delete(rawMsg, key)
 		case "updateInfoDetails":
 			err = unpopulate(val, "UpdateInfoDetails", &a.UpdateInfoDetails)
 			delete(rawMsg, key)
 		case "updateRequestedDateTime":
-			err = unpopulateDateTimeRFC3339(val, "UpdateRequestedDateTime", &a.UpdateRequestedDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "UpdateRequestedDateTime", &a.UpdateRequestedDateTime)
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", a, err)
+			return fmt.Errorf("unmarshalling type %T: %s", a, err.Error())
 		}
 	}
 	return nil
@@ -164,7 +230,7 @@ func (a AdditionalCustomerProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "customerAsn", a.CustomerAsn)
 	populate(objectMap, "customerAsnEstimatedEgressPeekGbps", a.CustomerAsnEstimatedEgressPeekGbps)
 	populate(objectMap, "customerEmail", a.CustomerEmail)
-	populateDateTimeRFC3339(objectMap, "customerEntitlementExpiration", a.CustomerEntitlementExpiration)
+	populateTime[datetime.RFC3339](objectMap, "customerEntitlementExpiration", a.CustomerEntitlementExpiration, true)
 	populate(objectMap, "customerEntitlementSkuGuid", a.CustomerEntitlementSKUGUID)
 	populate(objectMap, "customerEntitlementSkuId", a.CustomerEntitlementSKUID)
 	populate(objectMap, "customerEntitlementSkuName", a.CustomerEntitlementSKUName)
@@ -175,9 +241,9 @@ func (a AdditionalCustomerProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "customerPropertiesOverviewCacheNodesHealthyCount", a.CustomerPropertiesOverviewCacheNodesHealthyCount)
 	populate(objectMap, "customerPropertiesOverviewCacheNodesUnhealthyCount", a.CustomerPropertiesOverviewCacheNodesUnhealthyCount)
 	populate(objectMap, "customerPropertiesOverviewEgressMbpsMax", a.CustomerPropertiesOverviewEgressMbpsMax)
-	populateDateTimeRFC3339(objectMap, "customerPropertiesOverviewEgressMbpsMaxDateTime", a.CustomerPropertiesOverviewEgressMbpsMaxDateTime)
+	populateTime[datetime.RFC3339](objectMap, "customerPropertiesOverviewEgressMbpsMaxDateTime", a.CustomerPropertiesOverviewEgressMbpsMaxDateTime, true)
 	populate(objectMap, "customerPropertiesOverviewMissMbpsMax", a.CustomerPropertiesOverviewMissMbpsMax)
-	populateDateTimeRFC3339(objectMap, "customerPropertiesOverviewMissMbpsMaxDateTime", a.CustomerPropertiesOverviewMissMbpsMaxDateTime)
+	populateTime[datetime.RFC3339](objectMap, "customerPropertiesOverviewMissMbpsMaxDateTime", a.CustomerPropertiesOverviewMissMbpsMaxDateTime, true)
 	populate(objectMap, "customerTransitAsn", a.CustomerTransitAsn)
 	populate(objectMap, "customerTransitState", a.CustomerTransitState)
 	populate(objectMap, "optionalProperty1", a.OptionalProperty1)
@@ -185,8 +251,7 @@ func (a AdditionalCustomerProperties) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "optionalProperty3", a.OptionalProperty3)
 	populate(objectMap, "optionalProperty4", a.OptionalProperty4)
 	populate(objectMap, "optionalProperty5", a.OptionalProperty5)
-	populateDateTimeRFC3339(objectMap, "peeringDbLastUpdateDate", a.PeeringDbLastUpdateDate)
-	populateDateTimeRFC3339(objectMap, "peeringDbLastUpdateTime", a.PeeringDbLastUpdateTime)
+	populateTime[datetime.RFC3339](objectMap, "peeringDbLastUpdateDate", a.PeeringDbLastUpdateDate, true)
 	populate(objectMap, "signupPhaseStatusCode", a.SignupPhaseStatusCode)
 	populate(objectMap, "signupPhaseStatusText", a.SignupPhaseStatusText)
 	populate(objectMap, "signupStatus", a.SignupStatus)
@@ -199,7 +264,7 @@ func (a AdditionalCustomerProperties) MarshalJSON() ([]byte, error) {
 func (a *AdditionalCustomerProperties) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", a, err)
+		return fmt.Errorf("unmarshalling type %T: %s", a, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -214,7 +279,7 @@ func (a *AdditionalCustomerProperties) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "CustomerEmail", &a.CustomerEmail)
 			delete(rawMsg, key)
 		case "customerEntitlementExpiration":
-			err = unpopulateDateTimeRFC3339(val, "CustomerEntitlementExpiration", &a.CustomerEntitlementExpiration)
+			err = unpopulateTime[datetime.RFC3339](val, "CustomerEntitlementExpiration", &a.CustomerEntitlementExpiration)
 			delete(rawMsg, key)
 		case "customerEntitlementSkuGuid":
 			err = unpopulate(val, "CustomerEntitlementSKUGUID", &a.CustomerEntitlementSKUGUID)
@@ -247,13 +312,13 @@ func (a *AdditionalCustomerProperties) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "CustomerPropertiesOverviewEgressMbpsMax", &a.CustomerPropertiesOverviewEgressMbpsMax)
 			delete(rawMsg, key)
 		case "customerPropertiesOverviewEgressMbpsMaxDateTime":
-			err = unpopulateDateTimeRFC3339(val, "CustomerPropertiesOverviewEgressMbpsMaxDateTime", &a.CustomerPropertiesOverviewEgressMbpsMaxDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "CustomerPropertiesOverviewEgressMbpsMaxDateTime", &a.CustomerPropertiesOverviewEgressMbpsMaxDateTime)
 			delete(rawMsg, key)
 		case "customerPropertiesOverviewMissMbpsMax":
 			err = unpopulate(val, "CustomerPropertiesOverviewMissMbpsMax", &a.CustomerPropertiesOverviewMissMbpsMax)
 			delete(rawMsg, key)
 		case "customerPropertiesOverviewMissMbpsMaxDateTime":
-			err = unpopulateDateTimeRFC3339(val, "CustomerPropertiesOverviewMissMbpsMaxDateTime", &a.CustomerPropertiesOverviewMissMbpsMaxDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "CustomerPropertiesOverviewMissMbpsMaxDateTime", &a.CustomerPropertiesOverviewMissMbpsMaxDateTime)
 			delete(rawMsg, key)
 		case "customerTransitAsn":
 			err = unpopulate(val, "CustomerTransitAsn", &a.CustomerTransitAsn)
@@ -277,10 +342,7 @@ func (a *AdditionalCustomerProperties) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "OptionalProperty5", &a.OptionalProperty5)
 			delete(rawMsg, key)
 		case "peeringDbLastUpdateDate":
-			err = unpopulateDateTimeRFC3339(val, "PeeringDbLastUpdateDate", &a.PeeringDbLastUpdateDate)
-			delete(rawMsg, key)
-		case "peeringDbLastUpdateTime":
-			err = unpopulateDateTimeRFC3339(val, "PeeringDbLastUpdateTime", &a.PeeringDbLastUpdateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "PeeringDbLastUpdateDate", &a.PeeringDbLastUpdateDate)
 			delete(rawMsg, key)
 		case "signupPhaseStatusCode":
 			err = unpopulate(val, "SignupPhaseStatusCode", &a.SignupPhaseStatusCode)
@@ -299,7 +361,7 @@ func (a *AdditionalCustomerProperties) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", a, err)
+			return fmt.Errorf("unmarshalling type %T: %s", a, err.Error())
 		}
 	}
 	return nil
@@ -316,7 +378,7 @@ func (b BgpCidrsConfiguration) MarshalJSON() ([]byte, error) {
 func (b *BgpCidrsConfiguration) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", b, err)
+		return fmt.Errorf("unmarshalling type %T: %s", b, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -326,7 +388,7 @@ func (b *BgpCidrsConfiguration) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", b, err)
+			return fmt.Errorf("unmarshalling type %T: %s", b, err.Error())
 		}
 	}
 	return nil
@@ -343,7 +405,7 @@ func (b BgpConfiguration) MarshalJSON() ([]byte, error) {
 func (b *BgpConfiguration) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", b, err)
+		return fmt.Errorf("unmarshalling type %T: %s", b, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -353,7 +415,7 @@ func (b *BgpConfiguration) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", b, err)
+			return fmt.Errorf("unmarshalling type %T: %s", b, err.Error())
 		}
 	}
 	return nil
@@ -373,7 +435,7 @@ func (c CacheNodeDriveConfiguration) MarshalJSON() ([]byte, error) {
 func (c *CacheNodeDriveConfiguration) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -392,7 +454,7 @@ func (c *CacheNodeDriveConfiguration) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -408,9 +470,10 @@ func (c CacheNodeEntity) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "autoUpdateRingType", c.AutoUpdateRingType)
 	populate(objectMap, "bgpAddressSpace", c.BgpAddressSpace)
 	populate(objectMap, "bgpCidrBlocksCount", c.BgpCidrBlocksCount)
-	populateDateTimeRFC3339(objectMap, "bgpCidrCsvLastUpdateTime", c.BgpCidrCSVLastUpdateTime)
+	populateTime[datetime.RFC3339](objectMap, "bgpCidrCsvLastUpdateTime", c.BgpCidrCSVLastUpdateTime, true)
 	populate(objectMap, "bgpFileBytesTruncated", c.BgpFileBytesTruncated)
-	populateDateTimeRFC3339(objectMap, "bgpLastReportedTime", c.BgpLastReportedTime)
+	populateTime[datetime.RFC3339](objectMap, "bgpLastReportedTime", c.BgpLastReportedTime, true)
+	populate(objectMap, "bgpNetworkInterface", c.BgpNetworkInterface)
 	populate(objectMap, "bgpNumberOfRecords", c.BgpNumberOfRecords)
 	populate(objectMap, "bgpNumberOfTimesUpdated", c.BgpNumberOfTimesUpdated)
 	populate(objectMap, "bgpReviewFeedback", c.BgpReviewFeedback)
@@ -420,7 +483,7 @@ func (c CacheNodeEntity) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "cacheNodeName", c.CacheNodeName)
 	populate(objectMap, "category", c.Category)
 	populate(objectMap, "cidrCsv", c.CidrCSV)
-	populateDateTimeRFC3339(objectMap, "cidrCsvLastUpdateTime", c.CidrCSVLastUpdateTime)
+	populateTime[datetime.RFC3339](objectMap, "cidrCsvLastUpdateTime", c.CidrCSVLastUpdateTime, true)
 	populate(objectMap, "cidrSelectionType", c.CidrSelectionType)
 	populate(objectMap, "clientTenantId", c.ClientTenantID)
 	populate(objectMap, "configurationState", c.ConfigurationState)
@@ -440,18 +503,23 @@ func (c CacheNodeEntity) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "isEnabled", c.IsEnabled)
 	populate(objectMap, "isEnterpriseManaged", c.IsEnterpriseManaged)
 	populate(objectMap, "isFrozen", c.IsFrozen)
-	populateDateTimeRFC3339(objectMap, "lastSyncWithAzureTimestamp", c.LastSyncWithAzureTimestamp)
-	populateDateTimeRFC3339(objectMap, "lastUpdatedTimestamp", c.LastUpdatedTimestamp)
+	populateTime[datetime.RFC3339](objectMap, "lastSyncWithAzureTimestamp", c.LastSyncWithAzureTimestamp, true)
+	populateTime[datetime.RFC3339](objectMap, "lastUpdatedTimestamp", c.LastUpdatedTimestamp, true)
 	populate(objectMap, "maxAllowableEgressInMbps", c.MaxAllowableEgressInMbps)
 	populate(objectMap, "maxAllowableProbability", c.MaxAllowableProbability)
+	populate(objectMap, "openFirewallPort443", c.OpenFirewallPort443)
+	populate(objectMap, "openFirewallPort5000", c.OpenFirewallPort5000)
+	populate(objectMap, "openFirewallPort5001", c.OpenFirewallPort5001)
+	populate(objectMap, "openFirewallPort80", c.OpenFirewallPort80)
 	populate(objectMap, "releaseVersion", c.ReleaseVersion)
 	populate(objectMap, "reviewFeedback", c.ReviewFeedback)
 	populate(objectMap, "reviewState", c.ReviewState)
 	populate(objectMap, "reviewStateText", c.ReviewStateText)
+	populate(objectMap, "runtimeAccountType", c.RuntimeAccountType)
 	populate(objectMap, "shouldMigrate", c.ShouldMigrate)
 	populate(objectMap, "synchWithAzureAttemptsCount", c.SynchWithAzureAttemptsCount)
 	populate(objectMap, "workerConnections", c.WorkerConnections)
-	populateDateTimeRFC3339(objectMap, "workerConnectionsLastUpdatedDateTime", c.WorkerConnectionsLastUpdatedDateTime)
+	populateTime[datetime.RFC3339](objectMap, "workerConnectionsLastUpdatedDateTime", c.WorkerConnectionsLastUpdatedDateTime, true)
 	populate(objectMap, "xCid", c.XCid)
 	return json.Marshal(objectMap)
 }
@@ -460,7 +528,7 @@ func (c CacheNodeEntity) MarshalJSON() ([]byte, error) {
 func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -487,13 +555,16 @@ func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "BgpCidrBlocksCount", &c.BgpCidrBlocksCount)
 			delete(rawMsg, key)
 		case "bgpCidrCsvLastUpdateTime":
-			err = unpopulateDateTimeRFC3339(val, "BgpCidrCSVLastUpdateTime", &c.BgpCidrCSVLastUpdateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "BgpCidrCSVLastUpdateTime", &c.BgpCidrCSVLastUpdateTime)
 			delete(rawMsg, key)
 		case "bgpFileBytesTruncated":
 			err = unpopulate(val, "BgpFileBytesTruncated", &c.BgpFileBytesTruncated)
 			delete(rawMsg, key)
 		case "bgpLastReportedTime":
-			err = unpopulateDateTimeRFC3339(val, "BgpLastReportedTime", &c.BgpLastReportedTime)
+			err = unpopulateTime[datetime.RFC3339](val, "BgpLastReportedTime", &c.BgpLastReportedTime)
+			delete(rawMsg, key)
+		case "bgpNetworkInterface":
+			err = unpopulate(val, "BgpNetworkInterface", &c.BgpNetworkInterface)
 			delete(rawMsg, key)
 		case "bgpNumberOfRecords":
 			err = unpopulate(val, "BgpNumberOfRecords", &c.BgpNumberOfRecords)
@@ -523,7 +594,7 @@ func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "CidrCSV", &c.CidrCSV)
 			delete(rawMsg, key)
 		case "cidrCsvLastUpdateTime":
-			err = unpopulateDateTimeRFC3339(val, "CidrCSVLastUpdateTime", &c.CidrCSVLastUpdateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "CidrCSVLastUpdateTime", &c.CidrCSVLastUpdateTime)
 			delete(rawMsg, key)
 		case "cidrSelectionType":
 			err = unpopulate(val, "CidrSelectionType", &c.CidrSelectionType)
@@ -583,16 +654,28 @@ func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "IsFrozen", &c.IsFrozen)
 			delete(rawMsg, key)
 		case "lastSyncWithAzureTimestamp":
-			err = unpopulateDateTimeRFC3339(val, "LastSyncWithAzureTimestamp", &c.LastSyncWithAzureTimestamp)
+			err = unpopulateTime[datetime.RFC3339](val, "LastSyncWithAzureTimestamp", &c.LastSyncWithAzureTimestamp)
 			delete(rawMsg, key)
 		case "lastUpdatedTimestamp":
-			err = unpopulateDateTimeRFC3339(val, "LastUpdatedTimestamp", &c.LastUpdatedTimestamp)
+			err = unpopulateTime[datetime.RFC3339](val, "LastUpdatedTimestamp", &c.LastUpdatedTimestamp)
 			delete(rawMsg, key)
 		case "maxAllowableEgressInMbps":
 			err = unpopulate(val, "MaxAllowableEgressInMbps", &c.MaxAllowableEgressInMbps)
 			delete(rawMsg, key)
 		case "maxAllowableProbability":
 			err = unpopulate(val, "MaxAllowableProbability", &c.MaxAllowableProbability)
+			delete(rawMsg, key)
+		case "openFirewallPort443":
+			err = unpopulate(val, "OpenFirewallPort443", &c.OpenFirewallPort443)
+			delete(rawMsg, key)
+		case "openFirewallPort5000":
+			err = unpopulate(val, "OpenFirewallPort5000", &c.OpenFirewallPort5000)
+			delete(rawMsg, key)
+		case "openFirewallPort5001":
+			err = unpopulate(val, "OpenFirewallPort5001", &c.OpenFirewallPort5001)
+			delete(rawMsg, key)
+		case "openFirewallPort80":
+			err = unpopulate(val, "OpenFirewallPort80", &c.OpenFirewallPort80)
 			delete(rawMsg, key)
 		case "releaseVersion":
 			err = unpopulate(val, "ReleaseVersion", &c.ReleaseVersion)
@@ -606,6 +689,9 @@ func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 		case "reviewStateText":
 			err = unpopulate(val, "ReviewStateText", &c.ReviewStateText)
 			delete(rawMsg, key)
+		case "runtimeAccountType":
+			err = unpopulate(val, "RuntimeAccountType", &c.RuntimeAccountType)
+			delete(rawMsg, key)
 		case "shouldMigrate":
 			err = unpopulate(val, "ShouldMigrate", &c.ShouldMigrate)
 			delete(rawMsg, key)
@@ -616,14 +702,14 @@ func (c *CacheNodeEntity) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "WorkerConnections", &c.WorkerConnections)
 			delete(rawMsg, key)
 		case "workerConnectionsLastUpdatedDateTime":
-			err = unpopulateDateTimeRFC3339(val, "WorkerConnectionsLastUpdatedDateTime", &c.WorkerConnectionsLastUpdatedDateTime)
+			err = unpopulateTime[datetime.RFC3339](val, "WorkerConnectionsLastUpdatedDateTime", &c.WorkerConnectionsLastUpdatedDateTime)
 			delete(rawMsg, key)
 		case "xCid":
 			err = unpopulate(val, "XCid", &c.XCid)
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -634,9 +720,12 @@ func (c CacheNodeInstallProperties) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
 	populate(objectMap, "cacheNodeId", c.CacheNodeID)
 	populate(objectMap, "customerId", c.CustomerID)
+	populate(objectMap, "driveConfiguration", c.DriveConfiguration)
 	populate(objectMap, "primaryAccountKey", c.PrimaryAccountKey)
+	populate(objectMap, "proxyUrlConfiguration", c.ProxyURLConfiguration)
 	populate(objectMap, "registrationKey", c.RegistrationKey)
 	populate(objectMap, "secondaryAccountKey", c.SecondaryAccountKey)
+	populate(objectMap, "tlsCertificateProvisioningKey", c.TLSCertificateProvisioningKey)
 	return json.Marshal(objectMap)
 }
 
@@ -644,7 +733,7 @@ func (c CacheNodeInstallProperties) MarshalJSON() ([]byte, error) {
 func (c *CacheNodeInstallProperties) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -655,8 +744,14 @@ func (c *CacheNodeInstallProperties) UnmarshalJSON(data []byte) error {
 		case "customerId":
 			err = unpopulate(val, "CustomerID", &c.CustomerID)
 			delete(rawMsg, key)
+		case "driveConfiguration":
+			err = unpopulate(val, "DriveConfiguration", &c.DriveConfiguration)
+			delete(rawMsg, key)
 		case "primaryAccountKey":
 			err = unpopulate(val, "PrimaryAccountKey", &c.PrimaryAccountKey)
+			delete(rawMsg, key)
+		case "proxyUrlConfiguration":
+			err = unpopulate(val, "ProxyURLConfiguration", &c.ProxyURLConfiguration)
 			delete(rawMsg, key)
 		case "registrationKey":
 			err = unpopulate(val, "RegistrationKey", &c.RegistrationKey)
@@ -664,138 +759,12 @@ func (c *CacheNodeInstallProperties) UnmarshalJSON(data []byte) error {
 		case "secondaryAccountKey":
 			err = unpopulate(val, "SecondaryAccountKey", &c.SecondaryAccountKey)
 			delete(rawMsg, key)
-		}
-		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
-		}
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaller interface for type CacheNodeOldResponse.
-func (c CacheNodeOldResponse) MarshalJSON() ([]byte, error) {
-	objectMap := make(map[string]any)
-	populate(objectMap, "error", c.Error)
-	populate(objectMap, "provisioningState", c.ProvisioningState)
-	populate(objectMap, "status", c.Status)
-	populate(objectMap, "statusCode", c.StatusCode)
-	populate(objectMap, "statusDetails", c.StatusDetails)
-	populate(objectMap, "statusText", c.StatusText)
-	return json.Marshal(objectMap)
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface for type CacheNodeOldResponse.
-func (c *CacheNodeOldResponse) UnmarshalJSON(data []byte) error {
-	var rawMsg map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
-	}
-	for key, val := range rawMsg {
-		var err error
-		switch key {
-		case "error":
-			err = unpopulate(val, "Error", &c.Error)
-			delete(rawMsg, key)
-		case "provisioningState":
-			err = unpopulate(val, "ProvisioningState", &c.ProvisioningState)
-			delete(rawMsg, key)
-		case "status":
-			err = unpopulate(val, "Status", &c.Status)
-			delete(rawMsg, key)
-		case "statusCode":
-			err = unpopulate(val, "StatusCode", &c.StatusCode)
-			delete(rawMsg, key)
-		case "statusDetails":
-			err = unpopulate(val, "StatusDetails", &c.StatusDetails)
-			delete(rawMsg, key)
-		case "statusText":
-			err = unpopulate(val, "StatusText", &c.StatusText)
+		case "tlsCertificateProvisioningKey":
+			err = unpopulate(val, "TLSCertificateProvisioningKey", &c.TLSCertificateProvisioningKey)
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
-		}
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaller interface for type CacheNodePreviewResource.
-func (c CacheNodePreviewResource) MarshalJSON() ([]byte, error) {
-	objectMap := make(map[string]any)
-	populate(objectMap, "id", c.ID)
-	populate(objectMap, "location", c.Location)
-	populate(objectMap, "name", c.Name)
-	populate(objectMap, "properties", c.Properties)
-	populate(objectMap, "systemData", c.SystemData)
-	populate(objectMap, "tags", c.Tags)
-	populate(objectMap, "type", c.Type)
-	return json.Marshal(objectMap)
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface for type CacheNodePreviewResource.
-func (c *CacheNodePreviewResource) UnmarshalJSON(data []byte) error {
-	var rawMsg map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
-	}
-	for key, val := range rawMsg {
-		var err error
-		switch key {
-		case "id":
-			err = unpopulate(val, "ID", &c.ID)
-			delete(rawMsg, key)
-		case "location":
-			err = unpopulate(val, "Location", &c.Location)
-			delete(rawMsg, key)
-		case "name":
-			err = unpopulate(val, "Name", &c.Name)
-			delete(rawMsg, key)
-		case "properties":
-			err = unpopulate(val, "Properties", &c.Properties)
-			delete(rawMsg, key)
-		case "systemData":
-			err = unpopulate(val, "SystemData", &c.SystemData)
-			delete(rawMsg, key)
-		case "tags":
-			err = unpopulate(val, "Tags", &c.Tags)
-			delete(rawMsg, key)
-		case "type":
-			err = unpopulate(val, "Type", &c.Type)
-			delete(rawMsg, key)
-		}
-		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
-		}
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaller interface for type CacheNodePreviewResourceListResult.
-func (c CacheNodePreviewResourceListResult) MarshalJSON() ([]byte, error) {
-	objectMap := make(map[string]any)
-	populate(objectMap, "nextLink", c.NextLink)
-	populate(objectMap, "value", c.Value)
-	return json.Marshal(objectMap)
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface for type CacheNodePreviewResourceListResult.
-func (c *CacheNodePreviewResourceListResult) UnmarshalJSON(data []byte) error {
-	var rawMsg map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
-	}
-	for key, val := range rawMsg {
-		var err error
-		switch key {
-		case "nextLink":
-			err = unpopulate(val, "NextLink", &c.NextLink)
-			delete(rawMsg, key)
-		case "value":
-			err = unpopulate(val, "Value", &c.Value)
-			delete(rawMsg, key)
-		}
-		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -819,7 +788,7 @@ func (c CacheNodeProperty) MarshalJSON() ([]byte, error) {
 func (c *CacheNodeProperty) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -850,7 +819,7 @@ func (c *CacheNodeProperty) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -870,7 +839,7 @@ func (c CustomerEntity) MarshalJSON() ([]byte, error) {
 	populate(objectMap, "fullyQualifiedResourceId", c.FullyQualifiedResourceID)
 	populate(objectMap, "isEnterpriseManaged", c.IsEnterpriseManaged)
 	populate(objectMap, "isEntitled", c.IsEntitled)
-	populateDateTimeRFC3339(objectMap, "lastSyncWithAzureTimestamp", c.LastSyncWithAzureTimestamp)
+	populateTime[datetime.RFC3339](objectMap, "lastSyncWithAzureTimestamp", c.LastSyncWithAzureTimestamp, true)
 	populate(objectMap, "releaseVersion", c.ReleaseVersion)
 	populate(objectMap, "resendSignupCode", c.ResendSignupCode)
 	populate(objectMap, "shouldMigrate", c.ShouldMigrate)
@@ -884,7 +853,7 @@ func (c CustomerEntity) MarshalJSON() ([]byte, error) {
 func (c *CustomerEntity) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -923,7 +892,7 @@ func (c *CustomerEntity) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "IsEntitled", &c.IsEntitled)
 			delete(rawMsg, key)
 		case "lastSyncWithAzureTimestamp":
-			err = unpopulateDateTimeRFC3339(val, "LastSyncWithAzureTimestamp", &c.LastSyncWithAzureTimestamp)
+			err = unpopulateTime[datetime.RFC3339](val, "LastSyncWithAzureTimestamp", &c.LastSyncWithAzureTimestamp)
 			delete(rawMsg, key)
 		case "releaseVersion":
 			err = unpopulate(val, "ReleaseVersion", &c.ReleaseVersion)
@@ -945,7 +914,7 @@ func (c *CustomerEntity) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -969,7 +938,7 @@ func (c CustomerProperty) MarshalJSON() ([]byte, error) {
 func (c *CustomerProperty) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", c, err)
+		return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1000,7 +969,7 @@ func (c *CustomerProperty) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", c, err)
+			return fmt.Errorf("unmarshalling type %T: %s", c, err.Error())
 		}
 	}
 	return nil
@@ -1023,7 +992,7 @@ func (e EnterpriseMccCacheNodeResource) MarshalJSON() ([]byte, error) {
 func (e *EnterpriseMccCacheNodeResource) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1051,7 +1020,7 @@ func (e *EnterpriseMccCacheNodeResource) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1069,7 +1038,7 @@ func (e EnterpriseMccCacheNodeResourceListResult) MarshalJSON() ([]byte, error) 
 func (e *EnterpriseMccCacheNodeResourceListResult) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1082,7 +1051,7 @@ func (e *EnterpriseMccCacheNodeResourceListResult) UnmarshalJSON(data []byte) er
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1105,7 +1074,7 @@ func (e EnterpriseMccCustomerResource) MarshalJSON() ([]byte, error) {
 func (e *EnterpriseMccCustomerResource) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1133,7 +1102,7 @@ func (e *EnterpriseMccCustomerResource) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1151,7 +1120,7 @@ func (e EnterpriseMccCustomerResourceListResult) MarshalJSON() ([]byte, error) {
 func (e *EnterpriseMccCustomerResourceListResult) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1164,89 +1133,7 @@ func (e *EnterpriseMccCustomerResourceListResult) UnmarshalJSON(data []byte) err
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
-		}
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaller interface for type EnterprisePreviewResource.
-func (e EnterprisePreviewResource) MarshalJSON() ([]byte, error) {
-	objectMap := make(map[string]any)
-	populate(objectMap, "id", e.ID)
-	populate(objectMap, "location", e.Location)
-	populate(objectMap, "name", e.Name)
-	populate(objectMap, "properties", e.Properties)
-	populate(objectMap, "systemData", e.SystemData)
-	populate(objectMap, "tags", e.Tags)
-	populate(objectMap, "type", e.Type)
-	return json.Marshal(objectMap)
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface for type EnterprisePreviewResource.
-func (e *EnterprisePreviewResource) UnmarshalJSON(data []byte) error {
-	var rawMsg map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
-	}
-	for key, val := range rawMsg {
-		var err error
-		switch key {
-		case "id":
-			err = unpopulate(val, "ID", &e.ID)
-			delete(rawMsg, key)
-		case "location":
-			err = unpopulate(val, "Location", &e.Location)
-			delete(rawMsg, key)
-		case "name":
-			err = unpopulate(val, "Name", &e.Name)
-			delete(rawMsg, key)
-		case "properties":
-			err = unpopulate(val, "Properties", &e.Properties)
-			delete(rawMsg, key)
-		case "systemData":
-			err = unpopulate(val, "SystemData", &e.SystemData)
-			delete(rawMsg, key)
-		case "tags":
-			err = unpopulate(val, "Tags", &e.Tags)
-			delete(rawMsg, key)
-		case "type":
-			err = unpopulate(val, "Type", &e.Type)
-			delete(rawMsg, key)
-		}
-		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
-		}
-	}
-	return nil
-}
-
-// MarshalJSON implements the json.Marshaller interface for type EnterprisePreviewResourceListResult.
-func (e EnterprisePreviewResourceListResult) MarshalJSON() ([]byte, error) {
-	objectMap := make(map[string]any)
-	populate(objectMap, "nextLink", e.NextLink)
-	populate(objectMap, "value", e.Value)
-	return json.Marshal(objectMap)
-}
-
-// UnmarshalJSON implements the json.Unmarshaller interface for type EnterprisePreviewResourceListResult.
-func (e *EnterprisePreviewResourceListResult) UnmarshalJSON(data []byte) error {
-	var rawMsg map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
-	}
-	for key, val := range rawMsg {
-		var err error
-		switch key {
-		case "nextLink":
-			err = unpopulate(val, "NextLink", &e.NextLink)
-			delete(rawMsg, key)
-		case "value":
-			err = unpopulate(val, "Value", &e.Value)
-			delete(rawMsg, key)
-		}
-		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1255,7 +1142,7 @@ func (e *EnterprisePreviewResourceListResult) UnmarshalJSON(data []byte) error {
 // MarshalJSON implements the json.Marshaller interface for type ErrorAdditionalInfo.
 func (e ErrorAdditionalInfo) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
-	populate(objectMap, "info", e.Info)
+	populateAny(objectMap, "info", e.Info)
 	populate(objectMap, "type", e.Type)
 	return json.Marshal(objectMap)
 }
@@ -1264,7 +1151,7 @@ func (e ErrorAdditionalInfo) MarshalJSON() ([]byte, error) {
 func (e *ErrorAdditionalInfo) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1277,7 +1164,7 @@ func (e *ErrorAdditionalInfo) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1298,7 +1185,7 @@ func (e ErrorDetail) MarshalJSON() ([]byte, error) {
 func (e *ErrorDetail) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", e, err)
+		return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1320,7 +1207,7 @@ func (e *ErrorDetail) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", e, err)
+			return fmt.Errorf("unmarshalling type %T: %s", e, err.Error())
 		}
 	}
 	return nil
@@ -1343,7 +1230,7 @@ func (i IspCacheNodeResource) MarshalJSON() ([]byte, error) {
 func (i *IspCacheNodeResource) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", i, err)
+		return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1371,7 +1258,7 @@ func (i *IspCacheNodeResource) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", i, err)
+			return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 		}
 	}
 	return nil
@@ -1389,7 +1276,7 @@ func (i IspCacheNodeResourceListResult) MarshalJSON() ([]byte, error) {
 func (i *IspCacheNodeResourceListResult) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", i, err)
+		return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1402,7 +1289,7 @@ func (i *IspCacheNodeResourceListResult) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", i, err)
+			return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 		}
 	}
 	return nil
@@ -1425,7 +1312,7 @@ func (i IspCustomerResource) MarshalJSON() ([]byte, error) {
 func (i *IspCustomerResource) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", i, err)
+		return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1453,7 +1340,7 @@ func (i *IspCustomerResource) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", i, err)
+			return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 		}
 	}
 	return nil
@@ -1471,7 +1358,7 @@ func (i IspCustomerResourceListResult) MarshalJSON() ([]byte, error) {
 func (i *IspCustomerResourceListResult) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", i, err)
+		return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1484,7 +1371,184 @@ func (i *IspCustomerResourceListResult) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", i, err)
+			return fmt.Errorf("unmarshalling type %T: %s", i, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeAutoUpdateHistory.
+func (m MccCacheNodeAutoUpdateHistory) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "id", m.ID)
+	populate(objectMap, "location", m.Location)
+	populate(objectMap, "name", m.Name)
+	populate(objectMap, "properties", m.Properties)
+	populate(objectMap, "systemData", m.SystemData)
+	populate(objectMap, "tags", m.Tags)
+	populate(objectMap, "type", m.Type)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeAutoUpdateHistory.
+func (m *MccCacheNodeAutoUpdateHistory) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "id":
+			err = unpopulate(val, "ID", &m.ID)
+			delete(rawMsg, key)
+		case "location":
+			err = unpopulate(val, "Location", &m.Location)
+			delete(rawMsg, key)
+		case "name":
+			err = unpopulate(val, "Name", &m.Name)
+			delete(rawMsg, key)
+		case "properties":
+			err = unpopulate(val, "Properties", &m.Properties)
+			delete(rawMsg, key)
+		case "systemData":
+			err = unpopulate(val, "SystemData", &m.SystemData)
+			delete(rawMsg, key)
+		case "tags":
+			err = unpopulate(val, "Tags", &m.Tags)
+			delete(rawMsg, key)
+		case "type":
+			err = unpopulate(val, "Type", &m.Type)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeAutoUpdateHistoryProperties.
+func (m MccCacheNodeAutoUpdateHistoryProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "autoUpdateHistory", m.AutoUpdateHistory)
+	populate(objectMap, "cacheNodeId", m.CacheNodeID)
+	populate(objectMap, "customerId", m.CustomerID)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeAutoUpdateHistoryProperties.
+func (m *MccCacheNodeAutoUpdateHistoryProperties) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "autoUpdateHistory":
+			err = unpopulate(val, "AutoUpdateHistory", &m.AutoUpdateHistory)
+			delete(rawMsg, key)
+		case "cacheNodeId":
+			err = unpopulate(val, "CacheNodeID", &m.CacheNodeID)
+			delete(rawMsg, key)
+		case "customerId":
+			err = unpopulate(val, "CustomerID", &m.CustomerID)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeAutoUpdateInfo.
+func (m MccCacheNodeAutoUpdateInfo) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "autoUpdateLastAppliedStatus", m.AutoUpdateLastAppliedStatus)
+	populate(objectMap, "autoUpdateLastAppliedStatusDetailedText", m.AutoUpdateLastAppliedStatusDetailedText)
+	populate(objectMap, "autoUpdateLastAppliedStatusText", m.AutoUpdateLastAppliedStatusText)
+	populate(objectMap, "autoUpdateRingType", m.AutoUpdateRingType)
+	populateTime[datetime.RFC3339](objectMap, "createdDateTimeUtc", m.CreatedDateTimeUTC, true)
+	populate(objectMap, "imageUriBeforeUpdate", m.ImageURIBeforeUpdate)
+	populate(objectMap, "imageUriTargeted", m.ImageURITargeted)
+	populate(objectMap, "imageUriTerminal", m.ImageURITerminal)
+	populateTime[datetime.RFC3339](objectMap, "movedToTerminalStateDateTime", m.MovedToTerminalStateDateTime, true)
+	populate(objectMap, "planChangeLogText", m.PlanChangeLogText)
+	populate(objectMap, "planId", m.PlanID)
+	populate(objectMap, "ruleRequestedDay", m.RuleRequestedDay)
+	populate(objectMap, "ruleRequestedHour", m.RuleRequestedHour)
+	populate(objectMap, "ruleRequestedMinute", m.RuleRequestedMinute)
+	populate(objectMap, "ruleRequestedWeek", m.RuleRequestedWeek)
+	populate(objectMap, "timeToGoLiveDateTime", m.TimeToGoLiveDateTime)
+	populateTime[datetime.RFC3339](objectMap, "updatedRegistryDateTimeUtc", m.UpdatedRegistryDateTimeUTC, true)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeAutoUpdateInfo.
+func (m *MccCacheNodeAutoUpdateInfo) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "autoUpdateLastAppliedStatus":
+			err = unpopulate(val, "AutoUpdateLastAppliedStatus", &m.AutoUpdateLastAppliedStatus)
+			delete(rawMsg, key)
+		case "autoUpdateLastAppliedStatusDetailedText":
+			err = unpopulate(val, "AutoUpdateLastAppliedStatusDetailedText", &m.AutoUpdateLastAppliedStatusDetailedText)
+			delete(rawMsg, key)
+		case "autoUpdateLastAppliedStatusText":
+			err = unpopulate(val, "AutoUpdateLastAppliedStatusText", &m.AutoUpdateLastAppliedStatusText)
+			delete(rawMsg, key)
+		case "autoUpdateRingType":
+			err = unpopulate(val, "AutoUpdateRingType", &m.AutoUpdateRingType)
+			delete(rawMsg, key)
+		case "createdDateTimeUtc":
+			err = unpopulateTime[datetime.RFC3339](val, "CreatedDateTimeUTC", &m.CreatedDateTimeUTC)
+			delete(rawMsg, key)
+		case "imageUriBeforeUpdate":
+			err = unpopulate(val, "ImageURIBeforeUpdate", &m.ImageURIBeforeUpdate)
+			delete(rawMsg, key)
+		case "imageUriTargeted":
+			err = unpopulate(val, "ImageURITargeted", &m.ImageURITargeted)
+			delete(rawMsg, key)
+		case "imageUriTerminal":
+			err = unpopulate(val, "ImageURITerminal", &m.ImageURITerminal)
+			delete(rawMsg, key)
+		case "movedToTerminalStateDateTime":
+			err = unpopulateTime[datetime.RFC3339](val, "MovedToTerminalStateDateTime", &m.MovedToTerminalStateDateTime)
+			delete(rawMsg, key)
+		case "planChangeLogText":
+			err = unpopulate(val, "PlanChangeLogText", &m.PlanChangeLogText)
+			delete(rawMsg, key)
+		case "planId":
+			err = unpopulate(val, "PlanID", &m.PlanID)
+			delete(rawMsg, key)
+		case "ruleRequestedDay":
+			err = unpopulate(val, "RuleRequestedDay", &m.RuleRequestedDay)
+			delete(rawMsg, key)
+		case "ruleRequestedHour":
+			err = unpopulate(val, "RuleRequestedHour", &m.RuleRequestedHour)
+			delete(rawMsg, key)
+		case "ruleRequestedMinute":
+			err = unpopulate(val, "RuleRequestedMinute", &m.RuleRequestedMinute)
+			delete(rawMsg, key)
+		case "ruleRequestedWeek":
+			err = unpopulate(val, "RuleRequestedWeek", &m.RuleRequestedWeek)
+			delete(rawMsg, key)
+		case "timeToGoLiveDateTime":
+			err = unpopulate(val, "TimeToGoLiveDateTime", &m.TimeToGoLiveDateTime)
+			delete(rawMsg, key)
+		case "updatedRegistryDateTimeUtc":
+			err = unpopulateTime[datetime.RFC3339](val, "UpdatedRegistryDateTimeUTC", &m.UpdatedRegistryDateTimeUTC)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
 		}
 	}
 	return nil
@@ -1507,7 +1571,7 @@ func (m MccCacheNodeBgpCidrDetails) MarshalJSON() ([]byte, error) {
 func (m *MccCacheNodeBgpCidrDetails) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", m, err)
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1535,7 +1599,7 @@ func (m *MccCacheNodeBgpCidrDetails) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", m, err)
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
 		}
 	}
 	return nil
@@ -1558,7 +1622,7 @@ func (m MccCacheNodeInstallDetails) MarshalJSON() ([]byte, error) {
 func (m *MccCacheNodeInstallDetails) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", m, err)
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1586,7 +1650,281 @@ func (m *MccCacheNodeInstallDetails) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", m, err)
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeIssueHistory.
+func (m MccCacheNodeIssueHistory) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "id", m.ID)
+	populate(objectMap, "location", m.Location)
+	populate(objectMap, "name", m.Name)
+	populate(objectMap, "properties", m.Properties)
+	populate(objectMap, "systemData", m.SystemData)
+	populate(objectMap, "tags", m.Tags)
+	populate(objectMap, "type", m.Type)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeIssueHistory.
+func (m *MccCacheNodeIssueHistory) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "id":
+			err = unpopulate(val, "ID", &m.ID)
+			delete(rawMsg, key)
+		case "location":
+			err = unpopulate(val, "Location", &m.Location)
+			delete(rawMsg, key)
+		case "name":
+			err = unpopulate(val, "Name", &m.Name)
+			delete(rawMsg, key)
+		case "properties":
+			err = unpopulate(val, "Properties", &m.Properties)
+			delete(rawMsg, key)
+		case "systemData":
+			err = unpopulate(val, "SystemData", &m.SystemData)
+			delete(rawMsg, key)
+		case "tags":
+			err = unpopulate(val, "Tags", &m.Tags)
+			delete(rawMsg, key)
+		case "type":
+			err = unpopulate(val, "Type", &m.Type)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeIssueHistoryProperties.
+func (m MccCacheNodeIssueHistoryProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "cacheNodeId", m.CacheNodeID)
+	populate(objectMap, "customerId", m.CustomerID)
+	populate(objectMap, "mccIssueHistory", m.MccIssueHistory)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeIssueHistoryProperties.
+func (m *MccCacheNodeIssueHistoryProperties) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "cacheNodeId":
+			err = unpopulate(val, "CacheNodeID", &m.CacheNodeID)
+			delete(rawMsg, key)
+		case "customerId":
+			err = unpopulate(val, "CustomerID", &m.CustomerID)
+			delete(rawMsg, key)
+		case "mccIssueHistory":
+			err = unpopulate(val, "MccIssueHistory", &m.MccIssueHistory)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeTLSCertificate.
+func (m MccCacheNodeTLSCertificate) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "actionRequired", m.ActionRequired)
+	populate(objectMap, "certType", m.CertType)
+	populate(objectMap, "certificateFileName", m.CertificateFileName)
+	populateTime[datetime.RFC3339](objectMap, "expiryDate", m.ExpiryDate, true)
+	populateTime[datetime.RFC3339](objectMap, "notBeforeDate", m.NotBeforeDate, true)
+	populate(objectMap, "subject", m.Subject)
+	populate(objectMap, "subjectAltName", m.SubjectAltName)
+	populate(objectMap, "thumbprint", m.Thumbprint)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeTLSCertificate.
+func (m *MccCacheNodeTLSCertificate) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "actionRequired":
+			err = unpopulate(val, "ActionRequired", &m.ActionRequired)
+			delete(rawMsg, key)
+		case "certType":
+			err = unpopulate(val, "CertType", &m.CertType)
+			delete(rawMsg, key)
+		case "certificateFileName":
+			err = unpopulate(val, "CertificateFileName", &m.CertificateFileName)
+			delete(rawMsg, key)
+		case "expiryDate":
+			err = unpopulateTime[datetime.RFC3339](val, "ExpiryDate", &m.ExpiryDate)
+			delete(rawMsg, key)
+		case "notBeforeDate":
+			err = unpopulateTime[datetime.RFC3339](val, "NotBeforeDate", &m.NotBeforeDate)
+			delete(rawMsg, key)
+		case "subject":
+			err = unpopulate(val, "Subject", &m.Subject)
+			delete(rawMsg, key)
+		case "subjectAltName":
+			err = unpopulate(val, "SubjectAltName", &m.SubjectAltName)
+			delete(rawMsg, key)
+		case "thumbprint":
+			err = unpopulate(val, "Thumbprint", &m.Thumbprint)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeTLSCertificateHistory.
+func (m MccCacheNodeTLSCertificateHistory) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "id", m.ID)
+	populate(objectMap, "location", m.Location)
+	populate(objectMap, "name", m.Name)
+	populate(objectMap, "properties", m.Properties)
+	populate(objectMap, "systemData", m.SystemData)
+	populate(objectMap, "tags", m.Tags)
+	populate(objectMap, "type", m.Type)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeTLSCertificateHistory.
+func (m *MccCacheNodeTLSCertificateHistory) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "id":
+			err = unpopulate(val, "ID", &m.ID)
+			delete(rawMsg, key)
+		case "location":
+			err = unpopulate(val, "Location", &m.Location)
+			delete(rawMsg, key)
+		case "name":
+			err = unpopulate(val, "Name", &m.Name)
+			delete(rawMsg, key)
+		case "properties":
+			err = unpopulate(val, "Properties", &m.Properties)
+			delete(rawMsg, key)
+		case "systemData":
+			err = unpopulate(val, "SystemData", &m.SystemData)
+			delete(rawMsg, key)
+		case "tags":
+			err = unpopulate(val, "Tags", &m.Tags)
+			delete(rawMsg, key)
+		case "type":
+			err = unpopulate(val, "Type", &m.Type)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccCacheNodeTLSCertificateProperties.
+func (m MccCacheNodeTLSCertificateProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "cacheNodeId", m.CacheNodeID)
+	populate(objectMap, "customerId", m.CustomerID)
+	populate(objectMap, "tlsCertificateHistory", m.TLSCertificateHistory)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccCacheNodeTLSCertificateProperties.
+func (m *MccCacheNodeTLSCertificateProperties) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "cacheNodeId":
+			err = unpopulate(val, "CacheNodeID", &m.CacheNodeID)
+			delete(rawMsg, key)
+		case "customerId":
+			err = unpopulate(val, "CustomerID", &m.CustomerID)
+			delete(rawMsg, key)
+		case "tlsCertificateHistory":
+			err = unpopulate(val, "TLSCertificateHistory", &m.TLSCertificateHistory)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+		}
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaller interface for type MccIssue.
+func (m MccIssue) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]any)
+	populate(objectMap, "detailString", m.DetailString)
+	populate(objectMap, "helpLink", m.HelpLink)
+	populateTime[datetime.RFC3339](objectMap, "issueEndDate", m.IssueEndDate, true)
+	populateTime[datetime.RFC3339](objectMap, "issueStartDate", m.IssueStartDate, true)
+	populate(objectMap, "mccIssueType", m.MccIssueType)
+	populate(objectMap, "toastString", m.ToastString)
+	return json.Marshal(objectMap)
+}
+
+// UnmarshalJSON implements the json.Unmarshaller interface for type MccIssue.
+func (m *MccIssue) UnmarshalJSON(data []byte) error {
+	var rawMsg map[string]json.RawMessage
+	if err := json.Unmarshal(data, &rawMsg); err != nil {
+		return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
+	}
+	for key, val := range rawMsg {
+		var err error
+		switch key {
+		case "detailString":
+			err = unpopulate(val, "DetailString", &m.DetailString)
+			delete(rawMsg, key)
+		case "helpLink":
+			err = unpopulate(val, "HelpLink", &m.HelpLink)
+			delete(rawMsg, key)
+		case "issueEndDate":
+			err = unpopulateTime[datetime.RFC3339](val, "IssueEndDate", &m.IssueEndDate)
+			delete(rawMsg, key)
+		case "issueStartDate":
+			err = unpopulateTime[datetime.RFC3339](val, "IssueStartDate", &m.IssueStartDate)
+			delete(rawMsg, key)
+		case "mccIssueType":
+			err = unpopulate(val, "MccIssueType", &m.MccIssueType)
+			delete(rawMsg, key)
+		case "toastString":
+			err = unpopulate(val, "ToastString", &m.ToastString)
+			delete(rawMsg, key)
+		}
+		if err != nil {
+			return fmt.Errorf("unmarshalling type %T: %s", m, err.Error())
 		}
 	}
 	return nil
@@ -1607,7 +1945,7 @@ func (o Operation) MarshalJSON() ([]byte, error) {
 func (o *Operation) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", o, err)
+		return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1629,7 +1967,7 @@ func (o *Operation) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", o, err)
+			return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 		}
 	}
 	return nil
@@ -1649,7 +1987,7 @@ func (o OperationDisplay) MarshalJSON() ([]byte, error) {
 func (o *OperationDisplay) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", o, err)
+		return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1668,7 +2006,7 @@ func (o *OperationDisplay) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", o, err)
+			return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 		}
 	}
 	return nil
@@ -1686,7 +2024,7 @@ func (o OperationListResult) MarshalJSON() ([]byte, error) {
 func (o *OperationListResult) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", o, err)
+		return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1699,7 +2037,7 @@ func (o *OperationListResult) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", o, err)
+			return fmt.Errorf("unmarshalling type %T: %s", o, err.Error())
 		}
 	}
 	return nil
@@ -1716,7 +2054,7 @@ func (p PatchResource) MarshalJSON() ([]byte, error) {
 func (p *PatchResource) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", p, err)
+		return fmt.Errorf("unmarshalling type %T: %s", p, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1726,7 +2064,7 @@ func (p *PatchResource) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", p, err)
+			return fmt.Errorf("unmarshalling type %T: %s", p, err.Error())
 		}
 	}
 	return nil
@@ -1743,7 +2081,7 @@ func (p ProxyURLConfiguration) MarshalJSON() ([]byte, error) {
 func (p *ProxyURLConfiguration) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", p, err)
+		return fmt.Errorf("unmarshalling type %T: %s", p, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
@@ -1753,7 +2091,7 @@ func (p *ProxyURLConfiguration) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", p, err)
+			return fmt.Errorf("unmarshalling type %T: %s", p, err.Error())
 		}
 	}
 	return nil
@@ -1762,10 +2100,10 @@ func (p *ProxyURLConfiguration) UnmarshalJSON(data []byte) error {
 // MarshalJSON implements the json.Marshaller interface for type SystemData.
 func (s SystemData) MarshalJSON() ([]byte, error) {
 	objectMap := make(map[string]any)
-	populateDateTimeRFC3339(objectMap, "createdAt", s.CreatedAt)
+	populateTime[datetime.RFC3339](objectMap, "createdAt", s.CreatedAt, true)
 	populate(objectMap, "createdBy", s.CreatedBy)
 	populate(objectMap, "createdByType", s.CreatedByType)
-	populateDateTimeRFC3339(objectMap, "lastModifiedAt", s.LastModifiedAt)
+	populateTime[datetime.RFC3339](objectMap, "lastModifiedAt", s.LastModifiedAt, true)
 	populate(objectMap, "lastModifiedBy", s.LastModifiedBy)
 	populate(objectMap, "lastModifiedByType", s.LastModifiedByType)
 	return json.Marshal(objectMap)
@@ -1775,13 +2113,13 @@ func (s SystemData) MarshalJSON() ([]byte, error) {
 func (s *SystemData) UnmarshalJSON(data []byte) error {
 	var rawMsg map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawMsg); err != nil {
-		return fmt.Errorf("unmarshalling type %T: %v", s, err)
+		return fmt.Errorf("unmarshalling type %T: %s", s, err.Error())
 	}
 	for key, val := range rawMsg {
 		var err error
 		switch key {
 		case "createdAt":
-			err = unpopulateDateTimeRFC3339(val, "CreatedAt", &s.CreatedAt)
+			err = unpopulateTime[datetime.RFC3339](val, "CreatedAt", &s.CreatedAt)
 			delete(rawMsg, key)
 		case "createdBy":
 			err = unpopulate(val, "CreatedBy", &s.CreatedBy)
@@ -1790,7 +2128,7 @@ func (s *SystemData) UnmarshalJSON(data []byte) error {
 			err = unpopulate(val, "CreatedByType", &s.CreatedByType)
 			delete(rawMsg, key)
 		case "lastModifiedAt":
-			err = unpopulateDateTimeRFC3339(val, "LastModifiedAt", &s.LastModifiedAt)
+			err = unpopulateTime[datetime.RFC3339](val, "LastModifiedAt", &s.LastModifiedAt)
 			delete(rawMsg, key)
 		case "lastModifiedBy":
 			err = unpopulate(val, "LastModifiedBy", &s.LastModifiedBy)
@@ -1800,7 +2138,7 @@ func (s *SystemData) UnmarshalJSON(data []byte) error {
 			delete(rawMsg, key)
 		}
 		if err != nil {
-			return fmt.Errorf("unmarshalling type %T: %v", s, err)
+			return fmt.Errorf("unmarshalling type %T: %s", s, err.Error())
 		}
 	}
 	return nil
@@ -1816,12 +2154,54 @@ func populate(m map[string]any, k string, v any) {
 	}
 }
 
+func populateTime[T dateTimeConstraints](m map[string]any, k string, t *time.Time, utc bool) {
+	if t == nil {
+		return
+	} else if azcore.IsNullValue(t) {
+		m[k] = nil
+	} else if !reflect.ValueOf(t).IsNil() {
+		tt := *t
+		if utc {
+			tt = tt.UTC()
+		}
+		newTime := T(tt)
+		m[k] = (*T)(&newTime)
+	}
+}
+
+func populateAny(m map[string]any, k string, v any) {
+	if v == nil {
+		return
+	} else if azcore.IsNullValue(v) {
+		m[k] = nil
+	} else {
+		m[k] = v
+	}
+}
+
 func unpopulate(data json.RawMessage, fn string, v any) error {
 	if data == nil || string(data) == "null" {
 		return nil
 	}
 	if err := json.Unmarshal(data, v); err != nil {
-		return fmt.Errorf("struct field %s: %v", fn, err)
+		return fmt.Errorf("struct field %s: %s", fn, err.Error())
 	}
 	return nil
+}
+
+func unpopulateTime[T dateTimeConstraints](data json.RawMessage, fn string, t **time.Time) error {
+	if data == nil || string(data) == "null" {
+		return nil
+	}
+	var aux T
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return fmt.Errorf("struct field %s: %s", fn, err.Error())
+	}
+	newTime := time.Time(aux)
+	*t = &newTime
+	return nil
+}
+
+type dateTimeConstraints interface {
+	datetime.PlainDate | datetime.PlainTime | datetime.RFC3339 | datetime.RFC7231 | datetime.Unix
 }

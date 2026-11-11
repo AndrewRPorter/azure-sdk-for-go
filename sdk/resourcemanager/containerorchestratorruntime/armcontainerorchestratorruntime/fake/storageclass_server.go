@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 )
 
 // StorageClassServer is a fake server for instances of the armcontainerorchestratorruntime.StorageClassClient type.
@@ -28,6 +29,10 @@ type StorageClassServer struct {
 	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted, http.StatusNoContent
 	BeginDelete func(ctx context.Context, resourceURI string, storageClassName string, options *armcontainerorchestratorruntime.StorageClassClientBeginDeleteOptions) (resp azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientDeleteResponse], errResp azfake.ErrorResponder)
 
+	// BeginUpdate is the fake for method StorageClassClient.BeginUpdate
+	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
+	BeginUpdate func(ctx context.Context, resourceURI string, storageClassName string, properties armcontainerorchestratorruntime.StorageClassResourceUpdate, options *armcontainerorchestratorruntime.StorageClassClientBeginUpdateOptions) (resp azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientUpdateResponse], errResp azfake.ErrorResponder)
+
 	// Get is the fake for method StorageClassClient.Get
 	// HTTP status codes to indicate success: http.StatusOK
 	Get func(ctx context.Context, resourceURI string, storageClassName string, options *armcontainerorchestratorruntime.StorageClassClientGetOptions) (resp azfake.Responder[armcontainerorchestratorruntime.StorageClassClientGetResponse], errResp azfake.ErrorResponder)
@@ -35,10 +40,6 @@ type StorageClassServer struct {
 	// NewListPager is the fake for method StorageClassClient.NewListPager
 	// HTTP status codes to indicate success: http.StatusOK
 	NewListPager func(resourceURI string, options *armcontainerorchestratorruntime.StorageClassClientListOptions) (resp azfake.PagerResponder[armcontainerorchestratorruntime.StorageClassClientListResponse])
-
-	// BeginUpdate is the fake for method StorageClassClient.BeginUpdate
-	// HTTP status codes to indicate success: http.StatusOK, http.StatusAccepted
-	BeginUpdate func(ctx context.Context, resourceURI string, storageClassName string, properties armcontainerorchestratorruntime.StorageClassResourceUpdate, options *armcontainerorchestratorruntime.StorageClassClientBeginUpdateOptions) (resp azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientUpdateResponse], errResp azfake.ErrorResponder)
 }
 
 // NewStorageClassServerTransport creates a new instance of StorageClassServerTransport with the provided implementation.
@@ -49,8 +50,8 @@ func NewStorageClassServerTransport(srv *StorageClassServer) *StorageClassServer
 		srv:                 srv,
 		beginCreateOrUpdate: newTracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientCreateOrUpdateResponse]](),
 		beginDelete:         newTracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientDeleteResponse]](),
-		newListPager:        newTracker[azfake.PagerResponder[armcontainerorchestratorruntime.StorageClassClientListResponse]](),
 		beginUpdate:         newTracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientUpdateResponse]](),
+		newListPager:        newTracker[azfake.PagerResponder[armcontainerorchestratorruntime.StorageClassClientListResponse]](),
 	}
 }
 
@@ -60,8 +61,8 @@ type StorageClassServerTransport struct {
 	srv                 *StorageClassServer
 	beginCreateOrUpdate *tracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientCreateOrUpdateResponse]]
 	beginDelete         *tracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientDeleteResponse]]
-	newListPager        *tracker[azfake.PagerResponder[armcontainerorchestratorruntime.StorageClassClientListResponse]]
 	beginUpdate         *tracker[azfake.PollerResponder[armcontainerorchestratorruntime.StorageClassClientUpdateResponse]]
+	newListPager        *tracker[azfake.PagerResponder[armcontainerorchestratorruntime.StorageClassClientListResponse]]
 }
 
 // Do implements the policy.Transporter interface for StorageClassServerTransport.
@@ -69,37 +70,38 @@ func (s *StorageClassServerTransport) Do(req *http.Request) (*http.Response, err
 	rawMethod := req.Context().Value(runtime.CtxAPINameKey{})
 	method, ok := rawMethod.(string)
 	if !ok {
-		return nil, nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
+		return nil, &nonRetriableError{errors.New("unable to dispatch request, missing value for CtxAPINameKey")}
 	}
 
 	return s.dispatchToMethodFake(req, method)
 }
 
 func (s *StorageClassServerTransport) dispatchToMethodFake(req *http.Request, method string) (*http.Response, error) {
-	resultChan := make(chan result)
-	defer close(resultChan)
-
+	resultChan := make(chan result, 1)
 	go func() {
+		var intercepted bool
 		var res result
-		switch method {
-		case "StorageClassClient.BeginCreateOrUpdate":
-			res.resp, res.err = s.dispatchBeginCreateOrUpdate(req)
-		case "StorageClassClient.BeginDelete":
-			res.resp, res.err = s.dispatchBeginDelete(req)
-		case "StorageClassClient.Get":
-			res.resp, res.err = s.dispatchGet(req)
-		case "StorageClassClient.NewListPager":
-			res.resp, res.err = s.dispatchNewListPager(req)
-		case "StorageClassClient.BeginUpdate":
-			res.resp, res.err = s.dispatchBeginUpdate(req)
-		default:
-			res.err = fmt.Errorf("unhandled API %s", method)
+		if storageClassServerTransportInterceptor != nil {
+			res.resp, res.err, intercepted = storageClassServerTransportInterceptor.Do(req)
 		}
+		if !intercepted {
+			switch method {
+			case "StorageClassClient.BeginCreateOrUpdate":
+				res.resp, res.err = s.dispatchBeginCreateOrUpdate(req)
+			case "StorageClassClient.BeginDelete":
+				res.resp, res.err = s.dispatchBeginDelete(req)
+			case "StorageClassClient.BeginUpdate":
+				res.resp, res.err = s.dispatchBeginUpdate(req)
+			case "StorageClassClient.Get":
+				res.resp, res.err = s.dispatchGet(req)
+			case "StorageClassClient.NewListPager":
+				res.resp, res.err = s.dispatchNewListPager(req)
+			default:
+				res.err = fmt.Errorf("unhandled API %s", method)
+			}
 
-		select {
-		case resultChan <- res:
-		case <-req.Context().Done():
 		}
+		resultChan <- res
 	}()
 
 	select {
@@ -116,20 +118,17 @@ func (s *StorageClassServerTransport) dispatchBeginCreateOrUpdate(req *http.Requ
 	}
 	beginCreateOrUpdate := s.beginCreateOrUpdate.get(req)
 	if beginCreateOrUpdate == nil {
-		const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
+		if len(matches) < 3 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armcontainerorchestratorruntime.StorageClassResource](req)
 		if err != nil {
 			return nil, err
 		}
-		resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-		if err != nil {
-			return nil, err
-		}
+		resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
 		storageClassNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storageClassName")])
 		if err != nil {
 			return nil, err
@@ -147,7 +146,7 @@ func (s *StorageClassServerTransport) dispatchBeginCreateOrUpdate(req *http.Requ
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusCreated}, resp.StatusCode) {
 		s.beginCreateOrUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusCreated", resp.StatusCode)}
 	}
@@ -164,16 +163,13 @@ func (s *StorageClassServerTransport) dispatchBeginDelete(req *http.Request) (*h
 	}
 	beginDelete := s.beginDelete.get(req)
 	if beginDelete == nil {
-		const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
+		if len(matches) < 3 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
-		resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-		if err != nil {
-			return nil, err
-		}
+		resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
 		storageClassNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storageClassName")])
 		if err != nil {
 			return nil, err
@@ -191,7 +187,7 @@ func (s *StorageClassServerTransport) dispatchBeginDelete(req *http.Request) (*h
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted, http.StatusNoContent}, resp.StatusCode) {
 		s.beginDelete.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted, http.StatusNoContent", resp.StatusCode)}
 	}
@@ -202,96 +198,23 @@ func (s *StorageClassServerTransport) dispatchBeginDelete(req *http.Request) (*h
 	return resp, nil
 }
 
-func (s *StorageClassServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
-	if s.srv.Get == nil {
-		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
-	}
-	const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
-	regex := regexp.MustCompile(regexStr)
-	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-	if matches == nil || len(matches) < 2 {
-		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-	}
-	resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-	if err != nil {
-		return nil, err
-	}
-	storageClassNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storageClassName")])
-	if err != nil {
-		return nil, err
-	}
-	respr, errRespr := s.srv.Get(req.Context(), resourceURIParam, storageClassNameParam, nil)
-	if respErr := server.GetError(errRespr, req); respErr != nil {
-		return nil, respErr
-	}
-	respContent := server.GetResponseContent(respr)
-	if !contains([]int{http.StatusOK}, respContent.HTTPStatus) {
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
-	}
-	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).StorageClassResource, req)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (s *StorageClassServerTransport) dispatchNewListPager(req *http.Request) (*http.Response, error) {
-	if s.srv.NewListPager == nil {
-		return nil, &nonRetriableError{errors.New("fake for method NewListPager not implemented")}
-	}
-	newListPager := s.newListPager.get(req)
-	if newListPager == nil {
-		const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.KubernetesRuntime/storageClasses`
-		regex := regexp.MustCompile(regexStr)
-		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 1 {
-			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
-		}
-		resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-		if err != nil {
-			return nil, err
-		}
-		resp := s.srv.NewListPager(resourceURIParam, nil)
-		newListPager = &resp
-		s.newListPager.add(req, newListPager)
-		server.PagerResponderInjectNextLinks(newListPager, req, func(page *armcontainerorchestratorruntime.StorageClassClientListResponse, createLink func() string) {
-			page.NextLink = to.Ptr(createLink())
-		})
-	}
-	resp, err := server.PagerResponderNext(newListPager, req)
-	if err != nil {
-		return nil, err
-	}
-	if !contains([]int{http.StatusOK}, resp.StatusCode) {
-		s.newListPager.remove(req)
-		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
-	}
-	if !server.PagerResponderMore(newListPager) {
-		s.newListPager.remove(req)
-	}
-	return resp, nil
-}
-
 func (s *StorageClassServerTransport) dispatchBeginUpdate(req *http.Request) (*http.Response, error) {
 	if s.srv.BeginUpdate == nil {
 		return nil, &nonRetriableError{errors.New("fake for method BeginUpdate not implemented")}
 	}
 	beginUpdate := s.beginUpdate.get(req)
 	if beginUpdate == nil {
-		const regexStr = `/(?P<resourceUri>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[!#&$-;=?-\[\]_a-zA-Z0-9~%@]+)`
+		const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
 		regex := regexp.MustCompile(regexStr)
 		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
-		if matches == nil || len(matches) < 2 {
+		if len(matches) < 3 {
 			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
 		}
 		body, err := server.UnmarshalRequestAsJSON[armcontainerorchestratorruntime.StorageClassResourceUpdate](req)
 		if err != nil {
 			return nil, err
 		}
-		resourceURIParam, err := url.PathUnescape(matches[regex.SubexpIndex("resourceUri")])
-		if err != nil {
-			return nil, err
-		}
+		resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
 		storageClassNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storageClassName")])
 		if err != nil {
 			return nil, err
@@ -309,7 +232,7 @@ func (s *StorageClassServerTransport) dispatchBeginUpdate(req *http.Request) (*h
 		return nil, err
 	}
 
-	if !contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
+	if !slices.Contains([]int{http.StatusOK, http.StatusAccepted}, resp.StatusCode) {
 		s.beginUpdate.remove(req)
 		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK, http.StatusAccepted", resp.StatusCode)}
 	}
@@ -318,4 +241,74 @@ func (s *StorageClassServerTransport) dispatchBeginUpdate(req *http.Request) (*h
 	}
 
 	return resp, nil
+}
+
+func (s *StorageClassServerTransport) dispatchGet(req *http.Request) (*http.Response, error) {
+	if s.srv.Get == nil {
+		return nil, &nonRetriableError{errors.New("fake for method Get not implemented")}
+	}
+	const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.KubernetesRuntime/storageClasses/(?P<storageClassName>[a-zA-Z0-9._~%!$&'()*+,;=:@-]+)`
+	regex := regexp.MustCompile(regexStr)
+	matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+	if len(matches) < 3 {
+		return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+	}
+	resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+	storageClassNameParam, err := url.PathUnescape(matches[regex.SubexpIndex("storageClassName")])
+	if err != nil {
+		return nil, err
+	}
+	respr, errRespr := s.srv.Get(req.Context(), resourceURIParam, storageClassNameParam, nil)
+	if respErr := server.GetError(errRespr, req); respErr != nil {
+		return nil, respErr
+	}
+	respContent := server.GetResponseContent(respr)
+	if !slices.Contains([]int{http.StatusOK}, respContent.HTTPStatus) {
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", respContent.HTTPStatus)}
+	}
+	resp, err := server.MarshalResponseAsJSON(respContent, server.GetResponse(respr).StorageClassResource, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (s *StorageClassServerTransport) dispatchNewListPager(req *http.Request) (*http.Response, error) {
+	if s.srv.NewListPager == nil {
+		return nil, &nonRetriableError{errors.New("fake for method NewListPager not implemented")}
+	}
+	newListPager := s.newListPager.get(req)
+	if newListPager == nil {
+		const regexStr = `/(?P<resourceUri>[a-zA-Z0-9._~%!$&'()*+,;=:@/-]+)/providers/Microsoft\.KubernetesRuntime/storageClasses`
+		regex := regexp.MustCompile(regexStr)
+		matches := regex.FindStringSubmatch(req.URL.EscapedPath())
+		if len(matches) < 2 {
+			return nil, fmt.Errorf("failed to parse path %s", req.URL.Path)
+		}
+		resourceURIParam := matches[regex.SubexpIndex("resourceUri")]
+		resp := s.srv.NewListPager(resourceURIParam, nil)
+		newListPager = &resp
+		s.newListPager.add(req, newListPager)
+		server.PagerResponderInjectNextLinks(newListPager, req, func(page *armcontainerorchestratorruntime.StorageClassClientListResponse, createLink func() string) {
+			page.NextLink = to.Ptr(createLink())
+		})
+	}
+	resp, err := server.PagerResponderNext(newListPager, req)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.Contains([]int{http.StatusOK}, resp.StatusCode) {
+		s.newListPager.remove(req)
+		return nil, &nonRetriableError{fmt.Errorf("unexpected status code %d. acceptable values are http.StatusOK", resp.StatusCode)}
+	}
+	if !server.PagerResponderMore(newListPager) {
+		s.newListPager.remove(req)
+	}
+	return resp, nil
+}
+
+// set this to conditionally intercept incoming requests to StorageClassServerTransport
+var storageClassServerTransportInterceptor interface {
+	// Do returns true if the server transport should use the returned response/error
+	Do(*http.Request) (*http.Response, error, bool)
 }

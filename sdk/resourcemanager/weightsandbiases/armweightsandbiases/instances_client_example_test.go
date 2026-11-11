@@ -12,7 +12,7 @@ import (
 	"log"
 )
 
-// Generated from example definition: 2024-09-18-preview/Instances_CreateOrUpdate_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_CreateOrUpdate_MaximumSet_Gen.json
 func ExampleInstancesClient_BeginCreateOrUpdate() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -70,13 +70,13 @@ func ExampleInstancesClient_BeginCreateOrUpdate() {
 	}
 	res, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 	// You could use response here. We use blank identifier for just demo purposes.
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armweightsandbiases.InstancesClientCreateOrUpdateResponse{
-	// 	InstanceResource: &armweightsandbiases.InstanceResource{
+	// 	InstanceResource: armweightsandbiases.InstanceResource{
 	// 		Properties: &armweightsandbiases.InstanceProperties{
 	// 			Marketplace: &armweightsandbiases.MarketplaceDetails{
 	// 				SubscriptionID: to.Ptr("00000000-0000-0000-0000-000000000000"),
@@ -128,16 +128,16 @@ func ExampleInstancesClient_BeginCreateOrUpdate() {
 	// 		SystemData: &armweightsandbiases.SystemData{
 	// 			CreatedBy: to.Ptr("lhixxxtbajbjlaytguxuewxe"),
 	// 			CreatedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qqyff"),
 	// 			LastModifiedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_Delete_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_Delete_MaximumSet_Gen.json
 func ExampleInstancesClient_BeginDelete() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -154,11 +154,11 @@ func ExampleInstancesClient_BeginDelete() {
 	}
 	_, err = poller.PollUntilDone(ctx, nil)
 	if err != nil {
-		log.Fatalf("failed to pull the result: %v", err)
+		log.Fatalf("failed to poll the result: %v", err)
 	}
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_Get_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_Get_MaximumSet_Gen.json
 func ExampleInstancesClient_Get() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -177,7 +177,7 @@ func ExampleInstancesClient_Get() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armweightsandbiases.InstancesClientGetResponse{
-	// 	InstanceResource: &armweightsandbiases.InstanceResource{
+	// 	InstanceResource: armweightsandbiases.InstanceResource{
 	// 		Properties: &armweightsandbiases.InstanceProperties{
 	// 			Marketplace: &armweightsandbiases.MarketplaceDetails{
 	// 				SubscriptionID: to.Ptr("00000000-0000-0000-0000-000000000000"),
@@ -229,16 +229,16 @@ func ExampleInstancesClient_Get() {
 	// 		SystemData: &armweightsandbiases.SystemData{
 	// 			CreatedBy: to.Ptr("lhixxxtbajbjlaytguxuewxe"),
 	// 			CreatedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qqyff"),
 	// 			LastModifiedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 		},
 	// 	},
 	// }
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_ListByResourceGroup_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_ListByResourceGroup_MaximumSet_Gen.json
 func ExampleInstancesClient_NewListByResourceGroupPager_instancesListByResourceGroupGeneratedByMaximumSetRule() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -315,10 +315,10 @@ func ExampleInstancesClient_NewListByResourceGroupPager_instancesListByResourceG
 		// 				SystemData: &armweightsandbiases.SystemData{
 		// 					CreatedBy: to.Ptr("lhixxxtbajbjlaytguxuewxe"),
 		// 					CreatedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qqyff"),
 		// 					LastModifiedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -328,7 +328,7 @@ func ExampleInstancesClient_NewListByResourceGroupPager_instancesListByResourceG
 	}
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_ListByResourceGroup_MinimumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_ListByResourceGroup_MinimumSet_Gen.json
 func ExampleInstancesClient_NewListByResourceGroupPager_instancesListByResourceGroupGeneratedByMinimumSetRule() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -363,7 +363,7 @@ func ExampleInstancesClient_NewListByResourceGroupPager_instancesListByResourceG
 	}
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_ListBySubscription_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_ListBySubscription_MaximumSet_Gen.json
 func ExampleInstancesClient_NewListBySubscriptionPager_instancesListBySubscriptionGeneratedByMaximumSetRule() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -440,10 +440,10 @@ func ExampleInstancesClient_NewListBySubscriptionPager_instancesListBySubscripti
 		// 				SystemData: &armweightsandbiases.SystemData{
 		// 					CreatedBy: to.Ptr("lhixxxtbajbjlaytguxuewxe"),
 		// 					CreatedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-		// 					CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+		// 					CreatedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 		// 					LastModifiedBy: to.Ptr("qqyff"),
 		// 					LastModifiedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-		// 					LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+		// 					LastModifiedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 		// 				},
 		// 			},
 		// 		},
@@ -453,7 +453,7 @@ func ExampleInstancesClient_NewListBySubscriptionPager_instancesListBySubscripti
 	}
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_ListBySubscription_MinimumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_ListBySubscription_MinimumSet_Gen.json
 func ExampleInstancesClient_NewListBySubscriptionPager_instancesListBySubscriptionGeneratedByMinimumSetRule() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -488,7 +488,7 @@ func ExampleInstancesClient_NewListBySubscriptionPager_instancesListBySubscripti
 	}
 }
 
-// Generated from example definition: 2024-09-18-preview/Instances_Update_MaximumSet_Gen.json
+// Generated from example definition: 2024-09-18/Instances_Update_MaximumSet_Gen.json
 func ExampleInstancesClient_Update() {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -513,7 +513,7 @@ func ExampleInstancesClient_Update() {
 	_ = res
 	// If the HTTP response code is 200 as defined in example definition, your response structure would look as follows. Please pay attention that all the values in the output are fake values for just demo purposes.
 	// res = armweightsandbiases.InstancesClientUpdateResponse{
-	// 	InstanceResource: &armweightsandbiases.InstanceResource{
+	// 	InstanceResource: armweightsandbiases.InstanceResource{
 	// 		Properties: &armweightsandbiases.InstanceProperties{
 	// 			Marketplace: &armweightsandbiases.MarketplaceDetails{
 	// 				SubscriptionID: to.Ptr("00000000-0000-0000-0000-000000000000"),
@@ -565,10 +565,10 @@ func ExampleInstancesClient_Update() {
 	// 		SystemData: &armweightsandbiases.SystemData{
 	// 			CreatedBy: to.Ptr("lhixxxtbajbjlaytguxuewxe"),
 	// 			CreatedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			CreatedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			CreatedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 			LastModifiedBy: to.Ptr("qqyff"),
 	// 			LastModifiedByType: to.Ptr(armweightsandbiases.CreatedByTypeUser),
-	// 			LastModifiedAt: to.Ptr(func() time.Time { t, _ := time.Parse(time.RFC3339Nano, "2024-09-18T18:08:48.680Z"); return t}()),
+	// 			LastModifiedAt: to.Ptr(time.Date(2024, time.September, 18, 18, 8, 48, 680000000, time.UTC)),
 	// 		},
 	// 	},
 	// }

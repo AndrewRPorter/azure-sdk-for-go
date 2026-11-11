@@ -1,6 +1,3 @@
-//go:build go1.18
-// +build go1.18
-
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
@@ -18,6 +15,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/runtime"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
 	"github.com/Azure/azure-sdk-for-go/sdk/internal/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestProgressReporting(t *testing.T) {
@@ -30,7 +28,7 @@ func TestProgressReporting(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse(mock.WithBody(content))
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -51,7 +49,9 @@ func TestProgressReporting(t *testing.T) {
 	respRpt := streaming.NewResponseProgress(resp.Body, func(bytesTransferred int64) {
 		bytesReceived = bytesTransferred
 	})
-	defer respRpt.Close()
+	defer func() {
+		require.NoError(t, respRpt.Close())
+	}()
 	b, err := io.ReadAll(respRpt)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -79,7 +79,7 @@ func TestProgressReportingSeek(t *testing.T) {
 	srv, close := mock.NewServer()
 	defer close()
 	srv.SetResponse()
-	pl := exported.NewPipeline(srv)
+	pl := exported.NewPipeline(nil, srv)
 	req, err := runtime.NewRequest(context.Background(), http.MethodGet, srv.URL())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

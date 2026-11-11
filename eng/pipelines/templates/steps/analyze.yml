@@ -21,22 +21,44 @@ steps:
 
   - pwsh: |
       . $(Build.SourcesDirectory)/eng/common/scripts/common.ps1
+      . $(Build.SourcesDirectory)/eng/scripts/analysis-helpers.ps1
+
+      $packages = "$(Packages)" -split "," | Where-Object { $_ }
+      $filterToChangedFiles = "$(Build.Reason)" -eq "PullRequest"
+      $packageSets = Get-GoAnalysisPackageSets `
+        -PackageDirectories $packages `
+        -FilterToChangedFiles $filterToChangedFiles
+
+      $analysisPackages = $packageSets.AnalysisPackages -join ","
+      $dependencyCheckPackages = $packageSets.DependencyCheckPackages -join ","
+
+      Write-Host "Analysis packages: $analysisPackages"
+      Write-Host "Dependency check packages: $dependencyCheckPackages"
+      Write-Host "##vso[task.setvariable variable=AnalysisPackages;]$analysisPackages"
+      Write-Host "##vso[task.setvariable variable=DependencyCheckPackages;]$dependencyCheckPackages"
+    displayName: Resolve Analysis Packages
+
+  - pwsh: |
+      . $(Build.SourcesDirectory)/eng/common/scripts/common.ps1
       . $(Build.SourcesDirectory)/eng/scripts/apiview-helpers.ps1
 
       $pkgs = Get-PackagesFromPackageInfo -PackageInfoFolder "$(Build.ArtifactStagingDirectory)/PackageInfo" `
         -IncludeIndirect $false -CustomCompareFunction { param($pkgProp) { return $pkgProp.CIParameters.IsSdkLibrary } }
 
+      $analysisPackageNames = "$(AnalysisPackages)" -split "," | Where-Object { $_ }
       $apiviewEnabledPackages = @()
-      if ($pkgs) {
-        $apiviewEnabledPackages = $pkgs | ForEach-Object { $_.Name } | Sort-Object -Unique
+      if ($pkgs -and $analysisPackageNames) {
+        $apiviewEnabledPackages = $pkgs `
+          | ForEach-Object { $_.Name } `
+          | Where-Object { $_ -in $analysisPackageNames } `
+          | Sort-Object -Unique
       }
       else {
-        Write-Host "No sdk packages were found in package set. Skipping APIView generation."
-        exit 0
+        Write-Host "No sdk packages with Go analysis changes were found. Skipping APIView generation."
       }
 
-      $failed = $false
       $directoryToPublish = Join-Path -Path $(Build.ArtifactStagingDirectory) ${{ parameters.ArtifactName }}
+      New-Item -ItemType Directory -Path $directoryToPublish -Force | Out-Null
 
       foreach($serviceDirectory in $apiviewEnabledPackages) {
         New-APIViewArtifacts `
@@ -69,20 +91,26 @@ steps:
 
   - template: /eng/common/pipelines/templates/steps/set-default-branch.yml
 
-  - pwsh: |
-      . $(Build.SourcesDirectory)/eng/scripts/apiview-helpers.ps1
-      New-APIViewFromCI `
-        -ServiceDirectory '${{parameters.ServiceDirectory}}' `
-        -ArtifactPath '$(Build.ArtifactStagingDirectory)' `
-        -ApiKey '$(azuresdk-apiview-apikey)' `
-        -SourceBranch '$(Build.SourceBranchName)' `
-        -DefaultBranch '$(DefaultBranch)' `
-        -ConfigFileDir '$(Build.ArtifactStagingDirectory)/PackageInfo' `
-        -BuildId $(Build.BuildId) `
-        -RepoName '$(Build.Repository.Name)'
-    displayName: Create API review for Go
-    workingDirectory: $(Pipeline.Workspace)
-    condition: and(succeeded(), ne(variables['Skip.CreateApiReview'], 'true') , ne(variables['Build.Reason'],'PullRequest'), eq(variables['System.TeamProject'], 'internal'))
+  - ${{ if and(eq(variables['System.TeamProject'], 'internal'), ne(variables['Build.Reason'], 'PullRequest'), not(endsWith(variables['Build.Repository.Name'], '-pr'))) }}:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'APIView prod deployment'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          . $(Build.SourcesDirectory)/eng/scripts/apiview-helpers.ps1
+          New-APIViewFromCI `
+            -ServiceDirectory '${{ parameters.ServiceDirectory }}' `
+            -ArtifactPath '$(Build.ArtifactStagingDirectory)' `
+            -SourceBranch '$(Build.SourceBranchName)' `
+            -DefaultBranch '$(DefaultBranch)' `
+            -ConfigFileDir '$(Build.ArtifactStagingDirectory)/PackageInfo' `
+            -BuildId $(Build.BuildId) `
+            -RepoName '$(Build.Repository.Name)'
+        pwsh: true
+        workingDirectory: $(Pipeline.Workspace)
+      displayName: Create API review for Go
+      condition: and(succeeded(), ne(variables['Skip.CreateApiReview'], 'true'))
 
   - ${{ if eq(variables['Build.Reason'],'PullRequest') }}:
     - template: /eng/common/pipelines/templates/steps/detect-api-changes.yml
@@ -132,26 +160,27 @@ steps:
       condition: >-
         and(
           succeededOrFailed(),
-          not(endsWith(variables['Build.Repository.Name'], '-pr'))
+          not(endsWith(variables['Build.Repository.Name'], '-pr')),
+          not(endsWith(variables['Build.DefinitionName'], 'weekly'))
         )
 
   - pwsh: |
-      ./eng/scripts/Invoke-DependencyCheck.ps1 "$(Packages)"
+      ./eng/scripts/Invoke-DependencyCheck.ps1 "$(DependencyCheckPackages)"
     displayName: Dependency Check
-    condition: ne(variables['Skip.DependencyCheck'], 'true')
+    condition: and(ne(variables['Skip.DependencyCheck'], 'true'), ne(variables['DependencyCheckPackages'], ''))
     env:
       GO111MODULE: 'on'
 
   - script: |
-      curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${{parameters.LintVersion}}
+      curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin ${{parameters.LintVersion}}
       golangci-lint --version
     displayName: 'Install GoLintCLI and dependencies.'
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), ne(variables['AnalysisPackages'], ''))
     workingDirectory: $(System.DefaultWorkingDirectory)
     retryCountOnTaskFailure: 3
 
   - pwsh: |
-      $changedPackages = "$(Packages)" -split ","
+      $changedPackages = "$(AnalysisPackages)" -split ","
       $failed = $false
 
       foreach($packageDirectory in $changedPackages) {
@@ -180,7 +209,7 @@ steps:
       }
     displayName: 'Lint'
     workingDirectory: $(System.DefaultWorkingDirectory)
-    condition: succeededOrFailed()
+    condition: and(succeededOrFailed(), ne(variables['AnalysisPackages'], ''))
 
   - pwsh: |
       $changedPackages = "$(Packages)" -split ","
@@ -276,16 +305,6 @@ steps:
       pwsh: true
     displayName: 'Format Check'
     condition: succeededOrFailed()
-
-  - template: /eng/common/pipelines/templates/steps/verify-links.yml
-    parameters:
-      ${{ if eq(variables['Build.Reason'], 'PullRequest') }}:
-        Directory: ''
-        Urls: (eng/common/scripts/get-markdown-files-from-changed-files.ps1)
-      ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-        Directory: sdk/${{ parameters.ServiceDirectory }}
-      CheckLinkGuidance: $true
-      Condition: succeededOrFailed()
 
   - pwsh: |
       if (-not "$(Packages)") {
